@@ -468,7 +468,7 @@ public class TacosMonster extends TacosMapObject {
             highestDamageChar = attacker.getId();
         }
         if (exp > 0) {
-            exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
+            exp *= attacker.getEXPMod();
             exp *= attacker.getChannelServer().getExpRate();
             exp *= 1.25; // JMS
             //do this last just incase someone has a 2x exp card and its set to max value

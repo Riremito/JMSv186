@@ -11,7 +11,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -677,12 +677,10 @@ public class MapleStatEffect {
 
     private int alchemistModifyVal(TacosCharacter chr, int val, boolean withX) {
         if (!skill) {
-            int offset = chr.getStat().RecoveryUP;
             MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
+            int offset = 100;
             if (alchemistEffect != null) {
-                offset += (withX ? alchemistEffect.getX() : alchemistEffect.getY());
-            } else {
-                offset += 100;
+                offset = withX ? alchemistEffect.getX() : alchemistEffect.getY();
             }
             return (val * offset / 100);
         }

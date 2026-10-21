@@ -135,7 +135,7 @@ public class TacosReward {
             }
 
             // ボスは無条件でドロップ確定, 通常Mobはx/1000の確率でDBの値を参照してドロップする
-            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0)))) {
+            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod()))) {
                 // メル
                 if (de.itemId == 0) {
                     int mesos = de.Minimum;
@@ -144,7 +144,7 @@ public class TacosReward {
                     }
 
                     if (mesos > 0) {
-                        map.spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, false, drop_type, 0);
+                        map.spawnMobMesoDrop((int) (mesos * chr.getDropMod() * cmServerrate), map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, false, drop_type, 0);
                         dropped_count++;
                     }
                 } else {

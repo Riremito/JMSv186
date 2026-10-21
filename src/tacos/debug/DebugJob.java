@@ -21,7 +21,7 @@ package tacos.debug;
 import odin.client.Skill;
 import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import java.util.ArrayList;
 import odin.server.Randomizer;
 import tacos.config.Config;

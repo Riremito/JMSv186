@@ -206,7 +206,7 @@ public class ParseCUser_Attack {
         attack.m_nLevel = chr.getLevel();
         attack.nSkillID = 0;
         attack.SkillLevel = 0;
-        attack.nMastery = chr.getStat().passive_mastery();
+        attack.nMastery = 0;
         attack.nBulletItemID = 0;
         attack.X = chr.getPosition().x;
         attack.Y = chr.getPosition().y;

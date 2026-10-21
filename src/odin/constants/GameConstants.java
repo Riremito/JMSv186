@@ -345,19 +345,6 @@ public class GameConstants {
         return job >= 0 && job < 1000;
     }
 
-    public static boolean isRecoveryIncSkill(int id) {
-        switch (id) {
-            case 1110000:
-            case 2000000:
-            case 1210000:
-            case 11110000:
-            case 4100002:
-            case 4200001:
-                return true;
-        }
-        return false;
-    }
-
     public static boolean isLinkedAranSkill(int id) {
         return getLinkedAranSkill(id) != id;
     }

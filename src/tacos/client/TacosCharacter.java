@@ -32,9 +32,9 @@ import java.util.Map;
 import odin.client.BuddyList;
 import odin.client.BuddyList.BuddylistEntry;
 import odin.client.Skill;
-import odin.client.PlayerStats;
 import odin.client.Skill.SkillEntry;
 import odin.client.inventory.Item;
+import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
@@ -481,7 +481,6 @@ public class TacosCharacter extends TacosPlayer {
             updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortal(0)); // for dynamic portal
             sendSetField(false);
             map_to.userEnterField((TacosCharacter) this);
-            stats.relocHeal();
         }
 
         if (getPyramidSubway() != null) {
@@ -800,7 +799,7 @@ public class TacosCharacter extends TacosPlayer {
         }
         SkillEntry ret = this.skills.get(skill);
 
-        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel);
         return skill_level;
     }
 
@@ -2079,7 +2078,7 @@ public class TacosCharacter extends TacosPlayer {
             inventory[type.ordinal()] = new MapleInventory(type);
         }
         quests = new LinkedHashMap<>(); // Stupid erev quest.
-        stats = new PlayerStats(this);
+        stats = new PlayerStats();
         for (int i = 0; i < remainingSp.length; i++) {
             remainingSp[i] = 0;
         }
@@ -2271,9 +2270,7 @@ public class TacosCharacter extends TacosPlayer {
         } else {
             skills.put(skill, new SkillEntry(newLevel, newMasterlevel, expiration));
         }
-        if (GameConstants.isRecoveryIncSkill(skill.getId())) {
-            stats.relocHeal();
-        } else if (GameConstants.isElementAmp_Skill(skill.getId())) {
+        if (GameConstants.isElementAmp_Skill(skill.getId())) {
             stats.recalcLocalStats();
         }
 
@@ -2314,7 +2311,7 @@ public class TacosCharacter extends TacosPlayer {
 
         sendStatChanged();
 
-        if (!stats.checkEquipDurabilitys(this, -100)) { //i guess this is how it works ?
+        if (!stats.checkEquipDurabilitys(-100)) { //i guess this is how it works ?
             Notice("An item has run out of durability but has no inventory room to go to.");
         } //lol
         if (getPyramidSubway() != null) {
@@ -2422,7 +2419,7 @@ public class TacosCharacter extends TacosPlayer {
             if (show) { // still show the expgain even if it's not there
                 SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
-            stats.checkEquipLevels(this, total);
+            stats.checkEquipLevels(total);
         }
     }
 
@@ -2698,7 +2695,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setChair(int chair) {
         this.chair = chair;
-        stats.relocHeal();
     }
 
     public int getFamilyId() {
@@ -3920,7 +3916,7 @@ public class TacosCharacter extends TacosPlayer {
                     SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
                 }
                 if (total > 0) {
-                    stats.checkEquipLevels(this, total); //gms like
+                    stats.checkEquipLevels(total); //gms like
                 }
             }
         } catch (Exception e) {
@@ -3969,7 +3965,7 @@ public class TacosCharacter extends TacosPlayer {
         if (ret == null || ret.skillevel <= 0) {
             return 0;
         }
-        return (byte) Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        return (byte) Math.min(skill.getMaxLevel(), ret.skillevel);
     }
 
     // used by script
@@ -4269,5 +4265,384 @@ public class TacosCharacter extends TacosPlayer {
     public boolean StartPachinko(int type) {
         SendPacket(Res_JMS_CField_Pachinko.openBeans(this, type));
         return true;
+    }
+
+    public class PlayerStats {
+
+        public int str;
+        public int dex;
+        public int luk;
+        public int int_;
+        public int hp;
+        public int maxhp;
+        public int mp;
+        public int maxmp;
+        public int equipmentBonusExp;
+        public int expMod;
+        public int dropMod;
+        public int levelBonus;
+        public boolean equippedWelcomeBackRing;
+        public boolean hasPartyBonus;
+        private final List<Equip> durabilityHandling = new ArrayList<>();
+        private final List<Equip> equipLevelHandling = new ArrayList<>();
+        private boolean isRecalc = false;
+        private short localmaxhp;
+        private short localmaxmp;
+        private int localstr;
+        private int localdex;
+        private int localluk;
+        private int localint_;
+        private int magic;
+        private int watk;
+
+        public int getStr() {
+            return str;
+        }
+
+        public int getDex() {
+            return dex;
+        }
+
+        public int getLuk() {
+            return luk;
+        }
+
+        public int getInt() {
+            return int_;
+        }
+
+        public void setStr(int str) {
+            this.str = str;
+            recalcLocalStats();
+        }
+
+        public void setDex(int dex) {
+            this.dex = dex;
+            recalcLocalStats();
+        }
+
+        public void setLuk(int luk) {
+            this.luk = luk;
+            recalcLocalStats();
+        }
+
+        public void setInt(int int_) {
+            this.int_ = int_;
+            recalcLocalStats();
+        }
+
+        public boolean setHp(int newhp) {
+            return setHp(newhp, false);
+        }
+
+        public boolean setHp(int newhp, boolean silent) {
+            int oldHp = hp;
+            hp = Math.max(0, Math.min(newhp, localmaxhp));
+            if (!silent) {
+                updatePartyMemberHP();
+            }
+            if (oldHp > hp && !isAlive()) {
+                playerDead();
+            }
+            return hp != oldHp;
+        }
+
+        public boolean setMp(int newmp) {
+            int oldMp = mp;
+            mp = Math.max(0, Math.min(newmp, localmaxmp));
+            return mp != oldMp;
+        }
+
+        public void setMaxHp(int hp) {
+            this.maxhp = hp;
+            recalcLocalStats();
+        }
+
+        public void setMaxMp(int mp) {
+            this.maxmp = mp;
+            recalcLocalStats();
+        }
+
+        public int getHp() {
+            return hp;
+        }
+
+        public int getMaxHp() {
+            return maxhp;
+        }
+
+        public int getMp() {
+            return mp;
+        }
+
+        public int getMaxMp() {
+            return maxmp;
+        }
+
+        public int getTotalDex() {
+            return localdex;
+        }
+
+        public int getTotalInt() {
+            return localint_;
+        }
+
+        public int getTotalStr() {
+            return localstr;
+        }
+
+        public int getTotalLuk() {
+            return localluk;
+        }
+
+        public int getTotalMagic() {
+            return magic;
+        }
+
+        public int getTotalWatk() {
+            return watk;
+        }
+
+        public short getCurrentMaxHp() {
+            return localmaxhp;
+        }
+
+        public short getCurrentMaxMp() {
+            return localmaxmp;
+        }
+
+        public void recalcLocalStats() {
+            recalcLocalStats(false);
+        }
+
+        public void recalcLocalStats(boolean first_login) {
+            if (isRecalc) {
+                return;
+            }
+            isRecalc = true;
+            int oldmaxhp = localmaxhp;
+            int localmaxhp_ = maxhp;
+            int localmaxmp_ = maxmp;
+            int percent_hp = 0;
+            int percent_mp = 0;
+            localdex = dex;
+            localint_ = int_;
+            localstr = str;
+            localluk = luk;
+            magic = localint_;
+            watk = 0;
+            if (job == 500 || (520 <= job && job <= 522)) {
+                watk = 20; // bullet
+            } else if (job == 400 || (410 <= job && job <= 412) || (1400 <= job && job <= 1412)) {
+                watk = 30; // stars
+            }
+            equippedWelcomeBackRing = false;
+            hasPartyBonus = false;
+            boolean canEquipLevel = level >= 120 && !GameConstants.isKOC(job);
+            equipmentBonusExp = 0;
+            dropMod = 1;
+            expMod = 1;
+            levelBonus = 0;
+            durabilityHandling.clear();
+            equipLevelHandling.clear();
+
+            for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
+                Equip equip = (Equip) item;
+                localmaxhp_ += equip.getHp();
+                localmaxmp_ += equip.getMp();
+                localdex += equip.getDex();
+                localint_ += equip.getInt();
+                localstr += equip.getStr();
+                localluk += equip.getLuk();
+                magic += equip.getMatk() + equip.getInt();
+                watk += equip.getWatk();
+                if (equip.getItemId() == 1112127) {
+                    equippedWelcomeBackRing = true;
+                } else {
+                    for (int eb_bonus : GameConstants.Equipments_Bonus) {
+                        if (equip.getItemId() == eb_bonus) {
+                            equipmentBonusExp += GameConstants.Equipment_Bonus_EXP(eb_bonus);
+                            break;
+                        }
+                    }
+                }
+                percent_hp += equip.getHpR();
+                percent_mp += equip.getMpR();
+                if (equip.getHidden() > 1) {
+                    if (equip.getDurability() > 0) {
+                        durabilityHandling.add(equip);
+                    }
+                    int max_level = GameConstants.getMaxLevel(equip.getItemId());
+                    if (canEquipLevel && max_level > 0 && (GameConstants.getStatFromWeapon(equip.getItemId()) == null ? equip.getEquipLevel() <= max_level : equip.getEquipLevel() < max_level)) {
+                        equipLevelHandling.add(equip);
+                    }
+                }
+            }
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            for (Item item : getInventory(MapleInventoryType.CASH)) {
+                int item_id = item.getItemId();
+                if (expMod < 3 && (item_id == 5211060 || item_id == 5211050 || item_id == 5211051 || item_id == 5211052 || item_id == 5211053 || item_id == 5211054)) {
+                    expMod = 3; // overwrite
+                } else if (expMod == 1 && (item_id == 5210000 || item_id == 5210001 || item_id == 5210002 || item_id == 5210003 || item_id == 5210004 || item_id == 5210005 || item_id == 5211061 || item_id == 5211000 || item_id == 5211001 || item_id == 5211002 || item_id == 5211003 || item_id == 5211046 || item_id == 5211047 || item_id == 5211048 || item_id == 5211049)) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210006 && (hour >= 22 || hour <= 2)) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210007 && hour >= 2 && hour <= 6) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210008 && hour >= 6 && hour <= 10) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210009 && hour >= 10 && hour <= 14) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210010 && hour >= 14 && hour <= 18) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210011 && hour >= 18 && hour <= 22) {
+                    expMod = 2;
+                }
+                if (dropMod == 1) {
+                    if (item_id == 5360009 || item_id == 5360010 || item_id == 5360011 || item_id == 5360012 || item_id == 5360013 || item_id == 5360014 || item_id == 5360017 || item_id == 5360050 || item_id == 5360053 || item_id == 5360042 || item_id == 5360052) {
+                        dropMod = 2;
+                    } else if (item_id == 5360000 && hour >= 0 && hour <= 6) {
+                        dropMod = 2;
+                    } else if (item_id == 5360001 && hour >= 6 && hour <= 12) {
+                        dropMod = 2;
+                    } else if (item_id == 5360002 && hour >= 12 && hour <= 18) {
+                        dropMod = 2;
+                    } else if (item_id == 5360003 && hour >= 18 && hour <= 24) {
+                        dropMod = 2;
+                    }
+                }
+                if (item_id == 5650000) {
+                    hasPartyBonus = true;
+                } else if (item_id == 5590001) {
+                    levelBonus = 10;
+                } else if (levelBonus == 0 && item_id == 5590000) {
+                    levelBonus = 5;
+                }
+            }
+            magic += getSkillLevel(WzXML.SKILL.getSkill().get(22000000));
+            localmaxhp_ += (percent_hp * localmaxhp_) / 100f;
+            localmaxmp_ += (percent_mp * localmaxmp_) / 100f;
+            magic = Math.min(magic, 1999); // buffs can make it higher
+
+            switch (job) {
+                case 322: { // Crossbowman
+                    watk += getExpertWatk(3220004);
+                    break;
+                }
+                case 312: { // Bowmaster
+                    watk += getExpertWatk(3120005);
+                    break;
+                }
+                case 2112: { // Aran
+                    watk += getExpertWatk(21120001);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            Skill blessoffairy = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(job));
+            int boflevel = getSkillLevel(blessoffairy);
+            if (boflevel > 0) {
+                watk += blessoffairy.getEffect(boflevel).getX();
+                magic += blessoffairy.getEffect(boflevel).getY();
+            }
+
+            localmaxhp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxhp_)));
+            localmaxmp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxmp_)));
+
+            if (first_login) {
+                silentEnforceMaxHpMp();
+            } else {
+                enforceMaxHpMp();
+            }
+
+            if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
+                updatePartyMemberHP();
+            }
+            isRecalc = false;
+        }
+
+        private int getExpertWatk(int skill_id) {
+            Skill expert = WzXML.SKILL.getSkill().get(skill_id);
+            int boostLevel = getSkillLevel(expert);
+            if (boostLevel <= 0) {
+                return 0;
+            }
+            return expert.getEffect(boostLevel).getX();
+        }
+
+        public boolean checkEquipLevels(int gain) {
+            boolean changed = false;
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            for (Equip eq : new ArrayList<>(equipLevelHandling)) {
+                int lvlz = eq.getEquipLevel();
+                eq.setItemEXP(eq.getItemEXP() + gain);
+
+                if (eq.getEquipLevel() > lvlz) { // lvlup
+                    for (int i = eq.getEquipLevel() - lvlz; i > 0; i--) {
+                        int equip_level = lvlz + i;
+                        // now for the equipment increments...
+                        Map<Integer, Map<String, Integer>> inc = ii.getEquipIncrements(eq.getItemId());
+                        if (inc != null && inc.containsKey(equip_level)) { // flair = 1
+                            eq = ii.levelUpEquip(eq, inc.get(equip_level));
+                        }
+                        if (GameConstants.getStatFromWeapon(eq.getItemId()) == null) {
+                            learnEquipSkills(ii.getEquipSkills(eq.getItemId()), equip_level);
+                        }
+                    }
+                    changed = true;
+                }
+                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eq.copy()).build()));
+            }
+            if (changed) {
+                equipChanged();
+
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .player(TacosCharacter.this)
+                        .build();
+                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+                getMap().splitSendPacket(TacosCharacter.this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
+            }
+            return changed;
+        }
+
+        // skills of the equip level : 10% chance to learn each skill
+        private void learnEquipSkills(Map<Integer, List<Integer>> ins, int equip_level) {
+            if (ins == null || !ins.containsKey(equip_level)) {
+                return;
+            }
+            for (Integer z : ins.get(equip_level)) {
+                if (Math.random() >= 0.1) { // 10% chance
+                    continue;
+                }
+                Skill skil = WzXML.SKILL.getSkill().get(z);
+                if (skil != null && skil.canBeLearnedBy(job) && getSkillLevel(skil) < getMasterLevel(skil)) { // dont go over masterlevel
+                    changeSkillLevel(skil, (byte) (getSkillLevel(skil) + 1), getMasterLevel(skil));
+                }
+            }
+        }
+
+        public boolean checkEquipDurabilitys(int gain) {
+            for (Equip item : durabilityHandling) {
+                item.setDurability(Math.max(0, item.getDurability() + gain));
+            }
+            for (Equip eqq : new ArrayList<>(durabilityHandling)) {
+                if (eqq.getDurability() != 0) {
+                    SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eqq.copy()).build()));
+                    continue;
+                }
+                if (getInventory(MapleInventoryType.EQUIP).isFull()) {
+                    updateInv();
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                    return false;
+                }
+                durabilityHandling.remove(eqq);
+                short pos = getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
+                MapleInventoryManipulator.unequip(TacosCharacter.this, eqq.getPosition(), pos);
+                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
+            }
+            return true;
+        }
     }
 }

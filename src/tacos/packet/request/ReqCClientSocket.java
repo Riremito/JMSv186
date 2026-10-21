@@ -31,7 +31,7 @@ import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.MapleParty.PartyOperation;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;

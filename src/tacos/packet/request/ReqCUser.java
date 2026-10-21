@@ -28,7 +28,7 @@ import tacos.server.map.object.TacosNpc;
 import tacos.server.map.object.TacosDrop;
 import odin.client.Skill;
 import tacos.client.TacosClient;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;

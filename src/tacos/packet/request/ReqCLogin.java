@@ -34,7 +34,7 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugUser;
 import java.util.ArrayList;
 import java.util.Random;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsNewCharacter;

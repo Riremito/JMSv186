@@ -19,7 +19,7 @@
 package tacos.packet.response.data;
 
 import tacos.server.map.object.TacosPet;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import tacos.config.Content;
 import tacos.config.Region;
 import odin.constants.GameConstants;

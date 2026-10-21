@@ -11,7 +11,7 @@ import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import tacos.packet.ops.OpsCashItem;
