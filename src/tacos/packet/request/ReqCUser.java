@@ -33,7 +33,7 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MapleMount;
+import tacos.client.TacosCharacter.MapleMount;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedExpTable;
@@ -2712,12 +2712,12 @@ public class ReqCUser {
         if (item_used != null && item_used.getQuantity() > 0 && item_used.getItemId() == item_id && mount != null) {
             int fatigue = mount.getFatigue();
             boolean levelup = false;
-            mount.setFatigue((byte) -30);
+            mount.addFatigue(-30);
             if (fatigue > 0) {
                 mount.increaseExp();
                 int level = mount.getLevel();
                 if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
-                    mount.setLevel((byte) (level + 1));
+                    mount.setLevel(level + 1);
                     levelup = true;
                 }
             }

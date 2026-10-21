@@ -22,7 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.inventory.MapleMount;
+import tacos.client.TacosCharacter.MapleMount;
 import tacos.client.TacosCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;

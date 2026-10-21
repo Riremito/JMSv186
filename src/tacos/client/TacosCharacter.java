@@ -37,7 +37,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MapleMount;
 import odin.constants.GameConstants;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
@@ -813,6 +812,70 @@ public class TacosCharacter extends TacosPlayer {
         return OpsSkill_BB.UNKNOWN;
     }
 
+    // taming mob (monster riding).
+    public static class MapleMount {
+
+        private int itemid;
+        private int exp;
+        private int fatigue;
+        private int level;
+        private boolean changed = false;
+
+        public MapleMount(int itemid, int fatigue, int level, int exp) {
+            this.itemid = itemid;
+            this.fatigue = fatigue;
+            this.level = level;
+            this.exp = exp;
+        }
+
+        public void saveMount(int charid) {
+            if (changed) {
+                DQ_Mountdata.update(this, charid);
+            }
+        }
+
+        public int getItemId() {
+            return itemid;
+        }
+
+        public int getFatigue() {
+            return fatigue;
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void addFatigue(int amount) {
+            changed = true;
+            fatigue = Math.max(0, fatigue + amount);
+        }
+
+        public void setLevel(int level) {
+            changed = true;
+            this.level = level;
+        }
+
+        public void increaseExp() {
+            int gain;
+            if (1 <= level && level <= 7) {
+                gain = Randomizer.nextInt(10) + 15;
+            } else if (8 <= level && level <= 15) {
+                gain = Randomizer.nextInt(13) + 7;
+            } else if (16 <= level && level <= 24) {
+                gain = Randomizer.nextInt(23) + 9;
+            } else {
+                gain = Randomizer.nextInt(28) + 12;
+            }
+            changed = true;
+            exp += gain;
+        }
+    }
+
     protected MapleMount mount = null;
 
     public MapleMount getMount() {
@@ -820,35 +883,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean setMount() {
-        int mount_id = 1004;
-        switch (this.job / 1000) {
-            case 0: {
-                mount_id = 1004;
-                break;
-            }
-            case 1: {
-                mount_id = 10001004;
-                break;
-            }
-            case 2: {
-                if (GameConstants.isAran(this.job)) {
-                    mount_id = 20001004;
-                }
-                if (GameConstants.isEvan(this.job)) {
-                    mount_id = 20011004;
-                }
-                break;
-            }
-            case 3: {
-                mount_id = 30001004;
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        this.mount = new MapleMount(this, 0, mount_id, 0, 1, 0);
+        this.mount = new MapleMount(0, 0, 1, 0);
         return true;
     }
 
@@ -1929,7 +1964,7 @@ public class TacosCharacter extends TacosPlayer {
 
                 DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
                 Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
-                ret.mount = new MapleMount(ret, mount != null ? mount.getItemId() : 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || ret.job >= 2200 ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), mountRow.fatigue, mountRow.level, mountRow.exp);
+                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, mountRow.fatigue, mountRow.level, mountRow.exp);
 
                 ret.stats.recalcLocalStats(true);
             }

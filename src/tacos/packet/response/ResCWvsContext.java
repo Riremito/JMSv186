@@ -21,7 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MapleMount;
+import tacos.client.TacosCharacter.MapleMount;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedDate;
