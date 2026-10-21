@@ -212,7 +212,9 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public TacosWorld getWorld() {
-        return this.client.getWorld();
+        // the client has no world on the login server (character list).
+        TacosWorld world = (this.client != null) ? this.client.getWorld() : null;
+        return (world != null) ? world : TacosWorld.find(this.world_id);
     }
 
     public TacosServerType getServerType() {
@@ -3483,7 +3485,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void makeMFC(int familyid, int seniorid, int junior1, int junior2) {
         if (familyid > 0) {
-            MapleFamily f = getWorld().getFamily().getFamily(familyid);
+            MapleFamily f = (getWorld() != null) ? getWorld().getFamily().getFamily(familyid) : null;
             if (f == null) {
                 mfc = null;
             } else {
