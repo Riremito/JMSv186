@@ -50,6 +50,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsAlliance;
 import tacos.packet.ops.OpsGuildBBS;
 import tacos.packet.ops.OpsGuild;
+import tacos.packet.ops.OpsFamily;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsEntrustedShop;
@@ -2130,6 +2131,19 @@ public class ResCWvsContext {
 
         sp.Encode1(online ? 1 : 0);
         sp.EncodeStr(name);
+        return sp;
+    }
+
+    // CWvsContext::OnFamilyResult
+    public static ServerPacket FamilyResult(OpsFamily ops) {
+        return FamilyResult(ops, 0);
+    }
+
+    public static ServerPacket FamilyResult(OpsFamily ops, int value) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyResult);
+
+        sp.Encode4(ops.get());
+        sp.Encode4(value); // meso for NotEnoughMoney
         return sp;
     }
 

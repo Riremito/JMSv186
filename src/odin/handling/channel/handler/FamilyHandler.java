@@ -27,6 +27,7 @@ import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsFamily;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
 import tacos.wz.opt.FieldOpt;
@@ -88,15 +89,15 @@ public class FamilyHandler {
     private static boolean teleportToFamily(TacosCharacter chr, String name) {
         TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(name);
         if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
             return false;
         }
         if (target == null || (target.isGM() && !chr.isGM())) {
-            chr.Alert("Invalid name or you are not on the same channel.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_WrongName));
             return false;
         }
         if (!canFamilyTeleport(chr, target)) {
-            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
             return false;
         }
         chr.changeMapPortal(target.getMap(), target.getMap().getPortal(0));
@@ -106,16 +107,16 @@ public class FamilyHandler {
     private static void requestFamilySummon(TacosCharacter chr, String name) {
         TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(name);
         if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
         } else if (target == null || (target.isGM() && !chr.isGM())) {
-            chr.Alert("Invalid name or you are not on the same channel.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_WrongName));
         } else if (!target.getTeleportName().isEmpty()) {
-            chr.Alert("Another character has requested to summon this character. Please try again later.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_AlreadySummon));
         } else if (canFamilyTeleport(chr, target)) {
             target.SendPacket(ResCWvsContext.familySummonRequest(chr.getName(), getMapName(chr.getMapId())));
             target.setTeleportName(chr.getName());
         } else {
-            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
         }
     }
 
@@ -130,23 +131,23 @@ public class FamilyHandler {
         }
         TacosCharacter addChr = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
-            chr.Alert("The name you requested is incorrect or he/she is currently not logged in.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_WrongName));
         } else if (addChr.getFamilyId() == chr.getFamilyId() && addChr.getFamilyId() > 0) {
-            chr.Alert("You belong to the same family.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_SameFamily));
         } else if (addChr.getMapId() != chr.getMapId()) {
-            chr.Alert("The one you wish to add as a junior must be in the same map.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_NotSameMap));
         } else if (addChr.getSeniorId() != 0) {
-            chr.Alert("The character is already a junior of another character.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_AleadyHasParent));
         } else if (addChr.getLevel() >= chr.getLevel()) {
-            chr.Alert("The junior you wish to add must be at a lower rank.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_OverLevel));
         } else if (addChr.getLevel() < chr.getLevel() - 20) {
-            chr.Alert("The gap between you and your junior must be within 20 levels.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_UnderLevel));
             //} else if (c.getPlayer().getFamilyId() != 0 && c.getPlayer().getFamily().getGens() >= 1000) {
             //	c.getPlayer().Notice("Your family cannot extend more than 1000 generations from above and below.");
         } else if (addChr.getLevel() < 10) {
-            chr.Alert("The junior you wish to add must be over Level 10.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_MinLevel));
         } else if (chr.getJunior1() > 0 && chr.getJunior2() > 0) {
-            chr.Alert("You have 2 juniors already.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_CanNotRegister));
         } else if (chr.isGM() || !addChr.isGM()) {
             addChr.SendPacket(ResCWvsContext.sendFamilyInvite(chr.getId(), chr.getLevel(), chr.getJob(), chr.getName()));
         }
@@ -176,10 +177,10 @@ public class FamilyHandler {
                 tt.SendPacket(ResCWvsContext.changeRep(-cost.rep, tt.getName()));
                 tt.useFamilyBuff(cost);
             } else {
-                tt.Notice("Summons failed. Your current location or state does not allow a summons.");
+                tt.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
             }
         } else {
-            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
         }
         chr.setTeleportName("");
     }
@@ -212,7 +213,7 @@ public class FamilyHandler {
             }
             fam.resetPedigree();
         }
-        chr.Alert("Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
+        chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Success_Unregister));
         chr.updateStat();
     }
 
@@ -243,7 +244,7 @@ public class FamilyHandler {
             }
             fam.resetPedigree();
         }
-        chr.Alert("Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
+        chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Success_Unregister));
         chr.updateStat();
     }
 

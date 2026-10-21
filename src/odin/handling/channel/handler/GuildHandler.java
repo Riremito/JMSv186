@@ -103,8 +103,11 @@ public class GuildHandler {
         int op = cp.Decode1();
         switch (OpsGuild.find(op)) {
             case GuildReq_CheckGuildName: { // create guild
-                if (chr.getGuildId() > 0 || chr.getMapId() != GUILD_OFFICE_MAP_ID) {
-                    chr.Alert("You cannot create a new Guild while in one.");
+                if (chr.getMapId() != GUILD_OFFICE_MAP_ID) {
+                    return;
+                }
+                if (chr.getGuildId() > 0) {
+                    chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_CreateNewGuild_AlreayJoined));
                     return;
                 }
                 if (chr.getMeso() < CREATE_GUILD_COST) {
@@ -236,7 +239,7 @@ public class GuildHandler {
         chr.setGuildId(guild_id);
         chr.setGuildRank((byte) 5);
         if (world_guild.addGuildMember(chr.getMGC()) == 0) {
-            chr.Alert("The Guild you are trying to join is already full.");
+            chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_JoinGuild_AlreadyFull));
             chr.setGuildId(0);
             return;
         }
