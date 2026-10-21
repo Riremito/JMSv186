@@ -75,7 +75,7 @@ public class ResCUserLocal {
         switch (ops) {
             case UserEffect_SkillUse: {
                 data.Encode4(pb.skill_id); // nSkillID
-                data.Encode1(pb.player.getLevel(), Config.PostBB()); // nCharLevel
+                data.Encode1(pb.player.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)); // nCharLevel
                 data.Encode1(pb.skill_level); // nSLV
                 switch (pb.skill_id) {
                     // Berserk
