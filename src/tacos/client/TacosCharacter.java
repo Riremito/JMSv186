@@ -29,8 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.BuddyList;
-import odin.client.BuddyList.BuddylistEntry;
+import tacos.client.TacosCharacter.BuddyList.BuddylistEntry;
 import odin.client.Skill;
 import odin.client.Skill.SkillEntry;
 import odin.client.inventory.Item;
@@ -1015,6 +1014,133 @@ public class TacosCharacter extends TacosPlayer {
         return this.lazy_data_list;
     }
 
+    // friend list.
+    public static class BuddyList {
+
+        private final Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
+        private int capacity;
+
+        public BuddyList(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public boolean containsVisible(int characterId) {
+            BuddylistEntry ble = buddies.get(characterId);
+            return ble != null && ble.isVisible();
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public BuddylistEntry get(int characterId) {
+            return buddies.get(characterId);
+        }
+
+        public BuddylistEntry get(String characterName) {
+            for (BuddylistEntry ble : buddies.values()) {
+                if (ble.getName().equalsIgnoreCase(characterName)) {
+                    return ble;
+                }
+            }
+            return null;
+        }
+
+        public void put(BuddylistEntry entry) {
+            buddies.put(entry.getCharacterId(), entry);
+        }
+
+        public void remove(int characterId) {
+            buddies.remove(characterId);
+        }
+
+        public Collection<BuddylistEntry> getBuddies() {
+            return buddies.values();
+        }
+
+        public boolean isFull() {
+            return buddies.size() >= capacity;
+        }
+
+        public int[] getBuddyIds() {
+            return buddies.keySet().stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        public static class BuddylistEntry {
+
+            private final String name;
+            private final int cid;
+            private final int level;
+            private final int job;
+            private String group;
+            private int channel;
+            private boolean visible;
+            private boolean hidden = false;
+
+            public BuddylistEntry(String name, int characterId, String group, int channel, boolean visible, int level, int job) {
+                this.name = name;
+                this.cid = characterId;
+                this.group = group;
+                this.channel = channel;
+                this.visible = visible;
+                this.level = level;
+                this.job = job;
+            }
+
+            public boolean getHidden() {
+                return hidden;
+            }
+
+            public void setHidden(boolean hidden) {
+                this.hidden = hidden;
+            }
+
+            public int getChannel() {
+                return channel;
+            }
+
+            public void setChannel(int channel) {
+                this.channel = channel;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public int getCharacterId() {
+                return cid;
+            }
+
+            public void setVisible(boolean visible) {
+                this.visible = visible;
+            }
+
+            public boolean isVisible() {
+                return visible;
+            }
+
+            public String getGroup() {
+                return group;
+            }
+
+            public void setGroup(String group) {
+                this.group = group;
+            }
+
+            public int getLevel() {
+                return level;
+            }
+
+            public int getJob() {
+                return job;
+            }
+        }
+    }
+
     // friend
     protected BuddyList buddylist = null;
 
@@ -1047,7 +1173,6 @@ public class TacosCharacter extends TacosPlayer {
         }
         // フレンドのチャンネル情報を更新
         ble.setChannel(isOnline ? friend.getChannelId() : -1);
-        this.buddylist.put(ble);
         SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_Notify, PB_Friend.builder().friend_id(ble.getCharacterId()).friend_channel(isOnline ? (ble.getChannel() - 1) : -1).build())); // from 0.
         return true;
     }
@@ -1075,7 +1200,6 @@ public class TacosCharacter extends TacosPlayer {
             // オンラインのフレンドのチャンネル情報を更新
             BuddylistEntry ble = this.buddylist.get(friend.getId());
             ble.setChannel(friend.getChannelId());
-            this.buddylist.put(ble);
         }
     }
 
