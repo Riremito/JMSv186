@@ -148,7 +148,7 @@ public enum OpsGuild implements IPacketOps {
     }
 
     public static void init() {
-        if (Config.PostBB()) {
+        if (Config.PostBB() && !Config.Equal(Region.JMS, 187)) {
             return;
         }
         // JMS v186 : no ShowGuildRanking/SetSkill requests and no SetMemberCommitment_Done.
@@ -232,6 +232,14 @@ public enum OpsGuild implements IPacketOps {
             GuildRes_GuildQuest_RegisterDisconnected.set(75);
             GuildRes_GuildQuest_NoticeOrder.set(76);
             GuildRes_Authkey_Update.set(77);
+            // JMS v187 : one more request than JMS v186, every result is one higher (LoadGuild_Done 27, CheckGuildName_AlreadyUsed 29 in the client).
+            if (Config.Equal(Region.JMS, 187)) {
+                for (OpsGuild ops : values()) {
+                    if (ops.name().startsWith("GuildRes_") && ops.get() != UNKNOWN.get()) {
+                        ops.set(ops.get() + 1);
+                    }
+                }
+            }
             return;
         }
     }

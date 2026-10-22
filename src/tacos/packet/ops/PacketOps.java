@@ -55,6 +55,7 @@ public class PacketOps {
         OpsUI.init();
         OpsMoveAbility.init();
         OpsGuild.init();
+        OpsAlliance.init();
         OpsParty.init();
         OpsChatGroup.init();
     }

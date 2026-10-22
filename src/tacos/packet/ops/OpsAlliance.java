@@ -18,12 +18,15 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
  */
 public enum OpsAlliance implements IPacketOps {
-    // GMS v95, same values in JMS v186.
+    // GMS v95
     AllianceReq_Create(0),
     AllianceReq_Load(1),
     AllianceReq_Withdraw(2),
@@ -84,5 +87,50 @@ public enum OpsAlliance implements IPacketOps {
             }
         }
         return UNKNOWN;
+    }
+
+    public static void clear() {
+        for (OpsAlliance ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
+    public static void init() {
+        // JMS v164 - v187 : one more request after Destroy, every result is one higher than GMS v95 (CWvsContext::OnAllianceResult).
+        if (Config.Between(Region.JMS, 164, 187)) {
+            clear();
+            AllianceReq_Create.set(0);
+            AllianceReq_Load.set(1);
+            AllianceReq_Withdraw.set(2);
+            AllianceReq_Invite.set(3);
+            AllianceReq_Join.set(4);
+            AllianceReq_UpdateMemberCountMax.set(5);
+            AllianceReq_Kick.set(6);
+            AllianceReq_ChangeMaster.set(7);
+            AllianceReq_SetGradeName.set(8);
+            AllianceReq_ChangeGrade.set(9);
+            AllianceReq_SetNotice.set(10);
+            AllianceReq_Destroy.set(11);
+            AllianceRes_LoadDone.set(13);
+            AllianceRes_LoadGuildDone.set(14);
+            AllianceRes_NotifyLoginOrLogout.set(15);
+            AllianceRes_CreateDone.set(16);
+            AllianceRes_Withdraw_Done.set(17);
+            AllianceRes_Withdraw_Failed.set(18);
+            AllianceRes_Invite_Done.set(19);
+            AllianceRes_Invite_Failed.set(20);
+            AllianceRes_InviteGuild_BlockedByOpt.set(21);
+            AllianceRes_InviteGuild_AlreadyInvited.set(22);
+            AllianceRes_InviteGuild_Rejected.set(23);
+            AllianceRes_UpdateAllianceInfo.set(24);
+            AllianceRes_ChangeLevelOrJob.set(25);
+            AllianceRes_ChangeMaster_Done.set(26);
+            AllianceRes_SetGradeName_Done.set(27);
+            AllianceRes_ChangeGrade_Done.set(28);
+            AllianceRes_SetNotice_Done.set(29);
+            AllianceRes_Destroy_Done.set(30);
+            AllianceRes_UpdateGuildInfo.set(31);
+            return;
+        }
     }
 }

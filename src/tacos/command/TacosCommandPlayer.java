@@ -19,6 +19,10 @@
 package tacos.command;
 
 import odin.server.maps.SavedLocationType;
+import odin.handling.world.guild.MapleGuildCharacter;
+import odin.handling.world.guild.MapleGuildAlliance;
+import java.util.List;
+import java.util.ArrayList;
 import tacos.packet.response.ResCWvsContext;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.Guild;
@@ -150,6 +154,9 @@ public class TacosCommandPlayer {
                     chr.DebugMsg("alliancecreate : failed.");
                     return true;
                 }
+                // the client keeps the alliance id in its guild data
+                refreshGuild(chr, guild.getId());
+                refreshGuild(chr, other_guild.getId());
                 chr.DebugMsg("alliancecreate : " + alliance_name);
                 return true;
             }
@@ -163,11 +170,20 @@ public class TacosCommandPlayer {
                 Alliance world_alliance = chr.getWorld().getAlliance();
                 int alliance_id = guild.getAllianceId();
                 if (world_alliance.getAllianceLeader(alliance_id) == chr.getId()) {
+                    List<Integer> guild_ids = new ArrayList<>();
+                    MapleGuildAlliance alliance = world_alliance.getAlliance(alliance_id);
+                    for (int i = 0; alliance != null && i < alliance.getNoGuilds(); i++) {
+                        guild_ids.add(alliance.getGuildId(i));
+                    }
                     boolean disbanded = world_alliance.disbandAlliance(alliance_id);
+                    for (int guild_id : guild_ids) {
+                        refreshGuild(chr, guild_id);
+                    }
                     chr.DebugMsg("allianceleave : " + (disbanded ? "disbanded." : "failed."));
                     return true;
                 }
                 boolean removed = world_alliance.removeGuildFromAlliance(alliance_id, guild.getId(), false);
+                refreshGuild(chr, guild.getId());
                 chr.DebugMsg("allianceleave : " + (removed ? "left." : "failed."));
                 return true;
             }
@@ -176,5 +192,19 @@ public class TacosCommandPlayer {
         }
 
         return false;
+    }
+
+    // send the guild data again to the online members (alliance id changed)
+    private static void refreshGuild(TacosCharacter chr, int guild_id) {
+        MapleGuild guild = chr.getWorld().getGuild().getGuild(guild_id);
+        if (guild == null) {
+            return;
+        }
+        for (MapleGuildCharacter member : guild.getMembers()) {
+            TacosCharacter player = chr.getWorld().findOnlinePlayerById(member.getId(), false);
+            if (player != null) {
+                player.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(player));
+            }
+        }
     }
 }
