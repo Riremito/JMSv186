@@ -19,6 +19,7 @@
 package tacos.server.map.object;
 
 import java.util.AbstractMap;
+import odin.server.shops.IPlayerShop;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ import java.sql.SQLException;
  *
  * @author Riremito
  */
-public class TacosMerchant extends TacosMapObject {
+public class TacosMerchant extends TacosMapObject implements IPlayerShop {
 
     private boolean open = false;
     private final TacosCharacter[] visitors = new TacosCharacter[4];

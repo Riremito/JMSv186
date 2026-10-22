@@ -19,6 +19,7 @@
 package tacos.client;
 
 import tacos.packet.ops.OpsMRLeave;
+import odin.server.shops.IPlayerShop;
 import tacos.server.map.object.TacosDragon;
 import tacos.wz.WzXML;
 import tacos.server.map.object.TacosMerchant;
@@ -146,7 +147,6 @@ import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.MapleCarnivalParty;
 import odin.server.maps.SavedLocationType;
-import odin.server.shops.ShopDispatch;
 import odin.server.MapleCarnivalChallenge;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
@@ -2222,7 +2222,7 @@ public class TacosCharacter extends TacosPlayer {
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleShop shop;
     private transient MapleTrade trade;
-    private transient Object playerShop;
+    private transient IPlayerShop playerShop;
     // 雇用商人
     private Object remoteStore = null;
     private IDebugMan debugMan = null;
@@ -3154,7 +3154,7 @@ public class TacosCharacter extends TacosPlayer {
         regrocks[getRegRockSize()] = getMapId();
     }
 
-    public Object getPlayerShop() {
+    public IPlayerShop getPlayerShop() {
         return playerShop;
     }
 
@@ -3170,7 +3170,7 @@ public class TacosCharacter extends TacosPlayer {
         return merchant;
     }
 
-    public void setPlayerShop(Object playerShop) {
+    public void setPlayerShop(IPlayerShop playerShop) {
         this.playerShop = playerShop;
     }
 
@@ -3432,9 +3432,9 @@ public class TacosCharacter extends TacosPlayer {
             getPyramidSubway().dispose(this);
         }
         if (playerShop != null && !dc) {
-            ShopDispatch.removeVisitor(playerShop, this);
-            if (ShopDispatch.isOwner(playerShop, this)) {
-                ShopDispatch.setOpen(playerShop, true);
+            playerShop.removeVisitor(this);
+            if (playerShop.isOwner(this)) {
+                playerShop.setOpen(true);
             }
         }
         TacosScriptNPC.getInstance().dispose(client);
@@ -3724,14 +3724,14 @@ public class TacosCharacter extends TacosPlayer {
                 map.userLeaveField(this);
             }
 
-            Object shop = this.getPlayerShop();
+            IPlayerShop shop = this.getPlayerShop();
             if (shop != null) {
-                ShopDispatch.removeVisitor(shop, this);
-                if (ShopDispatch.isOwner(shop, this)) {
-                    if (ShopDispatch.getShopType(shop) == 1 && ShopDispatch.isAvailable(shop)) {
-                        ShopDispatch.setOpen(shop, true);
+                shop.removeVisitor(this);
+                if (shop.isOwner(this)) {
+                    if (shop.getShopType() == 1 && shop.isAvailable()) {
+                        shop.setOpen(true);
                     } else {
-                        ShopDispatch.closeShop(shop, true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
+                        shop.closeShop(true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
                     }
                 }
             }

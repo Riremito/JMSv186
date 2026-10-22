@@ -41,7 +41,7 @@ import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
 import java.sql.SQLException;
 
-public class MaplePlayerShop {
+public class MaplePlayerShop implements IPlayerShop {
 
     public final static byte HIRED_MERCHANT = 1;
     public final static byte PLAYER_SHOP = 2;
