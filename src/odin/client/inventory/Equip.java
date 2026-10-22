@@ -28,7 +28,7 @@ import tacos.config.Config;
 
 public class Equip extends Item {
 
-    public static enum ScrollResult {
+    public enum ScrollResult {
 
         SUCCESS, FAIL, CURSE
     }
@@ -182,108 +182,63 @@ public class Equip extends Item {
     }
 
     public void setStr(int str) {
-        if (str < 0) {
-            str = 0;
-        }
-        this.str = str;
+        this.str = Math.max(0, str);
     }
 
     public void setDex(int dex) {
-        if (dex < 0) {
-            dex = 0;
-        }
-        this.dex = dex;
+        this.dex = Math.max(0, dex);
     }
 
     public void setInt(int _int) {
-        if (_int < 0) {
-            _int = 0;
-        }
-        this._int = _int;
+        this._int = Math.max(0, _int);
     }
 
     public void setLuk(int luk) {
-        if (luk < 0) {
-            luk = 0;
-        }
-        this.luk = luk;
+        this.luk = Math.max(0, luk);
     }
 
     public void setHp(int hp) {
-        if (hp < 0) {
-            hp = 0;
-        }
-        this.hp = hp;
+        this.hp = Math.max(0, hp);
     }
 
     public void setMp(int mp) {
-        if (mp < 0) {
-            mp = 0;
-        }
-        this.mp = mp;
+        this.mp = Math.max(0, mp);
     }
 
     public void setWatk(int watk) {
-        if (watk < 0) {
-            watk = 0;
-        }
-        this.watk = watk;
+        this.watk = Math.max(0, watk);
     }
 
     public void setMatk(int matk) {
-        if (matk < 0) {
-            matk = 0;
-        }
-        this.matk = matk;
+        this.matk = Math.max(0, matk);
     }
 
     public void setWdef(int wdef) {
-        if (wdef < 0) {
-            wdef = 0;
-        }
-        this.wdef = wdef;
+        this.wdef = Math.max(0, wdef);
     }
 
     public void setMdef(int mdef) {
-        if (mdef < 0) {
-            mdef = 0;
-        }
-        this.mdef = mdef;
+        this.mdef = Math.max(0, mdef);
     }
 
     public void setAcc(int acc) {
-        if (acc < 0) {
-            acc = 0;
-        }
-        this.acc = acc;
+        this.acc = Math.max(0, acc);
     }
 
     public void setAvoid(int avoid) {
-        if (avoid < 0) {
-            avoid = 0;
-        }
-        this.avoid = avoid;
+        this.avoid = Math.max(0, avoid);
     }
 
     public void setHands(int hands) {
-        if (hands < 0) {
-            hands = 0;
-        }
-        this.hands = hands;
+        this.hands = Math.max(0, hands);
     }
 
     public void setSpeed(int speed) {
-        if (speed < 0) {
-            speed = 0;
-        }
-        this.speed = speed;
+        this.speed = Math.max(0, speed);
     }
 
     public void setJump(int jump) {
-        if (jump < 0) {
-            jump = 0;
-        }
-        this.jump = jump;
+        this.jump = Math.max(0, jump);
     }
 
     public void setUpgradeSlots(int upgradeSlots) {
@@ -311,10 +266,7 @@ public class Equip extends Item {
     }
 
     public void setItemEXP(int itemEXP) {
-        if (itemEXP < 0) {
-            itemEXP = 0;
-        }
-        this.itemEXP = itemEXP;
+        this.itemEXP = Math.max(0, itemEXP);
     }
 
     public int getEquipExp() {
@@ -469,12 +421,20 @@ public class Equip extends Item {
         return 1;
     }
 
+    // the second and third lines are the same rank or one rank lower
+    private static int getSubRank(int rank) {
+        if (rank < 2) {
+            return 1;
+        }
+        return (50 <= Randomizer.nextInt(100)) ? rank : rank - 1;
+    }
+
     public boolean resetPotential(boolean hyper, boolean master) {
-        int lines = getNewLines();
-        int newrank = getNewRank(master);
         if (getHidden() != 0) {
             return false;
         }
+        int lines = getNewLines();
+        int newrank = getNewRank(master);
         setHidden(1); // 未確認状態
         setRank(newrank); // 等級
 
@@ -483,9 +443,9 @@ public class Equip extends Item {
         }
 
         setPotential1(DWI_Random.getRandomPotential(newrank));
-        setPotential2(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+        setPotential2(DWI_Random.getRandomPotential(getSubRank(newrank)));
         if (lines == 3) {
-            setPotential3(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+            setPotential3(DWI_Random.getRandomPotential(getSubRank(newrank)));
         }
         return true;
     }
