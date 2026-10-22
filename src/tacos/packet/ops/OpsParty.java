@@ -153,6 +153,80 @@ public enum OpsParty implements IPacketOps {
     }
 
     public static void init() {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            clear();
+            // same as GMS95 until 40, one of 41-45 is missing (41-44 not checked).
+            PartyReq_LoadParty.set(0);
+            PartyReq_CreateNewParty.set(1);
+            PartyReq_WithdrawParty.set(2);
+            PartyReq_JoinParty.set(3);
+            PartyReq_InviteParty.set(4);
+            PartyReq_KickParty.set(5);
+            PartyReq_ChangePartyBoss.set(6);
+            PartyRes_LoadParty_Done.set(7);
+            PartyRes_CreateNewParty_Done.set(8);
+            PartyRes_CreateNewParty_AlreayJoined.set(9);
+            PartyRes_CreateNewParty_Beginner.set(10);
+            PartyRes_CreateNewParty_Unknown.set(11);
+            PartyRes_WithdrawParty_Done.set(12);
+            PartyRes_WithdrawParty_NotJoined.set(13);
+            PartyRes_WithdrawParty_Unknown.set(14);
+            PartyRes_JoinParty_Done.set(15);
+            PartyRes_JoinParty_Done2.set(16);
+            PartyRes_JoinParty_AlreadyJoined.set(17);
+            PartyRes_JoinParty_AlreadyFull.set(18);
+            PartyRes_JoinParty_OverDesiredSize.set(19);
+            PartyRes_JoinParty_UnknownUser.set(20);
+            PartyRes_JoinParty_Unknown.set(21);
+            PartyRes_InviteParty_Sent.set(22);
+            PartyRes_InviteParty_BlockedUser.set(23);
+            PartyRes_InviteParty_AlreadyInvited.set(24);
+            PartyRes_InviteParty_AlreadyInvitedByInviter.set(25);
+            PartyRes_InviteParty_Rejected.set(26);
+            PartyRes_InviteParty_Accepted.set(27);
+            PartyRes_KickParty_Done.set(28);
+            PartyRes_KickParty_FieldLimit.set(29);
+            PartyRes_KickParty_Unknown.set(30);
+            PartyRes_ChangePartyBoss_Done.set(31);
+            PartyRes_ChangePartyBoss_NotSameField.set(32);
+            PartyRes_ChangePartyBoss_NoMemberInSameField.set(33);
+            PartyRes_ChangePartyBoss_NotSameChannel.set(34);
+            PartyRes_ChangePartyBoss_Unknown.set(35);
+            PartyRes_AdminCannotCreate.set(36);
+            PartyRes_AdminCannotInvite.set(37);
+            PartyRes_UserMigration.set(38);
+            PartyRes_ChangeLevelOrJob.set(39);
+            PartyRes_SuccessToSelectPQReward.set(40);
+            PartyInfo_TownPortalChanged.set(45); // JMS187 OK
+            PartyInfo_OpenGate.set(46);
+            ExpeditionReq_Load.set(47);
+            ExpeditionReq_CreateNew.set(48); // JMS187 OK
+            ExpeditionReq_Invite.set(49); // JMS187 OK
+            ExpeditionReq_ResponseInvite.set(50); // JMS187 OK
+            ExpeditionReq_Withdraw.set(51); // JMS187 OK
+            ExpeditionReq_Kick.set(52); // JMS187 OK
+            ExpeditionReq_ChangeMaster.set(53); // JMS187 OK
+            ExpeditionReq_ChangePartyBoss.set(54); // JMS187 OK
+            ExpeditionReq_RelocateMember.set(55); // JMS187 OK
+            ExpeditionNoti_Load_Done.set(56); // JMS187 OK
+            ExpeditionNoti_Load_Fail.set(57); // JMS187 OK
+            ExpeditionNoti_CreateNew_Done.set(58); // JMS187 OK
+            ExpeditionNoti_Join_Done.set(59); // JMS187 OK
+            ExpeditionNoti_You_Joined.set(60); // JMS187 OK
+            ExpeditionNoti_You_Joined2.set(61);
+            ExpeditionNoti_Join_Fail.set(62);
+            ExpeditionNoti_Withdraw_Done.set(63); // JMS187 OK
+            ExpeditionNoti_You_Withdrew.set(64); // JMS187 OK
+            ExpeditionNoti_Kick_Done.set(65); // JMS187 OK
+            ExpeditionNoti_You_Kicked.set(66); // JMS187 OK
+            ExpeditionNoti_Removed.set(67); // JMS187 OK
+            ExpeditionNoti_MasterChanged.set(68); // JMS187 OK
+            ExpeditionNoti_Modified.set(69); // JMS187 OK
+            ExpeditionNoti_Modified2.set(70);
+            ExpeditionNoti_Invite.set(71); // JMS187 OK
+            ExpeditionNoti_ResponseInvite.set(72); // JMS187 OK
+            return;
+        }
         if (Config.PostBB()) {
             return;
         }

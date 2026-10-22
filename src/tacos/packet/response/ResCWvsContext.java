@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleQuestStatus;
+import tacos.server.TacosExpedition;
 import tacos.server.map.object.TacosMysticDoor;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -1242,7 +1243,115 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnExpedtionResult
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_Get
+    // Load_Done, CreateNew_Done, You_Joined
+    public static ServerPacket ExpeditionNoti_Get(OpsParty ops, TacosExpedition expedition) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(ops.get());
+        sp.EncodeBuffer(encodeExpedition(expedition));
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_Removed
+    // Load_Fail, You_Withdrew, You_Kicked, Removed
+    public static ServerPacket ExpeditionNoti_Removed(OpsParty ops) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(ops.get());
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_Notice
+    // Join_Done, Withdraw_Done, Kick_Done
+    public static ServerPacket ExpeditionNoti_Notice(OpsParty ops, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(ops.get());
+        sp.EncodeStr(name); // sCharName
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_MasterChanged
+    public static ServerPacket ExpeditionNoti_MasterChanged(TacosExpedition expedition) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(OpsParty.ExpeditionNoti_MasterChanged.get());
+        sp.Encode4(expedition.getMasterIndex()); // nMasterPartyIndex
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_Modified
+    public static ServerPacket ExpeditionNoti_Modified(TacosExpedition expedition, int party_index) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(OpsParty.ExpeditionNoti_Modified.get());
+        sp.Encode4(expedition.getMasterIndex()); // nMasterPartyIndex
+        sp.Encode4(party_index); // nPartyIndex
+        sp.EncodeBuffer(encodeExpeditionParty(expedition, party_index)); // partyMember
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_Invite
+    public static ServerPacket ExpeditionNoti_Invite(TacosCharacter master, TacosExpedition expedition) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(OpsParty.ExpeditionNoti_Invite.get());
+        sp.Encode4(master.getLevel()); // nLevel
+        sp.Encode4(master.getJob()); // nJobCode
+        sp.EncodeStr(master.getName()); // sName
+        sp.Encode4(expedition.getQuestId()); // nPartyQuestID
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult, ExpeditionIntermediary::OnPacketExpNoti_ResponseInvite
+    public static ServerPacket ExpeditionNoti_ResponseInvite(int response, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ExpeditionNoti);
+
+        sp.Encode1(OpsParty.ExpeditionNoti_ResponseInvite.get());
+        sp.Encode4(response); // nResponse
+        sp.EncodeStr(name); // sName
+        return sp;
+    }
+
+    // EXPEDITION::Decode (0x384 bytes)
+    private static byte[] encodeExpedition(TacosExpedition expedition) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(expedition.getQuestId()); // nPartyQuestID
+        data.Encode4(expedition.getMasterIndex()); // nMasterPartyIndex
+        for (int i = 0; i < TacosExpedition.PARTY_MAX; i++) {
+            data.EncodeBuffer(encodeExpeditionParty(expedition, i)); // aParty
+        }
+        data.Encode2(0); // padding
+        return data.getBytes();
+    }
+
+    // PARTYMEMBER (0xB2 bytes)
+    private static byte[] encodeExpeditionParty(TacosExpedition expedition, int party_index) {
+        ServerPacket data = new ServerPacket();
+
+        List<TacosExpedition.Member> members = expedition.getParty(party_index);
+        for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
+            data.Encode4((i < members.size()) ? members.get(i).getId() : 0); // adwCharacterID
+        }
+        for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
+            data.EncodeBuffer((i < members.size()) ? members.get(i).getName() : "", 13); // asCharacterName
+        }
+        for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
+            data.Encode4((i < members.size()) ? members.get(i).getJob() : 0); // anJob
+        }
+        for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
+            data.Encode4((i < members.size()) ? members.get(i).getLevel() : 0); // anLevel
+        }
+        for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
+            TacosCharacter member = (i < members.size()) ? expedition.findOnline(members.get(i)) : null;
+            data.Encode4((member != null) ? member.getClient().getChannelId() - 1 : -2); // anChannelID
+        }
+        data.Encode4(expedition.getBossId(party_index)); // dwPartyBossCharacterID
+        return data.getBytes();
+    }
+
     // CWvsContext::OnFriendResult
     // CWvsContext::OnGuildResult
     // CWvsContext::OnAllianceResult

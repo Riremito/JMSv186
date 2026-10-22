@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.server.TacosExpedition;
 import tacos.server.map.TacosPortal;
 import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
@@ -540,6 +541,10 @@ public class ReqCUser {
             }
             case CP_PartyResult: {
                 OnPartyResult(chr, cp);
+                return true;
+            }
+            case CP_ExpeditionRequest: {
+                OnExpeditionRequest(chr, cp);
                 return true;
             }
             case CP_GuildRequest: {
@@ -3093,7 +3098,12 @@ public class ReqCUser {
                 break;
             }
             case CG_Expedition: {
-                break;
+                TacosExpedition expedition = world.findExpedition(chr.getId());
+                if (expedition == null) {
+                    return true;
+                }
+                expedition.broadcast(ResCField.GroupMessage(OpsChatGroup.CG_Expedition, chr.getName(), sText), chr.getId());
+                return true;
             }
             default: {
                 break;
@@ -3262,6 +3272,146 @@ public class ReqCUser {
         }
 
         DebugLogger.ErrorLog("OnPartyRequest : not coded, type = " + type);
+        return false;
+    }
+
+    // ExpeditionIntermediary::SendExpCreatePacket, ExpeditionIntermediary::SendExpInvitePacket, ExpeditionIntermediary::SendResponseInvitePacket,
+    // ExpeditionIntermediary::SendWithdrawPacket, ExpeditionIntermediary::SendExpKickPacket, ExpeditionIntermediary::SendExpChangeMasterPacket,
+    // ExpeditionIntermediary::SendExpChangeBossPacket, ExpeditionIntermediary::SendExpRelocatePartyPacket
+    public static boolean OnExpeditionRequest(TacosCharacter chr, ClientPacket cp) {
+        int type = cp.Decode1();
+        TacosWorld world = chr.getWorld();
+        TacosExpedition expedition = world.findExpedition(chr.getId());
+        boolean is_master = expedition != null && expedition.getMasterId() == chr.getId();
+
+        switch (OpsParty.find(type)) {
+            case ExpeditionReq_CreateNew: {
+                int nSelectQuestID = cp.Decode4();
+                if (expedition != null) {
+                    return false;
+                }
+                expedition = world.createExpedition(chr, nSelectQuestID);
+                chr.SendPacket(ResCWvsContext.ExpeditionNoti_Get(OpsParty.ExpeditionNoti_CreateNew_Done, expedition));
+                return true;
+            }
+            case ExpeditionReq_Invite: {
+                String sName = cp.DecodeStr();
+                if (!is_master) {
+                    return false;
+                }
+                TacosCharacter invited = world.findOnlinePlayer(sName, false);
+                if (invited == null) {
+                    chr.SendPacket(ResCWvsContext.ExpeditionNoti_ResponseInvite(0, sName)); // not found
+                    return true;
+                }
+                if (world.findExpedition(invited.getId()) != null) {
+                    chr.SendPacket(ResCWvsContext.ExpeditionNoti_ResponseInvite(2, invited.getName())); // already joined
+                    return true;
+                }
+                invited.SendPacket(ResCWvsContext.ExpeditionNoti_Invite(chr, expedition));
+                chr.SendPacket(ResCWvsContext.ExpeditionNoti_ResponseInvite(7, invited.getName())); // invited
+                return true;
+            }
+            case ExpeditionReq_ResponseInvite: {
+                String sMasterName = cp.DecodeStr();
+                int nResponse = cp.Decode4(); // 8 = accept, 9 = decline, 4-6 = refused by the client
+                TacosCharacter master = world.findOnlinePlayer(sMasterName, false);
+                TacosExpedition invited_expedition = (master != null) ? world.findExpedition(master.getId()) : null;
+                if (invited_expedition == null) {
+                    return false;
+                }
+                if (nResponse != 8) {
+                    if (4 <= nResponse && nResponse <= 6) {
+                        master.SendPacket(ResCWvsContext.ExpeditionNoti_ResponseInvite(nResponse, chr.getName()));
+                    }
+                    return true;
+                }
+                if (expedition != null) {
+                    return false;
+                }
+                int party_index = invited_expedition.add(chr);
+                if (party_index == -1) {
+                    return false;
+                }
+                invited_expedition.broadcast(ResCWvsContext.ExpeditionNoti_Notice(OpsParty.ExpeditionNoti_Join_Done, chr.getName()), chr.getId());
+                invited_expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(invited_expedition, party_index), chr.getId());
+                chr.SendPacket(ResCWvsContext.ExpeditionNoti_Get(OpsParty.ExpeditionNoti_You_Joined, invited_expedition));
+                return true;
+            }
+            case ExpeditionReq_Withdraw: {
+                if (expedition == null) {
+                    return false;
+                }
+                if (is_master) {
+                    world.removeExpedition(expedition);
+                    expedition.broadcast(ResCWvsContext.ExpeditionNoti_Removed(OpsParty.ExpeditionNoti_Removed), -1);
+                    return true;
+                }
+                int party_index = expedition.remove(chr.getId());
+                chr.SendPacket(ResCWvsContext.ExpeditionNoti_Removed(OpsParty.ExpeditionNoti_You_Withdrew));
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Notice(OpsParty.ExpeditionNoti_Withdraw_Done, chr.getName()), -1);
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, party_index), -1);
+                return true;
+            }
+            case ExpeditionReq_Kick: {
+                int dwCharID = cp.Decode4();
+                if (!is_master || dwCharID == chr.getId() || !expedition.contains(dwCharID)) {
+                    return false;
+                }
+                TacosCharacter kicked = world.findOnlinePlayerById(dwCharID, false);
+                String kicked_name = expedition.findMember(dwCharID).getName();
+                int party_index = expedition.remove(dwCharID);
+                if (kicked != null) {
+                    kicked.SendPacket(ResCWvsContext.ExpeditionNoti_Removed(OpsParty.ExpeditionNoti_You_Kicked));
+                }
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Notice(OpsParty.ExpeditionNoti_Kick_Done, kicked_name), -1);
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, party_index), -1);
+                return true;
+            }
+            case ExpeditionReq_ChangeMaster: {
+                int dwCharID = cp.Decode4();
+                if (!is_master || !expedition.setMaster(dwCharID)) {
+                    return false;
+                }
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_MasterChanged(expedition), -1);
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, expedition.getMasterIndex()), -1);
+                return true;
+            }
+            case ExpeditionReq_ChangePartyBoss: {
+                int dwCharID = cp.Decode4();
+                if (!is_master || !expedition.setBoss(dwCharID)) {
+                    return false;
+                }
+                int party_index = expedition.findPartyIndex(dwCharID);
+                if (party_index == expedition.getMasterIndex()) {
+                    expedition.broadcast(ResCWvsContext.ExpeditionNoti_MasterChanged(expedition), -1);
+                }
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, party_index), -1);
+                return true;
+            }
+            case ExpeditionReq_RelocateMember: {
+                int nToIndex = cp.Decode4();
+                int dwCharID = cp.Decode4();
+                if (!is_master || nToIndex < 0 || TacosExpedition.PARTY_MAX <= nToIndex || dwCharID == chr.getId()) {
+                    return false;
+                }
+                TacosCharacter member = world.findOnlinePlayerById(dwCharID, false);
+                int from_index = expedition.findPartyIndex(dwCharID);
+                if (member == null || from_index == -1 || from_index == nToIndex || TacosExpedition.MEMBER_MAX <= expedition.getParty(nToIndex).size()) {
+                    return false;
+                }
+                expedition.remove(dwCharID);
+                expedition.add(member, nToIndex);
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, from_index), -1);
+                expedition.broadcast(ResCWvsContext.ExpeditionNoti_Modified(expedition, nToIndex), -1);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnExpeditionRequest : not coded, type = " + type);
         return false;
     }
 

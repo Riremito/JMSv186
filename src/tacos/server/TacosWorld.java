@@ -19,6 +19,8 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 import odin.constants.GameConstants;
 import odin.handling.world.Alliance;
@@ -73,6 +75,7 @@ public class TacosWorld {
     private final Guild guild = new Guild();
     private final Alliance alliance = new Alliance();
     private final Family family = new Family();
+    private final List<TacosExpedition> expeditions = new CopyOnWriteArrayList<>();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
         this.id = id;
@@ -115,6 +118,25 @@ public class TacosWorld {
 
     public Party getParty() {
         return this.party;
+    }
+
+    public TacosExpedition findExpedition(int character_id) {
+        for (TacosExpedition expedition : this.expeditions) {
+            if (expedition.contains(character_id)) {
+                return expedition;
+            }
+        }
+        return null;
+    }
+
+    public TacosExpedition createExpedition(TacosCharacter master, int quest_id) {
+        TacosExpedition expedition = new TacosExpedition(this, master, quest_id);
+        this.expeditions.add(expedition);
+        return expedition;
+    }
+
+    public void removeExpedition(TacosExpedition expedition) {
+        this.expeditions.remove(expedition);
     }
 
     public Guild getGuild() {
