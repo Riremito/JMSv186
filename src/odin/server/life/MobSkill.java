@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.LinkedList;
 import tacos.packet.ops.OpsMobStat;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCWvsContext;
@@ -53,7 +52,6 @@ public class MobSkill {
     private long duration;
     private long cooltime;
     private float prop;
-//    private short effect_delay;
     private short limit;
     private List<Integer> toSummon = new ArrayList<>();
     private Point lt;
@@ -71,10 +69,6 @@ public class MobSkill {
     public void addSummons(List<Integer> toSummon) {
         this.toSummon = toSummon;
     }
-
-    /*   public void setEffectDelay(short effect_delay) {
-    this.effect_delay = effect_delay;
-    }*/
     public void setSpawnEffect(int spawnEffect) {
         this.spawnEffect = spawnEffect;
     }
@@ -114,7 +108,6 @@ public class MobSkill {
 
     public void applyEffect(TacosCharacter player, TacosMonster monster, boolean skill) {
         Map<OpsMobStat, Integer> stats = new EnumMap<>(OpsMobStat.class);
-        List<Integer> reflection = new LinkedList<>();
 
         switch (OpsMobSkill.find(skillId)) {
             case MOBSKILL_POWERUP:
@@ -218,79 +211,22 @@ public class MobSkill {
             case MOBSKILL_PCOUNTER: // Weapon Reflect
                 stats.put(OpsMobStat.MS_PCounter, x);
                 stats.put(OpsMobStat.MS_PImmune, x);
-                reflection.add(x);
                 break;
             case MOBSKILL_MCOUNTER: // Magic Reflect
                 stats.put(OpsMobStat.MS_MCounter, x);
                 stats.put(OpsMobStat.MS_MImmune, x);
-                reflection.add(x);
                 break;
             case MOBSKILL_PMCOUNTER: // Weapon / Magic reflect
                 stats.put(OpsMobStat.MS_PCounter, x);
                 stats.put(OpsMobStat.MS_PImmune, x);
                 stats.put(OpsMobStat.MS_MCounter, x);
                 stats.put(OpsMobStat.MS_MImmune, x);
-                reflection.add(x);
-                reflection.add(x);
                 break;
             case MOBSKILL_SUMMON:
                 if (monster == null) {
                     return;
                 }
-                for (Integer mobId : getSummons()) {
-                    TacosMonster toSpawn = null;
-                    try {
-                        toSpawn = WzXML.MOB.createMob(GameConstants.getCustomSpawnID(monster.getId(), mobId));
-                    } catch (RuntimeException e) { //monster doesn't exist
-                        continue;
-                    }
-                    if (toSpawn == null) {
-                        continue;
-                    }
-                    toSpawn.setPosition(monster.getPosition());
-                    int ypos = (int) monster.getPosition().getY(), xpos = (int) monster.getPosition().getX();
-
-                    switch (mobId) {
-                        case 8500003: // Pap bomb high
-                            toSpawn.setFootholdId((int) Math.ceil(Math.random() * 19.0));
-                            ypos = -590;
-                            break;
-                        case 8500004: // Pap bomb
-                            //Spawn between -500 and 500 from the monsters X position
-                            xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
-                            ypos = (int) monster.getPosition().getY();
-                            break;
-                        case 8510100: //Pianus bomb
-                            if (Math.ceil(Math.random() * 5) == 1) {
-                                ypos = 78;
-                                xpos = (int) (0 + Math.ceil(Math.random() * 5)) + ((Math.ceil(Math.random() * 2) == 1) ? 180 : 0);
-                            } else {
-                                xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
-                            }
-                            break;
-                        case 8820007: //mini bean
-                            continue;
-                    }
-                    // Get spawn coordinates (This fixes monster lock)
-                    // TODO get map left and right wall.
-                    switch (monster.getMap().getId()) {
-                        case 220080001: //Pap map
-                            if (xpos < -890) {
-                                xpos = (int) (-890 + Math.ceil(Math.random() * 150));
-                            } else if (xpos > 230) {
-                                xpos = (int) (230 - Math.ceil(Math.random() * 150));
-                            }
-                            break;
-                        case 230040420: // Pianus map
-                            if (xpos < -239) {
-                                xpos = (int) (-239 + Math.ceil(Math.random() * 150));
-                            } else if (xpos > 371) {
-                                xpos = (int) (371 - Math.ceil(Math.random() * 150));
-                            }
-                            break;
-                    }
-                    monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), monster.getMap().calcPointBelow(new Point(xpos, ypos - 1)));
-                }
+                summonMonsters(monster);
                 break;
             default:
                 break;
@@ -314,6 +250,63 @@ public class MobSkill {
         }
     }
 
+    private void summonMonsters(TacosMonster monster) {
+        for (Integer mobId : getSummons()) {
+            TacosMonster toSpawn = null;
+            try {
+                toSpawn = WzXML.MOB.createMob(GameConstants.getCustomSpawnID(monster.getId(), mobId));
+            } catch (RuntimeException e) { //monster doesn't exist
+                continue;
+            }
+            if (toSpawn == null) {
+                continue;
+            }
+            toSpawn.setPosition(monster.getPosition());
+            int ypos = (int) monster.getPosition().getY(), xpos = (int) monster.getPosition().getX();
+
+            switch (mobId) {
+                case 8500003: // Pap bomb high
+                    toSpawn.setFootholdId((int) Math.ceil(Math.random() * 19.0));
+                    ypos = -590;
+                    break;
+                case 8500004: // Pap bomb
+                    //Spawn between -500 and 500 from the monsters X position
+                    xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
+                    ypos = (int) monster.getPosition().getY();
+                    break;
+                case 8510100: //Pianus bomb
+                    if (Math.ceil(Math.random() * 5) == 1) {
+                        ypos = 78;
+                        xpos = (int) (0 + Math.ceil(Math.random() * 5)) + ((Math.ceil(Math.random() * 2) == 1) ? 180 : 0);
+                    } else {
+                        xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
+                    }
+                    break;
+                case 8820007: //mini bean
+                    continue;
+            }
+            // Get spawn coordinates (This fixes monster lock)
+            // TODO get map left and right wall.
+            switch (monster.getMap().getId()) {
+                case 220080001: //Pap map
+                    if (xpos < -890) {
+                        xpos = (int) (-890 + Math.ceil(Math.random() * 150));
+                    } else if (xpos > 230) {
+                        xpos = (int) (230 - Math.ceil(Math.random() * 150));
+                    }
+                    break;
+                case 230040420: // Pianus map
+                    if (xpos < -239) {
+                        xpos = (int) (-239 + Math.ceil(Math.random() * 150));
+                    } else if (xpos > 371) {
+                        xpos = (int) (371 - Math.ceil(Math.random() * 150));
+                    }
+                    break;
+            }
+            monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), monster.getMap().calcPointBelow(new Point(xpos, ypos - 1)));
+        }
+    }
+
     public int getSkillId() {
         return skillId;
     }
@@ -329,10 +322,6 @@ public class MobSkill {
     public List<Integer> getSummons() {
         return Collections.unmodifiableList(toSummon);
     }
-
-    /*    public short getEffectDelay() {
-    return effect_delay;
-    }*/
     public int getSpawnEffect() {
         return spawnEffect;
     }
