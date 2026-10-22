@@ -42,8 +42,8 @@ public enum OpsCommodity implements IPacketOps {
     CM_PACKAGESN(1 << 16), // 0x10000
     CM_REQPOP(1 << 17), // 0x20000
     CM_REQLEV(1 << 18), // 0x40000
-    CM_ALL(0x7FFFF),
-    UNKNOWN(-1);
+    CM_ALL((1 << 19) - 1), // 0x7FFFF
+    UNKNOWN;
 
     private int value;
 

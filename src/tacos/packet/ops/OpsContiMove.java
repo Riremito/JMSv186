@@ -36,7 +36,7 @@ public enum OpsContiMove implements IPacketOps {
     CONTI_TARGET_MOVEFIELD(10),
     CONTI_TARGET_ENDFIELD(11),
     CONTI_TARGET_END_SHIPMOVE_FIELD(12),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

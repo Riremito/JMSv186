@@ -53,7 +53,7 @@ public enum OpsMREnterResult implements IPacketOps {
     MREnterResult_NotAvailableField_ShopScanner(23),
     MREnterResult_Expired(24),
     MREnterResult_TooShortTimeInterval(25),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

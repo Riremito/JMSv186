@@ -27,7 +27,7 @@ public enum OpsFuncKeyMapped implements IPacketOps {
     FuncKeyMapped_PetConsumeHPItemModified(1), // HP, rename
     FuncKeyMapped_PetConsumeMPItemModified(2), // MP
     FuncKeyMapped_JMS_PetConsumeCureItemModified(3), // Cure (JMS)
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

@@ -31,7 +31,7 @@ public enum OpsFieldEffect {
     FieldEffect_MobHPTag(5),
     FieldEffect_ChangeBGM(6),
     FieldEffect_RewordRullet(7),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

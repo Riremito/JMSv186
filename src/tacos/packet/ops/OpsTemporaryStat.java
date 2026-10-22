@@ -31,7 +31,7 @@ public enum OpsTemporaryStat {
     TS_GUIDED_BULLET(5),
     TS_UNDEAD(6),
     _TS_NO(7),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     int value;
 

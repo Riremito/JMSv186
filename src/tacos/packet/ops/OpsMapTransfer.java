@@ -35,7 +35,7 @@ public enum OpsMapTransfer implements IPacketOps {
     MapTransferRes_AlreadyInMap(9),
     MapTransferRes_RegisterFail(10),
     MapTransferRes_LevelLimit(11),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

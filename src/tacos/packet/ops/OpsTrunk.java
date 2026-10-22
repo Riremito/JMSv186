@@ -51,7 +51,7 @@ public enum OpsTrunk implements IPacketOps {
     TrunkRes_OpenTrunkDlg,
     TrunkRes_TradeBlocked,
     TrunkRes_ServerMsg,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

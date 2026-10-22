@@ -29,7 +29,7 @@ public enum OpsDropPickUpMessage {
     PICKUP_INVENTORY_FULL(-1), // any value
     PICKUP_UNAVAILABLE(-2),
     PICKUP_BROKEN(-3),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

@@ -35,7 +35,7 @@ public enum OpsTransferChannel implements IPacketOps {
     TC_ITCSVR_OVERLIMITUSER,
     TC_CHANNEL_RESTRICTION,
     TC_ITCSVR_LOWLEVELUSER,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

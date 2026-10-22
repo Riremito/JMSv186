@@ -44,7 +44,7 @@ public enum OpsMessage {
     MS_ItemExpireReplaceMessage(13),
     MS_SkillExpireMessage(14),
     MS_JMS_Pachinko(15),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     public static void init() {
         if (Config.LessOrEqual(Region.JMS, 147)) {

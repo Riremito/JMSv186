@@ -27,29 +27,29 @@ import tacos.config.Region;
  */
 public enum OpsChangeStat {
     // JMS v186, GMS v95
-    CS_SKIN(0x1),
-    CS_FACE(0x2),
-    CS_HAIR(0x4),
-    CS_PETSN(0x8),
-    CS_LEV(0x10),
-    CS_JOB(0x20),
-    CS_STR(0x40),
-    CS_DEX(0x80),
-    CS_INT(0x100),
-    CS_LUK(0x200),
-    CS_HP(0x400),
-    CS_MHP(0x800),
-    CS_MP(0x1000),
-    CS_MMP(0x2000),
-    CS_AP(0x4000),
-    CS_SP(0x8000),
-    CS_EXP(0x10000),
-    CS_POP(0x20000),
-    CS_MONEY(0x40000),
-    CS_PETSN2(0x80000),
-    CS_PETSN3(0x100000),
-    CS_TEMPEXP(0x200000),
-    UNKNOWN(-1);
+    CS_SKIN(1), // 0x1
+    CS_FACE(1 << 1), // 0x2
+    CS_HAIR(1 << 2), // 0x4
+    CS_PETSN(1 << 3), // 0x8
+    CS_LEV(1 << 4), // 0x10
+    CS_JOB(1 << 5), // 0x20
+    CS_STR(1 << 6), // 0x40
+    CS_DEX(1 << 7), // 0x80
+    CS_INT(1 << 8), // 0x100
+    CS_LUK(1 << 9), // 0x200
+    CS_HP(1 << 10), // 0x400
+    CS_MHP(1 << 11), // 0x800
+    CS_MP(1 << 12), // 0x1000
+    CS_MMP(1 << 13), // 0x2000
+    CS_AP(1 << 14), // 0x4000
+    CS_SP(1 << 15), // 0x8000
+    CS_EXP(1 << 16), // 0x10000
+    CS_POP(1 << 17), // 0x20000
+    CS_MONEY(1 << 18), // 0x40000
+    CS_PETSN2(1 << 19), // 0x80000
+    CS_PETSN3(1 << 20), // 0x100000
+    CS_TEMPEXP(1 << 21), // 0x200000
+    UNKNOWN;
 
     private int value;
 

@@ -23,21 +23,21 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsForcedStat implements IPacketOps {
-    AUTO(0x0),
-    STR(0x1),
-    DEX(0x2),
-    INT(0x4),
-    LUK(0x8),
-    PAD(0x10),
-    PDD(0x20),
-    MAD(0x40),
-    MDD(0x80),
-    ACC(0x100),
-    EVA(0x200),
-    SPEED(0x400),
-    JUMP(0x800),
-    SPEEDMAX(0x1000),
-    ALL(0x1FFF),
+    AUTO(0),
+    STR(1), // 0x1
+    DEX(1 << 1), // 0x2
+    INT(1 << 2), // 0x4
+    LUK(1 << 3), // 0x8
+    PAD(1 << 4), // 0x10
+    PDD(1 << 5), // 0x20
+    MAD(1 << 6), // 0x40
+    MDD(1 << 7), // 0x80
+    ACC(1 << 8), // 0x100
+    EVA(1 << 9), // 0x200
+    SPEED(1 << 10), // 0x400
+    JUMP(1 << 11), // 0x800
+    SPEEDMAX(1 << 12), // 0x1000
+    ALL((1 << 13) - 1), // 0x1FFF
     UNKNOWN;
 
     private int value;

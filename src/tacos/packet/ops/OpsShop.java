@@ -51,7 +51,7 @@ public enum OpsShop implements IPacketOps {
     ShopRes_TradeBlocked,
     ShopRes_BuyLimit,
     ShopRes_ServerMsg,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

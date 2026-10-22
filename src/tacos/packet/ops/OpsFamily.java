@@ -24,27 +24,27 @@ package tacos.packet.ops;
  */
 public enum OpsFamily implements IPacketOps {
     // GMS v95, same values in JMS v186 (CWvsContext::OnFamilyResult).
-    FamilyRes_Success(0x0),
-    FamilyRes_Success_Unregister(0x1), // You have severed ties with %s.
-    FamilyRes_Fail_CanNotRegister(0x40), // You cannot add this character as a Junior.
-    FamilyRes_Fail_WrongName(0x41), // The name you entered is incorrect or he/she is currently not logged in.
-    FamilyRes_Fail_SameFamily(0x42), // You belong to the same family.
-    FamilyRes_Fail_NotSameFamily(0x43), // You do not belong to the same family.
-    FamilyRes_Fail_DifferentFamily(0x44),
-    FamilyRes_Fail_NotSameMap(0x45), // The character you wish to add as a Junior must be in the same map.
-    FamilyRes_Fail_AleadyHasParent(0x46), // This character is already a Junior of another character.
-    FamilyRes_Fail_OverLevel(0x47), // The Junior you wish to add must be at a lower rank.
-    FamilyRes_Fail_UnderLevel(0x48), // The gap between you and your junior must be within 20 levels.
-    FamilyRes_Fail_AlreadyJoining(0x49), // Another character has requested to add this character.
-    FamilyRes_Fail_AlreadySummon(0x4A), // Another character has requested a summon.
-    FamilyRes_Fail_Summon(0x4B), // The summons has failed. Your current location or state does not allow a summons.
-    FamilyRes_Fail_MaxDepth(0x4C), // The family cannot extend more than 1000 generations from above and below.
-    FamilyRes_Fail_MinLevel(0x4D), // The Junior you wish to add must be over Level 10.
-    FamilyRes_Fail_ChildReqWorldTransferUser(0x4E),
-    FamilyRes_Fail_SelfReqWorldTransferUser(0x4F),
-    FamilyRes_Fail_NotEnoughMoney(0x50),
-    FamilyRes_Fail_NotEnoughParentMoney(0x51),
-    FamilyRes_Fail_CanNotTeleport_ByLevellimited(0x52),
+    FamilyRes_Success(0),
+    FamilyRes_Success_Unregister(1), // You have severed ties with %s.
+    FamilyRes_Fail_CanNotRegister(64), // You cannot add this character as a Junior.
+    FamilyRes_Fail_WrongName(65), // The name you entered is incorrect or he/she is currently not logged in.
+    FamilyRes_Fail_SameFamily(66), // You belong to the same family.
+    FamilyRes_Fail_NotSameFamily(67), // You do not belong to the same family.
+    FamilyRes_Fail_DifferentFamily(68),
+    FamilyRes_Fail_NotSameMap(69), // The character you wish to add as a Junior must be in the same map.
+    FamilyRes_Fail_AleadyHasParent(70), // This character is already a Junior of another character.
+    FamilyRes_Fail_OverLevel(71), // The Junior you wish to add must be at a lower rank.
+    FamilyRes_Fail_UnderLevel(72), // The gap between you and your junior must be within 20 levels.
+    FamilyRes_Fail_AlreadyJoining(73), // Another character has requested to add this character.
+    FamilyRes_Fail_AlreadySummon(74), // Another character has requested a summon.
+    FamilyRes_Fail_Summon(75), // The summons has failed. Your current location or state does not allow a summons.
+    FamilyRes_Fail_MaxDepth(76), // The family cannot extend more than 1000 generations from above and below.
+    FamilyRes_Fail_MinLevel(77), // The Junior you wish to add must be over Level 10.
+    FamilyRes_Fail_ChildReqWorldTransferUser(78),
+    FamilyRes_Fail_SelfReqWorldTransferUser(79),
+    FamilyRes_Fail_NotEnoughMoney(80),
+    FamilyRes_Fail_NotEnoughParentMoney(81),
+    FamilyRes_Fail_CanNotTeleport_ByLevellimited(82),
     UNKNOWN;
 
     private int value;

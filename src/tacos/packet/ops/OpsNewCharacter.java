@@ -44,7 +44,7 @@ public enum OpsNewCharacter {
     Luminous(-1),
     Kaizer(-1),
     AngelicBuster(-1),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

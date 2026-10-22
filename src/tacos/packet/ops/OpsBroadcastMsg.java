@@ -47,7 +47,7 @@ public enum OpsBroadcastMsg {
     UNKNOWN_0F(15), // 青文字, 名前:アイテム名(xxxx個))
     BM_CASHSHOPAD(16), // 体験用アバター獲得
     UNKNOWN_11(17), // 青文字, アイテム表示
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

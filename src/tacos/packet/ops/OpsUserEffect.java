@@ -27,48 +27,48 @@ import tacos.config.Region;
  */
 public enum OpsUserEffect {
     // GMS v95
-    UserEffect_LevelUp(0x0),
-    UserEffect_SkillUse(0x1),
-    UserEffect_SkillAffected(0x2),
-    UserEffect_SkillAffected_Select(0x3),
-    UserEffect_SkillSpecialAffected(0x4),
-    UserEffect_Quest(0x5),
-    UserEffect_Pet(0x6),
-    UserEffect_SkillSpecial(0x7),
+    UserEffect_LevelUp(0),
+    UserEffect_SkillUse(1),
+    UserEffect_SkillAffected(2),
+    UserEffect_SkillAffected_Select(3),
+    UserEffect_SkillSpecialAffected(4),
+    UserEffect_Quest(5),
+    UserEffect_Pet(6),
+    UserEffect_SkillSpecial(7),
     UserEffect_Resist(-1),
-    UserEffect_ProtectOnDieItemUse(0x8),
-    UserEffect_PlayPortalSE(0x9),
-    UserEffect_JobChanged(0xA),
-    UserEffect_QuestComplete(0xB),
-    UserEffect_IncDecHPEffect(0xC),
-    UserEffect_BuffItemEffect(0xD),
-    UserEffect_SquibEffect(0xE),
-    UserEffect_MonsterBookCardGet(0xF),
-    UserEffect_LotteryUse(0x10),
-    UserEffect_ItemLevelUp(0x11),
-    UserEffect_ItemMaker(0x12),
-    UserEffect_ExpItemConsumed(0x13),
-    UserEffect_ReservedEffect(0x14),
-    UserEffect_Buff(0x15),
-    UserEffect_ConsumeEffect(0x16),
-    UserEffect_UpgradeTombItemUse(0x17),
-    UserEffect_BattlefieldItemUse(0x18),
-    UserEffect_AvatarOriented(0x19),
-    UserEffect_IncubatorUse(0x1A),
-    UserEffect_PlaySoundWithMuteBGM(0x1B),
-    UserEffect_SoulStoneUse(0x1C),
-    UserEffect_IncDecHPEffect_EX(0x1D),
+    UserEffect_ProtectOnDieItemUse(8),
+    UserEffect_PlayPortalSE(9),
+    UserEffect_JobChanged(10),
+    UserEffect_QuestComplete(11),
+    UserEffect_IncDecHPEffect(12),
+    UserEffect_BuffItemEffect(13),
+    UserEffect_SquibEffect(14),
+    UserEffect_MonsterBookCardGet(15),
+    UserEffect_LotteryUse(16),
+    UserEffect_ItemLevelUp(17),
+    UserEffect_ItemMaker(18),
+    UserEffect_ExpItemConsumed(19),
+    UserEffect_ReservedEffect(20),
+    UserEffect_Buff(21),
+    UserEffect_ConsumeEffect(22),
+    UserEffect_UpgradeTombItemUse(23),
+    UserEffect_BattlefieldItemUse(24),
+    UserEffect_AvatarOriented(25),
+    UserEffect_IncubatorUse(26),
+    UserEffect_PlaySoundWithMuteBGM(27),
+    UserEffect_SoulStoneUse(28),
+    UserEffect_IncDecHPEffect_EX(29),
     UserEffect_IncDecHPRegenEffect(-1),
-    UserEffect_DeliveryQuestItemUse(0x1E),
-    UserEffect_RepeatEffectRemove(0x1F),
-    UserEffect_EvolRing(0x20),
+    UserEffect_DeliveryQuestItemUse(30),
+    UserEffect_RepeatEffectRemove(31),
+    UserEffect_EvolRing(32),
     UserEffect_PvPRage(-1),
     UserEffect_PvPChampion(-1),
     UserEffect_PvPGradeUp(-1),
     UserEffect_PvPRevive(-1),
     // For THMS v87
     UserEffect_UNK_1(-1),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 
@@ -228,37 +228,37 @@ public enum OpsUserEffect {
         }
         if (Config.Equal(Region.THMS, 87)) {
             clear();
-            UserEffect_LevelUp.set(0x0);
-            UserEffect_SkillUse.set(0x1);
-            UserEffect_SkillAffected.set(0x2);
-            UserEffect_SkillAffected_Select.set(0x2);
-            UserEffect_SkillSpecialAffected.set(0x2);
-            UserEffect_Quest.set(0x3);
-            UserEffect_Pet.set(0x4);
-            UserEffect_SkillSpecial.set(0x5);
-            UserEffect_ProtectOnDieItemUse.set(0x6);
-            UserEffect_PlayPortalSE.set(0x7);
-            UserEffect_JobChanged.set(0x8);
-            UserEffect_QuestComplete.set(0x9);
-            UserEffect_IncDecHPEffect.set(0xA);
-            UserEffect_BuffItemEffect.set(0xB);
-            UserEffect_UNK_1.set(0xC); // UserEffect_UNK_1 is UserEffect (Effect/ItemEff.img/%d/0 and Effect/ItemEff.img/%d/1)
-            UserEffect_SquibEffect.set(0xD);
-            UserEffect_MonsterBookCardGet.set(0xE);
-            UserEffect_LotteryUse.set(0xF);
-            UserEffect_ItemLevelUp.set(0x10);
-            UserEffect_ItemMaker.set(0x11);
-            UserEffect_ExpItemConsumed.set(0x12);
-            UserEffect_ReservedEffect.set(0x13);
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_SkillAffected_Select.set(2);
+            UserEffect_SkillSpecialAffected.set(2);
+            UserEffect_Quest.set(3);
+            UserEffect_Pet.set(4);
+            UserEffect_SkillSpecial.set(5);
+            UserEffect_ProtectOnDieItemUse.set(6);
+            UserEffect_PlayPortalSE.set(7);
+            UserEffect_JobChanged.set(8);
+            UserEffect_QuestComplete.set(9);
+            UserEffect_IncDecHPEffect.set(10);
+            UserEffect_BuffItemEffect.set(11);
+            UserEffect_UNK_1.set(12); // UserEffect_UNK_1 is UserEffect (Effect/ItemEff.img/%d/0 and Effect/ItemEff.img/%d/1)
+            UserEffect_SquibEffect.set(13);
+            UserEffect_MonsterBookCardGet.set(14);
+            UserEffect_LotteryUse.set(15);
+            UserEffect_ItemLevelUp.set(16);
+            UserEffect_ItemMaker.set(17);
+            UserEffect_ExpItemConsumed.set(18);
+            UserEffect_ReservedEffect.set(19);
             UserEffect_Buff.set(-1); // Not Exist in THMS v87
             UserEffect_ConsumeEffect.set(-1); // Not Exist in THMS v87
-            UserEffect_UpgradeTombItemUse.set(0x14);
-            UserEffect_BattlefieldItemUse.set(0x15);
-            UserEffect_AvatarOriented.set(0x16);
-            UserEffect_IncubatorUse.set(0x17);
-            UserEffect_PlaySoundWithMuteBGM.set(0x18);
-            UserEffect_SoulStoneUse.set(0x19);
-            UserEffect_IncDecHPEffect_EX.set(0x1A);
+            UserEffect_UpgradeTombItemUse.set(20);
+            UserEffect_BattlefieldItemUse.set(21);
+            UserEffect_AvatarOriented.set(22);
+            UserEffect_IncubatorUse.set(23);
+            UserEffect_PlaySoundWithMuteBGM.set(24);
+            UserEffect_SoulStoneUse.set(25);
+            UserEffect_IncDecHPEffect_EX.set(26);
             UserEffect_DeliveryQuestItemUse.set(-1); // Not Exist in THMS v87
             UserEffect_RepeatEffectRemove.set(-1); // Not Exist in THMS v87
             UserEffect_EvolRing.set(-1); // Not Exist in THMS v87

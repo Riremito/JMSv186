@@ -40,7 +40,7 @@ public enum OpsTransferField implements IPacketOps {
     TF_DISABLE_INDUN,
     TF_DISABLE_INDUN_ENTERTIME,
     TF_NOT_AVAILABLE_SHOP,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

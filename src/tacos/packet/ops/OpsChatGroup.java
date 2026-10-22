@@ -30,7 +30,7 @@ public enum OpsChatGroup implements IPacketOps {
     CG_Couple(-1),
     CG_ToCouple(-1),
     CG_Expedition(4), // JMS186-302 OK
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

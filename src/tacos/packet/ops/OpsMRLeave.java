@@ -47,7 +47,7 @@ public enum OpsMRLeave implements IPacketOps {
     ESLeave_EndManage(19),
     ESLeave_DestoryByAdmin(20), // closes the dialog without a notice
     MGLeave_UserRequest(21),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

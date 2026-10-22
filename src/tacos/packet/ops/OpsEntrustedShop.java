@@ -65,7 +65,7 @@ public enum OpsEntrustedShop implements IPacketOps {
     StoreBankRes_StoreBankCalculateFee,
     StoreBankRes_StoreBankLoadFailed,
     StoreBankRes_StoreBankBlock,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 
