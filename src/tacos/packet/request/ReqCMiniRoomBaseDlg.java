@@ -190,7 +190,7 @@ public class ReqCMiniRoomBaseDlg {
 
                 // 交換
                 if (chr.getTrade() != null && chr.getTrade().getPartner() != null) {
-                    MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().IsPointTrading());
+                    MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().isPointTrade());
                     return true;
                 }
 

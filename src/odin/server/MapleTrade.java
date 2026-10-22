@@ -1,6 +1,8 @@
 package odin.server;
 
 import java.util.LinkedList;
+import java.util.EnumMap;
+import java.util.Map;
 import tacos.client.TacosCharacter;
 import java.util.List;
 import odin.client.inventory.Item;
@@ -19,26 +21,25 @@ public class MapleTrade {
     private int meso = 0;
     private int exchangeMeso = 0;
     private boolean locked = false;
-    private boolean isPointTrade = false;
-    private final TacosCharacter wrchr;
+    private final boolean isPointTrade;
+    private final TacosCharacter chr;
     private final byte tradingslot;
 
     public MapleTrade(byte tradingslot, TacosCharacter chr) {
-        this.tradingslot = tradingslot;
-        this.wrchr = chr;
+        this(tradingslot, chr, false);
     }
 
     public MapleTrade(byte tradingslot, TacosCharacter chr, boolean isPointTrade) {
         this.tradingslot = tradingslot;
-        this.wrchr = chr;
+        this.chr = chr;
         this.isPointTrade = isPointTrade;
     }
 
-    public boolean IsPointTrading() {
+    public boolean isPointTrade() {
         return this.isPointTrade;
     }
 
-    public void CompleteTrade() {
+    public void complete() {
         if (exchangeItems != null) { // just to be on the safe side...
             for (Item item : exchangeItems) {
                 byte flag = item.getFlag();
@@ -48,16 +49,16 @@ public class MapleTrade {
                 } else if (ItemFlag.KARMA_USE.check(flag)) {
                     item.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
                 }
-                MapleInventoryManipulator.addFromDrop(wrchr, item, false);
+                MapleInventoryManipulator.addFromDrop(chr, item, false);
             }
             exchangeItems.clear();
         }
         if (exchangeMeso > 0) {
-            wrchr.gainMeso(exchangeMeso - GameConstants.getTaxAmount(exchangeMeso), false, true, false);
+            chr.gainMeso(exchangeMeso - GameConstants.getTaxAmount(exchangeMeso), false, true, false);
         }
         exchangeMeso = 0;
 
-        wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(tradingslot, OpsMRLeave.TRLeave_TradeDone));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(tradingslot, OpsMRLeave.TRLeave_TradeDone));
     }
 
     public void cancel(TacosCharacter chr) {
@@ -87,13 +88,11 @@ public class MapleTrade {
         if (locked || partner == null || meso <= 0 || this.meso + meso <= 0) {
             return;
         }
-        if (wrchr.getMeso() >= meso) {
-            wrchr.gainMeso(-meso, false, true, false);
+        if (chr.getMeso() >= meso) {
+            chr.gainMeso(-meso, false, true, false);
             this.meso += meso;
-            wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 0, this.meso));
-            if (partner != null) {
-                partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 1, this.meso));
-            }
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 0, this.meso));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 1, this.meso));
         }
     }
 
@@ -102,16 +101,14 @@ public class MapleTrade {
             return;
         }
         items.add(item);
-        wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 0, item));
-        if (partner != null) {
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 1, item));
-        }
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 0, item));
+        partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 1, item));
     }
 
     public void chat(String message) {
-        wrchr.dropMessage(-2, wrchr.getName() + " : " + message);
+        chr.dropMessage(-2, chr.getName() + " : " + message);
         if (partner != null) {
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(1, wrchr.getName() + " : " + message));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(1, chr.getName() + " : " + message));
         }
     }
 
@@ -127,7 +124,7 @@ public class MapleTrade {
     }
 
     public TacosCharacter getChr() {
-        return wrchr;
+        return chr;
     }
 
     public int getNextTargetSlot() {
@@ -181,36 +178,24 @@ public class MapleTrade {
         return true;
     }
 
-    private int check() { //0 = fine, 1 = invent space not, 2 = pickupRestricted
-        if (wrchr.getMeso() + exchangeMeso < 0) {
+    // 0 = fine, 1 = no inventory space or meso overflow, 2 = pickup restricted item
+    private int check() {
+        if (chr.getMeso() + exchangeMeso < 0) {
             return 1;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
+        Map<MapleInventoryType, Integer> needed = new EnumMap<>(MapleInventoryType.class);
         for (Item item : exchangeItems) {
-            switch (GameConstants.getInventoryType(item.getItemId())) {
-                case EQUIP:
-                    eq++;
-                    break;
-                case USE:
-                    use++;
-                    break;
-                case SETUP:
-                    setup++;
-                    break;
-                case ETC:
-                    etc++;
-                    break;
-                case CASH: // Not allowed, probably hacking
-                    cash++;
-                    break;
-            }
-            if (ii.isPickupRestricted(item.getItemId()) && wrchr.getInventory(GameConstants.getInventoryType(item.getItemId())).findById(item.getItemId()) != null) {
+            MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
+            needed.merge(type, 1, Integer::sum);
+            if (ii.isPickupRestricted(item.getItemId()) && chr.getInventory(type).findById(item.getItemId()) != null) {
                 return 2;
             }
         }
-        if (wrchr.getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < eq || wrchr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < use || wrchr.getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < setup || wrchr.getInventory(MapleInventoryType.ETC).getNumFreeSlot() < etc || wrchr.getInventory(MapleInventoryType.CASH).getNumFreeSlot() < cash) {
-            return 1;
+        for (Map.Entry<MapleInventoryType, Integer> entry : needed.entrySet()) {
+            if (chr.getInventory(entry.getKey()).getNumFreeSlot() < entry.getValue()) {
+                return 1;
+            }
         }
         return 0;
     }
@@ -231,8 +216,8 @@ public class MapleTrade {
         if (partner.isLocked()) { // Both locked
             int lz = local.check(), lz2 = partner.check();
             if (lz == 0 && lz2 == 0) {
-                local.CompleteTrade();
-                partner.CompleteTrade();
+                local.complete();
+                partner.complete();
             } else {
                 // NOTE : IF accepted = other party but inventory is full, the item is lost.
                 partner.cancel(partner.getChr(), lz == 0 ? lz2 : lz);
@@ -251,8 +236,8 @@ public class MapleTrade {
             partner.cancel(partner.getChr());
             partner.getChr().setTrade(null);
         }
-        if (Localtrade.wrchr != null) {
-            Localtrade.wrchr.setTrade(null);
+        if (Localtrade.chr != null) {
+            Localtrade.chr.setTrade(null);
         }
     }
 
@@ -273,7 +258,7 @@ public class MapleTrade {
             player2.setTrade(new MapleTrade((byte) 1, player2));
             player2.getTrade().setPartner(player1.getTrade());
             player1.getTrade().setPartner(player2.getTrade());
-            player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Invite(player1, player1.getTrade().IsPointTrading()));
+            player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Invite(player1, player1.getTrade().isPointTrade()));
         } else {
             player1.Notice("The other player is already trading with someone else.");
             cancelTrade(player1.getTrade(), player1.getClient());
@@ -285,8 +270,6 @@ public class MapleTrade {
             // We don't need to check for map here as the user is found via TacosMap.getCharacterById()
             player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(1, player1));
             player1.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_TradingRoom(player1, player1.getTrade(), (byte) 1, isPointTrade));
-            //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
-            //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
             player1.Notice("The other player has already closed the trade");
         }
