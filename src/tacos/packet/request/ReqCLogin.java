@@ -200,7 +200,6 @@ public class ReqCLogin {
     }
 
     // after KMS160 and JMS308.
-    // around phantom or tempest update.
     public static boolean OnCheckPassword_KMS160(TacosClient client, ClientPacket cp) {
         byte machine_id[] = cp.DecodeBuffer(16);
         int unk1 = cp.Decode4(); // 0
@@ -214,6 +213,7 @@ public class ReqCLogin {
         return checkLogin(client, maple_id, password);
     }
 
+    // CLogin::SendNewCharPacket
     public static boolean OnCreateNewCharacter(TacosClient client, ClientPacket cp) {
         String character_name;
         byte character_gender = client.getGender();
@@ -428,6 +428,7 @@ public class ReqCLogin {
         return true;
     }
 
+    // CLogin::SendNewCharPacket
     public static boolean OnCreateNewCharacterInCS(TacosClient client, ClientPacket cp) {
         String m_sCheckedName = cp.DecodeStr();
         int m_nCurSelectedRace = cp.Decode4();
@@ -437,12 +438,14 @@ public class ReqCLogin {
         return false;
     }
 
+    // CCashShop::SendCheckDuplicateIDPacket, CLogin::SendCheckDuplicateIDPacket
     public static void OnCheckDuplicatedID(TacosClient client, String character_name) {
         boolean isOK = checkCharacterName(character_name);
 
         client.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
     }
 
+    // CLogin::SendCheckPasswordPacket
     public static boolean OnSelectWorld(TacosClient client, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.HKMS.check() || Region.IMS.check());
 
@@ -476,6 +479,7 @@ public class ReqCLogin {
         return true;
     }
 
+    // CLogin::SendDeleteCharPacket
     public static boolean OnDeleteCharacter(TacosClient client, ClientPacket cp) {
         // JMS188+
         if (Config.GreaterOrEqual(Region.JMS, 188) || Region.HKMS.check()) {
@@ -512,6 +516,7 @@ public class ReqCLogin {
         client.SendPacket(ResCLogin.CheckUserLimitResult(client.getLoginServer().getWolrdStatus(world_id)));
     }
 
+    // CLogin::ChangeStepImmediate
     public static void OnWorldInfoRequest(TacosClient client) {
         for (TacosWorld world : TacosWorld.getWorlds()) {
             client.SendPacket(ResCLogin.WorldInformation(world));
@@ -525,6 +530,7 @@ public class ReqCLogin {
 
     }
 
+    // CLogin::OnCheckPasswordResult, CLogin::OnCheckPinCodeResult, CLogin::OnSelectWorldResult, CLogin::SendSelectCharPacket
     public static boolean OnSelectCharacter(TacosClient client, int character_id) {
         if (!client.checkCharacterId(character_id)) {
             client.loginFailed("OnSelectCharacter");
@@ -537,6 +543,7 @@ public class ReqCLogin {
         return true;
     }
 
+    // CLogin::SendSelectCharPacketByVAC
     public static boolean OnSelectCharacterByVAC(TacosClient client, ClientPacket cp) {
         int dwCharacterID = cp.Decode4();
         int wolrd_id = cp.Decode4();

@@ -141,6 +141,7 @@ public class ReqCField_Coconut {
 
     }
 
+    // CField_Coconut::BasicActionAttack
     private static void OnCoconutHit(TacosCharacter chr, short nTarget, short nDelay) {
         MapleCoconut coconut_map = null;
         if (coconut_map == null) {

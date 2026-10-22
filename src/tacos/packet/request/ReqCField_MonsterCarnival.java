@@ -60,6 +60,7 @@ public class ReqCField_MonsterCarnival {
         return false;
     }
 
+    // CUIMonsterCarnival::RequestSend
     public static void OnMCarnivalRequest(TacosCharacter chr, ClientPacket cp) {
         if (chr.getCarnivalParty() == null) {
             chr.sendStatChanged(true);

@@ -156,6 +156,7 @@ public class ReqCClientSocket {
         return false;
     }
 
+    // CClientSocket::OnConnect
     public static boolean OnMigrateIn(TacosClient client, ClientPacket cp) {
         int unk1 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 197));
         int character_id = cp.Decode4(); // m_dwCharacterId

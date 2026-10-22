@@ -61,6 +61,7 @@ public class ReqCRPSGameDlg {
         return false;
     }
 
+    // CRPSGameDlg::SendSelection
     public static boolean OnRPSGame(TacosCharacter chr, ClientPacket cp) {
         TacosClient client = chr.getClient();
         int tax = 1000;

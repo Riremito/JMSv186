@@ -80,6 +80,7 @@ public class ReqCField {
         return false;
     }
 
+    // CField_ContiMove::Init
     private static boolean OnContiState(TacosCharacter chr, int map_id) {
 
         switch (map_id) {

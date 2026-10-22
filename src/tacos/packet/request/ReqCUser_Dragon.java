@@ -63,6 +63,7 @@ public class ReqCUser_Dragon {
         return false;
     }
 
+    // CVecCtrlDragon::EndUpdateActive
     public static boolean OnMove(TacosCharacter chr, TacosMap map, TacosDragon dragon, ClientPacket cp) {
         // CMovePath::Decode
         ParseCMovePath move_path = new ParseCMovePath();

@@ -73,6 +73,7 @@ public class ReqCITC {
         return false;
     }
 
+    // CITC::OnBuy, CITC::OnBuyAuctionImm, CITC::OnBuyWish
     public static boolean OnITCItemRequest(TacosClient client, TacosCharacter chr, ClientPacket cp) {
         MTSCart cart = MTSStorage.getInstance().getCart(chr.getId());
         byte req = cp.Decode1();

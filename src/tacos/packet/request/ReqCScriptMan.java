@@ -34,6 +34,7 @@ import tacos.script.TacosScriptQuest;
  */
 public class ReqCScriptMan {
 
+    // CUIInitialQuiz::SendResult, CUISpeedQuiz::SendResult
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, ClientPacket cp) {
         int nMsgType = cp.Decode1();
         int action = cp.Decode1();

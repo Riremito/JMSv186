@@ -406,6 +406,7 @@ public class ReqCCashShop {
     static final String COUPON_CODE_30_TEST_CODE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     static final String COUPON_CODE_15_TEST_CODE = "XXXXXXXXXXXXXXX";
 
+    // CCashShop::OnStatusCoupon
     private static boolean OnCheckCoupon(TacosCharacter chr, String character_name, String coupon_code, boolean is_coupon_15, String message) {
 
         if (is_coupon_15) {
@@ -468,6 +469,7 @@ public class ReqCCashShop {
         return true;
     }
 
+    // CUICashGachapon::OnButtonClicked
     public static boolean OnGachaponOpen(TacosCharacter chr, long box_SN) {
 
         if (chr == null) {

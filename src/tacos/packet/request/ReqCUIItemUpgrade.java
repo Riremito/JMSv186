@@ -50,6 +50,7 @@ public class ReqCUIItemUpgrade {
         return false;
     }
 
+    // CUIItemUpgrade::Update
     public static boolean OnItemUpgradeComplete(TacosCharacter chr, ClientPacket cp) {
         int action = cp.Decode4(); // CashItemReq
         int hammered = cp.Decode4(); // 用途不明

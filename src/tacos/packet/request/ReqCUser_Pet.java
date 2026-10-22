@@ -147,6 +147,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CVecCtrlPet::EndUpdateActive
     public static boolean OnPetMove(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
@@ -159,6 +160,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CPet::DoAction
     public static boolean OnPetAction(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
@@ -168,6 +170,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CPet::ParseCommand
     public static void OnPetInteractionRequest(TacosCharacter chr, ClientPacket cp) {
         int petIndex = cp.Decode4();
 
@@ -204,6 +207,7 @@ public class ReqCUser_Pet {
         map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
+    // CPet::SendDropPickUpRequest
     public static boolean OnPetDropPickUpRequest(TacosCharacter chr, TacosPet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
@@ -229,6 +233,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CWvsContext::SendStatChangeItemUseRequestByPetQ
     public static boolean OnStatChangeItemUse(TacosCharacter chr, ClientPacket cp) {
         byte unk1 = cp.Decode1();
         int timestamp = cp.Decode4();

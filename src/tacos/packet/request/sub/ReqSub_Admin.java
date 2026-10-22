@@ -34,6 +34,7 @@ import tacos.wz.WzXML;
  */
 public class ReqSub_Admin {
 
+    // CField::SendChatMsgSlash
     public static boolean OnAdmin(TacosCharacter chr, ClientPacket cp) {
         byte command = cp.Decode1();
 

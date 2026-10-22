@@ -825,6 +825,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CCashShop::SendTransferFieldPacket, CField::SendTransferFieldRequest, CITC::SendTransferFieldPacket
     public static boolean OnUserTransferFieldRequest(TacosCharacter chr, ClientPacket cp) {
         boolean isKMS95orLater = Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 330) || Region.IMS.check() || Region.MSEA.check(); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
@@ -843,6 +844,7 @@ public class ReqCUser {
         return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
+    // CCashShop::SendTransferFieldPacket, CField::SendTransferFieldRequest, CITC::SendTransferFieldPacket
     public static void OnUserTransferFieldRequest_ITC(TacosCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getITC().getOnlinePlayers().remove(chr);
@@ -853,6 +855,7 @@ public class ReqCUser {
         }
     }
 
+    // CCashShop::SendTransferFieldPacket, CField::SendTransferFieldRequest, CITC::SendTransferFieldPacket
     public static void OnUserTransferFieldRequest_CS(TacosCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getCashShop().getOnlinePlayers().remove(chr);
@@ -863,6 +866,7 @@ public class ReqCUser {
         }
     }
 
+    // CField::SendTransferChannelRequest
     public static boolean OnUserTransferChannelRequest(TacosCharacter chr, ClientPacket cp) {
         int channel = cp.Decode1(); // from 0.
 
@@ -895,6 +899,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CVecCtrlUser::EndUpdateActive
     public static boolean OnUserMove(TacosCharacter chr, ClientPacket cp, TacosMap map) {
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 180) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
@@ -947,6 +952,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendGetUpFromChairRequest
     public static boolean OnUserSitRequest(TacosCharacter chr, ClientPacket cp) {
         short map_chair_id = cp.Decode2();
 
@@ -964,6 +970,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendSitOnPortableChairRequest
     public static boolean OnUserPortableChairSitRequest(TacosCharacter chr, ClientPacket cp) {
         int item_id = cp.Decode4();
 
@@ -1070,6 +1077,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CUserLocal::SetDamaged
     public static boolean OnUserHit(TacosCharacter chr, ClientPacket cp) {
         TacosMap map = chr.getMap();
         ResCUserRemote.UserHitData uhd = new ResCUserRemote.UserHitData();
@@ -1264,6 +1272,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CField::SendChatMsg, CField::SendChatMsgSlash
     public static boolean OnUserChat(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
@@ -1279,6 +1288,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendEmotionChange
     public static boolean OnUserEmotion(TacosCharacter chr, ClientPacket cp) {
         int emotion_id = cp.Decode4();
         if (7 < emotion_id) {
@@ -1335,6 +1345,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CNpc::ShowQuestList, CUserLocal::TalkToNpc
     public static boolean OnUserSelectNpc(TacosCharacter chr, ClientPacket cp) {
         int m_dwNpcId = cp.Decode4();
         short x = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
@@ -1404,6 +1415,7 @@ public class ReqCUser {
         return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
     }
 
+    // CWvsContext::SendRemoteShopOpenRequest
     public static boolean OnUserRemoteShopOpenRequest(TacosCharacter chr, ClientPacket cp) {
         short item_slot = cp.Decode2();
 
@@ -1479,6 +1491,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendActivatePetRequest
     public static boolean OnUserActivatePetRequest(TacosCharacter chr, ClientPacket cp) {
         int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
@@ -1514,6 +1527,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CUIShopScanner::OnCreate
     public static boolean OnShopScannerRequest(TacosCharacter chr, ClientPacket cp) {
         byte req = cp.Decode1();
 
@@ -1531,6 +1545,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CWvsContext::SendShopScannerItemUseRequest
     public static boolean OnUserShopScannerItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         short owl_slot = cp.Decode2(); // inlined
         int owl_item_id = cp.Decode4(); // inlined
@@ -1549,6 +1564,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendMapTransferItemUseRequest
     public static boolean OnUserMapTransferItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         short slot = cp.Decode2();
         int item_id = cp.Decode4();
@@ -1593,6 +1609,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CWvsContext::SendPortalScrollUseRequest
     public static boolean OnUserPortalScrollUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
@@ -1607,6 +1624,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendUpgradeItemUseRequest, CWvsContext::SendHyperUpgradeItemUseRequest, CWvsContext::SendItemOptionUpgradeItemUseRequest
     public static boolean OnUserUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot, int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
@@ -1807,16 +1825,19 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendHyperUpgradeItemUseRequest
     public static boolean OnUserHyperUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
+    // CWvsContext::SendItemOptionUpgradeItemUseRequest
     public static boolean OnUserItemOptionUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
+    // CWvsContext::SendItemReleaseRequest
     public static boolean OnUserItemReleaseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
         Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         Item toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
@@ -1857,6 +1878,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendAbilityUpRequest
     public static boolean OnUserAbilityUpRequest(TacosCharacter chr, ClientPacket cp) {
 
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
@@ -2022,6 +2044,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendAbilityUpRequest
     public static boolean OnUserAbilityMassUpRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = cp.Decode4();
         int count = cp.Decode4(); // ループ数
@@ -2090,6 +2113,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendStatChangeRequest
     public static boolean OnUserChangeStatRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
@@ -2131,6 +2155,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendSkillUpRequest
     public static boolean OnUserSkillUpRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
@@ -2376,6 +2401,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendDropMoneyRequest
     public static boolean OnUserDropMoneyRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int mesos = cp.Decode4();
@@ -2390,6 +2416,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CUserLocal::CheckPortal_Collision, CUserLocal::HandleUpKeyDown
     public static boolean OnUserPortalScriptRequest(TacosCharacter chr, ClientPacket cp) {
         byte portal_count = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
@@ -2410,6 +2437,7 @@ public class ReqCUser {
         return chr.usePortalTeleport(portal_name);
     }
 
+    // CWvsContext::SendMapTransferRequest
     public static boolean OnUserMapTransferRequest(TacosCharacter chr, ClientPacket cp) {
         byte cmd = cp.Decode1();
         byte rock_type = cp.Decode1();
@@ -2528,6 +2556,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CWvsContext::SendGatherItemRequest
     public static boolean OnUserGatherItemRequest(TacosCharacter chr, byte slot_type) {
         MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
@@ -2554,6 +2583,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendSortItemRequest
     public static boolean OnUserSortItemRequest(TacosCharacter chr, byte slot_type) {
         MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
@@ -2593,6 +2623,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendChangeSlotPositionRequest
     public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
         if (chr.getPlayerShop() != null || chr.getTrade() != null) {
             return false;
@@ -2641,6 +2672,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CWvsContext::SendStatChangeItemUseRequest
     public static boolean OnUserStatChangeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
@@ -2656,6 +2688,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendStatChangeItemCancelRequest
     public static boolean OnUserStatChangeItemCancelRequest(TacosCharacter chr, ClientPacket cp) {
         int buff_id = cp.Decode4(); // negative item id.
 
@@ -2668,6 +2701,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendMobSummonItemUseRequest
     public static boolean OnUserMobSummonItemUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null) {
@@ -2701,10 +2735,12 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendPetFoodItemUseRequest
     public static boolean OnUserPetFoodItemUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         return ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
     }
 
+    // CWvsContext::SendTamingMobFoodItemUseRequest
     public static boolean OnUserTamingMobFoodItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         MapleMount mount = chr.getMount();
@@ -2728,10 +2764,12 @@ public class ReqCUser {
         return true;
     }
 
+    // CUICharacterSaleDlg::SendCreateNewCharacter, CWvsContext::SendConsumeCashItemUseRequest
     public static boolean OnUserConsumeCashItemUseRequest(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
     }
 
+    // CWvsContext::SendBridleItemUseRequest
     public static boolean OnUserBridleItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id, int mob_oid) {
         TacosMonster mob = map.getMonsterByOid(mob_oid);
 
@@ -2798,6 +2836,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendSkillLearnItemUseRequest
     public static boolean OnUserSkillLearnItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id) {
         int item_type = item_id / 10000;
         boolean bIsMaterbook = (item_type == 229 || item_type == 562);
@@ -2847,6 +2886,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CRepairDurabilityDlg::SendRepairDurabilityAll
     public static boolean OnUserRepairDurabilityAll(TacosCharacter chr, ClientPacket cp) {
         int npc_id = Region.JMS.check() || Region.JMST.check() ? cp.Decode4() : 0;
 
@@ -2895,6 +2935,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CRepairDurabilityDlg::SendRepairDurability
     public static boolean OnUserRepairDurability(TacosCharacter chr, ClientPacket cp) {
         int nPOS = cp.Decode4();
         int npc_id = Region.JMS.check() || Region.JMST.check() ? cp.Decode4() : 0;
@@ -2979,6 +3020,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CUIStatusBar::SendGroupMessage
     public static boolean OnGroupMessage(TacosCharacter chr, ClientPacket cp) {
         TacosWorld world = chr.getWorld();
         ArrayList<TacosCharacter> players = new ArrayList<>();
@@ -3052,6 +3094,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CField::SendChatMsgWhisper, CField::SendLocationWhisper
     private static boolean OnWhisper(TacosCharacter chr, ClientPacket cp) {
         int operation = cp.Decode1();
         Ops_Whisper loc_whis = Ops_Whisper.find(operation & ~Ops_Whisper.WP_Request.get());
@@ -3084,6 +3127,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CField::SendChangePartyBossMsg, CField::SendCreateNewPartyMsg, CField::SendJoinPartyMsg
     public static boolean OnPartyRequest(TacosCharacter chr, ClientPacket cp) {
         int type = cp.Decode1();
         MapleParty party = chr.getParty();
@@ -3208,6 +3252,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CFadeWnd::SendCloseMessage
     public static boolean OnPartyResult(TacosCharacter chr, ClientPacket cp) {
         int type = cp.Decode1();
         int party_id = cp.Decode4();
@@ -3263,6 +3308,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CCashShop::OnCashItemResLoadGiftDone, CMemoListDlg::SetRet, CWvsContext::OnMemoNotify_Receive
     public static boolean OnMemoRequest(TacosCharacter chr, ClientPacket cp) {
         byte type = cp.Decode1();
 
@@ -3417,6 +3463,7 @@ public class ReqCUser {
         return false;
     }
 
+    // CWvsContext::SendMigrateToITCRequest
     public static boolean OnUserMigrateToITCRequest(TacosClient client, TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -3438,6 +3485,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendExpUpItemUseRequest
     private static boolean OnUserExpUpItemUseRequest(TacosCharacter chr, short nPOS, int nItemID) {
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
         if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
@@ -3462,6 +3510,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CWvsContext::SendTempExpUseRequest
     private static boolean OnUserTempExpUseRequest(TacosCharacter chr) {
         int exp_table = TacosSharedExpTable.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
@@ -3484,6 +3533,7 @@ public class ReqCUser {
         return true;
     }
 
+    // CUserLocal::HandleLButtonDblClk
     private static boolean OnTalkToTutor(TacosCharacter chr) {
 
         int job_id = chr.getJob();

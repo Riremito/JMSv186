@@ -84,6 +84,7 @@ public class ReqCDropPool {
         return false;
     }
 
+    // CWvsContext::SendDropPickUpRequest
     public static boolean OnDropPickUpRequest(TacosCharacter chr, int object_id) {
         TacosMap map = chr.getMap();
         TacosDrop mapitem = map.getDropByOid(object_id);

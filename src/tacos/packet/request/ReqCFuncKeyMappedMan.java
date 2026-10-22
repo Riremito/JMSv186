@@ -60,6 +60,7 @@ public class ReqCFuncKeyMappedMan {
         return false;
     }
 
+    // CMacroSysMan::FlushToSvr
     public static boolean OnUserMacroSysDataModified(TacosCharacter chr, ClientPacket cp) {
         // MACROSYSDATA::Encode
         byte macro_count = cp.Decode1();
@@ -86,6 +87,7 @@ public class ReqCFuncKeyMappedMan {
         return true;
     }
 
+    // CFuncKeyMappedMan::ChangePetConsumeItemID, CFuncKeyMappedMan::ChangePetConsumeMPItemID, CFuncKeyMappedMan::SaveFuncKeyMap
     public static boolean OnFuncKeyMappedModified(TacosCharacter chr, ClientPacket cp) {
         int funckey_type = cp.Decode4();
 
