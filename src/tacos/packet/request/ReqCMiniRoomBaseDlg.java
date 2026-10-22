@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
+import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
@@ -130,7 +131,7 @@ public class ReqCMiniRoomBaseDlg {
                         MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(mps);
                         map.addPlayerShop(mps);
-                        chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(chr));
                         return true;
                     }
                     case MR_EntrustedShop: {
@@ -148,7 +149,7 @@ public class ReqCMiniRoomBaseDlg {
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
                         map.addMerchant(merch);
-                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merch, true));
                         return true;
                     }
                     case MR_CashTradingRoom: {
@@ -204,7 +205,7 @@ public class ReqCMiniRoomBaseDlg {
                     return false;
                 }
                 //hm.addVisitor(chr);
-                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(hm, chr));
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, hm, true));
                  */
                 // old code
                 /*
@@ -221,7 +222,7 @@ public class ReqCMiniRoomBaseDlg {
                             return true;
                         } else {
                             if (ShopDispatch.getFreeSlot(ips) < 0 || ShopDispatch.getVisitorSlot(ips, chr) > -1 || !ShopDispatch.isOpen(ips) || !ShopDispatch.isAvailable(ips)) {
-                                chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGameFull());
+                                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Full));
                             } else {
                                 byte unk1 = cp.Decode1();
                                 if (unk1 > 0) { //a password has been entered
@@ -239,7 +240,7 @@ public class ReqCMiniRoomBaseDlg {
                                 if (ips instanceof MapleMiniGame) {
                                     ((MapleMiniGame) ips).send(chr.getClient());
                                 } else {
-                                    chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, false));
+                                    chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(chr));
                                 }
                             }
                         }
@@ -257,7 +258,7 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 if (chr.getPlayerShop() != null) {
                     Object ips = chr.getPlayerShop();
-                    ShopDispatch.broadcastToVisitors(ips, ResCMiniRoomBaseDlg.shopChat(chr.getName() + " : " + message, ShopDispatch.getVisitorSlot(ips, chr)));
+                    ShopDispatch.broadcastToVisitors(ips, ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(ShopDispatch.getVisitorSlot(ips, chr), chr.getName() + " : " + message));
                     return true;
                 }
                 DebugLogger.ErrorLog("OnMiniRoom : MRP_Chat, not  coded.");
@@ -417,7 +418,7 @@ public class ReqCMiniRoomBaseDlg {
                             sellItem.setQuantity(perBundle);
                             ShopDispatch.addItem(shop, new MaplePlayerShopItem(sellItem, bundles, price));
                         }
-                        chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(shop));
                     }
                 }
                 return true;
@@ -448,7 +449,7 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
                 ShopDispatch.buy(shop, chr, item, quantity);
-                ShopDispatch.broadcastToVisitors(shop, ResCMiniRoomBaseDlg.shopItemUpdate(shop));
+                ShopDispatch.broadcastToVisitors(shop, ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(shop));
                 return true;
             }
             case PSP_MoveItemToInventory:
@@ -475,7 +476,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                     }
                 }
-                chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(shop));
                 return true;
             }
             case PSP_Ban: {
@@ -486,7 +487,7 @@ public class ReqCMiniRoomBaseDlg {
                 if (ips != null) {
                     for (SimpleImmutableEntry<Byte, TacosCharacter> visitors : ShopDispatch.getVisitors(ips)) {
                         if (visitors.getValue().getName().equals(visitor_name)) {
-                            visitors.getValue().SendPacket(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
+                            visitors.getValue().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(visitor_slot, OpsMRLeave.MRLeave_Kicked));
                             visitors.getValue().setPlayerShop(null);
                             ShopDispatch.removeVisitor(ips, visitors.getValue());
                             return true;
@@ -514,11 +515,11 @@ public class ReqCMiniRoomBaseDlg {
                         }
                     }
                     if (chr.getMeso() + ShopDispatch.getMeso(imps) < 0) {
-                        chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(imps));
                     } else {
                         chr.gainMeso(ShopDispatch.getMeso(imps), false);
                         ShopDispatch.setMeso(imps, 0);
-                        chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(imps));
                     }
                 }
                 return true;
@@ -527,7 +528,7 @@ public class ReqCMiniRoomBaseDlg {
                 // 雇用商人 "商店とクローズ"
                 // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
                 // ダイアログを出さずに閉じる処理が必要となる
-                chr.SendPacket(ResCMiniRoomBaseDlg.CloseHiredMerchant());
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, OpsMRLeave.ESLeave_DestoryByAdmin));
 
                 Object ips = chr.getPlayerShop();
                 if (!ShopDispatch.isAvailable(ips) || ShopDispatch.isOwner(ips, chr)) {
@@ -601,9 +602,9 @@ public class ReqCMiniRoomBaseDlg {
                         return true;
                     }
                     if (game.isOwner(chr)) {
-                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameRequestTie(), false);
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieRequest(), false);
                     } else {
-                        game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
+                        game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieRequest());
                     }
                     game.setRequestedTie(game.getVisitorSlot(chr));
                 }
@@ -619,13 +620,14 @@ public class ReqCMiniRoomBaseDlg {
                     if (game.getRequestedTie() > -1 && game.getRequestedTie() != game.getVisitorSlot(chr)) {
                         byte unk1 = cp.Decode1();
                         if (unk1 > 0) {
-                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
+                            game.setGameResult(1, game.getRequestedTie());
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
                             map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                             game.checkExitAfterGame();
                         } else {
-                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieResult());
                         }
                         game.setRequestedTie(-1);
                     }
@@ -639,7 +641,8 @@ public class ReqCMiniRoomBaseDlg {
                     if (game.isOpen()) {
                         return true;
                     }
-                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
+                    game.setGameResult(0, game.getVisitorSlot(chr));
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
                     map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
@@ -669,7 +672,7 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
                 game.setExitAfter(chr);
-                game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameExitAfter(game.isExitAfter(chr)));
+                game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_LeaveEngage(game.isExitAfter(chr)));
                 return true;
             }
             case MGRP_Ready:
@@ -679,7 +682,7 @@ public class ReqCMiniRoomBaseDlg {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (!game.isOwner(chr) && game.isOpen()) {
                         game.setReady(game.getVisitorSlot(chr));
-                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_Ready(game.isReady(game.getVisitorSlot(chr))));
                     }
                 }
                 return true;
@@ -707,11 +710,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                         game.setGameType();
                         game.shuffleList();
-                        if (game.getGameType() == OpsMiniRoomType.MR_OmokRoom.get()) {
-                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameStart(game.getLoser()));
-                        } else {
-                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
-                        }
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_Start(game, game.getLoser()));
                         game.setOpen(false);
                         map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     }
@@ -728,7 +727,7 @@ public class ReqCMiniRoomBaseDlg {
                     if (game.isOpen()) {
                         return true;
                     }
-                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameSkip(game.getVisitorSlot(chr)));
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TimeOver(game.getVisitorSlot(chr)));
                     game.nextLoser();
                 }
                 return true;
@@ -760,17 +759,17 @@ public class ReqCMiniRoomBaseDlg {
                     if (turn == 1) {
                         game.setFirstSlot(slot);
                         if (game.isOwner(chr)) {
-                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn), false);
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGP_TurnUpCard(turn, slot, fs, turn), false);
                         } else {
-                            game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
+                            game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MGP_TurnUpCard(turn, slot, fs, turn));
                         }
                         game.setTurn(0); //2nd turn nao
                         return true;
                     } else if (fs > 0 && game.getCardId(fs + 1) == game.getCardId(slot + 1)) {
-                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGP_TurnUpCard(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
                         game.setPoints(game.getVisitorSlot(chr)); //correct.. so still same loser. diff turn tho
                     } else {
-                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGP_TurnUpCard(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
                         game.nextLoser();//wrong haha
 
                     }
@@ -803,7 +802,7 @@ public class ReqCMiniRoomBaseDlg {
         TacosMerchant merchant = (TacosMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
-            //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
+            //chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShopTest(chr));
 
             TacosMerchant hm = new TacosMerchant(chr, 5030000, "DebugHiredMarchant");
             chr.getMap().addMerchant(hm);
@@ -815,13 +814,13 @@ public class ReqCMiniRoomBaseDlg {
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
         List<SimpleImmutableEntry<Byte, TacosCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getValue().SendPacket(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getValue().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave((byte) i + 1, OpsMRLeave.ESLeave_StartManage));
             visitors.get(i).getValue().setPlayerShop(null);
             merchant.removeVisitor(visitors.get(i).getValue());
         }
 
         chr.setPlayerShop(merchant);
-        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
         return true;
     }
 }

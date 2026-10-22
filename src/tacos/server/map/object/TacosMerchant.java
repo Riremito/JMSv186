@@ -62,7 +62,7 @@ public class TacosMerchant extends TacosMapObject {
             setOpen(false);
             removeAllVisitors(OpsMRLeave.MRLeave_UserRequest.get(), 0);
             visitor.setPlayerShop(this);
-            visitor.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(visitor, this, false));
+            visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
             return true;
         }
         if (!isOpen()) {
@@ -79,7 +79,7 @@ public class TacosMerchant extends TacosMapObject {
         }
         visitor.setPlayerShop(this);
         addVisitor(visitor);
-        visitor.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(visitor, this, false));
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
         return true;
     }
 
@@ -138,7 +138,7 @@ public class TacosMerchant extends TacosMapObject {
     public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (0 < i) {
-            SendPacket(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
+            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor));
             visitors[i - 1] = visitor;
             if (getOwnerId() != visitor.getId()) {
                 this.visitors_names.add(visitor.getName());
@@ -149,7 +149,7 @@ public class TacosMerchant extends TacosMapObject {
     public void removeVisitor(TacosCharacter visitor) {
         byte slot = getVisitorSlot(visitor);
         if (0 < slot) {
-            SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(slot));
+            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot));
             visitors[slot - 1] = null;
         }
     }
@@ -171,9 +171,9 @@ public class TacosMerchant extends TacosMapObject {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
                 }
-                SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)));
+                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)));
                 visitor.setPlayerShop(null);
                 visitors[i] = null;
             }
@@ -212,11 +212,11 @@ public class TacosMerchant extends TacosMapObject {
     }
 
     public void sendBlackList(TacosCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverBlackList(blacklist));
     }
 
     public void sendVisitor(TacosCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors_names));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverVisitList(visitors_names));
     }
 
 

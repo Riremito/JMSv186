@@ -275,7 +275,7 @@ public class InventoryHandler {
             merchant.setOpen(false);
             merchant.removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
             chr.setPlayerShop(merchant);
-            chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
             return;
         }
         if (!merchant.isOpen() || !merchant.isAvailable()) {
@@ -292,6 +292,6 @@ public class InventoryHandler {
         }
         chr.setPlayerShop(merchant);
         merchant.addVisitor(chr);
-        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
     }
 }

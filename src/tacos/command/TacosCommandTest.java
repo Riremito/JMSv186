@@ -100,7 +100,7 @@ public class TacosCommandTest {
                 return true;
             }
             case "/omok" -> {
-                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_OmokTest(chr));
                 return true;
             }
             case "/fstest" -> {

@@ -4234,7 +4234,7 @@ public class TacosCharacter extends TacosPlayer {
                 SendPacket(ResCWvsContext.ScriptProgressMessage(message));
             }
             case -2 -> {
-                SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
+                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(0, message)); //0 or what
             }
             default -> {
                 SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));

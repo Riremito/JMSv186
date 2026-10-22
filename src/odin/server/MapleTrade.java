@@ -57,7 +57,7 @@ public class MapleTrade {
         }
         exchangeMeso = 0;
 
-        wrchr.SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, OpsMRLeave.TRLeave_TradeDone));
+        wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(tradingslot, OpsMRLeave.TRLeave_TradeDone));
     }
 
     public void cancel(TacosCharacter chr) {
@@ -74,7 +74,9 @@ public class MapleTrade {
         }
         meso = 0;
 
-        chr.SendPacket(ResCMiniRoomBaseDlg.getTradeCancel(tradingslot, unsuccessful));
+        // 0 = canceled, 1 = inventory full, 2 = only one item allowed
+        OpsMRLeave reason = (unsuccessful == 0) ? OpsMRLeave.MRLeave_Closed : (unsuccessful == 1 ? OpsMRLeave.TRLeave_TradeFail : OpsMRLeave.TRLeave_TradeFail_OnlyItem);
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(tradingslot, reason));
     }
 
     public boolean isLocked() {
@@ -88,9 +90,9 @@ public class MapleTrade {
         if (wrchr.getMeso() >= meso) {
             wrchr.gainMeso(-meso, false, true, false);
             this.meso += meso;
-            wrchr.SendPacket(ResCMiniRoomBaseDlg.getTradeMesoSet((byte) 0, this.meso));
+            wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 0, this.meso));
             if (partner != null) {
-                partner.getChr().SendPacket(ResCMiniRoomBaseDlg.getTradeMesoSet((byte) 1, this.meso));
+                partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 1, this.meso));
             }
         }
     }
@@ -100,16 +102,16 @@ public class MapleTrade {
             return;
         }
         items.add(item);
-        wrchr.SendPacket(ResCMiniRoomBaseDlg.getTradeItemAdd((byte) 0, item));
+        wrchr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 0, item));
         if (partner != null) {
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.getTradeItemAdd((byte) 1, item));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 1, item));
         }
     }
 
     public void chat(String message) {
         wrchr.dropMessage(-2, wrchr.getName() + " : " + message);
         if (partner != null) {
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.shopChat(wrchr.getName() + " : " + message, 1));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(1, wrchr.getName() + " : " + message));
         }
     }
 
@@ -221,7 +223,7 @@ public class MapleTrade {
             return;
         }
         local.locked = true; // Locking the trade
-        partner.getChr().SendPacket(ResCMiniRoomBaseDlg.getTradeConfirmation());
+        partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_Trade());
 
         partner.exchangeItems = local.items; // Copy this to partner's trade since it's alreadt accepted
         partner.exchangeMeso = local.meso; // Copy this to partner's trade since it's alreadt accepted
@@ -257,7 +259,7 @@ public class MapleTrade {
     public static void startTrade(TacosCharacter player, boolean isPointTrade) {
         if (player.getTrade() == null) {
             player.setTrade(new MapleTrade((byte) 0, player, isPointTrade));
-            player.SendPacket(ResCMiniRoomBaseDlg.getTradeStart(player, player.getTrade(), (byte) 0, isPointTrade));
+            player.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_TradingRoom(player, player.getTrade(), (byte) 0, isPointTrade));
         } else {
             player.Notice("You are already in a trade");
         }
@@ -271,7 +273,7 @@ public class MapleTrade {
             player2.setTrade(new MapleTrade((byte) 1, player2));
             player2.getTrade().setPartner(player1.getTrade());
             player1.getTrade().setPartner(player2.getTrade());
-            player2.SendPacket(ResCMiniRoomBaseDlg.getTradeInvite(player1, player1.getTrade().IsPointTrading()));
+            player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Invite(player1, player1.getTrade().IsPointTrading()));
         } else {
             player1.Notice("The other player is already trading with someone else.");
             cancelTrade(player1.getTrade(), player1.getClient());
@@ -281,8 +283,8 @@ public class MapleTrade {
     public static void visitTrade(TacosCharacter player1, TacosCharacter player2, boolean isPointTrade) {
         if (player1.getTrade() != null && player1.getTrade().getPartner() == player2.getTrade() && player2.getTrade() != null && player2.getTrade().getPartner() == player1.getTrade()) {
             // We don't need to check for map here as the user is found via TacosMap.getCharacterById()
-            player2.SendPacket(ResCMiniRoomBaseDlg.getTradePartnerAdd(player1));
-            player1.SendPacket(ResCMiniRoomBaseDlg.getTradeStart(player1, player1.getTrade(), (byte) 1, isPointTrade));
+            player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(1, player1));
+            player1.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_TradingRoom(player1, player1.getTrade(), (byte) 1, isPointTrade));
             //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
             //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {

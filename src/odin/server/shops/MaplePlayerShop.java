@@ -190,7 +190,7 @@ public class MaplePlayerShop {
     public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor));
             chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
@@ -202,7 +202,7 @@ public class MaplePlayerShop {
         byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot), slot);
             chrs[slot - 1] = null;
         }
     }
@@ -224,9 +224,9 @@ public class MaplePlayerShop {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
                 }
-                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = null;
             }
@@ -383,7 +383,7 @@ public class MaplePlayerShop {
                 chr.Alert("You do not have enough mesos.");
                 //}
             }
-            getMCOwner().SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(this));
+            getMCOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(this));
         }
     }
 
@@ -409,7 +409,7 @@ public class MaplePlayerShop {
             }
         }
 
-        owner.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
+        owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, reason));
         owner.setPlayerShop(null);
     }
 

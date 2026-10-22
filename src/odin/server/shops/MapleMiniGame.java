@@ -210,7 +210,7 @@ public class MapleMiniGame {
     public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, this));
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor, this));
             chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
@@ -222,7 +222,7 @@ public class MapleMiniGame {
         byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot), slot);
             chrs[slot - 1] = null;
         }
     }
@@ -244,9 +244,9 @@ public class MapleMiniGame {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
                 }
-                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = null;
             }
@@ -420,7 +420,8 @@ public class MapleMiniGame {
                 }
                 points[i] = 0;
             }
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, tie ? 1 : 2, x));
+            setGameResult(tie ? 1 : 2, x);
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, tie ? 1 : 2, x));
             this.setOpen(true);
             checkExitAfterGame();
         }
@@ -469,7 +470,7 @@ public class MapleMiniGame {
             closeShop(false, false, 0);
             return;
         }
-        chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(chr, this));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_MiniGame(chr, this));
     }
 
     public void setReady(int slot) {
@@ -484,12 +485,13 @@ public class MapleMiniGame {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
             // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameMoveOmok(move1, move2, type));
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_ORP_PutStoneChecker(move1, move2, type));
             boolean found = false;
             for (int y = 0; y < 15; y++) {
                 for (int x = 0; x < 15; x++) {
                     if (!found && searchCombo(x, y, type)) {
-                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, 2, getVisitorSlot(chr)));
+                        setGameResult(2, getVisitorSlot(chr));
+                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, 2, getVisitorSlot(chr)));
                         this.setOpen(true);
                         checkExitAfterGame();
                         found = true;
@@ -611,6 +613,14 @@ public class MapleMiniGame {
 
     public int getLosses(TacosCharacter chr) {
         return Integer.parseInt(getData(chr).split(",")[0]);
+    }
+
+    // updates the records before sending MGRP_GameResult
+    public void setGameResult(int type, int x) {
+        setPoints(x, type);
+        if (type != 0) {
+            setPoints(x == 1 ? 0 : 1, type == 2 ? 0 : 1);
+        }
     }
 
     public void setPoints(int i, int type) { //lose = 0, tie = 1, win = 2
