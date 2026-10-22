@@ -40,13 +40,13 @@ public class FamilyHandler {
     public static void RequestFamily(ClientPacket cp, TacosCharacter chr) {
         TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (target != null) {
-            chr.SendPacket(ResCWvsContext.getFamilyPedigree(target));
+            chr.SendPacket(ResCWvsContext.FamilyChartResult(target));
         }
     }
 
     // CP_FamilyInfoRequest
     public static void OpenFamily(ClientPacket cp, TacosCharacter chr) {
-        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+        chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
     }
 
     // CP_FamilyUsePrivilege
@@ -78,7 +78,7 @@ public class FamilyHandler {
             return;
         }
         chr.setCurrentRep(chr.getCurrentRep() - entry.rep);
-        chr.SendPacket(ResCWvsContext.changeRep(-entry.rep, chr.getName()));
+        chr.SendPacket(ResCWvsContext.FamilyFamousPointIncResult(-entry.rep, chr.getName()));
         chr.useFamilyBuff(entry);
     }
 
@@ -113,7 +113,7 @@ public class FamilyHandler {
         } else if (!target.getTeleportName().isEmpty()) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_AlreadySummon));
         } else if (canFamilyTeleport(chr, target)) {
-            target.SendPacket(ResCWvsContext.familySummonRequest(chr.getName(), getMapName(chr.getMapId())));
+            target.SendPacket(ResCWvsContext.FamilySummonRequest(chr.getName(), getMapName(chr.getMapId())));
             target.setTeleportName(chr.getName());
         } else {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
@@ -149,7 +149,7 @@ public class FamilyHandler {
         } else if (chr.getJunior1() > 0 && chr.getJunior2() > 0) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_CanNotRegister));
         } else if (chr.isGM() || !addChr.isGM()) {
-            addChr.SendPacket(ResCWvsContext.sendFamilyInvite(chr.getId(), chr.getLevel(), chr.getJob(), chr.getName()));
+            addChr.SendPacket(ResCWvsContext.FamilyJoinRequest(chr.getId(), chr.getLevel(), chr.getJob(), chr.getName()));
         }
         chr.updateStat();
     }
@@ -174,7 +174,7 @@ public class FamilyHandler {
             if (accepted) {
                 chr.changeMapPortal(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
-                tt.SendPacket(ResCWvsContext.changeRep(-cost.rep, tt.getName()));
+                tt.SendPacket(ResCWvsContext.FamilyFamousPointIncResult(-cost.rep, tt.getName()));
                 tt.useFamilyBuff(cost);
             } else {
                 tt.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
@@ -257,18 +257,18 @@ public class FamilyHandler {
             return;
         }
         boolean accepted = cp.Decode1() > 0;
-        inviter.SendPacket(ResCWvsContext.sendFamilyJoinResponse(accepted, chr.getName()));
+        inviter.SendPacket(ResCWvsContext.FamilyJoinRequestResult(accepted, chr.getName()));
         if (!accepted) {
             return;
         }
-        chr.SendPacket(ResCWvsContext.getSeniorMessage(inviter.getName()));
+        chr.SendPacket(ResCWvsContext.FamilyJoinAccepted(inviter.getName()));
         MapleFamilyCharacter old = chr.getMFC();
         if (inviter.getFamilyId() != 0) {
             joinFamily(chr.getClient(), chr, inviter, old);
         } else {
             createFamily(chr.getClient(), chr, inviter, old);
         }
-        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+        chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
     }
 
     // join the family of the inviter.

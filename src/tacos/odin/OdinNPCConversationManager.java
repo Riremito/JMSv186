@@ -746,7 +746,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        client.SendPacket(ResCWvsContext.genericGuildMessage((byte) code));
+        client.SendPacket(ResCWvsContext.GuildResult(code));
     }
 
     public void disbandGuild() {

@@ -75,7 +75,7 @@ public class BBSHandler {
             }
             case GuildBBS_LoadListRequest: {
                 int page = cp.Decode4(); // m_nEntryListStart
-                chr.SendPacket(ResCWvsContext.BBSThreadList(guild, page * 10));
+                chr.SendPacket(ResCWvsContext.GuildBBS_LoadListResult(guild, page * 10));
                 return;
             }
             case GuildBBS_ViewEntryRequest: {
@@ -114,9 +114,9 @@ public class BBSHandler {
     private static void displayThread(TacosCharacter chr, MapleGuild guild, int localthreadid) {
         MapleBBSThread thread = guild.getBBSThread(localthreadid);
         if (thread == null) {
-            chr.SendPacket(ResCWvsContext.BBSEntryNotFound());
+            chr.SendPacket(ResCWvsContext.GuildBBS_EntryNotFound());
             return;
         }
-        chr.SendPacket(ResCWvsContext.showThread(thread));
+        chr.SendPacket(ResCWvsContext.GuildBBS_ViewEntryResult(thread));
     }
 }

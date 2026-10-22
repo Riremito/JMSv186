@@ -881,6 +881,7 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
+    // CWvsContext::OnPartyResult
     public static ServerPacket PartyResult(OpsParty ops) {
         return PartyResult(ops, null);
     }
@@ -1109,6 +1110,7 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
+    // CWvsContext::OnPartyResult
     public static ServerPacket PartyResult(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
@@ -1474,7 +1476,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket fishingUpdate(byte type, int id) {
+    // LP_JMS_Fishing_BoardUpdate
+    public static ServerPacket Fishing_BoardUpdate(byte type, int id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_BoardUpdate);
 
         sp.Encode1(type);
@@ -1630,7 +1633,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket guildNotice(int gid, String notice) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_SetNotice_Done(int gid, String notice) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_SetNotice_Done.get());
@@ -1640,7 +1644,8 @@ public class ResCWvsContext {
     }
 
     //someone leaving, mode == 0x2c for leaving, 0x2f for expelled
-    public static ServerPacket memberLeft(MapleGuildCharacter mgc, boolean bExpelled) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_WithdrawGuild_Done(MapleGuildCharacter mgc, boolean bExpelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1((bExpelled ? OpsGuild.GuildRes_KickGuild_Done : OpsGuild.GuildRes_WithdrawGuild_Done).get());
@@ -1678,7 +1683,8 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
-    public static ServerPacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_ChangeLevelOrJob(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_ChangeLevelOrJob.get());
@@ -1690,7 +1696,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_NotifyLoginOrLogout
-    public static ServerPacket allianceMemberOnline(int alliance, int gid, int id, boolean online) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_NotifyLoginOrLogout(int alliance, int gid, int id, boolean online) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_NotifyLoginOrLogout.get());
@@ -1702,7 +1709,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_Destroy_Done
-    public static ServerPacket disbandAlliance(int alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_Destroy_Done(int alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_Destroy_Done.get());
@@ -1710,7 +1718,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket newGuildMember(MapleGuildCharacter mgc) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_JoinGuild_Done(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_JoinGuild_Done.get());
@@ -1727,7 +1736,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_LoadGuildDone
-    public static ServerPacket getGuildAlliance(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_LoadGuildDone(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_LoadGuildDone.get());
@@ -1739,7 +1749,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket guildMemberOnline(int gid, int cid, boolean bOnline) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_NotifyLoginOrLogout(int gid, int cid, boolean bOnline) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_NotifyLoginOrLogout.get());
@@ -1749,7 +1760,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket showGuildRanks(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_ShowGuildRanking(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_ShowGuildRanking.get());
@@ -1766,7 +1778,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket denyGuildInvitation(OpsGuild ops, String charname) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult(OpsGuild ops, String charname) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(ops.get());
@@ -1774,7 +1787,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket showGuildInfo(TacosCharacter player) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_LoadGuild_Done(TacosCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_LoadGuild_Done.get());
@@ -1794,7 +1808,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket guildEmblemChange(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_SetMark_Done(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_SetMark_Done.get());
@@ -1838,7 +1853,8 @@ public class ResCWvsContext {
         return guilds;
     }
 
-    public static ServerPacket guildDisband(int gid) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_RemoveGuild_Done(int gid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_RemoveGuild_Done.get());
@@ -1848,7 +1864,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_LoadDone
-    public static ServerPacket getAllianceInfo(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_LoadDone(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_LoadDone.get());
@@ -1860,7 +1877,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_ChangeMaster_Done
-    public static ServerPacket updateAllianceLeader(int allianceid, int newLeader, int oldLeader) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_ChangeMaster_Done(int allianceid, int newLeader, int oldLeader) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_ChangeMaster_Done.get());
@@ -1871,7 +1889,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_SetGradeName_Done
-    public static ServerPacket setAllianceGradeName(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_SetGradeName_Done(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_SetGradeName_Done.get());
@@ -1883,7 +1902,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_SetNotice_Done
-    public static ServerPacket setAllianceNotice(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_SetNotice_Done(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_SetNotice_Done.get());
@@ -1893,7 +1913,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_Invite_Done
-    public static ServerPacket addGuildToAlliance(MapleGuildAlliance alliance, MapleGuild newGuild) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_Invite_Done(MapleGuildAlliance alliance, MapleGuild newGuild) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_Invite_Done.get());
@@ -1904,7 +1925,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_ChangeLevelOrJob
-    public static ServerPacket updateAlliance(MapleGuildCharacter mgc, int allianceid) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_ChangeLevelOrJob(MapleGuildCharacter mgc, int allianceid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_ChangeLevelOrJob.get());
@@ -1917,7 +1939,8 @@ public class ResCWvsContext {
     }
 
     // AllianceReq_Invite
-    public static ServerPacket sendAllianceInvite(String allianceName, TacosCharacter inviter) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_Invite(String allianceName, TacosCharacter inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceReq_Invite.get());
@@ -1940,7 +1963,8 @@ public class ResCWvsContext {
     }
 
     // GuildBBS_ViewEntryResult
-    public static ServerPacket showThread(MapleBBSThread thread) {
+    // CUIGuildBBS::OnGuildBBSPacket
+    public static ServerPacket GuildBBS_ViewEntryResult(MapleBBSThread thread) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(OpsGuildBBS.GuildBBS_ViewEntryResult.get());
@@ -1961,7 +1985,8 @@ public class ResCWvsContext {
     }
 
     // GuildBBS_EntryNotFound
-    public static ServerPacket BBSEntryNotFound() {
+    // CUIGuildBBS::OnGuildBBSPacket
+    public static ServerPacket GuildBBS_EntryNotFound() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(OpsGuildBBS.GuildBBS_EntryNotFound.get());
@@ -1969,7 +1994,8 @@ public class ResCWvsContext {
     }
 
     // GuildBBS_LoadListResult, start = index of the first thread.
-    public static ServerPacket BBSThreadList(MapleGuild guild, int start) {
+    // CUIGuildBBS::OnGuildBBSPacket
+    public static ServerPacket GuildBBS_LoadListResult(MapleGuild guild, int start) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(OpsGuildBBS.GuildBBS_LoadListResult.get());
@@ -1992,7 +2018,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_CreateDone
-    public static ServerPacket createGuildAlliance(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_CreateDone(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_CreateDone.get());
@@ -2004,7 +2031,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket rankTitleChange(int gid, String[] ranks) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_SetGradeName_Done(int gid, String[] ranks) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_SetGradeName_Done.get());
@@ -2015,11 +2043,13 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket genericGuildMessage(OpsGuild ops) {
-        return genericGuildMessage((byte) ops.get());
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult(OpsGuild ops) {
+        return GuildResult(ops.get());
     }
 
-    public static ServerPacket genericGuildMessage(byte code) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult(int code) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(code);
@@ -2027,7 +2057,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_Withdraw_Done
-    public static ServerPacket removeGuildFromAlliance(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_Withdraw_Done(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_Withdraw_Done.get());
@@ -2039,7 +2070,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket guildCapacityChange(int gid, int capacity) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_IncMaxMemberNum_Done(int gid, int capacity) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_IncMaxMemberNum_Done.get());
@@ -2048,7 +2080,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket updateGP(int gid, int GP) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_IncPoint_Done(int gid, int GP) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_IncPoint_Done.get());
@@ -2059,7 +2092,8 @@ public class ResCWvsContext {
     }
 
     // AllianceRes_UpdateAllianceInfo
-    public static ServerPacket getAllianceUpdate(MapleGuildAlliance alliance) {
+    // CWvsContext::OnAllianceResult
+    public static ServerPacket AllianceResult_UpdateAllianceInfo(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(OpsAlliance.AllianceRes_UpdateAllianceInfo.get());
@@ -2067,7 +2101,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket guildInvite(int gid, String charName, int levelFrom, int jobFrom) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_InviteGuild(int gid, String charName, int levelFrom, int jobFrom) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildReq_InviteGuild.get());
@@ -2078,7 +2113,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket changeRank(MapleGuildCharacter mgc) {
+    // CWvsContext::OnGuildResult
+    public static ServerPacket GuildResult_SetMemberGrade_Done(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(OpsGuild.GuildRes_SetMemberGrade_Done.get());
@@ -2088,7 +2124,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket sendFamilyJoinResponse(boolean accepted, String added) {
+    // CWvsContext::OnFamilyJoinRequestResult
+    public static ServerPacket FamilyJoinRequestResult(boolean accepted, String added) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequestResult);
 
         sp.Encode1(accepted ? 1 : 0);
@@ -2097,7 +2134,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnFamilyFamousPointIncResult
-    public static ServerPacket changeRep(int r, String name) {
+    public static ServerPacket FamilyFamousPointIncResult(int r, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyFamousPointIncResult);
 
         sp.Encode4(r);
@@ -2105,7 +2142,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
+    // CWvsContext::OnFamilyJoinRequest
+    public static ServerPacket FamilyJoinRequest(int cid, int otherLevel, int otherJob, String inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequest);
 
         sp.Encode4(cid); //the inviter
@@ -2132,7 +2170,8 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
-    public static ServerPacket familyLoggedIn(boolean online, String name) {
+    // CWvsContext::OnFamilyNotifyLoginOrLogout
+    public static ServerPacket FamilyNotifyLoginOrLogout(boolean online, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyNotifyLoginOrLogout);
 
         sp.Encode1(online ? 1 : 0);
@@ -2145,6 +2184,7 @@ public class ResCWvsContext {
         return FamilyResult(ops, 0);
     }
 
+    // CWvsContext::OnFamilyResult
     public static ServerPacket FamilyResult(OpsFamily ops, int value) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyResult);
 
@@ -2153,7 +2193,8 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket familySummonRequest(String name, String mapname) {
+    // CWvsContext::OnFamilySummonRequest
+    public static ServerPacket FamilySummonRequest(String name, String mapname) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySummonRequest);
 
         sp.EncodeStr(name);
@@ -2162,10 +2203,11 @@ public class ResCWvsContext {
     }
 
     public static ServerPacket cancelFamilyBuff() {
-        return familyBuff(0, 0, 0, 0);
+        return FamilySetPrivilege(0, 0, 0, 0);
     }
 
-    public static ServerPacket getFamilyData() {
+    // CWvsContext::OnFamilyPrivilegeList
+    public static ServerPacket FamilyPrivilegeList() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyPrivilegeList);
 
         List<MapleFamilyBuff.MapleFamilyBuffEntry> entries = MapleFamilyBuff.getBuffEntry();
@@ -2181,7 +2223,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnFamilySetPrivilege, Privilege::Decode
-    public static ServerPacket familyBuff(int type, int buffnr, int amount, int time) {
+    public static ServerPacket FamilySetPrivilege(int type, int buffnr, int amount, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySetPrivilege);
 
         sp.Encode1(type);
@@ -2196,7 +2238,7 @@ public class ResCWvsContext {
     }
 
     // CUIFamilyChart::DecodeLocalChart
-    public static ServerPacket getFamilyPedigree(TacosCharacter chr) {
+    public static ServerPacket FamilyChartResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         MapleFamily family = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
@@ -2265,7 +2307,8 @@ public class ResCWvsContext {
         }
     }
 
-    public static ServerPacket getFamilyInfo(TacosCharacter chr) {
+    // CWvsContext::OnFamilyInfoResult
+    public static ServerPacket FamilyInfoResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyInfoResult);
 
         sp.Encode4(chr.getCurrentRep()); //rep
@@ -2291,13 +2334,15 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket getSeniorMessage(String name) {
+    // CWvsContext::OnFamilyJoinAccepted
+    public static ServerPacket FamilyJoinAccepted(String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinAccepted);
 
         sp.EncodeStr(name);
         return sp;
     }
 
+    // CWvsContext::OnNotifyLevelUp
     public static ServerPacket NotifyLevelUp(boolean family, int level, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyLevelUp);
 
@@ -2314,6 +2359,7 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnNotifyJobChange
     public static ServerPacket NotifyJobChange(boolean family, int jobid, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 
@@ -2323,6 +2369,7 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnNotifyWedding
     public static ServerPacket NotifyWedding(boolean family, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyWedding);
 

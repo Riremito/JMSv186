@@ -135,7 +135,7 @@ public class MapleGuildAlliance {
 
     public void setRank(String[] ranks) {
         this.ranks = ranks;
-        broadcast(ResCWvsContext.setAllianceGradeName(this));
+        broadcast(ResCWvsContext.AllianceResult_SetGradeName_Done(this));
         saveToDb();
     }
 
@@ -149,7 +149,7 @@ public class MapleGuildAlliance {
 
     public void setNotice(String newNotice) {
         this.notice = newNotice;
-        broadcast(ResCWvsContext.setAllianceNotice(this));
+        broadcast(ResCWvsContext.AllianceResult_SetNotice_Done(this));
         broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Alliance Notice : " + newNotice).build()));
         saveToDb();
     }
@@ -167,7 +167,7 @@ public class MapleGuildAlliance {
             return false;
         }
         this.capacity += 1;
-        broadcast(ResCWvsContext.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.AllianceResult_UpdateAllianceInfo(this));
         saveToDb();
         return true;
     }
@@ -196,8 +196,8 @@ public class MapleGuildAlliance {
                 guilds[x] = guilds[x + 1];
             }
             guilds[guilds.length - 1] = -1;
-            broadcast(ResCWvsContext.getAllianceUpdate(this));
-            broadcast(ResCWvsContext.getGuildAlliance(this));
+            broadcast(ResCWvsContext.AllianceResult_UpdateAllianceInfo(this));
+            broadcast(ResCWvsContext.AllianceResult_LoadGuildDone(this));
             saveToDb();
             return true;
         }
@@ -242,9 +242,9 @@ public class MapleGuildAlliance {
         if (leaderName != null) {
             broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(leaderName + " has become the leader of the alliance.").build()));
         }
-        broadcast(ResCWvsContext.updateAllianceLeader(allianceid, c, leaderid));
-        broadcast(ResCWvsContext.getAllianceUpdate(this));
-        broadcast(ResCWvsContext.getGuildAlliance(this));
+        broadcast(ResCWvsContext.AllianceResult_ChangeMaster_Done(allianceid, c, leaderid));
+        broadcast(ResCWvsContext.AllianceResult_UpdateAllianceInfo(this));
+        broadcast(ResCWvsContext.AllianceResult_LoadGuildDone(this));
         this.leaderid = c;
         saveToDb();
         return true;

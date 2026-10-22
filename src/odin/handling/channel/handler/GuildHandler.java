@@ -78,7 +78,7 @@ public class GuildHandler {
         }
         TacosCharacter inviter = chr.getChannelServer().getOnlinePlayers().findByName(from);
         if (inviter != null) {
-            inviter.SendPacket(ResCWvsContext.denyGuildInvitation(ops, chr.getName()));
+            inviter.SendPacket(ResCWvsContext.GuildResult(ops, chr.getName()));
         }
     }
 
@@ -107,7 +107,7 @@ public class GuildHandler {
                     return;
                 }
                 if (chr.getGuildId() > 0) {
-                    chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_CreateNewGuild_AlreayJoined));
+                    chr.SendPacket(ResCWvsContext.GuildResult(OpsGuild.GuildRes_CreateNewGuild_AlreayJoined));
                     return;
                 }
                 if (chr.getMeso() < CREATE_GUILD_COST) {
@@ -121,14 +121,14 @@ public class GuildHandler {
                 }
                 int guild_id = world_guild.createGuild(chr.getId(), guild_name);
                 if (guild_id == 0) {
-                    chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_CheckGuildName_AlreadyUsed));
+                    chr.SendPacket(ResCWvsContext.GuildResult(OpsGuild.GuildRes_CheckGuildName_AlreadyUsed));
                     return;
                 }
                 chr.gainMeso(-CREATE_GUILD_COST, true, false, true);
                 chr.setGuildId(guild_id);
                 chr.setGuildRank((byte) 1);
                 chr.saveGuildStatus();
-                chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+                chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
                 world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
                 chr.Alert("You have successfully created a guild.");
                 return;
@@ -171,7 +171,7 @@ public class GuildHandler {
                     return;
                 }
                 world_guild.leaveGuild(chr.getMGC());
-                chr.SendPacket(ResCWvsContext.showGuildInfo(null));
+                chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(null));
                 return;
             }
             case GuildReq_KickGuild: {
@@ -239,11 +239,11 @@ public class GuildHandler {
         chr.setGuildId(guild_id);
         chr.setGuildRank((byte) 5);
         if (world_guild.addGuildMember(chr.getMGC()) == 0) {
-            chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_JoinGuild_AlreadyFull));
+            chr.SendPacket(ResCWvsContext.GuildResult(OpsGuild.GuildRes_JoinGuild_AlreadyFull));
             chr.setGuildId(0);
             return;
         }
-        chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+        chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
         MapleGuild guild = world_guild.getGuild(guild_id);
         for (ServerPacket sp : chr.getWorld().getAlliance().getAllianceInfo(guild.getAllianceId(), true)) {
             chr.SendPacket(sp);

@@ -1390,7 +1390,7 @@ public class ReqCUser {
             return true;
         }
         if (npc_info.getGuildRank() != 0) {
-            chr.SendPacket(ResCWvsContext.showGuildRanks(npc_script_id, MapleGuildRanking.getInstance().getRank()));
+            chr.SendPacket(ResCWvsContext.GuildResult_ShowGuildRanking(npc_script_id, MapleGuildRanking.getInstance().getRank()));
             chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_script_id);
             return true;
         }

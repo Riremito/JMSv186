@@ -162,7 +162,7 @@ public class MapleGuild {
                 }
             }
 
-            broadcast(ResCWvsContext.guildDisband(id));
+            broadcast(ResCWvsContext.GuildResult_RemoveGuild_Done(id));
         }
     }
 
@@ -265,9 +265,9 @@ public class MapleGuild {
             }
         }
         if (bBroadcast) {
-            broadcast(ResCWvsContext.guildMemberOnline(id, cid, online), cid);
+            broadcast(ResCWvsContext.GuildResult_NotifyLoginOrLogout(id, cid, online), cid);
             if (allianceid > 0) {
-                TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
+                TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.AllianceResult_NotifyLoginOrLogout(allianceid, id, cid, online), id, allianceid);
             }
         }
         bDirty = true; // member formation has changed, update notifications
@@ -323,7 +323,7 @@ public class MapleGuild {
             }
         }
         gainGP(50);
-        broadcast(ResCWvsContext.newGuildMember(mgc));
+        broadcast(ResCWvsContext.GuildResult_JoinGuild_Done(mgc));
         if (allianceid > 0) {
             TacosWorld.find(0).getAlliance().sendGuild(allianceid);
         }
@@ -331,7 +331,7 @@ public class MapleGuild {
     }
 
     public void leaveGuild(MapleGuildCharacter mgc) {
-        broadcast(ResCWvsContext.memberLeft(mgc, false));
+        broadcast(ResCWvsContext.GuildResult_WithdrawGuild_Done(mgc, false));
         gainGP(-50);
         bDirty = true;
         members.remove(mgc);
@@ -351,7 +351,7 @@ public class MapleGuild {
             MapleGuildCharacter mgc = itr.next();
 
             if (mgc.getId() == cid && initiator.getGuildRank() < mgc.getGuildRank()) {
-                broadcast(ResCWvsContext.memberLeft(mgc, true));
+                broadcast(ResCWvsContext.GuildResult_WithdrawGuild_Done(mgc, true));
 
                 bDirty = true;
 
@@ -420,7 +420,7 @@ public class MapleGuild {
                     setOfflineGuildStatus((short) this.id, (byte) newRank, (byte) mgc.getAllianceRank(), cid);
                 }
                 mgc.setGuildRank((byte) newRank);
-                broadcast(ResCWvsContext.changeRank(mgc));
+                broadcast(ResCWvsContext.GuildResult_SetMemberGrade_Done(mgc));
                 return;
             }
         }
@@ -430,7 +430,7 @@ public class MapleGuild {
 
     public void setGuildNotice(String notice) {
         this.notice = notice;
-        broadcast(ResCWvsContext.guildNotice(id, notice));
+        broadcast(ResCWvsContext.GuildResult_SetNotice_Done(id, notice));
     }
 
     public void memberLevelJobUpdate(MapleGuildCharacter mgc) {
@@ -449,9 +449,9 @@ public class MapleGuild {
                 if (old_job != mgc.getJobId()) {
                     this.broadcast(ResCWvsContext.NotifyJobChange(false, mgc.getJobId(), mgc.getName()), mgc.getId());
                 }
-                broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
+                broadcast(ResCWvsContext.GuildResult_ChangeLevelOrJob(mgc));
                 if (allianceid > 0) {
-                    TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
+                    TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.AllianceResult_ChangeLevelOrJob(mgc, allianceid), id, allianceid);
                 }
                 break;
             }
@@ -462,7 +462,7 @@ public class MapleGuild {
         for (int i = 0; i < 5; i++) {
             rankTitles[i] = ranks[i];
         }
-        broadcast(ResCWvsContext.rankTitleChange(id, ranks));
+        broadcast(ResCWvsContext.GuildResult_SetGradeName_Done(id, ranks));
     }
 
     public void setGuildEmblem(short bg, byte bgcolor, short logo, byte logocolor) {
@@ -489,7 +489,7 @@ public class MapleGuild {
             return false;
         }
         capacity += 5;
-        broadcast(ResCWvsContext.guildCapacityChange(this.id, this.capacity));
+        broadcast(ResCWvsContext.GuildResult_IncMaxMemberNum_Done(this.id, this.capacity));
 
         DQ_Guilds.updateCapacity(id, capacity);
         return true;
@@ -503,7 +503,7 @@ public class MapleGuild {
             amount = -gp;
         } //0 lowest
         gp += amount;
-        broadcast(ResCWvsContext.updateGP(id, gp));
+        broadcast(ResCWvsContext.GuildResult_IncPoint_Done(id, gp));
         if (broadcast) {
             broadcast(ResCWvsContext.Message(OpsMessage.MS_IncGPMessage, PB_Message.builder().Inc_GP(amount).build()));
         }
@@ -541,7 +541,7 @@ public class MapleGuild {
         if (mc.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
         }
-        mc.SendPacket(ResCWvsContext.guildInvite(chr.getGuildId(), chr.getName(), chr.getLevel(), chr.getJob()));
+        mc.SendPacket(ResCWvsContext.GuildResult_InviteGuild(chr.getGuildId(), chr.getName(), chr.getLevel(), chr.getJob()));
         return null;
     }
 
@@ -674,7 +674,7 @@ public class MapleGuild {
 
         // used by script
         public ServerPacket getPacket() {
-            return ResCWvsContext.genericGuildMessage(ops);
+            return ResCWvsContext.GuildResult(ops);
         }
 
     }

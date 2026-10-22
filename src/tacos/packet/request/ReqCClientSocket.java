@@ -305,7 +305,7 @@ public class ReqCClientSocket {
                 chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
                 // guild
                 if (0 < chr.getGuildId()) {
-                    chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+                    chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
                     List<ServerPacket> packetList = client.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), true);
                     if (packetList != null) {
                         for (ServerPacket pack : packetList) {
@@ -316,8 +316,8 @@ public class ReqCClientSocket {
                     }
                 }
                 // family
-                chr.SendPacket(ResCWvsContext.getFamilyData());
-                chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+                chr.SendPacket(ResCWvsContext.FamilyPrivilegeList());
+                chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
                 chr.sendStatChanged(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
                 //chr.showNote();
                 chr.baseSkills(); // ?_?

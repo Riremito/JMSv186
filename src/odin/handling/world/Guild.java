@@ -232,7 +232,7 @@ public class Guild {
     }
 
     public void changeEmblem(int gid, int affectedPlayers, MapleGuildSummary mgs) {
-        sendGuildPacket(affectedPlayers, ResCWvsContext.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
+        sendGuildPacket(affectedPlayers, ResCWvsContext.GuildResult_SetMark_Done(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
         setGuildAndRank(affectedPlayers, -1, -1, -1);	//respawn player
     }
 

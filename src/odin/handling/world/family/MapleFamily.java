@@ -200,7 +200,7 @@ public class MapleFamily {
         MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (mgc.isOnline() != online) {
-                broadcast(ResCWvsContext.familyLoggedIn(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
+                broadcast(ResCWvsContext.FamilyNotifyLoginOrLogout(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
             }
             mgc.setOnline(online);
             mgc.setChannel((byte) channel);
@@ -219,7 +219,7 @@ public class MapleFamily {
             if (mgc.isOnline()) {
                 List<Integer> dummy = new ArrayList<>();
                 dummy.add(mgc.getId());
-                broadcast(ResCWvsContext.changeRep(addrep, from_name), -1, dummy);
+                broadcast(ResCWvsContext.FamilyFamousPointIncResult(addrep, from_name), -1, dummy);
                 TacosWorld.find(0).getFamily().setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             } else {
                 setOfflineFamilyStatus(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());

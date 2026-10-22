@@ -1492,7 +1492,7 @@ public class TacosCharacter extends TacosPlayer {
             {
                 int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
                 ((TacosCharacter) this).gainMeso(caught_meso, true);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 1, caught_meso));
             }
             case 1 -> // EXP
             {
@@ -1502,7 +1502,7 @@ public class TacosCharacter extends TacosPlayer {
                     caught_exp += 1;
                 }
                 ((TacosCharacter) this).gainExp(caught_exp, true, false, true);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 2, caught_exp));
             }
             default -> {
                 if (!WzDataStorage.ITEM.check(randval)) {
@@ -1510,7 +1510,7 @@ public class TacosCharacter extends TacosPlayer {
                     return false;
                 }
                 MapleInventoryManipulator.addById(client.getPlayer(), randval, (short) 1);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 0, randval));
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 0, randval));
             }
         }
 

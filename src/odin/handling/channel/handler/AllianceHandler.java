@@ -104,7 +104,7 @@ public class AllianceHandler {
                     break;
                 }
                 MapleGuildAlliance alliance = world_alliance.getAlliance(alliance_id);
-                target.SendPacket(ResCWvsContext.sendAllianceInvite(alliance.getName(), chr));
+                target.SendPacket(ResCWvsContext.AllianceResult_Invite(alliance.getName(), chr));
                 chr.getWorld().getGuild().setInvitedId(target.getGuildId(), alliance_id);
                 break;
             }
