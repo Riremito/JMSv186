@@ -648,6 +648,11 @@ public class MapleStatEffect {
         }
     }
 
+    // the area of the skill around a character (party buffs)
+    public Rectangle getAffectedArea(Point pos, boolean facingLeft) {
+        return calculateBoundingBox(pos, facingLeft);
+    }
+
     private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
@@ -840,7 +845,7 @@ public class MapleStatEffect {
         return false;
     }
 
-    private boolean isPartyBuff() {
+    public boolean isPartyBuff() {
         if (lt == null || rb == null) {
             return isSoulStone();
         }

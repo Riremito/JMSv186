@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import tacos.server.TacosExpedition;
 import tacos.server.map.TacosPortal;
 import tacos.server.map.object.TacosMerchant;
@@ -2261,6 +2262,9 @@ public class ReqCUser {
         if (chr.getBuff().update(nSkillID)) {
             chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
             chr.sendRemoteTemporaryStatSet(nSkillID);
+            if (skill != null) {
+                applyPartyBuff(chr, nSkillID, skill.getEffect(nSLV_SS));
+            }
             return true;
         }
 
@@ -2309,6 +2313,39 @@ public class ReqCUser {
         chr.sendStatChanged(true);
         DebugLogger.ErrorLog("OnUserSkillUseRequest : not coded, " + nSkillID + ", " + ops_skill);
         return false;
+    }
+
+    // party buffs reach the party members (or the same party of the expedition) inside the skill area, with the caster's effect.
+    // the client also sends dwAffectedMemberBitmap (CUserLocal::FindParty), the area is checked here instead.
+    private static void applyPartyBuff(TacosCharacter chr, int skill_id, MapleStatEffect effect) {
+        if (effect == null || !effect.isPartyBuff()) {
+            return;
+        }
+        MapleParty party = chr.getParty();
+        TacosExpedition expedition = chr.getWorld().findExpedition(chr.getId());
+        int expedition_party = (expedition != null) ? expedition.findPartyIndex(chr.getId()) : -1;
+        if (party == null && expedition == null) {
+            return;
+        }
+        Rectangle area = effect.getAffectedArea(chr.getPosition(), chr.isFacingLeft());
+        for (TacosCharacter member : chr.getMap().getPlayersInRect(area)) {
+            if (member.getId() == chr.getId() || !member.isAlive()) {
+                continue;
+            }
+            boolean same_party = party != null && member.getParty() != null && member.getParty().getId() == party.getId();
+            boolean same_expedition_party = expedition != null && expedition.findPartyIndex(member.getId()) == expedition_party;
+            if (!same_party && !same_expedition_party) {
+                continue;
+            }
+            if (!member.getBuff().apply(skill_id, effect)) {
+                continue;
+            }
+            member.SendPacket(ResCWvsContext.TemporaryStatSet(member, skill_id));
+            member.sendRemoteTemporaryStatSet(skill_id);
+            PB_UserEffect pb = PB_UserEffect.builder().player(member).skill_id(skill_id).build();
+            member.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
+            member.getMap().splitSendPacket(member, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), member.getId());
+        }
     }
 
     // CancelBuffHandler

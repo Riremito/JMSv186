@@ -159,6 +159,11 @@ public class TacosBuff {
             }
         }
 
+        return apply(buff_id, effect);
+    }
+
+    // sets the buff of an effect, also used for party buffs (the caster's effect and level)
+    public boolean apply(int buff_id, MapleStatEffect effect) {
         long time = System.currentTimeMillis();
         int count = 0;
         for (SimpleImmutableEntry<OpsSecondaryStat, Integer> oi : effect.getOss()) {
