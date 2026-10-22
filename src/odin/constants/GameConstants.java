@@ -28,7 +28,7 @@ import tacos.config.Region;
 
 public class GameConstants {
 
-    public static int[] eventCommonReward = {
+    public static final int[] eventCommonReward = {
         0, 40,
         1, 10,
         5060003, 18,
@@ -153,7 +153,7 @@ public class GameConstants {
         2000005, 10, // Power Elixir
         2000004, 10, // Elixir
         4280001, 4}; // Silver Box
-    public static int[] eventUncommonReward = {
+    public static final int[] eventUncommonReward = {
         2, 4,
         3, 4,
         2022179, 5,
@@ -177,7 +177,7 @@ public class GameConstants {
         4080100, 5,
         4080000, 5
     };
-    public static int[] eventRareReward = {
+    public static final int[] eventRareReward = {
         2049100, 5,
         2049116, 1,
         2049401, 10,
@@ -205,7 +205,7 @@ public class GameConstants {
         1012060, 2,
         1012061, 2
     };
-    public static int[] eventSuperReward = {
+    public static final int[] eventSuperReward = {
         2022121, 10,
         4031307, 50,
         3010127, 10,
@@ -216,8 +216,8 @@ public class GameConstants {
         1112428, 10,
         1112429, 10
     };
-    public static int[] Equipments_Bonus = {1122017};
-    public static int[] fishingReward = {
+    public static final int[] Equipments_Bonus = {1122017};
+    public static final int[] fishingReward = {
         0, 90, // Meso
         1, 70, // EXP
         2022179, 1, // Onyx Apple

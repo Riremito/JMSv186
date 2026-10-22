@@ -19,7 +19,7 @@ import tacos.wz.WzXML;
 
 public class MapleQuest {
 
-    private static Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
+    private static final Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;

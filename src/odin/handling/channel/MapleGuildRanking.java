@@ -26,7 +26,7 @@ import tacos.database.query.DQ_Guilds;
 
 public class MapleGuildRanking {
 
-    private static MapleGuildRanking instance = new MapleGuildRanking();
+    private static final MapleGuildRanking instance = new MapleGuildRanking();
     private List<GuildRankingInfo> ranks = new LinkedList<>();
 
     public static MapleGuildRanking getInstance() {

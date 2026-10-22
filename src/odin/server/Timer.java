@@ -10,7 +10,7 @@ public abstract class Timer {
 
     public static class MapTimer extends Timer {
 
-        private static MapTimer instance = new MapTimer();
+        private static final MapTimer instance = new MapTimer();
 
         private MapTimer() {
             name = "Maptimer";
@@ -23,7 +23,7 @@ public abstract class Timer {
 
     public static class CloneTimer extends Timer {
 
-        private static CloneTimer instance = new CloneTimer();
+        private static final CloneTimer instance = new CloneTimer();
 
         private CloneTimer() {
             name = "Clonetimer";
