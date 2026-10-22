@@ -142,8 +142,6 @@ public class FamilyHandler {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_OverLevel));
         } else if (addChr.getLevel() < chr.getLevel() - 20) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_UnderLevel));
-            //} else if (c.getPlayer().getFamilyId() != 0 && c.getPlayer().getFamily().getGens() >= 1000) {
-            //	c.getPlayer().Notice("Your family cannot extend more than 1000 generations from above and below.");
         } else if (addChr.getLevel() < 10) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_MinLevel));
         } else if (chr.getJunior1() > 0 && chr.getJunior2() > 0) {

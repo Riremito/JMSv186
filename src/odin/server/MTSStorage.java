@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.constants.GameConstants;
+import tacos.debug.DebugLogger;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
@@ -50,7 +51,6 @@ public class MTSStorage {
     //mts_items is id/packageid, tab(byte), price, characterid, seller, expiration
 
     public MTSStorage() {
-        //System.out.println("Loading MTSStorage::");
         idToCart = new LinkedHashMap<>();
         buyNow = new LinkedHashMap<>();
         packageId = new AtomicInteger(1);
@@ -129,7 +129,7 @@ public class MTSStorage {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugLogger.ExceptionLog(e.toString());
         }
         packageId.set(lastPackage);
     }
@@ -140,7 +140,7 @@ public class MTSStorage {
         }
         this.end = isShutDown;
         if (isShutDown) {
-            System.out.println("Saving MTS...");
+            DebugLogger.InfoLog("Saving MTS...");
         }
         Map<Integer, ArrayList<Item>> expire = new HashMap<>();
         List<Integer> toRemove = new ArrayList<>();
@@ -168,17 +168,17 @@ public class MTSStorage {
         }
         DQ_MtsItems.replaceTabOne(rowsToSave);
         if (isShutDown) {
-            System.out.println("Saving MTS items...");
+            DebugLogger.InfoLog("Saving MTS items...");
         }
         try {
             for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
                 ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            DebugLogger.ExceptionLog(e.toString());
         }
         if (isShutDown) {
-            System.out.println("Saving MTS carts...");
+            DebugLogger.InfoLog("Saving MTS carts...");
         }
         try {
             for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
@@ -194,7 +194,7 @@ public class MTSStorage {
                 c.getValue().save();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            DebugLogger.ExceptionLog(e.toString());
         }
         lastUpdate = System.currentTimeMillis();
     }
@@ -213,7 +213,7 @@ public class MTSStorage {
                 ret = new MTSCart(characterId);
                 idToCart.put(characterId, ret);
             } catch (SQLException e) {
-                e.printStackTrace();
+                DebugLogger.ExceptionLog(e.toString());
             }
         }
         return ret;

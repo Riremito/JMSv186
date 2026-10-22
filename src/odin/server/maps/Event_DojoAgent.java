@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.debug.DebugLogger;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
@@ -178,7 +179,7 @@ public class Event_DojoAgent {
                 }
             }
         } catch (Exception rm) {
-            rm.printStackTrace();
+            DebugLogger.ExceptionLog(rm.toString());
         }
         return false;
     }

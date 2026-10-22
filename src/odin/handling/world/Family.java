@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class Family {
     private final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
 
     public Family() {
-        //System.out.println("[MapleFamily] Loading Families");
         Collection<MapleFamily> allGuilds = MapleFamily.loadAll();
         for (MapleFamily g : allGuilds) {
             if (g.isProper()) {
@@ -78,7 +78,7 @@ public class Family {
     }
 
     public void save() {
-        System.out.println("Saving families...");
+        DebugLogger.InfoLog("Saving families...");
         for (MapleFamily a : families.values()) {
             a.writeToDB(false);
         }

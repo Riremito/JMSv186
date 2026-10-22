@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import java.util.List;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
@@ -102,7 +103,7 @@ public class MapleGuild {
 
         List<DQ_Characters.GuildMemberRow> memberRows = DQ_Characters.getGuildMembers(guildid);
         if (memberRows.isEmpty()) {
-            System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
+            DebugLogger.ErrorLog("No members in guild " + id + ".  Impossible... guild is disbanding");
             writeToDB(true);
             proper = false;
             return;
@@ -116,7 +117,7 @@ public class MapleGuild {
         }
 
         if (!leaderCheck) {
-            System.err.println("Leader " + leader + " isn't in guild " + id + ".  Impossible... guild is disbanding.");
+            DebugLogger.ErrorLog("Leader " + leader + " isn't in guild " + id + ".  Impossible... guild is disbanding.");
             writeToDB(true);
             proper = false;
             return;
@@ -408,7 +409,7 @@ public class MapleGuild {
             }
         }
         // it should never get to this point unless cid was incorrect o_O
-        System.err.println("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
+        DebugLogger.ErrorLog("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
     }
 
     public void changeRank(int cid, int newRank) {
@@ -425,7 +426,7 @@ public class MapleGuild {
             }
         }
         // it should never get to this point unless cid was incorrect o_O
-        System.err.println("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
+        DebugLogger.ErrorLog("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
     }
 
     public void setGuildNotice(String notice) {

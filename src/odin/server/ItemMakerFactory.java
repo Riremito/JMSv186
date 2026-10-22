@@ -19,7 +19,6 @@ public class ItemMakerFactory {
     }
 
     private ItemMakerFactory() {
-        //System.out.println("Loading ItemMakerFactory :::");
         WzXML.ETC.loadItemMake(gemCache, createCache);
     }
 

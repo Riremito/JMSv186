@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.ArrayList;
+import tacos.debug.DebugLogger;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +39,6 @@ public class Alliance {
     private final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
 
     public Alliance() {
-        //System.out.println("[MapleGuildAlliance] Loading GuildAlliances");
         Collection<MapleGuildAlliance> allGuilds = MapleGuildAlliance.loadAll();
         for (MapleGuildAlliance g : allGuilds) {
             alliances.put(g.getId(), g);
@@ -253,7 +253,7 @@ public class Alliance {
     }
 
     public void save() {
-        System.out.println("Saving alliances...");
+        DebugLogger.InfoLog("Saving alliances...");
         for (MapleGuildAlliance a : alliances.values()) {
             a.saveToDb();
         }

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.family;
 
 import java.util.List;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class MapleFamily {
         }
 
         if (leadername == null || members.size() < 2) {
-            System.err.println("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
+            DebugLogger.ErrorLog("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
             writeToDB(true);
             proper = false;
             return;
