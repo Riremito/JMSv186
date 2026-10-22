@@ -14,19 +14,20 @@ import tacos.client.TacosCharacter;
  */
 public class MapleCarnivalChallenge {
 
-    TacosCharacter challenger;
-    String challengeinfo = "";
+    private final TacosCharacter challenger;
+    private final String challengeinfo;
 
     public MapleCarnivalChallenge(TacosCharacter challenger) {
         this.challenger = challenger;
-        challengeinfo += "#b";
+        StringBuilder info = new StringBuilder("#b");
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
             TacosCharacter chr = challenger.getMap().getPlayerById(pc.getId());
             if (chr != null) {
-                challengeinfo += (chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
+                info.append(chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
             }
         }
-        challengeinfo += "#k";
+        info.append("#k");
+        this.challengeinfo = info.toString();
     }
 
     public static String getJobNameById(int job) {
