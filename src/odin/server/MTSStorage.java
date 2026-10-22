@@ -83,31 +83,26 @@ public class MTSStorage {
     }
 
     public void addToBuyNow(MTSCart cart, Item item, int price, int cid, String seller, long expiration) {
-        int id;
-        id = packageId.incrementAndGet();
+        int id = packageId.incrementAndGet();
         buyNow.put(id, new MTSItemInfo(price, item, seller, id, cid, expiration));
         cart.addToNotYetSold(id);
     }
 
     public boolean removeFromBuyNow(int id, int cidBought, boolean check) {
-        Item item = null;
-        if (buyNow.containsKey(id)) {
-            MTSItemInfo r = buyNow.get(id);
-            if (!check || r.getCharacterId() == cidBought) {
-                item = r.getItem();
-                buyNow.remove(id);
+        MTSItemInfo r = buyNow.get(id);
+        if (r == null || (check && r.getCharacterId() != cidBought)) {
+            return false;
+        }
+        Item item = r.getItem();
+        buyNow.remove(id);
+        for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
+            c.getValue().removeFromCart(id);
+            c.getValue().removeFromNotYetSold(id);
+            if (c.getKey() == cidBought) {
+                c.getValue().addToInventory(item);
             }
         }
-        if (item != null) {
-            for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
-                c.getValue().removeFromCart(id);
-                c.getValue().removeFromNotYetSold(id);
-                if (c.getKey() == cidBought) {
-                    c.getValue().addToInventory(item);
-                }
-            }
-        }
-        return item != null;
+        return true;
     }
 
     public void loadBuyNow() {
@@ -149,23 +144,15 @@ public class MTSStorage {
         List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
         for (MTSItemInfo m : buyNow.values()) {
             if (now > m.getEndingDate()) {
-                if (!expire.containsKey(m.getCharacterId())) {
-                    expire.put(m.getCharacterId(), new ArrayList<>());
-                }
-                expire.get(m.getCharacterId()).add(m.getItem());
+                expire.computeIfAbsent(m.getCharacterId(), k -> new ArrayList<>()).add(m.getItem());
                 toRemove.add(m.getId());
                 items.put(m.getId(), null); //destroy from the mtsitems.
             } else {
                 rowsToSave.add(new DQ_MtsItems.TabOneRow(m.getId(), m.getCharacterId(), m.getPrice(), m.getSeller(), m.getEndingDate()));
-                if (!items.containsKey(m.getId())) {
-                    items.put(m.getId(), new ArrayList<>());
-                }
-                items.get(m.getId()).add(new SimpleImmutableEntry<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
+                items.computeIfAbsent(m.getId(), k -> new ArrayList<>()).add(new SimpleImmutableEntry<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
             }
         }
-        for (int i : toRemove) {
-            buyNow.remove(i);
-        }
+        buyNow.keySet().removeAll(toRemove);
         DQ_MtsItems.replaceTabOne(rowsToSave);
         if (isShutDown) {
             DebugLogger.InfoLog("Saving MTS items...");
@@ -186,10 +173,8 @@ public class MTSStorage {
                     c.getValue().removeFromCart(i);
                     c.getValue().removeFromNotYetSold(i);
                 }
-                if (expire.containsKey(c.getKey())) {
-                    for (Item item : expire.get(c.getKey())) {
-                        c.getValue().addToInventory(item);
-                    }
+                for (Item item : expire.getOrDefault(c.getKey(), new ArrayList<>())) {
+                    c.getValue().addToInventory(item);
                 }
                 c.getValue().save();
             }
@@ -206,8 +191,7 @@ public class MTSStorage {
     }
 
     public MTSCart getCart(int characterId) {
-        MTSCart ret;
-        ret = idToCart.get(characterId);
+        MTSCart ret = idToCart.get(characterId);
         if (ret == null) {
             try {
                 ret = new MTSCart(characterId);
@@ -273,12 +257,12 @@ public class MTSStorage {
 
     public static class MTSItemInfo {
 
-        private int price;
-        private int id; //packageid
-        private int cid;
-        private Item item;
-        private String seller;
-        private long date;
+        private final int price;
+        private final int id; // packageid
+        private final int cid;
+        private final Item item;
+        private final String seller;
+        private final long date;
 
         public MTSItemInfo(int price, Item item, String seller, int id, int cid, long date) {
             this.item = item;
