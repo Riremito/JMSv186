@@ -698,7 +698,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnCheckGameGuardUpdatedResult
-    public static ServerPacket CheckGameGuardUpdated(boolean isOK) {
+    public static ServerPacket CheckGameGuardUpdatedResult(boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_CheckGameGuardUpdatedResult);
         // 0 = Update Game Guard
         // 1 = Enable Login Button
@@ -778,7 +778,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnCheckSPWResult
-    public static ServerPacket OnCheckSPWResult() {
+    public static ServerPacket CheckSPWResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckSPWResult);
 
         sp.Encode1(0); // unused.

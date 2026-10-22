@@ -487,7 +487,7 @@ public class ReqCCashShop {
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);
             chr.getCashInventory().addToInventory(item);
-            chr.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, chr.getClient()));
+            chr.SendPacket(ResCCashShop.CashShopCashItemGachaponResult(box_item, item, chr.getClient()));
         }
 
         return true;

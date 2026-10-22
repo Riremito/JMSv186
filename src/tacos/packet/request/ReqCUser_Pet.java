@@ -142,7 +142,7 @@ public class ReqCUser_Pet {
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(0).build()));
-            map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, 0), chr.getId());
+            map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().player(chr).index(0).build()), chr.getId());
         }
         return true;
     }
@@ -195,7 +195,7 @@ public class ReqCUser_Pet {
                 if (newCloseness >= TacosPet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(petIndex).build()));
-                    map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().player(chr).index(petIndex).build()), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }

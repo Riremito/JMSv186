@@ -258,10 +258,11 @@ public class ResCUserRemote {
         return sp;
     }
 
+    // CUser::OnEffect
     public static ServerPacket UserEffectRemote(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
-        sp.Encode4(pb.player.getId());
+        sp.Encode4(pb.player.getId()); // dwCharacterId
         sp.EncodeBuffer(ResCUserLocal.EffectData(ops, pb));
         return sp;
     }
@@ -298,47 +299,6 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket showPetLevelUp(TacosCharacter chr, int index) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(4);
-        sp.Encode1(0);
-        sp.Encode4(index);
-        return sp;
-    }
-
-    public static ServerPacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(from_playerid);
-        sp.Encode1(15);
-        sp.Encode4(itemId);
-        sp.Encode1(effect != null && effect.length() > 0 ? 1 : 0);
-        if (effect != null && effect.length() > 0) {
-            sp.EncodeStr(effect);
-        }
-        return sp;
-    }
-
-    //its likely that durability items use this
-    public static ServerPacket showHpHealed(int cid, int amount) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(cid);
-        sp.Encode1(10); //Type
-        sp.Encode4(amount);
-        return sp;
-    }
-
-    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, OpsItemMakerResult result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(OpsUserEffect.UserEffect_ItemMaker.get());
-        sp.Encode4(result.get());
-        return sp;
-    }
 
     public static byte[] addRingInfo(List<MapleRing> rings) {
         ServerPacket data = new ServerPacket();

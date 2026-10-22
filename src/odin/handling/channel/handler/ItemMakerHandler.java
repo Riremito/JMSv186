@@ -91,11 +91,12 @@ public class ItemMakerHandler {
     // CUIItemMaker::OnItemMakeResult
     private static void sendMakeResult(TacosCharacter chr, OpsItemMakerResult result) {
         PB_UserEffect pb = PB_UserEffect.builder()
+                .player(chr)
                 .maker(result)
                 .build();
         chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
         if (result == OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS || result == OpsItemMakerResult.ITEM_MAKER_RESULT_DESTROYED) {
-            chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, result), chr.getId());
+            chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemMaker, pb), chr.getId());
         }
     }
 

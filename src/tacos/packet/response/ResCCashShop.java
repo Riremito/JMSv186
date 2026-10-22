@@ -128,7 +128,7 @@ public class ResCCashShop {
     }
 
     // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
-    public static ServerPacket presentDialog() {
+    public static ServerPacket PresentDialog() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_PRESENT_DIALOG);
         // 多分未実装
         return sp;
@@ -388,7 +388,8 @@ public class ResCCashShop {
     }
 
     // アバターランダムボックス
-    public static ServerPacket OnCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
+    // CCashShop::OnCashItemGachaponResult
+    public static ServerPacket CashShopCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
@@ -405,11 +406,12 @@ public class ResCCashShop {
         return sp;
     }
 
-    public static ServerPacket cashItemExpired(int uniqueid) {
+    // CCashShop::OnCashItemResult
+    public static ServerPacket CashItemResult_Expire_Done(long sn) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_Expire_Done.get());
-        sp.Encode8(uniqueid);
+        sp.Encode8(sn); // liSN
         return sp;
     }
 }

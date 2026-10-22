@@ -105,7 +105,7 @@ public class CashShop {
         if (!toberemove.isEmpty()) {
             for (Item item : toberemove) {
                 removeFromInventory(item);
-                chr.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                chr.SendPacket(ResCCashShop.CashItemResult_Expire_Done(item.getUniqueId()));
             }
             toberemove.clear();
         }

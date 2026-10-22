@@ -136,7 +136,7 @@ public class ReqCLogin {
             case CP_JMS_CheckGameGuardUpdated: {
                 // JMS147 : @0010
                 // ログインボタンの有効化 (GameGuard Update)
-                client.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
+                client.SendPacket(ResCLogin.CheckGameGuardUpdatedResult(true));
                 return true;
             }
             case CP_EnableSPWRequest: {
