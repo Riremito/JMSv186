@@ -1,12 +1,12 @@
 package odin.server;
 
 import java.awt.Point;
-import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosPet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
@@ -14,8 +14,6 @@ import odin.client.inventory.Item.ItemFlag;
 import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.packet.ops.OpsCashItem;
-import tacos.packet.response.ResCCashShop;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.response.builder.PB_Message;
@@ -99,7 +97,7 @@ public class MapleInventoryManipulator {
             }
             nEquip.setUniqueId(uniqueid);
             if (period > 0) {
-                nEquip.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+                nEquip.setExpiration(getExpiration(period));
             }
             short newSlot = chr.getInventory(type).addItem(nEquip);
             if (newSlot == -1) {
@@ -112,7 +110,6 @@ public class MapleInventoryManipulator {
         }
 
         short slotMax = ii.getSlotMax(itemId);
-        List<Item> existing = chr.getInventory(type).listById(itemId);
         if (GameConstants.isRechargable(itemId)) {
             // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
             Item nItem = new Item(itemId, (byte) 0, quantity, (byte) 0, uniqueid);
@@ -122,7 +119,7 @@ public class MapleInventoryManipulator {
                 return -1;
             }
             if (period > 0) {
-                nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+                nItem.setExpiration(getExpiration(period));
             }
             chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
             chr.updateInv();
@@ -131,17 +128,7 @@ public class MapleInventoryManipulator {
         }
 
         // first update all existing slots to slotMax
-        Iterator<Item> it = existing.iterator();
-        while (quantity > 0 && it.hasNext()) {
-            Item eItem = it.next();
-            short oldQ = eItem.getQuantity();
-            if (oldQ < slotMax && (eItem.getOwner().equals(owner) || owner == null) && eItem.getExpiration() == -1) {
-                short newQ = (short) Math.min(oldQ + quantity, slotMax);
-                quantity -= (newQ - oldQ);
-                eItem.setQuantity(newQ);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(type, eItem).build()));
-            }
-        }
+        quantity = fillExistingSlots(chr, type, itemId, quantity, slotMax, eItem -> (owner == null || eItem.getOwner().equals(owner)) && eItem.getExpiration() == -1, false);
         // add new slots if there is still something left
         short newSlot = -1;
         while (quantity > 0) {
@@ -162,7 +149,7 @@ public class MapleInventoryManipulator {
                 nItem.setOwner(owner);
             }
             if (period > 0) {
-                nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+                nItem.setExpiration(getExpiration(period));
             }
             if (pet != null) {
                 nItem.setPet(pet);
@@ -172,6 +159,28 @@ public class MapleInventoryManipulator {
         }
         chr.havePartyQuest(itemId);
         return (byte) newSlot;
+    }
+
+    // period (days) to the expiration time
+    private static long getExpiration(long period) {
+        return System.currentTimeMillis() + period * 24 * 60 * 60 * 1000;
+    }
+
+    // fills the existing stacks of the item first, returns the quantity left
+    private static short fillExistingSlots(TacosCharacter chr, MapleInventoryType type, int itemId, short quantity, short slotMax, Predicate<Item> canStack, boolean unlock) {
+        for (Item eItem : chr.getInventory(type).listById(itemId)) {
+            if (quantity <= 0) {
+                break;
+            }
+            short oldQ = eItem.getQuantity();
+            if (oldQ < slotMax && canStack.test(eItem)) {
+                short newQ = (short) Math.min(oldQ + quantity, slotMax);
+                quantity -= (newQ - oldQ);
+                eItem.setQuantity(newQ);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, eItem).build()));
+            }
+        }
+        return quantity;
     }
 
     private static void sendInventoryFull(TacosCharacter chr) {
@@ -273,28 +282,13 @@ public class MapleInventoryManipulator {
 
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(item.getItemId());
-            List<Item> existing = chr.getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
-                if (quantity <= 0) { //wthsendPickupUnavailable(chr);
+                if (quantity <= 0) {
                     return false;
                 }
-                if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<Item> i = existing.iterator();
-                    while (quantity > 0) {
-                        if (i.hasNext()) {
-                            Item eItem = i.next();
-                            short oldQ = eItem.getQuantity();
-                            if (oldQ < slotMax && item.getOwner().equals(eItem.getOwner()) && item.getExpiration() == eItem.getExpiration()) {
-                                short newQ = (short) Math.min(oldQ + quantity, slotMax);
-                                quantity -= (newQ - oldQ);
-                                eItem.setQuantity(newQ);
-                                chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, eItem).build()));
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
+                // first update all existing slots to slotMax
+                final Item dropped = item;
+                quantity = fillExistingSlots(chr, type, item.getItemId(), quantity, slotMax, eItem -> dropped.getOwner().equals(eItem.getOwner()) && dropped.getExpiration() == eItem.getExpiration(), true);
                 // add new slots if there is still something left
                 while (quantity > 0) {
                     short newQ = (short) Math.min(quantity, slotMax);
@@ -375,11 +369,10 @@ public class MapleInventoryManipulator {
         return before;
     }
 
-    private static int rand(int min, int max) {
-        return Math.abs(Randomizer.rand(min, max));
-    }
-
     public static boolean checkSpace(TacosCharacter chr, int itemid, int quantity, String owner) {
+        if (chr == null) {
+            return false;
+        }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemid) && chr.haveItem(itemid, 1, true, false)) {
             chr.updateInv();
@@ -389,7 +382,7 @@ public class MapleInventoryManipulator {
             return false;
         }
         MapleInventoryType type = GameConstants.getInventoryType(itemid);
-        if (chr == null || chr.getInventory(type) == null) { //wtf is causing this?
+        if (chr.getInventory(type) == null) {
             return false;
         }
         if (!type.equals(MapleInventoryType.EQUIP)) {
@@ -441,17 +434,17 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean removeById(TacosCharacter chr, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
-        int remremove = quantity;
+        int remaining = quantity;
         for (Item item : chr.getInventory(type).listById(itemId)) {
-            if (remremove <= item.getQuantity()) {
-                removeFromSlot(chr, type, item.getPosition(), (short) remremove, fromDrop, consume);
-                remremove = 0;
+            if (remaining <= item.getQuantity()) {
+                removeFromSlot(chr, type, item.getPosition(), (short) remaining, fromDrop, consume);
+                remaining = 0;
                 break;
             }
-            remremove -= item.getQuantity();
+            remaining -= item.getQuantity();
             removeFromSlot(chr, type, item.getPosition(), item.getQuantity(), fromDrop, consume);
         }
-        return remremove <= 0;
+        return remaining <= 0;
     }
 
     public static void move(TacosCharacter chr, MapleInventoryType type, short src, short dst) {
@@ -673,59 +666,29 @@ public class MapleInventoryManipulator {
             chr.updateInv();
             return false;
         }
-        Point dropPos = new Point(chr.getPosition());
-        TacosMap map = chr.getMap();
+        Item dropped;
         if (quantity < source.getQuantity() && !GameConstants.isRechargable(source.getItemId())) {
-            Item target = source.copy();
-            target.setQuantity(quantity);
+            dropped = source.copy();
+            dropped.setQuantity(quantity);
             source.setQuantity((short) (source.getQuantity() - quantity));
             chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, source).build()));
-
-            if (ii.isDropRestricted(target.getItemId()) || ii.isAccountShared(target.getItemId())) {
-                if (ItemFlag.KARMA_EQ.check(flag)) {
-                    target.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                } else if (ItemFlag.KARMA_USE.check(flag)) {
-                    target.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                } else {
-                    //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), target, dropPos);
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                }
-            } else {
-                if (GameConstants.isPet(source.getItemId()) || ItemFlag.UNTRADEABLE.check(flag)) {
-                    //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), target, dropPos);
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                } else {
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                }
-            }
         } else {
+            dropped = source;
             chr.getInventory(type).removeSlot(src);
             chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove((src < 0 ? MapleInventoryType.EQUIP : type), src).build()));
             if (src < 0) {
                 chr.equipChanged();
             }
-            if (ii.isDropRestricted(source.getItemId()) || ii.isAccountShared(source.getItemId())) {
-                if (ItemFlag.KARMA_EQ.check(flag)) {
-                    source.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                } else if (ItemFlag.KARMA_USE.check(flag)) {
-                    source.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                } else {
-                    //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), source, dropPos);
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                }
-            } else {
-                if (GameConstants.isPet(source.getItemId()) || ItemFlag.UNTRADEABLE.check(flag)) {
-                    //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), source, dropPos);
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                } else {
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                }
+        }
+        // the karma scissors flag is used up when the item is dropped
+        if (ii.isDropRestricted(dropped.getItemId()) || ii.isAccountShared(dropped.getItemId())) {
+            if (ItemFlag.KARMA_EQ.check(flag)) {
+                dropped.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
+            } else if (ItemFlag.KARMA_USE.check(flag)) {
+                dropped.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
             }
         }
+        chr.getMap().spawnItemDrop(chr, chr, dropped, new Point(chr.getPosition()), true, true);
         return true;
     }
 }
