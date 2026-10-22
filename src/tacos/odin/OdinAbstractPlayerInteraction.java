@@ -912,15 +912,15 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void AranTutInstructionalBubble(String data) {
-        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(data).build()));
     }
 
     public void ShowWZEffect(String data) {
-        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(data).build()));
     }
 
     public void showWZEffect(String data) {
-        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
     }
 
     public void EarnTitleMsg(String data) {

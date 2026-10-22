@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.quest;
 
 import java.util.HashMap;
+import tacos.packet.ops.OpsQuest;
 import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.Map;
@@ -257,7 +258,7 @@ public class MapleQuestAction {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                chr.SendPacket(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), info.getValue()));
+                chr.SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getId(), status.getNpc(), info.getValue()));
                 break;
             case money:
                 status = chr.getQuest(quest);
@@ -349,7 +350,7 @@ public class MapleQuestAction {
                 break;
             }
             case nextQuest: {
-                chr.SendPacket(ResCUserLocal.UserQuestResult(quest.getId(), chr.getQuest(quest).getNpc(), info.getValue()));
+                chr.SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getId(), chr.getQuest(quest).getNpc(), info.getValue()));
                 break;
             }
             case money: {

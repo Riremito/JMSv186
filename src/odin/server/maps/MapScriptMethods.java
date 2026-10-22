@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
@@ -656,7 +658,7 @@ public class MapScriptMethods {
                 chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000016), (byte) -1, (byte) 0);
                 chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000017), (byte) -1, (byte) 0);
                 chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000018), (byte) -1, (byte) 0);
-                chr.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path("Effect/Direction1.img/aranTutorial/ClickLirin").build()));
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
@@ -665,7 +667,7 @@ public class MapScriptMethods {
             case rienArrow: {
                 if (chr.getInfoQuest(21019).equals("miss=o;helper=clear")) {
                     chr.updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    chr.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3").build()));
                 }
                 break;
             }
@@ -742,7 +744,7 @@ public class MapScriptMethods {
     private static void showIntro(TacosClient client, String data) {
         client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
         client.SendPacket(ResCUserLocal.SetDirectionMode(true));
-        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
     }
 
     private static void sendDojoClock(TacosClient client, int time) {

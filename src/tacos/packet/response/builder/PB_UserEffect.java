@@ -36,4 +36,8 @@ public class PB_UserEffect {
     public int skill_level;
     public boolean skill_on;
     public OpsItemMakerResult maker;
+    public String path; // effect path
+    public int count;
+    public int days;
+    public int index;
 }

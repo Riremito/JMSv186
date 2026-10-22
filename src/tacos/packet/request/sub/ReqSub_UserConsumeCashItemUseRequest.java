@@ -570,11 +570,11 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
 
                 if (!chr.gainMeso(randommeso, false)) {
-                    chr.SendPacket(ResCUserLocal.RandomMesoBagFailed());
+                    chr.SendPacket(ResCUserLocal.Random_Mesobag_Failed());
                     return false;
                 }
 
-                chr.SendPacket(ResCUserLocal.RandomMesoBagSuccess((byte) (r + 1), randommeso));
+                chr.SendPacket(ResCUserLocal.Random_Mesobag_Succeed((byte) (r + 1), randommeso));
                 return true;
             }
             default: {

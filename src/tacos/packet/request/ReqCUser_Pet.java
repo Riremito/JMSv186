@@ -19,6 +19,8 @@
 package tacos.packet.request;
 
 import tacos.server.map.object.TacosPet;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosDrop;
@@ -139,7 +141,7 @@ public class ReqCUser_Pet {
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
-            chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(0).build()));
             map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, 0), chr.getId());
         }
         return true;
@@ -192,7 +194,7 @@ public class ReqCUser_Pet {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= TacosPet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
-                    chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(petIndex).build()));
                     map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));

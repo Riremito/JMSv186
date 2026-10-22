@@ -36,18 +36,20 @@ import tacos.packet.response.data.RD_CUser;
  */
 public class ResCUserLocal {
 
+    // CUserLocal::OnSitResult
     public static ServerPacket UserSitResult(int id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSitResult);
 
         boolean is_cancel = (id == -1);
         sp.Encode1(is_cancel ? 0 : 1);
         if (!is_cancel) {
-            sp.Encode2(id); // sit
+            sp.Encode2(id); // nChairID
         }
 
         return sp;
     }
 
+    // CUser::OnEmotion
     public static ServerPacket UserEmotionLocal(TacosCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
@@ -55,10 +57,12 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUser::OnEffect
     public static ServerPacket UserEffectLocal(OpsUserEffect ops) {
         return UserEffectLocal(ops, null);
     }
 
+    // CUser::OnEffect
     public static ServerPacket UserEffectLocal(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
@@ -114,16 +118,53 @@ public class ResCUserLocal {
                 }
                 break;
             }
+            case UserEffect_Pet: {
+                data.Encode1(0); // 0 = level up
+                data.Encode1(pb.index); // pet index
+                break;
+            }
             case UserEffect_SkillSpecial: {
                 data.Encode4(pb.skill_id);
+                break;
+            }
+            case UserEffect_ProtectOnDieItemUse: {
+                data.Encode1(1); // safety charm
+                data.Encode1(pb.count); // remaining count
+                data.Encode1(pb.days); // remaining days
+                break;
+            }
+            case UserEffect_IncDecHPEffect: {
+                data.Encode1(pb.count); // HP
                 break;
             }
             case UserEffect_BuffItemEffect: {
                 data.Encode4(pb.skill_id);
                 break;
             }
+            case UserEffect_LotteryUse: {
+                boolean has_path = pb.path != null && !pb.path.isEmpty();
+                data.Encode4(pb.item_id);
+                data.Encode1(has_path ? 1 : 0);
+                if (has_path) {
+                    data.EncodeStr(pb.path);
+                }
+                break;
+            }
             case UserEffect_ItemMaker: {
                 data.Encode4(pb.maker.get());
+                break;
+            }
+            case UserEffect_ReservedEffect: {
+                data.EncodeStr(pb.path);
+                break;
+            }
+            case UserEffect_UpgradeTombItemUse: {
+                data.Encode1(pb.count); // remaining count
+                break;
+            }
+            case UserEffect_AvatarOriented: {
+                data.EncodeStr(pb.path);
+                data.Encode4(1);
                 break;
             }
             default: {
@@ -134,78 +175,16 @@ public class ResCUserLocal {
         return data.getBytes();
     }
 
-    public static ServerPacket showRewardItemAnimation(int itemId, String effect) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_LotteryUse.get());
-        sp.Encode4(itemId);
-        sp.Encode1(effect != null && effect.length() > 0 ? 1 : 0);
-        if (effect != null && effect.length() > 0) {
-            sp.EncodeStr(effect);
-        }
-        return sp;
-    }
-
-    public static ServerPacket showOwnHpHealed(int amount) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_IncDecHPEffect.get());
-        sp.Encode1(amount);
-        return sp;
-    }
-
-    public static ServerPacket useWheel(byte charmsleft) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_UpgradeTombItemUse.get());
-        sp.Encode1(charmsleft); // remaining count
-        return sp;
-    }
-
-    public static ServerPacket useCharm(byte charmsleft, byte daysleft) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_ProtectOnDieItemUse.get());
-        sp.Encode1(1);
-        sp.Encode1(charmsleft);
-        sp.Encode1(daysleft);
-        return sp;
-    }
-
-    public static ServerPacket ShowWZEffect(String data) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_ReservedEffect.get());
-        sp.EncodeStr(data);
-        return sp;
-    }
-
-    public static ServerPacket showOwnPetLevelUp(int index) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_Pet.get());
-        sp.Encode1(0); // level up
-        sp.Encode1(index); // pet index
-        return sp;
-    }
-
-    public static ServerPacket AranTutInstructionalBalloon(String data) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
-
-        sp.Encode1(OpsUserEffect.UserEffect_AvatarOriented.get());
-        sp.EncodeStr(data);
-        sp.Encode4(1);
-        return sp;
-    }
-
+    // CUserLocal::OnTeleport
     public static ServerPacket UserTeleport(byte portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTeleport);
 
         sp.Encode1(0); // set last teleported time by client side
-        sp.Encode1(portal);
+        sp.Encode1(portal); // m_aPortal index
         return sp;
     }
 
+    // CUserLocal::OnMesoGive_Succeeded
     public static ServerPacket MesoGive_Succeeded(int mesos) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MesoGive_Succeeded);
 
@@ -213,43 +192,39 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnMesoGive_Failed
     public static ServerPacket MesoGive_Failed() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MesoGive_Failed);
         return sp;
     }
 
-    public static ServerPacket RandomMesoBagSuccess(byte type, int mesos) {
+    // CUserLocal::OnRandomMesobag_Succeeded
+    public static ServerPacket Random_Mesobag_Succeed(byte type, int mesos) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Random_Mesobag_Succeed);
+
         sp.Encode1(type);
         sp.Encode4(mesos);
         return sp;
     }
 
-    public static ServerPacket RandomMesoBagFailed() {
+    // CUserLocal::OnRandomMesobag_Failed
+    public static ServerPacket Random_Mesobag_Failed() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Random_Mesobag_Failed);
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(int quest, int npc, int nextquest) {
+    // CUserLocal::OnQuestResult
+    public static ServerPacket UserQuestResult(OpsQuest ops, int quest_id, int npc_id, int next_quest_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
 
-        sp.Encode1(OpsQuest.QuestRes_Act_Success.get());
-        sp.Encode2(quest);
-        sp.Encode4(npc);
-        sp.Encode2(nextquest);
+        sp.Encode1(ops.get());
+        sp.Encode2(quest_id);
+        sp.Encode4(npc_id);
+        sp.Encode2(next_quest_id);
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(TacosCharacter player, int quest, int npc, OpsQuest oq) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
-
-        sp.Encode1(oq.get());
-        sp.Encode2(quest);
-        sp.Encode4(npc);
-        sp.Encode2(0);
-        return sp;
-    }
-
+    // CUserLocal::OnNotifyHPDecByField
     public static ServerPacket NotifyHPDecByField(int nDamage) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyHPDecByField);
 
@@ -271,14 +246,14 @@ public class ResCUserLocal {
             height = 5;
         }
 
-        sp.EncodeStr(hint);
-        sp.Encode2(width);
-        sp.Encode2(height);
-        sp.Encode1(1);
-
+        sp.EncodeStr(hint); // msg
+        sp.Encode2(width); // width
+        sp.Encode2(height); // timeout (sec)
+        sp.Encode1(1); // avatar oriented, no position
         return sp;
     }
 
+    // CUserLocal::OnOpenUIWithOption
     public static ServerPacket UserOpenUIWithOption(OpsUI ops, int npc_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUIWithOption);
 
@@ -287,6 +262,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnSetDirectionMode
     public static ServerPacket SetDirectionMode(boolean enable) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetDirectionMode);
 
@@ -295,6 +271,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnSetStandAloneMode
     public static ServerPacket SetStandAloneMode(boolean enable) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetStandAloneMode);
 
@@ -317,6 +294,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnHireTutor
     public static ServerPacket UserHireTutor(boolean summon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHireTutor);
 
@@ -324,30 +302,33 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserTutorMsg(int type) {
+    // CUserLocal::OnTutorMsg
+    public static ServerPacket UserTutorMsg(int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
-        sp.Encode1(1);
-        sp.Encode4(type);
-        sp.Encode4(7000); // probably the delay
+        sp.Encode1(1); // message index
+        sp.Encode4(index);
+        sp.Encode4(7000); // duration
         return sp;
     }
 
+    // CUserLocal::OnTutorMsg
     public static ServerPacket UserTutorMsg(String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
-        sp.Encode1(0);
+        sp.Encode1(0); // message text
         sp.EncodeStr(message);
-        sp.Encode4(200); // IDK
+        sp.Encode4(200); // width
         sp.Encode2(0);
         sp.Encode4(10000); // Probably delay
         return sp;
     }
 
+    // CUserLocal::OnIncComboResponse
     public static ServerPacket IncCombo(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncCombo);
 
-        sp.Encode4(chr.getCombo());
+        sp.Encode4(chr.getCombo()); // m_nCombo
         return sp;
     }
 
@@ -364,6 +345,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnNoticeMsg
     public static ServerPacket UserNoticeMsg(String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserNoticeMsg);
 
@@ -371,7 +353,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    // チャット欄へのテキスト表示
+    // CUserLocal::OnChatMsg, チャット欄へのテキスト表示
     public static ServerPacket UserChatMsg(String msg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChatMsg);
 
@@ -406,11 +388,12 @@ public class ResCUserLocal {
         0x0015  ドクロ拡声器
         0x0016  ハートバルーン拡声器
          */
-        sp.Encode2(11);
+        sp.Encode2(11); // chat type
         sp.EncodeStr(msg);
         return sp;
     }
 
+    // CUser::OnPassiveMove
     public static ServerPacket UserPassiveMove(ParseCMovePath move_path) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserPassiveMove);
 
@@ -418,6 +401,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnFollowCharacterFailed
     public static ServerPacket UserFollowCharacterFailed(int error) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacterFailed);
 
@@ -431,7 +415,8 @@ public class ResCUserLocal {
         0x06    離れているようです。
         0x07    以降0x00と同じ
          */
-        sp.Encode8(error); //5 = canceled request.
+        sp.Encode4(error); // 5 = canceled request.
+        sp.Encode4(0); // character id
         return sp;
     }
 
@@ -452,15 +437,15 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnSkillCooltimeSet
     public static ServerPacket SkillCooltimeSet(int skill_id, int cool_time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillCooltimeSet);
 
-        sp.Encode4(skill_id);
-
+        sp.Encode4(skill_id); // nSkillID
         if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(cool_time);
         } else {
-            sp.Encode2(cool_time);
+            sp.Encode2(cool_time); // tCoolTime (sec)
         }
 
         return sp;

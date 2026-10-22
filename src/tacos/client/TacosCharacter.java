@@ -2314,7 +2314,7 @@ public class TacosCharacter extends TacosPlayer {
         if (!(quest.isCustom())) {
             SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
             if (quest.getStatus() == 1 && !update) {
-                SendPacket(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
+                SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getQuest().getId(), quest.getNpc(), 0));
             }
         }
     }
@@ -2448,7 +2448,7 @@ public class TacosCharacter extends TacosPlayer {
                 if (charms > 0xFF) {
                     charms = 0xFF;
                 }
-                SendPacket(ResCUserLocal.useCharm((byte) charms, (byte) 0));
+                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ProtectOnDieItemUse, PB_UserEffect.builder().count(charms).days(0).build()));
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = TacosSharedExpTable.getExpNeededForLevel(level);
