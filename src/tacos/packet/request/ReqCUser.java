@@ -3491,20 +3491,21 @@ public class ReqCUser {
 
         for (TacosMysticDoor door : chr.getMap().getAllDoors()) {
             if (door.getOwnerId() == door_character_id) {
+                // the party slot can change after the door is created, the client draws the town door on the current slot.
+                TacosCharacter owner = chr.getWorld().findOnlinePlayerById(door_character_id);
                 if (is_town_to_field) {
                     TacosMap map_to = chr.getChannelServer().findMap(door.getFieldMapId());
                     if (map_to == null) {
                         return false;
                     }
-                    chr.changeMapPortal(map_to, map_to.findClosestSpawnpoint(door.getFieldPosition()));
+                    // arrive on the field door, not on the closest spawn point
+                    chr.changeMapDoor(map_to, door.getFieldPosition(), (owner != null) ? owner.getDoorSlot() : 0);
                     return true;
                 }
                 TacosMap map_to = chr.getChannelServer().findMap(door.getTownMapId());
                 if (map_to == null) {
                     return false;
                 }
-                // the party slot can change after the door is created, the client draws the town door on the current slot.
-                TacosCharacter owner = chr.getWorld().findOnlinePlayerById(door_character_id);
                 TacosPortal portal_to = TacosMysticDoor.getTownPortal(map_to, (owner != null) ? owner.getDoorSlot() : 0);
                 chr.changeMapPortal(map_to, (portal_to != null) ? portal_to : door.getTownPortal());
                 return true;

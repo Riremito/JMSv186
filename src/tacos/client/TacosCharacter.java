@@ -469,6 +469,29 @@ public class TacosCharacter extends TacosPlayer {
         changeMapPortal(map_to, map_to.getPortal(portal));
     }
 
+    // mystic door : nPortal = 0x80 | party slot places the user on the door (CUserLocal::Init, town portal of PARTYDATA or LP_TownPortal).
+    public boolean changeMapDoor(TacosMap map_to, Point pos, int slot) {
+        if (map_to == null) {
+            return false;
+        }
+        TacosPortal spawn = map_to.findClosestSpawnpoint(pos);
+        if (spawn == null) {
+            spawn = map_to.getPortal(0);
+        }
+        this.map.userLeaveField((TacosCharacter) this);
+        updateMap(map_to, spawn);
+        setPosition(pos);
+        setPortal(0x80 | slot);
+        sendSetField(false);
+        setPortal(spawn.getId());
+        map_to.userEnterField((TacosCharacter) this);
+        if (getPyramidSubway() != null) {
+            getPyramidSubway().onChangeMap((TacosCharacter) this, map_to.getId());
+        }
+        saveToDB(false);
+        return true;
+    }
+
     public boolean changeMapPortal(TacosMap map_to, TacosPortal portal_to) {
         if (map_to == null) {
             return false;
