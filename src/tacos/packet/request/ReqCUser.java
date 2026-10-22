@@ -44,7 +44,6 @@ import odin.handling.world.MapleParty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.MapleParty.PartyOperation;
 import tacos.packet.ClientPacket;
@@ -263,7 +262,7 @@ public class ReqCUser {
             case CP_ShopLinkRequest: {
                 int shop_id = cp.Decode4();
                 int map_id = cp.Decode4();
-                InventoryHandler.OwlWarp(chr, shop_id, map_id);
+                ReqCUser_Item.OnShopLinkRequest(chr, shop_id, map_id);
                 return true;
             }
             case CP_AdminShopRequest: {
@@ -322,7 +321,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
-                InventoryHandler.UseScriptedNPCItem(cp, chr);
+                ReqCUser_Item.OnUserScriptItemUseRequest(cp, chr);
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
@@ -481,7 +480,7 @@ public class ReqCUser {
             case CP_UserUseGachaponBoxRequest: {
                 short slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                int reward = InventoryHandler.UseTreasureChest(chr, slot, item_id);
+                int reward = ReqCUser_Item.OnUserUseGachaponBoxRequest(chr, slot, item_id);
                 if (reward != 0) {
                     chr.SendPacket(ResCWvsContext.SuccessInUseGachaponBox(item_id));
 
