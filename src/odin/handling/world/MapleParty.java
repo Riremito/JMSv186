@@ -43,11 +43,23 @@ public class MapleParty {
 
     public void updateMember(MaplePartyCharacter member) {
         for (int i = 0; i < members.size(); i++) {
-            MaplePartyCharacter chr = members.get(i);
-            if (chr.equals(member)) {
+            if (members.get(i).equals(member)) {
                 members.set(i, member);
             }
         }
+        if (leader.equals(member)) {
+            leader = member;
+        }
+    }
+
+    // party slot, the client places the member's town door on the slot-th door portal.
+    public int getMemberIndex(int id) {
+        for (int i = 0; i < members.size(); i++) {
+            if (members.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public MaplePartyCharacter getMemberById(int id) {
@@ -119,6 +131,23 @@ public class MapleParty {
 
         public MaplePartyCharacter() {
             this.name = "";
+        }
+
+        // members are rebuilt from the character on every update, compare by character id.
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof MaplePartyCharacter)) {
+                return false;
+            }
+            return this.id == ((MaplePartyCharacter) obj).id;
+        }
+
+        @Override
+        public int hashCode() {
+            return Integer.hashCode(this.id);
         }
 
         public boolean isOnline() {

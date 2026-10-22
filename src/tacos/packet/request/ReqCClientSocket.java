@@ -246,10 +246,6 @@ public class ReqCClientSocket {
                     chr.updateMapById(chr.getPosMap(), chr.getPortal());
                 }
                 client.getChannelServer().getOnlinePlayers().add(chr);
-                // group            
-                if (chr.getParty() != null) {
-                    client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
-                }
                 // friend
                 chr.setOnlineFriends();
                 chr.notityOnlineToFriends(true);
@@ -271,6 +267,10 @@ public class ReqCClientSocket {
                 }
 
                 chr.sendSetField(true);
+                // group, JMS147 crashes on LP_PartyResult before the field is set.
+                if (chr.getParty() != null) {
+                    client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+                }
                 if (Region.CMS.check()) {
                     // CMS causes crash without sending this packet when you use npc talk's avatar change.
                     chr.SendPacket(ResCWvsContext.CharacterCash(chr));

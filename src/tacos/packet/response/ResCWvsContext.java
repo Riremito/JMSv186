@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleQuestStatus;
+import tacos.server.map.object.TacosMysticDoor;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosCharacter.MapleMount;
@@ -890,16 +891,20 @@ public class ResCWvsContext {
     public static ServerPacket PartyResult(OpsParty ops, TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
-        MapleParty party = chr.getParty();
-        int forChannel = chr.getChannelId();
+        // chr is null for the result messages without data.
+        MapleParty party = (chr != null) ? chr.getParty() : null;
+        int forChannel = (chr != null) ? chr.getChannelId() : 0;
         sp.Encode1(ops.get());
 
         switch (ops) {
             case PartyReq_InviteParty: {
                 sp.Encode4(party.getId());
                 sp.EncodeStr(chr.getName());
-                sp.Encode4(chr.getLevel());
-                sp.Encode4(chr.getJob(), Config.GreaterOrEqual(Region.JMS, 186));
+                // JMS147 and JMS164 read the auto join flag right after the name.
+                if (!Config.LessOrEqual(Region.JMS, 165)) {
+                    sp.Encode4(chr.getLevel());
+                    sp.Encode4(chr.getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 95));
+                }
                 sp.Encode1(0); // auto join.
                 break;
             }
@@ -909,10 +914,13 @@ public class ResCWvsContext {
                 break;
             }
             case PartyRes_CreateNewParty_Done: {
+                TacosMysticDoor door = chr.getDoorField();
                 sp.Encode4(party.getId());
-                sp.Encode4(999999999);
-                sp.Encode4(999999999);
-                sp.Encode8(0);
+                sp.Encode4((door != null) ? door.getTownMapId() : 999999999); // m_dwTownID
+                sp.Encode4((door != null) ? door.getFieldMapId() : 999999999); // m_dwFieldID
+                sp.Encode4((door != null) ? door.getSkillId() : 0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)); // m_nSKillID
+                sp.Encode2((door != null) ? door.getFieldX() : 0); // m_ptFieldPortal.x
+                sp.Encode2((door != null) ? door.getFieldY() : 0); // m_ptFieldPortal.y
                 break;
             }
             case PartyRes_CreateNewParty_AlreayJoined: {
@@ -1088,13 +1096,15 @@ public class ResCWvsContext {
                 data.Encode4(partychar.getChannel() == forchannel ? partychar.getMapid() : 0);
             }
         }
-        // aTownPortal : mystic doors are not coded.
-        for (int i = 0; i < partymembers.size(); i++) {
-            data.Encode4(999999999); // m_dwTownID
-            data.Encode4(999999999); // m_dwFieldID
-            data.Encode4(0); // m_nSKillID
-            data.Encode4(-1); // m_ptFieldPortal.x
-            data.Encode4(-1); // m_ptFieldPortal.y
+        // aTownPortal : the client draws the town door of the i-th member on the i-th door portal of the town.
+        for (MaplePartyCharacter partychar : partymembers) {
+            TacosCharacter member = (partychar.getId() != 0 && partychar.isOnline()) ? TacosWorld.find(0).findOnlinePlayerById(partychar.getId()) : null;
+            TacosMysticDoor door = (member != null) ? member.getDoorField() : null;
+            data.Encode4((door != null) ? door.getTownMapId() : 999999999); // m_dwTownID
+            data.Encode4((door != null) ? door.getFieldMapId() : 999999999); // m_dwFieldID
+            data.Encode4((door != null) ? door.getSkillId() : 0); // m_nSKillID
+            data.Encode4((door != null) ? door.getFieldX() : -1); // m_ptFieldPortal.x
+            data.Encode4((door != null) ? door.getFieldY() : -1); // m_ptFieldPortal.y
         }
         // JMS187, GMS95
         if (Config.PostBB()) {

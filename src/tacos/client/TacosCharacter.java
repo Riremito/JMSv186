@@ -1363,9 +1363,7 @@ public class TacosCharacter extends TacosPlayer {
             DebugLogger.ErrorLog("addDoor : map_town is null.");
             return false;
         }
-        door_field_.setTownPortal(this.map.getPortal(0));
-
-        TacosPortal portal_town = door_field_.getFreePortal(map_town);
+        TacosPortal portal_town = TacosMysticDoor.getTownPortal(map_town, getDoorSlot());
         if (portal_town == null) {
             SendPacket(ResCTownPortalPool.TownPortal(null));
             DebugLogger.ErrorLog("addDoor : portal_town is null.");
@@ -1386,7 +1384,17 @@ public class TacosCharacter extends TacosPlayer {
         setDoorTown(door_town_);
         map_town.addDoor(door_town_);
         door_town_.setState(1);
+        // party members get the door from PARTYDATA::aTownPortal.
+        silentPartyUpdate();
         return true;
+    }
+
+    // index of the town door portal, the party slot or 0 when solo.
+    public int getDoorSlot() {
+        if (this.party == null) {
+            return 0;
+        }
+        return Math.max(0, this.party.getMemberIndex(getId()));
     }
 
     public void removeDoor() {
@@ -1774,6 +1782,7 @@ public class TacosCharacter extends TacosPlayer {
         if (getDoorField() != null) {
             if (getDoorField().getTimeCreated() + getDoorField().getTime() <= time_current) {
                 removeDoor();
+                silentPartyUpdate();
             }
         }
         // fishing.

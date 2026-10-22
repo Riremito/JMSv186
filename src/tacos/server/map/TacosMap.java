@@ -276,9 +276,15 @@ public class TacosMap extends TacosMapData {
         }
         chr.silentPartyUpdate();
         chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
-        chr.updatePartyMemberHP();
-        chr.receivePartyMemberHP();
         return true;
+    }
+
+    // LP_UserHP is ignored until the remote user is created, send it after UserEnterField.
+    private void sendPartyHP(TacosCharacter to, TacosCharacter from) {
+        if (to.getParty() == null || from.getParty() == null || to.getParty().getId() != from.getParty().getId()) {
+            return;
+        }
+        to.SendPacket(ResCUserRemote.UserHP(from.getId(), from.getStat().getHp(), from.getStat().getCurrentMaxHp()));
     }
 
     public boolean sendExpedition(TacosCharacter chr, TacosMonster monster) {
@@ -427,6 +433,9 @@ public class TacosMap extends TacosMapData {
                 if (player.getSkillPet() != null) {
                     chr.SendPacket(ResCUser_SkillPet.SkillPetTransferField(player.getSkillPet()));
                 }
+                // party hp
+                sendPartyHP(chr, player);
+                sendPartyHP(player, chr);
             }
         }
         // mob
@@ -568,6 +577,8 @@ public class TacosMap extends TacosMapData {
                 for (TacosSummon summon : player.getSummons()) {
                     chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
+                sendPartyHP(chr, player);
+                sendPartyHP(player, chr);
             }
             if (area_states.get(player_number) == MapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
