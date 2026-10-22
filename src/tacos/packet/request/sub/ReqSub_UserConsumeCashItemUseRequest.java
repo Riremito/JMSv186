@@ -467,7 +467,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 byte ear = cp.Decode1();
 
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.MEGAPHONE_TRIPLE, PB_BroadcastMsg.builder().chr(chr).ear(ear).messages(messages).build()));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ARTSPEAKERWORLD, PB_BroadcastMsg.builder().chr(chr).ear(ear).messages(messages).build()));
                 return true;
             }
             default: {

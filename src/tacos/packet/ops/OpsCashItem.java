@@ -223,16 +223,13 @@ public enum OpsCashItem implements IPacketOps {
     CashItemRes_CashItemGachapon_Done(193),
     UNKNOWN;
 
-    private final int gms95;
     private int value;
 
     OpsCashItem(int val) {
-        this.gms95 = val;
         this.value = val;
     }
 
     OpsCashItem() {
-        this.gms95 = -1;
         this.value = -1;
     }
 
@@ -255,17 +252,18 @@ public enum OpsCashItem implements IPacketOps {
         return UNKNOWN;
     }
 
-    public static void init() {
+    public static void clear() {
         for (OpsCashItem ops : values()) {
-            ops.set(ops.gms95);
+            ops.set(UNKNOWN.get());
         }
+    }
+
+    public static void init() {
         if (!Region.JMS.check()) {
             return;
         }
         // JMS v186 (CCashShop::OnCashItemResult), others are not used.
-        for (OpsCashItem ops : values()) {
-            ops.set(UNKNOWN.get());
-        }
+        clear();
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);
         CashItemReq_SetWish.set(5);

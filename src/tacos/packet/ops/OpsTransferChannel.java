@@ -26,15 +26,17 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTransferChannel implements IPacketOps {
+    // GMS v95
     TC_DONE(0),
     TC_GAMESVR_DISCONNECTED(1),
     TC_SHOPSVR_DISCONNECTED(2),
+    TC_ITCSVR_DISCONNECTED(3),
+    TC_ITCSVR_OVERLIMITUSER(4),
+    TC_ITCSVR_LOWLEVELUSER(5),
+    // added for JMS302
     TC_PVESVR_DISCONNECTED,
     TC_USER_NOTACTIVEACCOUNT,
-    TC_ITCSVR_DISCONNECTED,
-    TC_ITCSVR_OVERLIMITUSER,
     TC_CHANNEL_RESTRICTION,
-    TC_ITCSVR_LOWLEVELUSER,
     UNKNOWN;
 
     private int value;
@@ -67,8 +69,15 @@ public enum OpsTransferChannel implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsTransferChannel ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            clear();
             TC_DONE.set(0);
             TC_GAMESVR_DISCONNECTED.set(1);
             TC_SHOPSVR_DISCONNECTED.set(2);

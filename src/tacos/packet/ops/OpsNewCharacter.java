@@ -26,24 +26,24 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsNewCharacter {
-    // JMS v186, BB前は多分順番固定
-    KnightsOfCygnus(0),
+    // GMS v95 (JMS v188), 左上から右下に向かって連番 (デュアルブレイドは除外)
+    Resistance(0), // レジスタンス
     Adventurers(1), // 冒険家
-    DualBlade(1), // デュアルブレイド (冒険家と同じ値)
-    Aran(2), // アラン
-    Evan(3), // エヴァン
-    // BB後, 順番入れ替わる
-    Resistance(-1), // レジスタンス
-    CannonShooter(-1), // キャノンシューター
-    Hayato(-1), // ハヤト
-    Mercedes(-1), // メルセデス
-    DemonSlayer(-1), // デーモンスレイヤー
-    Phantom(-1), // ファントム
-    Kanna(-1), // カンナ
-    Chivalrous(-1), // 蒼龍侠客
-    Luminous(-1),
-    Kaizer(-1),
-    AngelicBuster(-1),
+    KnightsOfCygnus(2),
+    DualBlade(1), // デュアルブレイド (冒険家と必ず同じ値になる)
+    Aran(3), // アラン
+    Evan(4), // エヴァン
+    // added for later versions
+    CannonShooter, // キャノンシューター
+    Hayato, // ハヤト
+    Mercedes, // メルセデス
+    DemonSlayer, // デーモンスレイヤー
+    Phantom, // ファントム
+    Kanna, // カンナ
+    Chivalrous, // 蒼龍侠客
+    Luminous,
+    Kaizer,
+    AngelicBuster,
     UNKNOWN;
 
     private int value;
@@ -73,17 +73,31 @@ public enum OpsNewCharacter {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsNewCharacter ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
-        if (Config.PostBB()) {
-            // JMS v188, 左上から右下に向かって連番 (デュアルブレイドは除外)
+        // JMS v186, BB前は多分順番固定
+        if (!Config.PostBB()) {
+            clear();
+            KnightsOfCygnus.set(0);
+            Adventurers.set(1);
+            DualBlade.set(1);
+            Aran.set(2);
+            Evan.set(3);
+            return;
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            clear();
             Resistance.set(0);
             Adventurers.set(1);
             KnightsOfCygnus.set(2);
-            DualBlade.set(1); // 冒険家と必ず同じ値になる
+            DualBlade.set(1);
             Aran.set(3);
             Evan.set(4);
-        }
-        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205
@@ -91,14 +105,15 @@ public enum OpsNewCharacter {
             Hayato.set(8); // v301
             Kanna.set(9); // v302
             // v314以降全部作成可能
-        }
-        if (Config.GreaterOrEqual(Region.TWMS, 148)) {
-            Chivalrous.set(10);
-        }
-        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            Luminous.set(10); // v308
-            Kaizer.set(11); // v308
-            AngelicBuster.set(12); // v308
+            if (Config.GreaterOrEqual(Region.TWMS, 148)) {
+                Chivalrous.set(10);
+            }
+            if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
+                Luminous.set(10); // v308
+                Kaizer.set(11); // v308
+                AngelicBuster.set(12); // v308
+            }
+            return;
         }
     }
 

@@ -26,31 +26,32 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsShop implements IPacketOps {
-    ShopReq_Buy,
-    ShopReq_Sell,
-    ShopReq_Recharge,
-    ShopReq_Close,
+    // GMS v95
+    ShopReq_Buy(0),
+    ShopReq_Sell(1),
+    ShopReq_Recharge(2),
+    ShopReq_Close(3),
     // req should be found by find func.
-    ShopRes_BuySuccess,
-    ShopRes_BuyNoStock,
-    ShopRes_BuyNoMoney,
-    ShopRes_BuyUnknown,
-    ShopRes_SellSuccess,
-    ShopRes_SellNoStock,
-    ShopRes_SellIncorrectRequest,
-    ShopRes_SellUnkonwn,
-    ShopRes_RechargeSuccess,
-    ShopRes_RechargeNoStock,
-    ShopRes_RechargeNoMoney,
-    ShopRes_RechargeIncorrectRequest,
-    ShopRes_RechargeUnknown,
-    ShopRes_BuyNoToken,
-    ShopRes_LimitLevel_Less,
-    ShopRes_LimitLevel_More,
-    ShopRes_CantBuyAnymore,
-    ShopRes_TradeBlocked,
-    ShopRes_BuyLimit,
-    ShopRes_ServerMsg,
+    ShopRes_BuySuccess(0),
+    ShopRes_BuyNoStock(1),
+    ShopRes_BuyNoMoney(2),
+    ShopRes_BuyUnknown(3),
+    ShopRes_SellSuccess(4),
+    ShopRes_SellNoStock(5),
+    ShopRes_SellIncorrectRequest(6),
+    ShopRes_SellUnkonwn(7),
+    ShopRes_RechargeSuccess(8),
+    ShopRes_RechargeNoStock(9),
+    ShopRes_RechargeNoMoney(10),
+    ShopRes_RechargeIncorrectRequest(11),
+    ShopRes_RechargeUnknown(12),
+    ShopRes_BuyNoToken(13),
+    ShopRes_LimitLevel_Less(14),
+    ShopRes_LimitLevel_More(15),
+    ShopRes_CantBuyAnymore(16),
+    ShopRes_TradeBlocked(17),
+    ShopRes_BuyLimit(18),
+    ShopRes_ServerMsg(19),
     UNKNOWN;
 
     private int value;
@@ -82,8 +83,15 @@ public enum OpsShop implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsShop ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -103,6 +111,7 @@ public enum OpsShop implements IPacketOps {
             return;
         }
         if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            clear();
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -129,6 +138,7 @@ public enum OpsShop implements IPacketOps {
             return;
         }
         if (Config.GreaterOrEqual(Region.JMS, 194)) {
+            clear();
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -158,6 +168,7 @@ public enum OpsShop implements IPacketOps {
             return;
         }
         if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            clear();
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -178,6 +189,7 @@ public enum OpsShop implements IPacketOps {
             return;
         }
         if (Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 91)) {
+            clear();
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -195,25 +207,28 @@ public enum OpsShop implements IPacketOps {
             ShopRes_RechargeNoMoney.set(10);
             ShopRes_RechargeUnknown.set(11);
             return;
+        }        // JMS186 (Pre-BB)
+        if (!Config.PostBB()) {
+            clear();
+            ShopReq_Buy.set(0);
+            ShopReq_Sell.set(1);
+            ShopReq_Recharge.set(2);
+            ShopReq_Close.set(4);
+            ShopRes_BuySuccess.set(0);
+            ShopRes_BuyNoStock.set(1);
+            ShopRes_BuyNoMoney.set(2);
+            ShopRes_BuyUnknown.set(3);
+            ShopRes_SellSuccess.set(4);
+            ShopRes_SellNoStock.set(5);
+            ShopRes_SellIncorrectRequest.set(6);
+            ShopRes_SellUnkonwn.set(7);
+            ShopRes_RechargeSuccess.set(8);
+            ShopRes_RechargeNoStock.set(9);
+            ShopRes_RechargeNoMoney.set(10);
+            ShopRes_RechargeIncorrectRequest.set(11);
+            ShopRes_RechargeUnknown.set(12);
+            return;
         }
-        // JMS186
-        ShopReq_Buy.set(0);
-        ShopReq_Sell.set(1);
-        ShopReq_Recharge.set(2);
-        ShopReq_Close.set(4);
-        ShopRes_BuySuccess.set(0);
-        ShopRes_BuyNoStock.set(1);
-        ShopRes_BuyNoMoney.set(2);
-        ShopRes_BuyUnknown.set(3);
-        ShopRes_SellSuccess.set(4);
-        ShopRes_SellNoStock.set(5);
-        ShopRes_SellIncorrectRequest.set(6);
-        ShopRes_SellUnkonwn.set(7);
-        ShopRes_RechargeSuccess.set(8);
-        ShopRes_RechargeNoStock.set(9);
-        ShopRes_RechargeNoMoney.set(10);
-        ShopRes_RechargeIncorrectRequest.set(11);
-        ShopRes_RechargeUnknown.set(12);
-        return;
+        // GMS95
     }
 }

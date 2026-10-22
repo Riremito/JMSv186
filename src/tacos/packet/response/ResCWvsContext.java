@@ -1295,7 +1295,7 @@ public class ResCWvsContext {
                 }
                 break;
             }
-            case MEGAPHONE_TRIPLE: // 5077000, 三連拡声器
+            case BM_ARTSPEAKERWORLD: // 5077000, 三連拡声器
             {
                 String name = pb.chr.getPlayerNameWithMedal();
                 int channel = pb.chr.getClient().getChannelId() - 1;

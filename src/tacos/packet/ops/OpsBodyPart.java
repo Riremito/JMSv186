@@ -18,6 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
@@ -45,8 +47,7 @@ public enum OpsBodyPart {
     BP_TAMINGMOB(18),
     BP_SADDLE(19),
     BP_MOBEQUIP(20),
-    BP_MEDAL(21),
-    //BP_PETRING_LABEL(0x15),
+    BP_PETRING_LABEL(21),
     BP_PETABIL_ITEM(22),
     BP_PETABIL_MESO(23),
     BP_PETABIL_HPCONSUME(24),
@@ -74,6 +75,7 @@ public enum OpsBodyPart {
     BP_PETABIL_IGNOREITEMS1(46),
     BP_PETABIL_IGNOREITEMS2(47),
     BP_PETABIL_IGNOREITEMS3(48),
+    BP_MEDAL(49),
     BP_BELT(50),
     BP_SHOULDER(51),
     BP_NOTHING3(54),
@@ -126,6 +128,45 @@ public enum OpsBodyPart {
 
     public short getSlot() {
         return (short) -value;
+    }
+
+    public void set(int val) {
+        value = val;
+    }
+
+    public static void clear() {
+        for (OpsBodyPart ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
+    public static void init() {
+        if (Region.JMS.check()) {
+            clear();
+            BP_HAIR.set(0);
+            BP_CAP.set(1);
+            BP_FACEACC.set(2);
+            BP_EYEACC.set(3);
+            BP_EARACC.set(4);
+            BP_CLOTHES.set(5);
+            BP_PANTS.set(6);
+            BP_SHOES.set(7);
+            BP_GLOVES.set(8);
+            BP_CAPE.set(9);
+            BP_SHIELD.set(10);
+            BP_WEAPON.set(11);
+            BP_RING1.set(12);
+            BP_RING2.set(13);
+            BP_PETWEAR.set(14);
+            BP_RING3.set(15);
+            BP_RING4.set(16);
+            BP_PENDANT.set(17);
+            BP_TAMINGMOB.set(18);
+            BP_SADDLE.set(19);
+            BP_MOBEQUIP.set(20);
+            BP_MEDAL.set(21);
+            return;
+        }
     }
 
     public static OpsBodyPart find(int val) {

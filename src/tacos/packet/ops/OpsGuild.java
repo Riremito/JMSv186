@@ -19,6 +19,7 @@
 package tacos.packet.ops;
 
 import tacos.config.Config;
+import tacos.config.Region;
 
 /**
  *
@@ -111,16 +112,13 @@ public enum OpsGuild implements IPacketOps {
     GuildRes_ServerMsg(82),
     UNKNOWN;
 
-    private final int gms95;
     private int value;
 
     OpsGuild(int val) {
-        this.gms95 = val;
         this.value = val;
     }
 
     OpsGuild() {
-        this.gms95 = -1;
         this.value = -1;
     }
 
@@ -143,19 +141,98 @@ public enum OpsGuild implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsGuild ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.PostBB()) {
             return;
         }
         // JMS v186 : no ShowGuildRanking/SetSkill requests and no SetMemberCommitment_Done.
-        for (OpsGuild ops : values()) {
-            if (ops == GuildReq_ShowGuildRanking || ops == GuildReq_SetSkill || ops == GuildRes_SetMemberCommitment_Done || ops == GuildRes_SetSkill_Done || ops == GuildRes_ServerMsg) {
-                ops.set(UNKNOWN.get());
-            } else if (GuildRes_LoadGuild_Done.ordinal() <= ops.ordinal() && ops.ordinal() < GuildRes_SetMemberCommitment_Done.ordinal()) {
-                ops.set(ops.gms95 - 2);
-            } else if (GuildRes_SetMemberCommitment_Done.ordinal() < ops.ordinal() && ops != UNKNOWN) {
-                ops.set(ops.gms95 - 3);
-            }
+        if (Region.JMS.check()) {
+            clear();
+            GuildReq_LoadGuild.set(0);
+            GuildReq_InputGuildName.set(1);
+            GuildReq_CheckGuildName.set(2);
+            GuildReq_CreateGuildAgree.set(3);
+            GuildReq_CreateNewGuild.set(4);
+            GuildReq_InviteGuild.set(5);
+            GuildReq_JoinGuild.set(6);
+            GuildReq_WithdrawGuild.set(7);
+            GuildReq_KickGuild.set(8);
+            GuildReq_RemoveGuild.set(9);
+            GuildReq_IncMaxMemberNum.set(10);
+            GuildReq_ChangeLevel.set(11);
+            GuildReq_ChangeJob.set(12);
+            GuildReq_SetGradeName.set(13);
+            GuildReq_SetMemberGrade.set(14);
+            GuildReq_SetMark.set(15);
+            GuildReq_SetNotice.set(16);
+            GuildReq_InputMark.set(17);
+            GuildReq_CheckQuestWaiting.set(18);
+            GuildReq_CheckQuestWaiting2.set(19);
+            GuildReq_InsertQuestWaiting.set(20);
+            GuildReq_CancelQuestWaiting.set(21);
+            GuildReq_RemoveQuestCompleteGuild.set(22);
+            GuildReq_IncPoint.set(23);
+            GuildReq_IncCommitment.set(24);
+            GuildReq_SetQuestTime.set(25);
+            GuildRes_LoadGuild_Done.set(26);
+            GuildRes_CheckGuildName_Available.set(27);
+            GuildRes_CheckGuildName_AlreadyUsed.set(28);
+            GuildRes_CheckGuildName_Unknown.set(29);
+            GuildRes_CreateGuildAgree_Reply.set(30);
+            GuildRes_CreateGuildAgree_Unknown.set(31);
+            GuildRes_CreateNewGuild_Done.set(32);
+            GuildRes_CreateNewGuild_AlreayJoined.set(33);
+            GuildRes_CreateNewGuild_GuildNameAlreayExist.set(34);
+            GuildRes_CreateNewGuild_Beginner.set(35);
+            GuildRes_CreateNewGuild_Disagree.set(36);
+            GuildRes_CreateNewGuild_NotFullParty.set(37);
+            GuildRes_CreateNewGuild_Unknown.set(38);
+            GuildRes_JoinGuild_Done.set(39);
+            GuildRes_JoinGuild_AlreadyJoined.set(40);
+            GuildRes_JoinGuild_AlreadyFull.set(41);
+            GuildRes_JoinGuild_UnknownUser.set(42);
+            GuildRes_JoinGuild_Unknown.set(43);
+            GuildRes_WithdrawGuild_Done.set(44);
+            GuildRes_WithdrawGuild_NotJoined.set(45);
+            GuildRes_WithdrawGuild_Unknown.set(46);
+            GuildRes_KickGuild_Done.set(47);
+            GuildRes_KickGuild_NotJoined.set(48);
+            GuildRes_KickGuild_Unknown.set(49);
+            GuildRes_RemoveGuild_Done.set(50);
+            GuildRes_RemoveGuild_NotExist.set(51);
+            GuildRes_RemoveGuild_Unknown.set(52);
+            GuildRes_InviteGuild_BlockedUser.set(53);
+            GuildRes_InviteGuild_AlreadyInvited.set(54);
+            GuildRes_InviteGuild_Rejected.set(55);
+            GuildRes_AdminCannotCreate.set(56);
+            GuildRes_AdminCannotInvite.set(57);
+            GuildRes_IncMaxMemberNum_Done.set(58);
+            GuildRes_IncMaxMemberNum_Unknown.set(59);
+            GuildRes_ChangeLevelOrJob.set(60);
+            GuildRes_NotifyLoginOrLogout.set(61);
+            GuildRes_SetGradeName_Done.set(62);
+            GuildRes_SetGradeName_Unknown.set(63);
+            GuildRes_SetMemberGrade_Done.set(64);
+            GuildRes_SetMemberGrade_Unknown.set(65);
+            GuildRes_SetMark_Done.set(66);
+            GuildRes_SetMark_Unknown.set(67);
+            GuildRes_SetNotice_Done.set(68);
+            GuildRes_InsertQuest.set(69);
+            GuildRes_NoticeQuestWaitingOrder.set(70);
+            GuildRes_SetGuildCanEnterQuest.set(71);
+            GuildRes_IncPoint_Done.set(72);
+            GuildRes_ShowGuildRanking.set(73);
+            GuildRes_GuildQuest_NotEnoughUser.set(74);
+            GuildRes_GuildQuest_RegisterDisconnected.set(75);
+            GuildRes_GuildQuest_NoticeOrder.set(76);
+            GuildRes_Authkey_Update.set(77);
+            return;
         }
     }
 }

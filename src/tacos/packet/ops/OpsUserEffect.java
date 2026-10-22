@@ -35,7 +35,6 @@ public enum OpsUserEffect {
     UserEffect_Quest(5),
     UserEffect_Pet(6),
     UserEffect_SkillSpecial(7),
-    UserEffect_Resist(-1),
     UserEffect_ProtectOnDieItemUse(8),
     UserEffect_PlayPortalSE(9),
     UserEffect_JobChanged(10),
@@ -58,16 +57,17 @@ public enum OpsUserEffect {
     UserEffect_PlaySoundWithMuteBGM(27),
     UserEffect_SoulStoneUse(28),
     UserEffect_IncDecHPEffect_EX(29),
-    UserEffect_IncDecHPRegenEffect(-1),
     UserEffect_DeliveryQuestItemUse(30),
     UserEffect_RepeatEffectRemove(31),
     UserEffect_EvolRing(32),
-    UserEffect_PvPRage(-1),
-    UserEffect_PvPChampion(-1),
-    UserEffect_PvPGradeUp(-1),
-    UserEffect_PvPRevive(-1),
-    // For THMS v87
-    UserEffect_UNK_1(-1),
+    // added for other versions
+    UserEffect_Resist,
+    UserEffect_IncDecHPRegenEffect,
+    UserEffect_PvPRage,
+    UserEffect_PvPChampion,
+    UserEffect_PvPGradeUp,
+    UserEffect_PvPRevive,
+    UserEffect_UNK_1, // For THMS v87
     UNKNOWN;
 
     private int value;

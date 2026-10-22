@@ -187,6 +187,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
         }
         // JMS v186, JMS v187
         if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            clear();
             MRP_Create.set(0);
             MRP_CreateResult.set(1);
             MRP_Invite.set(2);
@@ -199,16 +200,9 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             MRP_Avatar.set(9);
             MRP_Leave.set(10);
             MRP_Balloon.set(11);
-            MRP_NotAvailableField.set(0);
-            MRP_FreeMarketClip.set(0);
-            MRP_CheckSSN2.set(0);
             TRP_PutItem.set(13);
             TRP_PutMoney.set(14);
             TRP_Trade.set(15);
-            TRP_UnTrade.set(0);
-            TRP_MoveItemToInventory.set(0);
-            TRP_ItemCRC.set(0);
-            TRP_LimitFail.set(0);
             PSP_PutItem.set(19);
             PSP_BuyItem.set(20);
             PSP_BuyResult.set(21);
@@ -260,6 +254,29 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             return;
         }
         if (Config.LessOrEqual(Region.GMS, 83)) {
+            clear();
+            MRP_Create.set(0);
+            MRP_CreateResult.set(1);
+            MRP_Invite.set(2);
+            MRP_InviteResult.set(3);
+            MRP_Enter.set(4);
+            MRP_EnterResult.set(5);
+            MRP_Chat.set(6);
+            MRP_GameMessage.set(7);
+            MRP_UserChat.set(8);
+            MRP_Avatar.set(9);
+            MRP_Leave.set(10);
+            MRP_Balloon.set(11);
+            MRP_NotAvailableField.set(12);
+            MRP_FreeMarketClip.set(13);
+            MRP_CheckSSN2.set(14);
+            TRP_PutItem.set(15);
+            TRP_PutMoney.set(16);
+            TRP_Trade.set(17);
+            TRP_UnTrade.set(18);
+            TRP_MoveItemToInventory.set(19);
+            TRP_ItemCRC.set(20);
+            TRP_LimitFail.set(21);
             PSP_PutItem.set(22);
             PSP_BuyItem.set(23);
             PSP_BuyResult.set(24);
@@ -283,6 +300,31 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_WithdrawAllResult.set(42);
             ESP_WithdrawMoney.set(43);
             ESP_WithdrawMoneyResult.set(44);
+            ESP_AdminChangeTitle.set(45);
+            ESP_DeliverVisitList.set(46);
+            ESP_DeliverBlackList.set(47);
+            ESP_AddBlackList.set(48);
+            ESP_DeleteBlackList.set(49);
+            MGRP_TieRequest.set(50);
+            MGRP_TieResult.set(51);
+            MGRP_GiveUpRequest.set(52);
+            MGRP_GiveUpResult.set(53);
+            MGRP_RetreatRequest.set(54);
+            MGRP_RetreatResult.set(55);
+            MGRP_LeaveEngage.set(56);
+            MGRP_LeaveEngageCancel.set(57);
+            MGRP_Ready.set(58);
+            MGRP_CancelReady.set(59);
+            MGRP_Ban.set(60);
+            MGRP_Start.set(61);
+            MGRP_GameResult.set(62);
+            MGRP_TimeOver.set(63);
+            ORP_PutStoneChecker.set(64);
+            ORP_InvalidStonePosition.set(65);
+            ORP_InvalidStonePosition_Normal.set(66);
+            ORP_InvalidStonePosition_By33.set(67);
+            MGP_TurnUpCard.set(68);
+            MGP_MatchCard.set(69);
             return;
         }
     }

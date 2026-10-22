@@ -18,18 +18,22 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
  */
 public enum OpsChatGroup implements IPacketOps {
+    // GMS v95
     CG_Friend(0),
     CG_Party(1),
     CG_Guild(2),
-    CG_Alliance(3), // JMS147 OK
-    CG_Couple(-1),
-    CG_ToCouple(-1),
-    CG_Expedition(4), // JMS186-302 OK
+    CG_Alliance(3),
+    CG_Couple(4),
+    CG_ToCouple(5),
+    CG_Expedition(6),
     UNKNOWN;
 
     private int value;
@@ -61,8 +65,23 @@ public enum OpsChatGroup implements IPacketOps {
         return UNKNOWN;
     }
 
-    public static void init() {
-
+    public static void clear() {
+        for (OpsChatGroup ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
     }
 
+    public static void init() {
+        if (Region.JMS.check()) {
+            clear();
+            CG_Friend.set(0);
+            CG_Party.set(1);
+            CG_Guild.set(2);
+            CG_Alliance.set(3); // JMS147 OK
+            if (Config.GreaterOrEqual(Region.JMS, 186)) {
+                CG_Expedition.set(4); // JMS186-302 OK
+            }
+            return;
+        }
+    }
 }

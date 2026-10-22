@@ -51,8 +51,11 @@ public class PacketOps {
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
         OpsMRLeave.init();
+        OpsBodyPart.init();
         OpsUI.init();
         OpsMoveAbility.init();
         OpsGuild.init();
+        OpsParty.init();
+        OpsChatGroup.init();
     }
 }

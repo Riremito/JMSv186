@@ -26,7 +26,7 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMessage {
-    // v186
+    // GMS v95
     MS_DropPickUpMessage(0),
     MS_QuestRecordMessage(1),
     MS_CashItemExpireMessage(2),
@@ -35,7 +35,6 @@ public enum OpsMessage {
     MS_IncPOPMessage(5),
     MS_IncMoneyMessage(6),
     MS_IncGPMessage(7),
-    MS_IncCommitmentMessage(-1),
     MS_GiveBuffMessage(8),
     MS_GeneralItemExpireMessage(9),
     MS_SystemMessage(10),
@@ -43,11 +42,21 @@ public enum OpsMessage {
     MS_ItemProtectExpireMessage(12),
     MS_ItemExpireReplaceMessage(13),
     MS_SkillExpireMessage(14),
-    MS_JMS_Pachinko(15),
+    // added for later versions
+    MS_IncCommitmentMessage,
+    // added for JMS
+    MS_JMS_Pachinko,
     UNKNOWN;
+
+    public static void clear() {
+        for (OpsMessage ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
 
     public static void init() {
         if (Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -61,6 +70,7 @@ public enum OpsMessage {
             return;
         }
         if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.GMS, 83)) {
+            clear();
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -75,11 +85,10 @@ public enum OpsMessage {
             OpsMessage.MS_ItemProtectExpireMessage.set(11);
             OpsMessage.MS_ItemExpireReplaceMessage.set(12);
             OpsMessage.MS_SkillExpireMessage.set(13);
-            OpsMessage.MS_IncGPMessage.set(-1);
-            OpsMessage.MS_JMS_Pachinko.set(-1);
             return;
         }
         if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 76)) {
+            clear();
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -97,6 +106,27 @@ public enum OpsMessage {
             OpsMessage.MS_ItemExpireReplaceMessage.set(14);
             OpsMessage.MS_SkillExpireMessage.set(15);
             OpsMessage.MS_JMS_Pachinko.set(16);
+            return;
+        }
+        // JMS v186
+        if (Region.JMS.check()) {
+            clear();
+            OpsMessage.MS_DropPickUpMessage.set(0);
+            OpsMessage.MS_QuestRecordMessage.set(1);
+            OpsMessage.MS_CashItemExpireMessage.set(2);
+            OpsMessage.MS_IncEXPMessage.set(3);
+            OpsMessage.MS_IncSPMessage.set(4);
+            OpsMessage.MS_IncPOPMessage.set(5);
+            OpsMessage.MS_IncMoneyMessage.set(6);
+            OpsMessage.MS_IncGPMessage.set(7);
+            OpsMessage.MS_GiveBuffMessage.set(8);
+            OpsMessage.MS_GeneralItemExpireMessage.set(9);
+            OpsMessage.MS_SystemMessage.set(10);
+            OpsMessage.MS_QuestRecordExMessage.set(11);
+            OpsMessage.MS_ItemProtectExpireMessage.set(12);
+            OpsMessage.MS_ItemExpireReplaceMessage.set(13);
+            OpsMessage.MS_SkillExpireMessage.set(14);
+            OpsMessage.MS_JMS_Pachinko.set(15);
             return;
         }
     }

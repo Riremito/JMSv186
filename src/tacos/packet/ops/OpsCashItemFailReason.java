@@ -98,16 +98,13 @@ public enum OpsCashItemFailReason implements IPacketOps {
     CashItemFailReason_CashLock(69),
     UNKNOWN;
 
-    private final int gms95;
     private int value;
 
     OpsCashItemFailReason(int val) {
-        this.gms95 = val;
         this.value = val;
     }
 
     OpsCashItemFailReason() {
-        this.gms95 = -1;
         this.value = -1;
     }
 
@@ -130,17 +127,18 @@ public enum OpsCashItemFailReason implements IPacketOps {
         return UNKNOWN;
     }
 
-    public static void init() {
+    public static void clear() {
         for (OpsCashItemFailReason ops : values()) {
-            ops.set(ops.gms95);
+            ops.set(UNKNOWN.get());
         }
+    }
+
+    public static void init() {
         if (!Region.JMS.check()) {
             return;
         }
         // JMS v186
-        for (OpsCashItemFailReason ops : values()) {
-            ops.set(UNKNOWN.get());
-        }
+        clear();
         CashItemFailReason_Timeout.set(178);
         CashItemFailReason_NoRemainCash.set(180);
         CashItemFailReason_GiftUnderAge.set(181);

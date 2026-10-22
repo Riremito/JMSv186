@@ -26,20 +26,22 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTransferField implements IPacketOps {
+    // GMS v95
     TF_DONE(0),
     TF_DISABLED_PORTAL(1),
     TF_NOT_CONNECTED_AREA(2),
     TF_NOT_ALLOWED_LEVEL(3),
     TF_NOT_ALLOWED_LEVEL_ITEM(4),
-    TF_NOT_ALLOWED_LEVEL_MD,
+    TF_NOT_ALLOWED_LEVEL_MD(5),
+    TF_PARTY_ONLY(6),
+    TF_EXPEDITION_ONLY(7),
+    TF_NOT_AVAILABLE_SHOP(8),
+    // added for JMS302
     TF_NOT_ALLOWED_LEVEL_FOR_ASWAN,
-    TF_PARTY_ONLY,
     TF_PARTYBOSS_ONLY,
     TF_PARTYMEMBER_MIA,
-    TF_EXPEDITION_ONLY,
     TF_DISABLE_INDUN,
     TF_DISABLE_INDUN_ENTERTIME,
-    TF_NOT_AVAILABLE_SHOP,
     UNKNOWN;
 
     private int value;
@@ -71,8 +73,15 @@ public enum OpsTransferField implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsTransferField ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            clear();
             TF_DONE.set(0);
             TF_DISABLED_PORTAL.set(1);
             TF_NOT_CONNECTED_AREA.set(2);

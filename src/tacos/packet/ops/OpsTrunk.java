@@ -26,31 +26,32 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTrunk implements IPacketOps {
-    TrunkReq_Load,
-    TrunkReq_Save,
-    TrunkReq_Close,
-    TrunkReq_CheckSSN2,
-    TrunkReq_GetItem,
-    TrunkReq_PutItem,
-    TrunkReq_SortItem,
-    TrunkReq_Money,
-    TrunkReq_CloseDialog,
-    TrunkRes_GetSuccess,
-    TrunkRes_GetUnknown,
-    TrunkRes_GetNoMoney,
-    TrunkRes_GetHavingOnlyItem, // lol
-    TrunkRes_PutSuccess,
-    TrunkRes_PutIncorrectRequest,
-    TrunkRes_SortItem,
-    TrunkRes_PutNoMoney,
-    TrunkRes_PutNoSpace,
-    TrunkRes_PutUnknown,
-    TrunkRes_MoneySuccess,
-    TrunkRes_MoneyUnknown,
-    TrunkRes_TrunkCheckSSN2,
-    TrunkRes_OpenTrunkDlg,
-    TrunkRes_TradeBlocked,
-    TrunkRes_ServerMsg,
+    // GMS v95
+    TrunkReq_Load(0),
+    TrunkReq_Save(1),
+    TrunkReq_Close(2),
+    TrunkReq_CheckSSN2(3),
+    TrunkReq_GetItem(4),
+    TrunkReq_PutItem(5),
+    TrunkReq_SortItem(6),
+    TrunkReq_Money(7),
+    TrunkReq_CloseDialog(8),
+    TrunkRes_GetSuccess(9),
+    TrunkRes_GetUnknown(10),
+    TrunkRes_GetNoMoney(11),
+    TrunkRes_GetHavingOnlyItem(12), // TruncRes_GetHavingOnlyItem (typo in the client)
+    TrunkRes_PutSuccess(13),
+    TrunkRes_PutIncorrectRequest(14),
+    TrunkRes_SortItem(15),
+    TrunkRes_PutNoMoney(16),
+    TrunkRes_PutNoSpace(17),
+    TrunkRes_PutUnknown(18),
+    TrunkRes_MoneySuccess(19),
+    TrunkRes_MoneyUnknown(20),
+    TrunkRes_TrunkCheckSSN2(21),
+    TrunkRes_OpenTrunkDlg(22),
+    TrunkRes_TradeBlocked(23),
+    TrunkRes_ServerMsg(24),
     UNKNOWN;
 
     private int value;
@@ -88,13 +89,21 @@ public enum OpsTrunk implements IPacketOps {
         }
     }
 
+    public static void clear() {
+        for (OpsTrunk ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.LessOrEqual(Region.KMS, 43)) {
+            clear();
             reset();
             TrunkRes_OpenTrunkDlg.set(19);
             return;
         }
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            clear();
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -119,6 +128,7 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
         if (Config.LessOrEqual(Region.JMS, 131)) {
+            clear();
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -141,6 +151,7 @@ public enum OpsTrunk implements IPacketOps {
         }
 
         if (Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -166,6 +177,7 @@ public enum OpsTrunk implements IPacketOps {
         }
 
         if (Config.GreaterOrEqual(Region.CMS, 73)) {
+            clear();
             TrunkReq_Close.set(3);
             TrunkReq_GetItem.set(4);
             TrunkReq_PutItem.set(5);
@@ -186,32 +198,34 @@ public enum OpsTrunk implements IPacketOps {
             TrunkRes_MoneyUnknown.set(20);
             TrunkRes_OpenTrunkDlg.set(22);
             return;
+        }        // JMS186 (Pre-BB)
+        if (!Config.PostBB()) {
+            clear();
+            TrunkReq_Load.set(0);
+            TrunkReq_Save.set(1);
+            TrunkReq_Close.set(2);
+            TrunkReq_GetItem.set(3);
+            TrunkReq_PutItem.set(4);
+            TrunkReq_SortItem.set(5);
+            TrunkReq_Money.set(6);
+            TrunkReq_CloseDialog.set(7);
+            TrunkRes_GetSuccess.set(8);
+            TrunkRes_GetUnknown.set(9);
+            TrunkRes_GetNoMoney.set(10);
+            TrunkRes_GetHavingOnlyItem.set(11);
+            TrunkRes_PutSuccess.set(12);
+            TrunkRes_PutIncorrectRequest.set(13);
+            TrunkRes_SortItem.set(14);
+            TrunkRes_PutNoMoney.set(15);
+            TrunkRes_PutNoSpace.set(16);
+            TrunkRes_PutUnknown.set(17);
+            TrunkRes_MoneySuccess.set(18);
+            TrunkRes_MoneyUnknown.set(19);
+            // unk
+            TrunkRes_OpenTrunkDlg.set(21);
+            return;
         }
-
-        // JMS186
-        TrunkReq_Load.set(0);
-        TrunkReq_Save.set(1);
-        TrunkReq_Close.set(2);
-        TrunkReq_GetItem.set(3);
-        TrunkReq_PutItem.set(4);
-        TrunkReq_SortItem.set(5);
-        TrunkReq_Money.set(6);
-        TrunkReq_CloseDialog.set(7);
-        TrunkRes_GetSuccess.set(8);
-        TrunkRes_GetUnknown.set(9);
-        TrunkRes_GetNoMoney.set(10);
-        TrunkRes_GetHavingOnlyItem.set(11);
-        TrunkRes_PutSuccess.set(12);
-        TrunkRes_PutIncorrectRequest.set(13);
-        TrunkRes_SortItem.set(14);
-        TrunkRes_PutNoMoney.set(15);
-        TrunkRes_PutNoSpace.set(16);
-        TrunkRes_PutUnknown.set(17);
-        TrunkRes_MoneySuccess.set(18);
-        TrunkRes_MoneyUnknown.set(19);
-        // unk
-        TrunkRes_OpenTrunkDlg.set(21);
-        return;
+        // GMS95
     }
 
 }
