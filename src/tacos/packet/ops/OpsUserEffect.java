@@ -201,11 +201,29 @@ public enum OpsUserEffect {
             UserEffect_Quest.set(3);
             UserEffect_Pet.set(4);
             UserEffect_SkillSpecial.set(5);
+            UserEffect_ProtectOnDieItemUse.set(6); // 翡翠のお守り
+            // 7 : 経験値のお守り JMS
             UserEffect_PlayPortalSE.set(8);
             UserEffect_JobChanged.set(9);
             UserEffect_QuestComplete.set(10);
+            UserEffect_IncDecHPEffect.set(11);
             UserEffect_BuffItemEffect.set(12);
+            UserEffect_SquibEffect.set(13);
             UserEffect_MonsterBookCardGet.set(14);
+            UserEffect_LotteryUse.set(15);
+            UserEffect_ItemLevelUp.set(16);
+            UserEffect_ItemMaker.set(17);
+            UserEffect_ExpItemConsumed.set(18);
+            UserEffect_ReservedEffect.set(19);
+            UserEffect_UpgradeTombItemUse.set(20); // 運命の車輪
+            // 21 : DecodeStr (BattlefieldItemUse?)
+            UserEffect_ConsumeEffect.set(22);
+            // 23 : Decode4, Decode4, Decode1
+            UserEffect_AvatarOriented.set(24);
+            UserEffect_IncubatorUse.set(25);
+            UserEffect_PlaySoundWithMuteBGM.set(26);
+            UserEffect_SoulStoneUse.set(27); // 霊魂石
+            UserEffect_IncDecHPEffect_EX.set(28);
             return;
         }
         if (Config.Equal(Region.THMS, 87)) {

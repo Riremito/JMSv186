@@ -137,7 +137,7 @@ public class ResCUserLocal {
     public static ServerPacket showRewardItemAnimation(int itemId, String effect) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(15);
+        sp.Encode1(OpsUserEffect.UserEffect_LotteryUse.get());
         sp.Encode4(itemId);
         sp.Encode1(effect != null && effect.length() > 0 ? 1 : 0);
         if (effect != null && effect.length() > 0) {
@@ -149,23 +149,23 @@ public class ResCUserLocal {
     public static ServerPacket showOwnHpHealed(int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(10); //Type
-        sp.Encode4(amount);
+        sp.Encode1(OpsUserEffect.UserEffect_IncDecHPEffect.get());
+        sp.Encode1(amount);
         return sp;
     }
 
     public static ServerPacket useWheel(byte charmsleft) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(21);
-        sp.Encode8(charmsleft);
+        sp.Encode1(OpsUserEffect.UserEffect_UpgradeTombItemUse.get());
+        sp.Encode1(charmsleft); // remaining count
         return sp;
     }
 
     public static ServerPacket useCharm(byte charmsleft, byte daysleft) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(6);
+        sp.Encode1(OpsUserEffect.UserEffect_ProtectOnDieItemUse.get());
         sp.Encode1(1);
         sp.Encode1(charmsleft);
         sp.Encode1(daysleft);
@@ -175,7 +175,7 @@ public class ResCUserLocal {
     public static ServerPacket ShowWZEffect(String data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(19);
+        sp.Encode1(OpsUserEffect.UserEffect_ReservedEffect.get());
         sp.EncodeStr(data);
         return sp;
     }
@@ -183,9 +183,9 @@ public class ResCUserLocal {
     public static ServerPacket showOwnPetLevelUp(int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.Encode1(4);
-        sp.Encode1(0);
-        sp.Encode4(index); // Pet Index
+        sp.Encode1(OpsUserEffect.UserEffect_Pet.get());
+        sp.Encode1(0); // level up
+        sp.Encode1(index); // pet index
         return sp;
     }
 
