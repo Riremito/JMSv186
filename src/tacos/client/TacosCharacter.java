@@ -19,6 +19,7 @@
 package tacos.client;
 
 import tacos.packet.ops.OpsMRLeave;
+import odin.handling.channel.handler.PachinkoHandler;
 import odin.server.shops.IPlayerShop;
 import tacos.server.map.object.TacosDragon;
 import tacos.wz.WzXML;
@@ -2207,8 +2208,7 @@ public class TacosCharacter extends TacosPlayer {
     private int totalCP;
     private int chair;
     // パチンコ
-    private int beansRange;
-    private int beansNum;
+    private final transient PachinkoHandler.State pachinko = new PachinkoHandler.State();
     // ポータルカウント
     private int portal_count = 1;
     // ペット回復薬
@@ -2217,7 +2217,6 @@ public class TacosCharacter extends TacosPlayer {
     private int pet_auto_cure_item_id = 0;
     private boolean smega;
     private boolean hasTutorialSummon = false;
-    private boolean canSetBeansNum;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleShop shop;
@@ -3522,28 +3521,8 @@ public class TacosCharacter extends TacosPlayer {
         SendPacket(ResCWvsContext.PachinkoResult(this));
     }
 
-    public int getBeansRange() {
-        return beansRange;
-    }
-
-    public void setBeansRange(int beansRange) {
-        this.beansRange = beansRange;
-    }
-
-    public int getBeansNum() {
-        return beansNum;
-    }
-
-    public void setBeansNum(int beansNum) {
-        this.beansNum = beansNum;
-    }
-
-    public boolean isCanSetBeansNum() {
-        return canSetBeansNum;
-    }
-
-    public void setCanSetBeansNum(boolean canSetBeansNum) {
-        this.canSetBeansNum = canSetBeansNum;
+    public PachinkoHandler.State getPachinko() {
+        return pachinko;
     }
 
     // 雇用商人

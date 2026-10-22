@@ -1,8 +1,8 @@
 package tacos.packet.response;
 
-import odin.handling.channel.handler.BeanGame.MapleBeans;
+import odin.handling.channel.handler.PachinkoHandler;
 import tacos.client.TacosCharacter;
-import odin.handling.channel.handler.BeanGame;
+import tacos.packet.ops.OpsPachinkoPlay;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -34,7 +34,7 @@ public class Res_JMS_CField_Pachinko {
     public static ServerPacket PachinkoPlay_GoldenDog(byte mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(BeanGame.BeansType.黄金狗.getType());
+        sp.Encode1(OpsPachinkoPlay.PachinkoPlay_GoldenDog.get());
         sp.Encode1(mode); // 改变模式
         return sp;
     }
@@ -43,7 +43,7 @@ public class Res_JMS_CField_Pachinko {
     public static ServerPacket PachinkoPlay_HoleCount(int count, int fast_spin, int blue, int green, int red) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(BeanGame.BeansType.颜色求进洞.getType());
+        sp.Encode1(OpsPachinkoPlay.PachinkoPlay_HoleCount.get());
         sp.Encode1(count);
         sp.Encode1(fast_spin); // 快速转动
         sp.Encode1(blue); // 蓝？
@@ -56,7 +56,7 @@ public class Res_JMS_CField_Pachinko {
     public static ServerPacket PachinkoPlay_Spin(int count, int row1, int row3, int row2, int mob_effect, int win_rate, int fast_spin, boolean hide_effect_a, boolean hide_effect_b) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(BeanGame.BeansType.进洞旋转.getType());
+        sp.Encode1(OpsPachinkoPlay.PachinkoPlay_Spin.get());
         sp.Encode1(count);
         sp.Encode1(row1); // 第一排
         sp.Encode1(row3); // 第三排
@@ -76,7 +76,7 @@ public class Res_JMS_CField_Pachinko {
     public static ServerPacket PachinkoPlay_Reward(boolean type, int count) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(type ? BeanGame.BeansType.奖励豆豆效果.getType() : BeanGame.BeansType.奖励豆豆效果B.getType()); // 05 08 都是加豆豆
+        sp.Encode1(type ? OpsPachinkoPlay.PachinkoPlay_Reward.get() : OpsPachinkoPlay.PachinkoPlay_RewardB.get()); // 05 08 都是加豆豆
         sp.Encode4(count); // 奖励豆豆的数量
         sp.Encode1(5);
         return sp;
@@ -86,18 +86,18 @@ public class Res_JMS_CField_Pachinko {
     public static ServerPacket PachinkoPlay_RewardItem(int item_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(BeanGame.BeansType.领奖NPC.getType());
+        sp.Encode1(OpsPachinkoPlay.PachinkoPlay_RewardItem.get());
         sp.Encode4(item_id);
         return sp;
     }
 
     // LP_JMS_PachinkoPlay : 开始打豆豆
-    public static ServerPacket PachinkoPlay_Start(List<MapleBeans> beansInfo) {
+    public static ServerPacket PachinkoPlay_Start(List<PachinkoHandler.Bean> beansInfo) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoPlay);
 
-        sp.Encode1(BeanGame.BeansType.开始打豆豆.getType());
+        sp.Encode1(OpsPachinkoPlay.PachinkoPlay_Start.get());
         sp.Encode1(beansInfo.size());
-        for (MapleBeans bean : beansInfo) {
+        for (PachinkoHandler.Bean bean : beansInfo) {
             sp.Encode2(bean.getPos());
             sp.Encode1(bean.getType());
             sp.Encode4(bean.getNumber());

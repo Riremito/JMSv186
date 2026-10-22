@@ -22,7 +22,7 @@ import tacos.client.TacosClient;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
-import odin.handling.channel.handler.BeanGame;
+import odin.handling.channel.handler.PachinkoHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsContiMove;
 import tacos.packet.response.ResCField_ContiMove;
@@ -63,7 +63,7 @@ public class ReqCField {
                 return true;
             }
             case BEANS_OPERATION: {
-                BeanGame.BeanGame1(chr, cp);
+                PachinkoHandler.OnPachinko(chr, cp);
                 return true;
             }
             case BEANS_UPDATE: {
