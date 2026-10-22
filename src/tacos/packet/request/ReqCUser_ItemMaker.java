@@ -1,26 +1,24 @@
 /*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package odin.handling.channel.handler;
+package tacos.packet.request;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.inventory.Equip;
@@ -28,9 +26,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.ItemMakerFactory;
-import odin.server.ItemMakerFactory.GemCreateEntry;
-import odin.server.ItemMakerFactory.ItemMakerCreateEntry;
-import odin.server.ItemMakerFactory.RandomReward;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -45,12 +40,16 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzXML;
 
-public class ItemMakerHandler {
+/**
+ *
+ * @author Riremito
+ */
+public class ReqCUser_ItemMaker {
 
     private static final int MONSTER_CRYSTAL_COST = 100; // monster etc items for a crystal
 
     // CUIItemMaker::RequestItemMake
-    public static boolean OnItemMakeRequest(ClientPacket cp, TacosCharacter chr) {
+    public static boolean OnUserItemMakeRequest(ClientPacket cp, TacosCharacter chr) {
         int recipe_class = cp.Decode4();
         OpsItemMakerResult result;
         switch (OpsRecipeClass.find(recipe_class)) {
@@ -167,12 +166,12 @@ public class ItemMakerHandler {
     }
 
     private static OpsItemMakerResult makeGem(TacosCharacter chr, int target_item_id) {
-        GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
+        ItemMakerFactory.GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
         if (gem == null || !hasSkill(chr, gem.getReqSkillLevel()) || chr.getMeso() < gem.getCost()) {
             DebugLogger.ErrorLog("makeGem : " + target_item_id);
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
-        RandomReward reward = getRandomReward(gem.getRandomReward());
+        ItemMakerFactory.RandomReward reward = getRandomReward(gem.getRandomReward());
         if (reward == null) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
@@ -188,7 +187,7 @@ public class ItemMakerHandler {
     }
 
     private static OpsItemMakerResult makeOtherGem(TacosCharacter chr, int target_item_id) {
-        GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
+        ItemMakerFactory.GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
         if (gem == null || !hasSkill(chr, gem.getReqSkillLevel()) || chr.getMeso() < gem.getCost()) {
             DebugLogger.ErrorLog("makeOtherGem : " + target_item_id);
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
@@ -216,7 +215,7 @@ public class ItemMakerHandler {
             gems[i] = cp.Decode4();
         }
 
-        ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(target_item_id);
+        ItemMakerFactory.ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(target_item_id);
         if (create == null || num_gem > create.getTUC() || !hasSkill(chr, create.getReqSkillLevel()) || chr.getMeso() < create.getCost()) {
             DebugLogger.ErrorLog("makeEquip : " + target_item_id);
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
@@ -312,16 +311,16 @@ public class ItemMakerHandler {
         }
     }
 
-    private static RandomReward getRandomReward(List<RandomReward> rewards) {
+    private static ItemMakerFactory.RandomReward getRandomReward(List<ItemMakerFactory.RandomReward> rewards) {
         int total = 0;
-        for (RandomReward reward : rewards) {
+        for (ItemMakerFactory.RandomReward reward : rewards) {
             total += reward.prob;
         }
         if (total <= 0) {
             return null;
         }
         int rand = Randomizer.nextInt(total);
-        for (RandomReward reward : rewards) {
+        for (ItemMakerFactory.RandomReward reward : rewards) {
             rand -= reward.prob;
             if (rand < 0) {
                 return reward;
@@ -330,13 +329,13 @@ public class ItemMakerHandler {
         return null;
     }
 
-    private static boolean checkRequiredNRemove(TacosCharacter chr, List<SimpleImmutableEntry<Integer, Integer>> recipe) {
-        for (SimpleImmutableEntry<Integer, Integer> p : recipe) {
+    private static boolean checkRequiredNRemove(TacosCharacter chr, List<AbstractMap.SimpleImmutableEntry<Integer, Integer>> recipe) {
+        for (AbstractMap.SimpleImmutableEntry<Integer, Integer> p : recipe) {
             if (!chr.haveItem(p.getKey(), p.getValue(), false, true)) {
                 return false;
             }
         }
-        for (SimpleImmutableEntry<Integer, Integer> p : recipe) {
+        for (AbstractMap.SimpleImmutableEntry<Integer, Integer> p : recipe) {
             int item_id = p.getKey();
             MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, p.getValue(), false, false);
         }

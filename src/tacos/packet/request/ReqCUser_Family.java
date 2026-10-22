@@ -37,7 +37,7 @@ import tacos.wz.opt.FieldOpt;
  *
  * @author Riremito
  */
-public class ReqCUIFamily {
+public class ReqCUser_Family {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         TacosCharacter chr = client.getPlayer();

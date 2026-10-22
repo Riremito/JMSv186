@@ -1,25 +1,22 @@
 /*
-This file is part of the ZeroFusion MapleStory Server
-Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-ZeroFusion organized by "RMZero213" <RMZero213@hotmail.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package odin.handling.channel.handler;
+package tacos.packet.request;
 
 import odin.handling.world.Alliance;
 import odin.handling.world.guild.MapleGuild;
@@ -31,9 +28,12 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsAlliance;
 import tacos.packet.response.ResCWvsContext;
 
-public class AllianceHandler {
+/**
+ *
+ * @author Riremito
+ */
+public class ReqCUser_Alliance {
 
-    // CP_AllianceRequest (result = false), CP_AllianceResult (result = true)
     public static void HandleAlliance(ClientPacket cp, TacosCharacter chr, boolean result) {
         MapleGuild guild = (chr.getGuildId() > 0) ? chr.getWorld().getGuild().getGuild(chr.getGuildId()) : null;
         if (guild == null) {
@@ -171,7 +171,6 @@ public class AllianceHandler {
         }
     }
 
-    // the guild master refused the invitation.
     private static void denyInvite(TacosCharacter chr, MapleGuild guild) {
         int invited_alliance_id = chr.getWorld().getGuild().getInvitedId(guild.getId());
         if (invited_alliance_id <= 0) {

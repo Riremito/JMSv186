@@ -44,11 +44,7 @@ import odin.handling.world.MapleParty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.handling.channel.handler.AllianceHandler;
-import odin.handling.channel.handler.BBSHandler;
-import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.InventoryHandler;
-import odin.handling.channel.handler.ItemMakerHandler;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.MapleParty.PartyOperation;
 import tacos.packet.ClientPacket;
@@ -59,7 +55,6 @@ import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUIVega;
@@ -103,8 +98,6 @@ import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsTrunk;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
-import tacos.packet.request.sub.ReqSub_Admin;
-import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCRPSGameDlg;
@@ -482,7 +475,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserItemMakeRequest: {
-                ItemMakerHandler.OnItemMakeRequest(cp, chr);
+                ReqCUser_ItemMaker.OnUserItemMakeRequest(cp, chr);
                 return true;
             }
             case CP_UserUseGachaponBoxRequest: {
@@ -547,15 +540,15 @@ public class ReqCUser {
                 return true;
             }
             case CP_GuildRequest: {
-                GuildHandler.Guild(cp, chr);
+                ReqCUser_Guild.OnGuildRequest(cp, chr);
                 return true;
             }
             case CP_GuildResult: {
-                GuildHandler.DenyGuildRequest(cp, chr);
+                ReqCUser_Guild.OnGuildResult(cp, chr);
                 return true;
             }
             case CP_Admin: {
-                ReqSub_Admin.OnAdmin(chr, cp);
+                ReqCUser_Admin.OnAdmin(chr, cp);
                 return true;
             }
             case CP_Log: {
@@ -564,7 +557,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_FriendRequest: {
-                ReqSub_FriendRequest.OnFriendRequest(chr, cp);
+                ReqCUser_Friend.OnFriendRequest(chr, cp);
                 return true;
             }
             case CP_MemoRequest: {
@@ -588,15 +581,15 @@ public class ReqCUser {
                 return true;
             }
             case CP_AllianceRequest: {
-                AllianceHandler.HandleAlliance(cp, chr, false);
+                ReqCUser_Alliance.HandleAlliance(cp, chr, false);
                 return true;
             }
             case CP_AllianceResult: {
-                AllianceHandler.HandleAlliance(cp, chr, true);
+                ReqCUser_Alliance.HandleAlliance(cp, chr, true);
                 return true;
             }
             case CP_GuildBBS: {
-                BBSHandler.BBSOperation(cp, chr);
+                ReqCUser_GuildBBS.OnGuildBBS(cp, chr);
                 return true;
             }
             case CP_JMS_InstancePortalEnter: {
@@ -2724,7 +2717,7 @@ public class ReqCUser {
 
     // CUICharacterSaleDlg::SendCreateNewCharacter, CWvsContext::SendConsumeCashItemUseRequest
     public static boolean OnUserConsumeCashItemUseRequest(TacosCharacter chr, TacosMap map, ClientPacket cp) {
-        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
+        return ReqCUser_Item.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
     }
 
     // CWvsContext::SendBridleItemUseRequest

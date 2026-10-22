@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.request.sub;
+package tacos.packet.request;
 
 import tacos.client.TacosCharacter.BuddyList;
 import tacos.client.TacosCharacter;
@@ -34,9 +34,8 @@ import tacos.server.TacosFriend;
  *
  * @author Riremito
  */
-public class ReqSub_FriendRequest {
+public class ReqCUser_Friend {
 
-    // CP_FriendRequest
     public static boolean OnFriendRequest(TacosCharacter chr, ClientPacket cp) {
         byte flag = cp.Decode1();
         OpsFriend ops_req = OpsFriend.find(flag);
@@ -155,5 +154,4 @@ public class ReqSub_FriendRequest {
 
         return false;
     }
-
 }

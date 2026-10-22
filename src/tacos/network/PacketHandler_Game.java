@@ -31,7 +31,7 @@ import tacos.packet.request.ReqCMobPool;
 import tacos.packet.request.ReqCNpcPool;
 import tacos.packet.request.ReqCReactorPool;
 import tacos.packet.request.ReqCSummonedPool;
-import tacos.packet.request.ReqCUIFamily;
+import tacos.packet.request.ReqCUser_Family;
 import tacos.packet.request.ReqCUIGoldHammer;
 import tacos.packet.request.ReqCUIItemUpgrade;
 import tacos.packet.request.ReqCUIRaise;
@@ -65,7 +65,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
         if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             // family
             if (header.between(ClientPacketHeader.CP_FamilyChartRequest, ClientPacketHeader.CP_FamilySummonResult)) {
-                return ReqCUIFamily.OnPacket(client, header, cp);
+                return ReqCUser_Family.OnPacket(client, header, cp);
             }
             // pet
             if (header.between(ClientPacketHeader.CP_BEGIN_PET, ClientPacketHeader.CP_END_PET)) {

@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.request.sub;
+package tacos.packet.request;
 
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosMerchant;
@@ -37,8 +37,6 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.request.ReqCUser;
-import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.response.ResCMapleTVMan;
 import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCUIItemUpgrade;
@@ -56,7 +54,7 @@ import tacos.wz.opt.FieldOpt;
  *
  * @author Riremito
  */
-public class ReqSub_UserConsumeCashItemUseRequest {
+public class ReqCUser_Item {
 
     public static boolean OnUserConsumeCashItemUseRequestInternal(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;

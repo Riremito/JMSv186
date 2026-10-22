@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.request.sub;
+package tacos.packet.request;
 
 import tacos.server.map.object.TacosNpc;
 import tacos.server.map.TacosMap;
@@ -32,7 +32,7 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-public class ReqSub_Admin {
+public class ReqCUser_Admin {
 
     // CField::SendChatMsgSlash
     public static boolean OnAdmin(TacosCharacter chr, ClientPacket cp) {

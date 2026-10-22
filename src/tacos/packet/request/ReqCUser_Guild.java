@@ -1,31 +1,28 @@
 /*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package odin.handling.channel.handler;
+package tacos.packet.request;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import odin.handling.world.Guild;
 import odin.handling.world.guild.MapleGuild;
-import odin.handling.world.guild.MapleGuild.MapleGuildResponse;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -33,7 +30,11 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsGuild;
 import tacos.packet.response.ResCWvsContext;
 
-public class GuildHandler {
+/**
+ *
+ * @author Riremito
+ */
+public class ReqCUser_Guild {
 
     private static final int GUILD_OFFICE_MAP_ID = 200000301;
     private static final int CREATE_GUILD_COST = 5000000;
@@ -41,63 +42,7 @@ public class GuildHandler {
     private static final long INVITE_EXPIRATION = 60 * 60 * 1000; // 1 hour
     private static final long PRUNE_INTERVAL = 20 * 60 * 1000;
 
-    private static final class Invited {
-
-        public final String name;
-        public final int gid;
-        public final long expiration;
-
-        public Invited(String name, int gid) {
-            this.name = name.toLowerCase();
-            this.gid = gid;
-            this.expiration = System.currentTimeMillis() + INVITE_EXPIRATION;
-        }
-
-        public boolean matches(String name, int gid) {
-            return this.gid == gid && this.name.equals(name.toLowerCase());
-        }
-    }
-
-    private static final List<Invited> invited = new LinkedList<>();
-    private static long nextPruneTime = System.currentTimeMillis() + PRUNE_INTERVAL;
-
-    // CP_GuildResult : the invitation was blocked or rejected.
-    public static void DenyGuildRequest(ClientPacket cp, TacosCharacter chr) {
-        OpsGuild ops = OpsGuild.find(cp.Decode1());
-        String from = cp.DecodeStr(); // inviter
-        switch (ops) {
-            case GuildRes_InviteGuild_BlockedUser:
-            case GuildRes_InviteGuild_AlreadyInvited:
-            case GuildRes_InviteGuild_Rejected: {
-                break;
-            }
-            default: {
-                ops = OpsGuild.GuildRes_InviteGuild_Rejected;
-                break;
-            }
-        }
-        TacosCharacter inviter = chr.getChannelServer().getOnlinePlayers().findByName(from);
-        if (inviter != null) {
-            inviter.SendPacket(ResCWvsContext.GuildResult(ops, chr.getName()));
-        }
-    }
-
-    private static boolean isGuildNameAcceptable(String name) {
-        int length = name.getBytes().length;
-        return 3 <= length && length <= 12;
-    }
-
-    private static void pruneInvited() {
-        long now = System.currentTimeMillis();
-        if (now < nextPruneTime) {
-            return;
-        }
-        invited.removeIf(inv -> inv.expiration <= now);
-        nextPruneTime = now + PRUNE_INTERVAL;
-    }
-
-    // CP_GuildRequest
-    public static void Guild(ClientPacket cp, TacosCharacter chr) {
+    public static void OnGuildRequest(ClientPacket cp, TacosCharacter chr) {
         pruneInvited();
         Guild world_guild = chr.getWorld().getGuild();
         int op = cp.Decode1();
@@ -138,7 +83,7 @@ public class GuildHandler {
                 if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2) { // 1 = guild master, 2 = jr. master
                     return;
                 }
-                MapleGuildResponse response = MapleGuild.sendInvite(chr, name);
+                MapleGuild.MapleGuildResponse response = MapleGuild.sendInvite(chr, name);
                 if (response != null) {
                     chr.SendPacket(response.getPacket());
                     return;
@@ -234,6 +179,61 @@ public class GuildHandler {
         }
     }
 
+    public static void OnGuildResult(ClientPacket cp, TacosCharacter chr) {
+        OpsGuild ops = OpsGuild.find(cp.Decode1());
+        String from = cp.DecodeStr(); // inviter
+        switch (ops) {
+            case GuildRes_InviteGuild_BlockedUser:
+            case GuildRes_InviteGuild_AlreadyInvited:
+            case GuildRes_InviteGuild_Rejected: {
+                break;
+            }
+            default: {
+                ops = OpsGuild.GuildRes_InviteGuild_Rejected;
+                break;
+            }
+        }
+        TacosCharacter inviter = chr.getChannelServer().getOnlinePlayers().findByName(from);
+        if (inviter != null) {
+            inviter.SendPacket(ResCWvsContext.GuildResult(ops, chr.getName()));
+        }
+    }
+
+    private static final class Invited {
+
+        public final String name;
+        public final int gid;
+        public final long expiration;
+
+        public Invited(String name, int gid) {
+            this.name = name.toLowerCase();
+            this.gid = gid;
+            this.expiration = System.currentTimeMillis() + INVITE_EXPIRATION;
+        }
+
+        public boolean matches(String name, int gid) {
+            return this.gid == gid && this.name.equals(name.toLowerCase());
+        }
+    }
+
+    private static final List<Invited> invited = new LinkedList<>();
+    private static long nextPruneTime = System.currentTimeMillis() + PRUNE_INTERVAL;
+
+    // CP_GuildResult : the invitation was blocked or rejected.
+    private static boolean isGuildNameAcceptable(String name) {
+        int length = name.getBytes().length;
+        return 3 <= length && length <= 12;
+    }
+
+    private static void pruneInvited() {
+        long now = System.currentTimeMillis();
+        if (now < nextPruneTime) {
+            return;
+        }
+        invited.removeIf(inv -> inv.expiration <= now);
+        nextPruneTime = now + PRUNE_INTERVAL;
+    }
+
     private static void joinGuild(TacosCharacter chr, int guild_id) {
         Guild world_guild = chr.getWorld().getGuild();
         chr.setGuildId(guild_id);
@@ -250,4 +250,6 @@ public class GuildHandler {
         }
         chr.saveGuildStatus();
     }
+
+    // Guild BBS.
 }
