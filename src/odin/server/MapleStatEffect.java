@@ -131,13 +131,13 @@ public class MapleStatEffect {
             case MAGICIAN_MAGIC_GUARD:
             case FLAMEWIZARD_MAGIC_GUARD:
             case EVAN_MAGIC_GUARD: {
-                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MagicGuard, x));
                 return true;
             }
             case ROGUE_DARK_SIGHT:
             case DUAL4_ADVANCED_DARK_SIGHT:
             case NIGHTWALKER_DARK_SIGHT: {
-                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkSight, x));
                 return true;
             }
             case FIGHTER_WEAPON_BOOSTER:
@@ -162,7 +162,7 @@ public class MapleStatEffect {
             case BMAGE_STAFF_BOOSTER:
             case WILDHUNTER_CROSSBOW_BOOSTER:
             case MECHANIC_BOOSTER: {
-                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Booster, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Booster, x));
                 return true;
             }
             case FIGHTER_POWER_GUARD:

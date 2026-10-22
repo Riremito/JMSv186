@@ -21,6 +21,7 @@
  */
 package odin.handling.world.family;
 
+import java.util.Objects;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import java.util.List;
@@ -169,6 +170,11 @@ public class MapleFamilyCharacter {
 
         MapleFamilyCharacter o = (MapleFamilyCharacter) other;
         return (o.getId() == id && o.getName().equals(name));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     public void setOnline(boolean f) {

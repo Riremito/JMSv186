@@ -182,7 +182,7 @@ public class MapScriptMethods {
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (chr.getMapId() - 925000000) / 100;
-                int stage = (int) (temp - ((temp / 100) * 100));
+                int stage = temp - ((temp / 100) * 100);
 
                 sendDojoClock(chr.getClient(), getTiming(stage) * 60);
                 sendDojoStart(chr.getClient(), stage - getDojoStageDec(stage));
@@ -582,6 +582,7 @@ public class MapScriptMethods {
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
+                // fall through
             case go20000:
             case go30000:
             case go40000:

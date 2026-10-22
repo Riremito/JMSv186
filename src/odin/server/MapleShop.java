@@ -63,7 +63,7 @@ public class MapleShop {
 
     // used by script.
     public boolean add(int item_id, int price) {
-        return addItem(new MapleShopItem((short) MapleItemInformationProvider.getInstance().getSlotMax(item_id), item_id, price, 0, 0));
+        return addItem(new MapleShopItem(MapleItemInformationProvider.getInstance().getSlotMax(item_id), item_id, price, 0, 0));
     }
 
     public boolean addItem(MapleShopItem item) {
@@ -184,7 +184,7 @@ public class MapleShop {
             int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (chr.getMeso() >= price) {
                 item.setQuantity(slotMax);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, item).build()));
                 chr.gainMeso(-price, false, true, false);
                 chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;

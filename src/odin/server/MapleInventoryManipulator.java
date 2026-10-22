@@ -282,7 +282,7 @@ public class MapleInventoryManipulator {
                     Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
-                            Item eItem = (Item) i.next();
+                            Item eItem = i.next();
                             short oldQ = eItem.getQuantity();
                             if (oldQ < slotMax && item.getOwner().equals(eItem.getOwner()) && item.getExpiration() == eItem.getExpiration()) {
                                 short newQ = (short) Math.min(oldQ + quantity, slotMax);
@@ -376,7 +376,7 @@ public class MapleInventoryManipulator {
     }
 
     private static int rand(int min, int max) {
-        return Math.abs((int) Randomizer.rand(min, max));
+        return Math.abs(Randomizer.rand(min, max));
     }
 
     public static boolean checkSpace(TacosCharacter chr, int itemid, int quantity, String owner) {
@@ -435,7 +435,7 @@ public class MapleInventoryManipulator {
             if (item.getQuantity() == 0 && !allowZero) {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().remove(type, item.getPosition()).build()));
             } else {
-                chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, (Item) item).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, item).build()));
             }
         }
     }

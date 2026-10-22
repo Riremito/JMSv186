@@ -135,7 +135,7 @@ public class CashShop {
         if (GameConstants.getInventoryType(cItem.getId()) == MapleInventoryType.EQUIP) {
             Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(cItem.getId());
             eq.setUniqueId(uniqueid);
-            eq.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
+            eq.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
             eq.setGiftFrom(gift);
             if (GameConstants.isEffectRing(cItem.getId()) && uniqueid > 0) {
                 MapleRing ring = MapleRing.loadFromDb(uniqueid);
@@ -146,7 +146,7 @@ public class CashShop {
             ret = eq.copy();
         } else {
             Item item = new Item(cItem.getId(), (byte) 0, (short) cItem.getCount(), (byte) 0, uniqueid);
-            item.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
+            item.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
             item.setGiftFrom(gift);
             if (GameConstants.isPet(cItem.getId())) {
                 TacosPet pet = TacosPet.createPet(cItem.getId(), uniqueid);

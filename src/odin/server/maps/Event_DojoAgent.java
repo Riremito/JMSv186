@@ -139,7 +139,7 @@ public class Event_DojoAgent {
         try {
             TacosMap currentmap = player.getMap();
             int temp = (currentmap.getId() - 925000000) / 100;
-            int thisStage = (int) (temp - ((temp / 100) * 100));
+            int thisStage = temp - ((temp / 100) * 100);
             if (!fromResting) {
                 clearMap(currentmap, true);
                 giveStagePoints(player, currentmap, getDojoPoints(thisStage));

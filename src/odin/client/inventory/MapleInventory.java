@@ -114,8 +114,8 @@ public class MapleInventory implements Iterable<Item> {
         if (dSlot > slotLimit) {
             return;
         }
-        Item source = (Item) inventory.get(sSlot);
-        Item target = (Item) inventory.get(dSlot);
+        Item source = inventory.get(sSlot);
+        Item target = inventory.get(dSlot);
         if (source == null) {
             return;
         }

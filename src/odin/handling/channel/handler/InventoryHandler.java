@@ -175,7 +175,7 @@ public class InventoryHandler {
         }
         if (expiration_days > 0) {
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false);
-            chr.changeSkillLevel(WzXML.SKILL.getSkill().get(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+            chr.changeSkillLevel(WzXML.SKILL.getSkill().get(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + expiration_days * 24 * 60 * 60 * 1000);
             chr.Notice("The skill has been attained.");
         }
     }

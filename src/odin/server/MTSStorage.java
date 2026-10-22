@@ -302,7 +302,7 @@ public class MTSStorage {
         }
 
         public int getTaxes() {
-            return TacosITC.m_nCommissionBase + (int) (price * TacosITC.m_nCommissionRate / 100);
+            return TacosITC.m_nCommissionBase + price * TacosITC.m_nCommissionRate / 100;
         }
 
         public int getId() {
