@@ -24,54 +24,57 @@ package tacos.property;
  */
 public class Property_Pachinko {
 
-    public static String[] 五职业奖励;
-    public static String[] 豆豆坐骑;
-    public static int 豆豆奖励范围;
-    public static String[] 白怪奖励;
-    public static String[] 色怪奖励;
-    public static String[] 粉色怪;
-    public static int 海洋帽子几率;
-    public static String[] 黄金狗几率;
-    public static String[] 飞侠;
-    public static String[] 战士;
-    public static String[] 紫色怪;
-    public static String[] 弓箭手;
-    public static int 力度搞假;
-    public static String[] 消耗品;
-    public static String[] 女皇奖励;
-    public static String[] 女皇;
-    public static String[] 小白怪;
-    public static String[] 法师;
-    public static String[] 豆豆装备;
-    public static String[] 大白怪;
-    public static String[] 海盗;
+    // 報酬アイテム (アイテムID)
+    public static String[] equip_items; // 装備
+    public static String[] mount_items; // 騎乗
+    public static String[] consume_items; // 消費
+    // 図柄の確率 : [0], [1] = 表示される確率, [2], [3] = 当たる確率
+    public static String[] big_white_mob_rates; // 白いモンスター (大)
+    public static String[] small_white_mob_rates; // 白いモンスター (小)
+    public static String[] purple_mob_rates; // 紫のモンスター
+    public static String[] pink_mob_rates; // ピンクのモンスター
+    public static String[] thief_rates; // 盗賊
+    public static String[] pirate_rates; // 海賊
+    public static String[] magician_rates; // 魔法使い
+    public static String[] warrior_rates; // 戦士
+    public static String[] archer_rates; // 弓使い
+    public static String[] queen_rates; // 女王
+    // 当たり図柄ごとの報酬の確率
+    public static String[] white_mob_reward_rates; // 白いモンスター
+    public static String[] color_mob_reward_rates; // 紫, ピンクのモンスター
+    public static String[] job_reward_rates; // 5職業
+    public static String[] queen_reward_rates; // 女王
+    public static String[] golden_dog_rates; // 黄金の犬
+    public static int ocean_hat_rate; // 海の帽子
+    public static int power_random; // 発射の強さに加える乱数の範囲
+    public static int tama_reward_unit; // 当たりで獲得する玉の数 (図柄の番号 + 1 倍)
 
     public static boolean init() {
         Property conf = new Property("properties/beans.properties");
         if (!conf.open()) {
             return false;
         }
-        豆豆装备 = conf.get("ddzb").split(",");
-        豆豆坐骑 = conf.get("ddzq").split(",");
-        消耗品 = conf.get("xhp").split(",");
-        海洋帽子几率 = conf.getInt("hymzjl");
-        黄金狗几率 = conf.get("hjgjl").split(",");
-        大白怪 = conf.get("dbg").split(",");
-        小白怪 = conf.get("xbg").split(",");
-        紫色怪 = conf.get("zsg").split(",");
-        粉色怪 = conf.get("fsg").split(",");
-        飞侠 = conf.get("fx").split(",");
-        海盗 = conf.get("hd").split(",");
-        法师 = conf.get("fs").split(",");
-        战士 = conf.get("zs").split(",");
-        弓箭手 = conf.get("gjs").split(",");
-        女皇 = conf.get("nh").split(",");
-        白怪奖励 = conf.get("bgjl").split(",");
-        色怪奖励 = conf.get("sgjl").split(",");
-        五职业奖励 = conf.get("wzyjl").split(",");
-        女皇奖励 = conf.get("nhjl").split(",");
-        力度搞假 = conf.getInt("ldgj");
-        豆豆奖励范围 = conf.getInt("ddjlfw");
+        equip_items = conf.get("ddzb").split(",");
+        mount_items = conf.get("ddzq").split(",");
+        consume_items = conf.get("xhp").split(",");
+        ocean_hat_rate = conf.getInt("hymzjl");
+        golden_dog_rates = conf.get("hjgjl").split(",");
+        big_white_mob_rates = conf.get("dbg").split(",");
+        small_white_mob_rates = conf.get("xbg").split(",");
+        purple_mob_rates = conf.get("zsg").split(",");
+        pink_mob_rates = conf.get("fsg").split(",");
+        thief_rates = conf.get("fx").split(",");
+        pirate_rates = conf.get("hd").split(",");
+        magician_rates = conf.get("fs").split(",");
+        warrior_rates = conf.get("zs").split(",");
+        archer_rates = conf.get("gjs").split(",");
+        queen_rates = conf.get("nh").split(",");
+        white_mob_reward_rates = conf.get("bgjl").split(",");
+        color_mob_reward_rates = conf.get("sgjl").split(",");
+        job_reward_rates = conf.get("wzyjl").split(",");
+        queen_reward_rates = conf.get("nhjl").split(",");
+        power_random = conf.getInt("ldgj");
+        tama_reward_unit = conf.getInt("ddjlfw");
         return true;
     }
 

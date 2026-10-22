@@ -28,7 +28,7 @@ import tacos.property.Property_Pachinko;
 import tacos.shared.TacosSharedExpTable;
 
 /**
- * JMS pachinko (豆豆机), based on the CMS v72 source:
+ * JMS pachinko (パチンコ), based on the CMS v72 source:
  * https://github.com/huangshushu/Maplrstory072-cn-/blob/master/src/handling/channel/handler/BeanGame.java
  *
  * @author Riremito
@@ -36,9 +36,9 @@ import tacos.shared.TacosSharedExpTable;
 public class PachinkoHandler {
 
     private static final int MAX_HOLE_COUNT = 7;
-    private static final int OCEAN_HAT_ITEM_ID = 1002743; // 海洋帽子
+    private static final int OCEAN_HAT_ITEM_ID = 1002743; // 海の帽子
     private static final int PACHINKO_MAP_ID = 809030000;
-    private static final int QUEEN = 9; // 女皇
+    private static final int QUEEN = 9; // 女王
 
     // the symbols of one line: row1, row3 and the row2 symbol of a hit
     private static final class Symbol {
@@ -61,61 +61,61 @@ public class PachinkoHandler {
         public String[] rates() {
             switch (row2) {
                 case 0:
-                    return Property_Pachinko.大白怪;
+                    return Property_Pachinko.big_white_mob_rates;
                 case 1:
-                    return Property_Pachinko.紫色怪;
+                    return Property_Pachinko.purple_mob_rates;
                 case 3:
-                    return Property_Pachinko.粉色怪;
+                    return Property_Pachinko.pink_mob_rates;
                 case 5:
-                    return Property_Pachinko.小白怪;
+                    return Property_Pachinko.small_white_mob_rates;
                 case 2:
-                    return Property_Pachinko.飞侠;
+                    return Property_Pachinko.thief_rates;
                 case 4:
-                    return Property_Pachinko.海盗;
+                    return Property_Pachinko.pirate_rates;
                 case 6:
-                    return Property_Pachinko.法师;
+                    return Property_Pachinko.magician_rates;
                 case 7:
-                    return Property_Pachinko.战士;
+                    return Property_Pachinko.warrior_rates;
                 case 8:
-                    return Property_Pachinko.弓箭手;
+                    return Property_Pachinko.archer_rates;
                 default:
-                    return Property_Pachinko.女皇;
+                    return Property_Pachinko.queen_rates;
             }
         }
     }
 
     // checked in this order, the queen last
     private static final Symbol[] SYMBOLS = {
-        new Symbol(0, 0, 0), // 大白怪
-        new Symbol(9, 7, 1), // 紫色怪
-        new Symbol(1, 2, 3), // 粉色怪
-        new Symbol(5, 1, 5), // 小白怪
-        new Symbol(4, 9, 2), // 飞侠
-        new Symbol(7, 5, 4), // 海盗
-        new Symbol(2, 4, 6), // 法师
-        new Symbol(8, 8, 7), // 战士
-        new Symbol(6, 3, 8), // 弓箭手
-        new Symbol(3, 6, QUEEN), // 女皇
+        new Symbol(0, 0, 0), // 白いモンスター (大)
+        new Symbol(9, 7, 1), // 紫のモンスター
+        new Symbol(1, 2, 3), // ピンクのモンスター
+        new Symbol(5, 1, 5), // 白いモンスター (小)
+        new Symbol(4, 9, 2), // 盗賊
+        new Symbol(7, 5, 4), // 海賊
+        new Symbol(2, 4, 6), // 魔法使い
+        new Symbol(8, 8, 7), // 戦士
+        new Symbol(6, 3, 8), // 弓使い
+        new Symbol(3, 6, QUEEN), // 女王
     };
 
     // per character state
     public static class State {
 
-        private int holeCount = 0; // 进洞次数
+        private int holeCount = 0; // 入賞回数 (最大 7)
         private int row1 = 0;
         private int row2 = 0;
         private int row3 = 0;
-        private int mobEffect = 0; // 启动打怪效果
-        private int winRate = 0; // 中奖率
-        private int fastSpin = 0; // 加速旋转
-        private boolean hideEffectA = false; // false = 启动动画效果
+        private int mobEffect = 0; // モンスターの演出
+        private int winRate = 0; // 当選率
+        private int fastSpin = 0; // 高速回転
+        private boolean hideEffectA = false; // false = 演出アニメーションを表示
         private boolean hideEffectB = false;
         private int blue = 0;
         private int green = 0;
         private int red = 0;
-        private boolean goldenDog = false; // 黄金狗
-        private int power = 0; // 力度
-        private int beanNumber = 0; // 豆豆序号
+        private boolean goldenDog = false; // 黄金の犬
+        private int power = 0; // 発射の強さ
+        private int beanNumber = 0; // 玉の番号
         private boolean canSetBeanNumber = false;
     }
 
@@ -158,7 +158,7 @@ public class PachinkoHandler {
     }
 
     private static int randomPower() {
-        return (Property_Pachinko.力度搞假 > 0) ? Randomizer.nextInt(Property_Pachinko.力度搞假) : 0;
+        return (Property_Pachinko.power_random > 0) ? Randomizer.nextInt(Property_Pachinko.power_random) : 0;
     }
 
     // BEANS_OPERATION
@@ -166,35 +166,35 @@ public class PachinkoHandler {
         State state = chr.getPachinko();
         int type = cp.Decode1();
         switch (type) {
-            // 0 : 开始打豆豆, 1 : 点开始的时候 确认打豆豆的力度
+            // 0 : 開始, 1 : 開始時の発射の強さ
             case 0:
             case 1: {
                 state.power = cp.Decode2() + randomPower();
                 chr.updateStat();
                 break;
             }
-            // 2 : 没存在的必要 (02 1B 00 00 00)
+            // 2 : 処理不要 (02 1B 00 00 00)
             case 2: {
                 break;
             }
-            // 打豆豆进洞以后的数据
+            // 玉が入賞口に入った
             case 3: {
                 state.holeCount = Math.min(state.holeCount + 1, MAX_HOLE_COUNT);
                 chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_HoleCount(state.holeCount, state.fastSpin, state.blue, state.green, state.red));
                 break;
             }
-            // 记录进洞次数的黄色豆豆。最多只有7个。
+            // 入賞回数を表す黄色の玉 (最大 7 個) を使って回転する
             case 4: {
                 state.holeCount--;
                 spin(state);
                 chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_Spin(state.holeCount, state.row1, state.row3, state.row2, state.mobEffect, state.winRate, state.fastSpin, state.hideEffectA, state.hideEffectB));
                 if (state.row2 != QUEEN) {
-                    state.goldenDog = !state.goldenDog && Randomizer.nextInt(rate(Property_Pachinko.黄金狗几率, 0)) == rate(Property_Pachinko.黄金狗几率, 1);
+                    state.goldenDog = !state.goldenDog && Randomizer.nextInt(rate(Property_Pachinko.golden_dog_rates, 0)) == rate(Property_Pachinko.golden_dog_rates, 1);
                     chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_GoldenDog((byte) (state.goldenDog ? 1 : 0)));
                 }
                 break;
             }
-            // 移动以后三排一样的
+            // 回転後に 3 列が揃った
             case 5: {
                 reward(chr, state);
                 break;
@@ -207,17 +207,17 @@ public class PachinkoHandler {
                 chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_Reward(true, 0));
                 break;
             }
-            // 点start/stop的时候获得start/stop时豆豆的力度和序号
+            // start/stop を押したときの発射の強さと玉の番号
             case 11: {
                 state.power = cp.Decode2() + randomPower();
-                state.beanNumber = cp.Decode4() + 1; // 最后一个豆豆的序号
+                state.beanNumber = cp.Decode4() + 1; // 最後の玉の番号
                 if (state.beanNumber == 1) {
                     state.canSetBeanNumber = false;
                 }
                 sendBeans(chr, state);
                 break;
             }
-            // 点暂停或者满5个豆豆后客户端发送的豆豆信息 最多5个豆豆
+            // 一時停止、または玉が 5 個たまったときにクライアントが送る玉の情報 (最大 5 個)
             case 6: {
                 cp.Decode1();
                 int count = cp.Decode1();
@@ -324,59 +324,59 @@ public class PachinkoHandler {
         }
         int exp = TacosSharedExpTable.getExpNeededForLevel(chr.getLevel() + 1) / 200;
         switch (state.row2) {
-            // 小白怪, 大白怪
+            // 白いモンスター (小, 大)
             case 5:
             case 0: {
-                String[] r = Property_Pachinko.白怪奖励;
+                String[] r = Property_Pachinko.white_mob_reward_rates;
                 if (roll(r, 0, 1)) {
                     gainExp(chr, exp);
                 } else if (roll(r, 2, 3)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.消耗品)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.consume_items)));
                 }
                 break;
             }
-            // 紫色怪, 粉色怪
+            // 紫, ピンクのモンスター
             case 1:
             case 3: {
-                String[] r = Property_Pachinko.色怪奖励;
+                String[] r = Property_Pachinko.color_mob_reward_rates;
                 if (roll(r, 0, 1)) {
                     gainExp(chr, exp);
                 } else if (roll(r, 4, 5)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.豆豆装备)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.equip_items)));
                 } else if (roll(r, 2, 3)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.消耗品)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.consume_items)));
                 }
                 break;
             }
-            // 飞侠, 海盗, 法师, 战士, 弓箭手
+            // 盗賊, 海賊, 魔法使い, 戦士, 弓使い
             case 2:
             case 4:
             case 6:
             case 7:
             case 8: {
-                String[] r = Property_Pachinko.五职业奖励;
+                String[] r = Property_Pachinko.job_reward_rates;
                 if (roll(r, 0, 1)) {
                     gainExp(chr, exp);
                 } else if (roll(r, 4, 5)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.豆豆装备)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.equip_items)));
                 } else if (roll(r, 6, 7)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.豆豆坐骑)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.mount_items)));
                 } else if (roll(r, 2, 3)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.消耗品)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.consume_items)));
                 }
                 break;
             }
-            // 女皇
+            // 女王
             case QUEEN: {
-                String[] r = Property_Pachinko.女皇奖励;
+                String[] r = Property_Pachinko.queen_reward_rates;
                 if (roll(r, 4, 5)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.豆豆装备)));
-                } else if (Randomizer.nextInt(100) + 1 == Property_Pachinko.海洋帽子几率) {
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.equip_items)));
+                } else if (Randomizer.nextInt(100) + 1 == Property_Pachinko.ocean_hat_rate) {
                     chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(OCEAN_HAT_ITEM_ID));
                 } else if (roll(r, 6, 7)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.豆豆坐骑)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.mount_items)));
                 } else if (roll(r, 2, 3)) {
-                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.消耗品)));
+                    chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoPlay_RewardItem(pick(Property_Pachinko.consume_items)));
                 }
                 break;
             }
@@ -384,11 +384,11 @@ public class PachinkoHandler {
                 break;
             }
         }
-        int tama = (state.row2 + 1) * Property_Pachinko.豆豆奖励范围;
+        int tama = (state.row2 + 1) * Property_Pachinko.tama_reward_unit;
         chr.gainTama(tama);
-        chr.Notice("在豆豆机中获得: " + tama + "个豆豆！");
+        chr.Notice("パチンコで玉を" + tama + "個獲得しました！");
         if (chr.getMapId() == PACHINKO_MAP_ID) {
-            chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoMessage(1, 1, "恭喜你打豆豆成功中奖！当前中奖获得豆豆：" + tama + "个！"));
+            chr.SendPacket(Res_JMS_CField_Pachinko.PachinkoMessage(1, 1, "おめでとうございます！当たりで玉を" + tama + "個獲得しました！"));
         }
         if (state.goldenDog && state.row2 == QUEEN) {
             state.goldenDog = false;
@@ -399,6 +399,6 @@ public class PachinkoHandler {
 
     private static void gainExp(TacosCharacter chr, int exp) {
         chr.gainExp(exp, false, false, false);
-        chr.Notice("在豆豆机中获得：" + exp + "经验值！");
+        chr.Notice("パチンコで経験値を" + exp + "獲得しました！");
     }
 }
