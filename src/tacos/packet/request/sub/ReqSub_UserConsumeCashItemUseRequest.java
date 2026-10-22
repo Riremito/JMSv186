@@ -165,7 +165,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             }
             case 533: // 速達
             {
-                chr.SendPacket(ResCParcelDlg.Open(true, false));
+                chr.SendPacket(ResCParcelDlg.Parcel_Open(true, false));
                 chr.sendStatChanged(true);
                 return true;
             }

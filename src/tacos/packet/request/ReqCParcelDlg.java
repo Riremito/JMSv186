@@ -66,7 +66,7 @@ public class ReqCParcelDlg {
         switch (Action.Find(action)) {
             // 配送
             case SEND: {
-                chr.SendPacket(ResCParcelDlg.Send());
+                chr.SendPacket(ResCParcelDlg.Parcel_Send());
                 return true;
             }
             // 閉じる

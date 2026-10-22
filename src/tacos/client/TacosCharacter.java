@@ -1514,7 +1514,7 @@ public class TacosCharacter extends TacosPlayer {
             }
         }
 
-        this.map.splitSendPacket(this, ResCUser.UserFishingSuccess(this));
+        this.map.splitSendPacket(this, ResCUser.Fishing_Caught(this));
         return true;
     }
 

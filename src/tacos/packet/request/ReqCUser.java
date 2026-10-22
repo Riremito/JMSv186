@@ -1385,7 +1385,7 @@ public class ReqCUser {
             return true;
         }
         if (npc_info.getParcel() != 0) {
-            chr.SendPacket(ResCParcelDlg.Open(false, true));
+            chr.SendPacket(ResCParcelDlg.Parcel_Open(false, true));
             chr.DebugMsg("OnUserSelectNpc (Parcel) : " + npc_script_id);
             return true;
         }

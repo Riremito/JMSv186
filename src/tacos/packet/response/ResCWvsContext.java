@@ -2202,10 +2202,6 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket cancelFamilyBuff() {
-        return FamilySetPrivilege(0, 0, 0, 0);
-    }
-
     // CWvsContext::OnFamilyPrivilegeList
     public static ServerPacket FamilyPrivilegeList() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyPrivilegeList);

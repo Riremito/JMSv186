@@ -151,7 +151,7 @@ public class ResCUser {
     }
 
     // CUser::OnShowPQReward
-    public static ServerPacket UserFishingSuccess(TacosCharacter chr) {
+    public static ServerPacket Fishing_Caught(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
 
         sp.Encode4(chr.getId());

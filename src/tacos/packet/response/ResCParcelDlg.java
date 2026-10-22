@@ -94,8 +94,8 @@ public class ResCParcelDlg {
 
     };
 
-    // 宅配
-    public static ServerPacket Open(boolean isQuick, boolean isNPC) {
+    // CParcelDlg::OnPacket, 宅配
+    public static ServerPacket Parcel_Open(boolean isQuick, boolean isNPC) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         // 0x3B or 0x40
         if (isQuick) {
@@ -113,7 +113,7 @@ public class ResCParcelDlg {
     }
 
     // CParcelDlg::OnPacket
-    public static ServerPacket Send() {
+    public static ServerPacket Parcel_Send() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         sp.Encode1((byte) Action.SEND.Get());
         return sp;
