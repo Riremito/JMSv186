@@ -200,9 +200,7 @@ public class FamilyHandler {
         }
         chr.saveFamilyStatus();
         other.setSeniorId(0);
-        //if (!other.isOnline()) {
         MapleFamily.setOfflineFamilyStatus(other.getFamilyId(), other.getSeniorId(), other.getJunior1(), other.getJunior2(), other.getCurrentRep(), other.getTotalRep(), other.getId());
-        //}
         DQ_Notes.sendNote(other.getName(), chr.getName(), chr.getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(juniorid)) { //juniorid splits to make their own family. function should handle the rest
             if (!junior2) {
@@ -230,9 +228,7 @@ public class FamilyHandler {
         } else {
             mgc.setJunior1(0);
         }
-        //if (!mgc.isOnline()) {
         MapleFamily.setOfflineFamilyStatus(mgc.getFamilyId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
-        //}
         chr.saveFamilyStatus();
         DQ_Notes.sendNote(mgc.getName(), chr.getName(), chr.getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(chr.getId())) { //now, we're the family leader
