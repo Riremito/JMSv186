@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
-import tacos.database.query.DQ_CashshopModifiedItems;
 import tacos.wz.WzXML;
 
 public class CashItemFactory {

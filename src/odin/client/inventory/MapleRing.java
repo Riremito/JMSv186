@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import java.sql.SQLException;
-import tacos.client.TacosCharacter;
 import java.util.Comparator;
 import tacos.database.query.DQ_Rings;
 

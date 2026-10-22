@@ -24,7 +24,6 @@ import tacos.config.Region;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsItemMakerResult;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CUser;

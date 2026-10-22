@@ -20,7 +20,6 @@ package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
 import odin.server.shops.IPlayerShop;
-import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;

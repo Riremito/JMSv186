@@ -1153,7 +1153,12 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public void setBuddylist(int capacity) {
-        this.buddylist = new BuddyList(capacity);
+        // buddies are loaded before the capacity (loadCharacterData runs before loadStat).
+        if (this.buddylist == null) {
+            this.buddylist = new BuddyList(capacity);
+            return;
+        }
+        this.buddylist.setCapacity(capacity);
     }
 
     public int getBuddyCapacity() {
@@ -1883,6 +1888,9 @@ public class TacosCharacter extends TacosPlayer {
         }
         DQ_KeyMap.loadKeyMap(this);
         DQ_Monsterbook.load(this);
+        if (this.buddylist == null) {
+            this.buddylist = new BuddyList(20);
+        }
         for (BuddylistEntry ble : DQ_Buddies.load(this)) {
             this.buddylist.put(ble);
         }

@@ -180,6 +180,10 @@ public class ReqCUser {
                 OnUserPortableChairSitRequest(chr, cp);
                 return true;
             }
+            case CP_UserStatChangeByPortableChairRequest: {
+                // CWvsContext::TryRecovery, not implemented (handled to stop the unhandled packet log).
+                return true;
+            }
             case CP_UserMeleeAttack:
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
@@ -3059,7 +3063,7 @@ public class ReqCUser {
             }
             case CG_Party: {
                 MapleParty party = chr.getParty();
-                if (party != null) {
+                if (party == null) {
                     return true;
                 }
                 chr.getWorld().getParty().partyChat(party.getId(), sText, chr.getName());
@@ -3102,6 +3106,9 @@ public class ReqCUser {
     // CField::SendChatMsgWhisper, CField::SendLocationWhisper
     private static boolean OnWhisper(TacosCharacter chr, ClientPacket cp) {
         int operation = cp.Decode1();
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Region.KMST.check() || Config.GreaterOrEqual(Region.JMS, 180) || Region.JMST.check() || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Region.THMS.check() || Config.GreaterOrEqual(Region.GMS, 91) || Region.MSEA.check() || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) {
+            int update_time = cp.Decode4();
+        }
         Ops_Whisper loc_whis = Ops_Whisper.find(operation & ~Ops_Whisper.WP_Request.get());
 
         switch (loc_whis) {
@@ -3114,7 +3121,7 @@ public class ReqCUser {
             case WP_Whisper: {
                 String name_to = cp.DecodeStr();
                 String message = cp.DecodeStr();
-                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to);;
+                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to);
                 if (chr_to == null) {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;
