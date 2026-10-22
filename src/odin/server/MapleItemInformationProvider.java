@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.IntFunction;
+import java.util.function.ObjIntConsumer;
+import java.util.function.ToIntFunction;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
@@ -25,7 +28,6 @@ public class MapleItemInformationProvider {
     private final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
     private final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<>();
     private final Map<Integer, Short> itemMakeLevel = new HashMap<>();
-    private final Map<Integer, Equip> equipCache = new HashMap<>();
     private final Map<Integer, Double> priceCache = new HashMap<>();
     private final Map<Integer, Integer> wholePriceCache = new HashMap<>();
     private final Map<Integer, Integer> monsterBookID = new HashMap<>();
@@ -43,11 +45,77 @@ public class MapleItemInformationProvider {
     private final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<>();
     private final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
     private final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
-    private Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
     private final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
+
+    // equip stats by their wz name
+    private enum EquipStat {
+        STR("STR", Equip::getStr, Equip::setStr),
+        DEX("DEX", Equip::getDex, Equip::setDex),
+        INT("INT", Equip::getInt, Equip::setInt),
+        LUK("LUK", Equip::getLuk, Equip::setLuk),
+        PAD("PAD", Equip::getWatk, Equip::setWatk),
+        PDD("PDD", Equip::getWdef, Equip::setWdef),
+        MAD("MAD", Equip::getMatk, Equip::setMatk),
+        MDD("MDD", Equip::getMdef, Equip::setMdef),
+        ACC("ACC", Equip::getAcc, Equip::setAcc),
+        EVA("EVA", Equip::getAvoid, Equip::setAvoid),
+        SPEED("Speed", Equip::getSpeed, Equip::setSpeed),
+        JUMP("Jump", Equip::getJump, Equip::setJump),
+        MHP("MHP", Equip::getHp, Equip::setHp),
+        MMP("MMP", Equip::getMp, Equip::setMp),
+        MHPR("MHPr", Equip::getHpR, Equip::setHpR),
+        MMPR("MMPr", Equip::getMpR, Equip::setMpR),
+        CRAFT("Craft", Equip::getHands, Equip::setHands);
+
+        private final String name;
+        private final ToIntFunction<Equip> getter;
+        private final ObjIntConsumer<Equip> setter;
+
+        EquipStat(String name, ToIntFunction<Equip> getter, ObjIntConsumer<Equip> setter) {
+            this.name = name;
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        public int get(Equip equip) {
+            return getter.applyAsInt(equip);
+        }
+
+        public void set(Equip equip, int value) {
+            setter.accept(equip, value);
+        }
+
+        public void add(Equip equip, int value) {
+            set(equip, get(equip) + value);
+        }
+
+        public static EquipStat find(String name) {
+            for (EquipStat stat : values()) {
+                if (stat.name.equals(name)) {
+                    return stat;
+                }
+            }
+            return null;
+        }
+    }
+
+    // the stats a chaos scroll changes
+    private static final EquipStat[] CHAOS_STATS = {EquipStat.STR, EquipStat.DEX, EquipStat.INT, EquipStat.LUK, EquipStat.PAD, EquipStat.PDD, EquipStat.MAD, EquipStat.MDD, EquipStat.ACC, EquipStat.EVA, EquipStat.SPEED, EquipStat.JUMP, EquipStat.MHP, EquipStat.MMP};
 
     public static MapleItemInformationProvider getInstance() {
         return instance;
+    }
+
+    // the loader result is cached unless it is null
+    private static <V> V cached(Map<Integer, V> cache, int itemId, IntFunction<V> loader) {
+        V value = cache.get(itemId);
+        if (value == null) {
+            value = loader.apply(itemId);
+            if (value != null) {
+                cache.put(itemId, value);
+            }
+        }
+        return value;
     }
 
     private MapleData getItemData(int id) {
@@ -58,168 +126,76 @@ public class MapleItemInformationProvider {
      * returns the maximum of items in one slot
      */
     public short getSlotMax(int itemId) {
-        if (slotMaxCache.containsKey(itemId)) {
-            return slotMaxCache.get(itemId);
-        }
-        short ret = WzXML.ITEM.loadSlotMax(itemId);
-        slotMaxCache.put(itemId, ret);
-        return ret;
+        return cached(slotMaxCache, itemId, WzXML.ITEM::loadSlotMax);
     }
 
     public int getWholePrice(int itemId) {
-        if (wholePriceCache.containsKey(itemId)) {
-            return wholePriceCache.get(itemId);
-        }
-        int pEntry = WzXML.ITEM.loadWholePrice(itemId);
-        if (pEntry == -1) {
-            return -1;
-        }
-        wholePriceCache.put(itemId, pEntry);
-        return pEntry;
+        return cached(wholePriceCache, itemId, WzXML.ITEM::loadWholePrice);
     }
 
     public double getPrice(int itemId) {
-        if (priceCache.containsKey(itemId)) {
-            return priceCache.get(itemId);
-        }
-        double pEntry = WzXML.ITEM.loadPrice(itemId);
-        if (pEntry == -1) {
-            return -1;
-        }
-        priceCache.put(itemId, pEntry);
-        return pEntry;
+        return cached(priceCache, itemId, WzXML.ITEM::loadPrice);
     }
 
     public Map<String, Byte> getItemMakeStats(int itemId) {
-        if (itemMakeStatsCache.containsKey(itemId)) {
-            return itemMakeStatsCache.get(itemId);
-        }
-        Map<String, Byte> ret = WzXML.ITEM.loadItemMakeStats(itemId);
-        if (ret == null) {
-            return null;
-        }
-        itemMakeStatsCache.put(itemId, ret);
-        return ret;
+        return cached(itemMakeStatsCache, itemId, WzXML.ITEM::loadItemMakeStats);
     }
 
     private int rand(int min, int max) {
         return Math.abs(Randomizer.rand(min, max));
     }
 
+    // "STRMin" and "STRMax" etc, "MaxHPMin" is MHP
     public Equip levelUpEquip(Equip equip, Map<String, Integer> sta) {
         Equip nEquip = (Equip) equip.copy();
-        //is this all the stats?
-        try {
-            for (Entry<String, Integer> stat : sta.entrySet()) {
-                if (stat.getKey().equals("STRMin")) {
-                    nEquip.setStr((short) (nEquip.getStr() + rand(stat.getValue().intValue(), sta.get("STRMax").intValue())));
-                } else if (stat.getKey().equals("DEXMin")) {
-                    nEquip.setDex((short) (nEquip.getDex() + rand(stat.getValue().intValue(), sta.get("DEXMax").intValue())));
-                } else if (stat.getKey().equals("INTMin")) {
-                    nEquip.setInt((short) (nEquip.getInt() + rand(stat.getValue().intValue(), sta.get("INTMax").intValue())));
-                } else if (stat.getKey().equals("LUKMin")) {
-                    nEquip.setLuk((short) (nEquip.getLuk() + rand(stat.getValue().intValue(), sta.get("LUKMax").intValue())));
-                } else if (stat.getKey().equals("PADMin")) {
-                    nEquip.setWatk((short) (nEquip.getWatk() + rand(stat.getValue().intValue(), sta.get("PADMax").intValue())));
-                } else if (stat.getKey().equals("PDDMin")) {
-                    nEquip.setWdef((short) (nEquip.getWdef() + rand(stat.getValue().intValue(), sta.get("PDDMax").intValue())));
-                } else if (stat.getKey().equals("MADMin")) {
-                    nEquip.setMatk((short) (nEquip.getMatk() + rand(stat.getValue().intValue(), sta.get("MADMax").intValue())));
-                } else if (stat.getKey().equals("MDDMin")) {
-                    nEquip.setMdef((short) (nEquip.getMdef() + rand(stat.getValue().intValue(), sta.get("MDDMax").intValue())));
-                } else if (stat.getKey().equals("ACCMin")) {
-                    nEquip.setAcc((short) (nEquip.getAcc() + rand(stat.getValue().intValue(), sta.get("ACCMax").intValue())));
-                } else if (stat.getKey().equals("EVAMin")) {
-                    nEquip.setAvoid((short) (nEquip.getAvoid() + rand(stat.getValue().intValue(), sta.get("EVAMax").intValue())));
-                } else if (stat.getKey().equals("SpeedMin")) {
-                    nEquip.setSpeed((short) (nEquip.getSpeed() + rand(stat.getValue().intValue(), sta.get("SpeedMax").intValue())));
-                } else if (stat.getKey().equals("JumpMin")) {
-                    nEquip.setJump((short) (nEquip.getJump() + rand(stat.getValue().intValue(), sta.get("JumpMax").intValue())));
-                } else if (stat.getKey().equals("MHPMin")) {
-                    nEquip.setHp((short) (nEquip.getHp() + rand(stat.getValue().intValue(), sta.get("MHPMax").intValue())));
-                } else if (stat.getKey().equals("MMPMin")) {
-                    nEquip.setMp((short) (nEquip.getMp() + rand(stat.getValue().intValue(), sta.get("MMPMax").intValue())));
-                } else if (stat.getKey().equals("MaxHPMin")) {
-                    nEquip.setHp((short) (nEquip.getHp() + rand(stat.getValue().intValue(), sta.get("MaxHPMax").intValue())));
-                } else if (stat.getKey().equals("MaxMPMin")) {
-                    nEquip.setMp((short) (nEquip.getMp() + rand(stat.getValue().intValue(), sta.get("MaxMPMax").intValue())));
-                }
+        for (Entry<String, Integer> stat : sta.entrySet()) {
+            String key = stat.getKey();
+            if (!key.endsWith("Min")) {
+                continue;
             }
-        } catch (NullPointerException e) {
-            //catch npe because obviously the wz have some error XD
-            e.printStackTrace();
+            String base = key.substring(0, key.length() - 3);
+            Integer max = sta.get(base + "Max");
+            EquipStat es = EquipStat.find(base.equals("MaxHP") ? "MHP" : base.equals("MaxMP") ? "MMP" : base);
+            if (max == null || es == null || es == EquipStat.MHPR || es == EquipStat.MMPR || es == EquipStat.CRAFT) {
+                continue;
+            }
+            es.add(nEquip, rand(stat.getValue(), max));
         }
         return nEquip;
     }
 
     public Map<Integer, Map<String, Integer>> getEquipIncrements(int itemId) {
-        if (equipIncsCache.containsKey(itemId)) {
-            return equipIncsCache.get(itemId);
-        }
-        Map<Integer, Map<String, Integer>> ret = WzXML.ITEM.loadEquipIncrements(itemId);
-        if (ret == null) {
-            return null;
-        }
-        equipIncsCache.put(itemId, ret);
-        return ret;
+        return cached(equipIncsCache, itemId, WzXML.ITEM::loadEquipIncrements);
     }
 
     public Map<Integer, List<Integer>> getEquipSkills(int itemId) {
-        if (equipSkillsCache.containsKey(itemId)) {
-            return equipSkillsCache.get(itemId);
-        }
-        Map<Integer, List<Integer>> ret = WzXML.ITEM.loadEquipSkills(itemId);
-        if (ret == null) {
-            return null;
-        }
-        equipSkillsCache.put(itemId, ret);
-        return ret;
+        return cached(equipSkillsCache, itemId, WzXML.ITEM::loadEquipSkills);
     }
 
     public Map<String, Integer> getEquipStats(int itemId) {
-        if (equipStatsCache.containsKey(itemId)) {
-            return equipStatsCache.get(itemId);
-        }
-        Map<String, Integer> ret = WzXML.ITEM.loadEquipStats(itemId);
-        if (ret == null) {
-            return null;
-        }
-        equipStatsCache.put(itemId, ret);
-        return ret;
+        return cached(equipStatsCache, itemId, WzXML.ITEM::loadEquipStats);
     }
 
     public boolean canEquip(Map<String, Integer> stats, int itemid, int level, int job, int fame, int str, int dex, int luk, int int_, int supremacy) {
         if ((level + supremacy) >= stats.get("reqLevel") && str >= stats.get("reqSTR") && dex >= stats.get("reqDEX") && luk >= stats.get("reqLUK") && int_ >= stats.get("reqINT")) {
             int fameReq = stats.get("reqPOP");
-            if (fameReq != 0 && fame < fameReq) {
-                return false;
-            }
-            return true;
+            return fameReq == 0 || fame >= fameReq;
         }
         return false;
     }
 
     public int getReqLevel(int itemId) {
-        if (getEquipStats(itemId) == null) {
-            return 0;
-        }
-        return getEquipStats(itemId).get("reqLevel");
+        Map<String, Integer> stats = getEquipStats(itemId);
+        return (stats == null) ? 0 : stats.get("reqLevel");
     }
 
     public int getSlots(int itemId) {
-        if (getEquipStats(itemId) == null) {
-            return 0;
-        }
-        return getEquipStats(itemId).get("tuc");
+        Map<String, Integer> stats = getEquipStats(itemId);
+        return (stats == null) ? 0 : stats.get("tuc");
     }
 
     public List<Integer> getScrollReqs(int itemId) {
-        if (scrollReqCache.containsKey(itemId)) {
-            return scrollReqCache.get(itemId);
-        }
-        List<Integer> ret = WzXML.ITEM.loadScrollReqs(itemId);
-        scrollReqCache.put(itemId, ret);
-        return ret;
+        return cached(scrollReqCache, itemId, WzXML.ITEM::loadScrollReqs);
     }
 
     public Item scrollEquipWithId(Item equip, Item scrollId, boolean ws, TacosCharacter chr, int vegas) {
@@ -242,7 +218,7 @@ public class MapleItemInformationProvider {
         // slot consuming scroll (not clean slate, special, enhance or potential scroll)
         boolean uses_slot = !GameConstants.isCleanSlate(scroll_id) && !GameConstants.isSpecialScroll(scroll_id) && !always_success;
 
-        if (GameConstants.isPotentialScroll(scroll_id) || GameConstants.isEquipScroll(scroll_id) || Randomizer.nextInt(100) <= success) {
+        if (always_success || Randomizer.nextInt(100) <= success) {
             applyScroll(nEquip, scroll_id, stats, eqstats);
             if (uses_slot) {
                 nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
@@ -310,126 +286,58 @@ public class MapleItemInformationProvider {
     }
 
     // stat +- random(z)
-    private static short chaosStat(int value, int z) {
-        return (short) (value + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1));
+    private void applyChaosScroll(Equip nEquip, int z) {
+        for (EquipStat stat : CHAOS_STATS) {
+            if (stat.get(nEquip) > 0) {
+                stat.add(nEquip, Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1));
+            }
+        }
     }
 
-    private void applyChaosScroll(Equip nEquip, int z) {
-        if (nEquip.getStr() > 0) {
-            nEquip.setStr(chaosStat(nEquip.getStr(), z));
+    // +random(5), and 1/chance to add the stat the equip does not have
+    private static void enhanceStat(Equip nEquip, EquipStat stat, int chance) {
+        if (stat.get(nEquip) > 0 || Randomizer.nextInt(chance) == 1) {
+            stat.add(nEquip, Randomizer.nextInt(5));
         }
-        if (nEquip.getDex() > 0) {
-            nEquip.setDex(chaosStat(nEquip.getDex(), z));
-        }
-        if (nEquip.getInt() > 0) {
-            nEquip.setInt(chaosStat(nEquip.getInt(), z));
-        }
-        if (nEquip.getLuk() > 0) {
-            nEquip.setLuk(chaosStat(nEquip.getLuk(), z));
-        }
-        if (nEquip.getWatk() > 0) {
-            nEquip.setWatk(chaosStat(nEquip.getWatk(), z));
-        }
-        if (nEquip.getWdef() > 0) {
-            nEquip.setWdef(chaosStat(nEquip.getWdef(), z));
-        }
-        if (nEquip.getMatk() > 0) {
-            nEquip.setMatk(chaosStat(nEquip.getMatk(), z));
-        }
-        if (nEquip.getMdef() > 0) {
-            nEquip.setMdef(chaosStat(nEquip.getMdef(), z));
-        }
-        if (nEquip.getAcc() > 0) {
-            nEquip.setAcc(chaosStat(nEquip.getAcc(), z));
-        }
-        if (nEquip.getAvoid() > 0) {
-            nEquip.setAvoid(chaosStat(nEquip.getAvoid(), z));
-        }
-        if (nEquip.getSpeed() > 0) {
-            nEquip.setSpeed(chaosStat(nEquip.getSpeed(), z));
-        }
-        if (nEquip.getJump() > 0) {
-            nEquip.setJump(chaosStat(nEquip.getJump(), z));
-        }
-        if (nEquip.getHp() > 0) {
-            nEquip.setHp(chaosStat(nEquip.getHp(), z));
-        }
-        if (nEquip.getMp() > 0) {
-            nEquip.setMp(chaosStat(nEquip.getMp(), z));
+    }
+
+    // attack +2% (at least 1) on weapons
+    private static void enhanceAttack(Equip nEquip, EquipStat stat) {
+        int value = stat.get(nEquip);
+        if (value > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
+            stat.add(nEquip, Math.max(value / 50, 1));
         }
     }
 
     // equip enhancement scroll (always success)
     private void applyEnhanceScroll(Equip nEquip) {
-        if (nEquip.getStr() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-            nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getDex() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-            nEquip.setDex((short) (nEquip.getDex() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getInt() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-            nEquip.setInt((short) (nEquip.getInt() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getLuk() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-            nEquip.setLuk((short) (nEquip.getLuk() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getWatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-            nEquip.setWatk((short) (nEquip.getWatk() + Math.max(nEquip.getWatk() / 50, 1)));
-        }
-        if (nEquip.getWdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
-            nEquip.setWdef((short) (nEquip.getWdef() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getMatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-            nEquip.setMatk((short) (nEquip.getMatk() + Math.max(nEquip.getMatk() / 50, 1)));
-        }
-        if (nEquip.getMdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
-            nEquip.setMdef((short) (nEquip.getMdef() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getAcc() > 0 || Randomizer.nextInt(20) == 1) { //1/20
-            nEquip.setAcc((short) (nEquip.getAcc() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getAvoid() > 0 || Randomizer.nextInt(20) == 1) { //1/20
-            nEquip.setAvoid((short) (nEquip.getAvoid() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getSpeed() > 0 || Randomizer.nextInt(10) == 1) { //1/10
-            nEquip.setSpeed((short) (nEquip.getSpeed() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getJump() > 0 || Randomizer.nextInt(10) == 1) { //1/10
-            nEquip.setJump((short) (nEquip.getJump() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getHp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
-            nEquip.setHp((short) (nEquip.getHp() + Randomizer.nextInt(5)));
-        }
-        if (nEquip.getMp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
-            nEquip.setMp((short) (nEquip.getMp() + Randomizer.nextInt(5)));
-        }
+        enhanceStat(nEquip, EquipStat.STR, 50);
+        enhanceStat(nEquip, EquipStat.DEX, 50);
+        enhanceStat(nEquip, EquipStat.INT, 50);
+        enhanceStat(nEquip, EquipStat.LUK, 50);
+        enhanceAttack(nEquip, EquipStat.PAD);
+        enhanceStat(nEquip, EquipStat.PDD, 40);
+        enhanceAttack(nEquip, EquipStat.MAD);
+        enhanceStat(nEquip, EquipStat.MDD, 40);
+        enhanceStat(nEquip, EquipStat.ACC, 20);
+        enhanceStat(nEquip, EquipStat.EVA, 20);
+        enhanceStat(nEquip, EquipStat.SPEED, 10);
+        enhanceStat(nEquip, EquipStat.JUMP, 10);
+        enhanceStat(nEquip, EquipStat.MHP, 5);
+        enhanceStat(nEquip, EquipStat.MMP, 5);
         nEquip.setEnhance((byte) (nEquip.getEnhance() + 1));
     }
 
     // normal scroll : add the stats of the scroll
     private void applyStatScroll(Equip nEquip, Map<String, Integer> stats) {
         for (Entry<String, Integer> stat : stats.entrySet()) {
-            int value = stat.getValue();
-            switch (stat.getKey()) {
-                case "STR" -> nEquip.setStr((short) (nEquip.getStr() + value));
-                case "DEX" -> nEquip.setDex((short) (nEquip.getDex() + value));
-                case "INT" -> nEquip.setInt((short) (nEquip.getInt() + value));
-                case "LUK" -> nEquip.setLuk((short) (nEquip.getLuk() + value));
-                case "PAD" -> nEquip.setWatk((short) (nEquip.getWatk() + value));
-                case "PDD" -> nEquip.setWdef((short) (nEquip.getWdef() + value));
-                case "MAD" -> nEquip.setMatk((short) (nEquip.getMatk() + value));
-                case "MDD" -> nEquip.setMdef((short) (nEquip.getMdef() + value));
-                case "ACC" -> nEquip.setAcc((short) (nEquip.getAcc() + value));
-                case "EVA" -> nEquip.setAvoid((short) (nEquip.getAvoid() + value));
-                case "Speed" -> nEquip.setSpeed((short) (nEquip.getSpeed() + value));
-                case "Jump" -> nEquip.setJump((short) (nEquip.getJump() + value));
-                case "MHP" -> nEquip.setHp((short) (nEquip.getHp() + value));
-                case "MMP" -> nEquip.setMp((short) (nEquip.getMp() + value));
-                case "MHPr" -> nEquip.setHpR((short) (nEquip.getHpR() + value));
-                case "MMPr" -> nEquip.setMpR((short) (nEquip.getMpR() + value));
-                case "attackSpeed" -> nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + value); // 攻撃速度の書
-                default -> {
-                }
+            if (stat.getKey().equals("attackSpeed")) {
+                nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + stat.getValue()); // 攻撃速度の書
+                continue;
+            }
+            EquipStat es = EquipStat.find(stat.getKey());
+            if (es != null && es != EquipStat.CRAFT) {
+                es.add(nEquip, stat.getValue());
             }
         }
     }
@@ -445,149 +353,104 @@ public class MapleItemInformationProvider {
         if (stats != null) {
             for (Entry<String, Integer> stat : stats.entrySet()) {
                 String key = stat.getKey();
-
-                if (key.equals("STR")) {
-                    nEquip.setStr((short) stat.getValue().intValue());
-                } else if (key.equals("DEX")) {
-                    nEquip.setDex((short) stat.getValue().intValue());
-                } else if (key.equals("INT")) {
-                    nEquip.setInt((short) stat.getValue().intValue());
-                } else if (key.equals("LUK")) {
-                    nEquip.setLuk((short) stat.getValue().intValue());
-                } else if (key.equals("PAD")) {
-                    nEquip.setWatk((short) stat.getValue().intValue());
-                } else if (key.equals("PDD")) {
-                    nEquip.setWdef((short) stat.getValue().intValue());
-                } else if (key.equals("MAD")) {
-                    nEquip.setMatk((short) stat.getValue().intValue());
-                } else if (key.equals("MDD")) {
-                    nEquip.setMdef((short) stat.getValue().intValue());
-                } else if (key.equals("ACC")) {
-                    nEquip.setAcc((short) stat.getValue().intValue());
-                } else if (key.equals("EVA")) {
-                    nEquip.setAvoid((short) stat.getValue().intValue());
-                } else if (key.equals("Speed")) {
-                    nEquip.setSpeed((short) stat.getValue().intValue());
-                } else if (key.equals("Jump")) {
-                    nEquip.setJump((short) stat.getValue().intValue());
-                } else if (key.equals("MHP")) {
-                    nEquip.setHp((short) stat.getValue().intValue());
-                } else if (key.equals("MMP")) {
-                    nEquip.setMp((short) stat.getValue().intValue());
-                } else if (key.equals("MHPr")) {
-                    nEquip.setHpR((short) stat.getValue().intValue());
-                } else if (key.equals("MMPr")) {
-                    nEquip.setMpR((short) stat.getValue().intValue());
+                EquipStat es = EquipStat.find(key);
+                if (es != null) {
+                    es.set(nEquip, stat.getValue());
                 } else if (key.equals("tuc")) {
                     nEquip.setUpgradeSlots(stat.getValue().byteValue());
-                } else if (key.equals("Craft")) {
-                    nEquip.setHands(stat.getValue().shortValue());
                 } else if (key.equals("durability")) {
                     nEquip.setDurability(stat.getValue());
                 }
             }
         }
-        equipCache.put(equipId, nEquip);
         return nEquip.copy();
     }
 
-    private short getRandStat(short defaultValue, int maxRange) {
+    // vary no more than ceil of 10% of stat
+    private static int getRandStat(int defaultValue, int maxRange) {
         if (defaultValue == 0) {
             return 0;
         }
-        // vary no more than ceil of 10% of stat
         int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
+        return (int) ((defaultValue - lMaxRange) + Math.floor(Math.random() * (lMaxRange * 2 + 1)));
+    }
 
-        return (short) ((defaultValue - lMaxRange) + Math.floor(Math.random() * (lMaxRange * 2 + 1)));
+    private static void randomizeStat(Equip equip, EquipStat stat, int maxRange) {
+        stat.set(equip, getRandStat(stat.get(equip), maxRange));
     }
 
     public Equip RireSabaStats(Equip equip) {
         int r = (int) Math.floor(Math.random() * 5) + 1;
-        int min = 0;
-        int range = 5;
-
-        // GOD
-        if (r == 4) {
-            min = 100;
-            range = 1000;
-        } // Legend
-        else if (r == 3) {
-            min = 20;
-            range = 100;
-        } // Super
-        else if (r == 2) {
-            min = 10;
-            range = 10;
-        } // Rare
-        else if (r == 1) {
-            min = 0;
-            range = 10;
-        } // Normal
-        else {
-            equip.setStr(getRandStat((short) equip.getStr(), 5));
-            equip.setDex(getRandStat((short) equip.getDex(), 5));
-            equip.setInt(getRandStat((short) equip.getInt(), 5));
-            equip.setLuk(getRandStat((short) equip.getLuk(), 5));
-            equip.setMatk(getRandStat((short) equip.getMatk(), 5));
-            equip.setWatk(getRandStat((short) equip.getWatk(), 5));
-            equip.setAcc(getRandStat((short) equip.getAcc(), 5));
-            equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
-            equip.setJump(getRandStat((short) equip.getJump(), 5));
-            equip.setHands(getRandStat((short) equip.getHands(), 5));
-            equip.setSpeed(getRandStat((short) equip.getSpeed(), 5));
-            equip.setWdef(getRandStat((short) equip.getWdef(), 10));
-            equip.setMdef(getRandStat((short) equip.getMdef(), 10));
-            equip.setHp(getRandStat((short) equip.getHp(), 10));
-            equip.setMp(getRandStat((short) equip.getMp(), 10));
-            return equip;
+        int min;
+        int range;
+        switch (r) {
+            case 4: { // GOD
+                min = 100;
+                range = 1000;
+                break;
+            }
+            case 3: { // Legend
+                min = 20;
+                range = 100;
+                break;
+            }
+            case 2: { // Super
+                min = 10;
+                range = 10;
+                break;
+            }
+            case 1: { // Rare
+                min = 0;
+                range = 10;
+                break;
+            }
+            default: { // Normal
+                return defaultRandomizeStats(equip);
+            }
         }
 
         // Legend以上なら存在しない能力値も付与
-        int def = equip.getStr();
-        if (r >= 3 || def != 0) {
-            equip.setStr((short) (def + min + Math.floor(Math.random() * range)));
-        }
-        def = equip.getDex();
-        if (r >= 3 || def != 0) {
-            equip.setDex((short) (def + min + Math.floor(Math.random() * range)));
-        }
-        def = equip.getInt();
-        if (r >= 3 || def != 0) {
-            equip.setInt((short) (def + min + Math.floor(Math.random() * range)));
-        }
-        def = equip.getLuk();
-        if (r >= 3 || def != 0) {
-            equip.setLuk((short) (def + min + Math.floor(Math.random() * range)));
-        }
-        def = equip.getWatk();
-        if (r >= 3 || def != 0) {
-            equip.setWatk((short) (def + min + Math.floor(Math.random() * range)));
-        }
-        def = equip.getMatk();
-        if (r >= 3 || def != 0) {
-            equip.setMatk((short) (def + min + Math.floor(Math.random() * range)));
+        for (EquipStat stat : new EquipStat[]{EquipStat.STR, EquipStat.DEX, EquipStat.INT, EquipStat.LUK, EquipStat.PAD, EquipStat.MAD}) {
+            int def = stat.get(equip);
+            if (r >= 3 || def != 0) {
+                stat.set(equip, (int) (def + min + Math.floor(Math.random() * range)));
+            }
         }
         // 戦士優遇
-        def = equip.getAcc();
-        if (r >= 1 || def != 0) {
-            equip.setAcc((short) (def + min + Math.floor(Math.random() * range)));
-        }
+        EquipStat.ACC.set(equip, (int) (equip.getAcc() + min + Math.floor(Math.random() * range)));
         // 移動速度とジャンプ力は最大値に合わせる
-        def = equip.getSpeed();
-        if (r >= 3 || def != 0) {
-            equip.setSpeed((short) (def + 40));
+        if (r >= 3 || equip.getSpeed() != 0) {
+            EquipStat.SPEED.add(equip, 40);
         }
-        def = equip.getJump();
-        if (r >= 3 || def != 0) {
-            equip.setJump((short) (def + 23));
+        if (r >= 3 || equip.getJump() != 0) {
+            EquipStat.JUMP.add(equip, 23);
         }
         // その他
-        equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
-        equip.setHands(getRandStat((short) equip.getHands(), 5));
-        equip.setWdef(getRandStat((short) equip.getWdef(), 10));
-        equip.setMdef(getRandStat((short) equip.getMdef(), 10));
-        equip.setHp(getRandStat((short) equip.getHp(), 10));
-        equip.setMp(getRandStat((short) equip.getMp(), 10));
+        randomizeStat(equip, EquipStat.EVA, 5);
+        randomizeStat(equip, EquipStat.CRAFT, 5);
+        randomizeStat(equip, EquipStat.PDD, 10);
+        randomizeStat(equip, EquipStat.MDD, 10);
+        randomizeStat(equip, EquipStat.MHP, 10);
+        randomizeStat(equip, EquipStat.MMP, 10);
+        return equip;
+    }
+
+    private Equip defaultRandomizeStats(Equip equip) {
+        randomizeStat(equip, EquipStat.STR, 5);
+        randomizeStat(equip, EquipStat.DEX, 5);
+        randomizeStat(equip, EquipStat.INT, 5);
+        randomizeStat(equip, EquipStat.LUK, 5);
+        randomizeStat(equip, EquipStat.MAD, 5);
+        randomizeStat(equip, EquipStat.PAD, 5);
+        randomizeStat(equip, EquipStat.ACC, 5);
+        randomizeStat(equip, EquipStat.EVA, 5);
+        randomizeStat(equip, EquipStat.JUMP, 5);
+        randomizeStat(equip, EquipStat.CRAFT, 5);
+        randomizeStat(equip, EquipStat.SPEED, 5);
+        randomizeStat(equip, EquipStat.PDD, 10);
+        randomizeStat(equip, EquipStat.MDD, 10);
+        randomizeStat(equip, EquipStat.MHP, 10);
+        randomizeStat(equip, EquipStat.MMP, 10);
         return equip;
     }
 
@@ -595,63 +458,27 @@ public class MapleItemInformationProvider {
         if (ContentCustom.CC_EQUIP_STAT_RANDOMIZER.get()) {
             return RireSabaStats(equip);
         }
-
-        equip.setStr(getRandStat((short) equip.getStr(), 5));
-        equip.setDex(getRandStat((short) equip.getDex(), 5));
-        equip.setInt(getRandStat((short) equip.getInt(), 5));
-        equip.setLuk(getRandStat((short) equip.getLuk(), 5));
-        equip.setMatk(getRandStat((short) equip.getMatk(), 5));
-        equip.setWatk(getRandStat((short) equip.getWatk(), 5));
-        equip.setAcc(getRandStat((short) equip.getAcc(), 5));
-        equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
-        equip.setJump(getRandStat((short) equip.getJump(), 5));
-        equip.setHands(getRandStat((short) equip.getHands(), 5));
-        equip.setSpeed(getRandStat((short) equip.getSpeed(), 5));
-        equip.setWdef(getRandStat((short) equip.getWdef(), 10));
-        equip.setMdef(getRandStat((short) equip.getMdef(), 10));
-        equip.setHp(getRandStat((short) equip.getHp(), 10));
-        equip.setMp(getRandStat((short) equip.getMp(), 10));
-        return equip;
+        return defaultRandomizeStats(equip);
     }
 
     public MapleStatEffect getItemEffect(int itemId) {
-        MapleStatEffect ret = itemEffects.get(itemId);
-        if (ret == null) {
-            if (getItemData(itemId) == null) {
-                return null;
-            }
-            ret = MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(itemId), itemId);
-            itemEffects.put(itemId, ret);
-        }
-        return ret;
+        return cached(itemEffects, itemId, id -> (getItemData(id) == null) ? null : MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(id), id));
     }
 
     public List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(int itemId) {
-        if (summonMobCache.containsKey(itemId)) {
-            return summonMobCache.get(itemId);
-        }
-        List<SimpleImmutableEntry<Integer, Integer>> mobPairs = WzXML.ITEM.loadSummonMobs(itemId);
-        if (mobPairs == null) {
-            return null;
-        }
-        summonMobCache.put(itemId, mobPairs);
-        return mobPairs;
+        return cached(summonMobCache, itemId, WzXML.ITEM::loadSummonMobs);
     }
 
     public int getCardMobId(int id) {
         if (id == 0) {
             return 0;
         }
-        if (monsterBookID.containsKey(id)) {
-            return monsterBookID.get(id);
-        }
-        int monsterid = WzXML.ITEM.loadCardMobId(id);
-
-        if (monsterid == 0) { // Hack.
-            return 0;
-        }
-        monsterBookID.put(id, monsterid);
-        return monsterBookID.get(id);
+        // 0 (no mob) is not cached
+        Integer mob_id = cached(monsterBookID, id, card_id -> {
+            int ret = WzXML.ITEM.loadCardMobId(card_id);
+            return (ret == 0) ? null : ret;
+        });
+        return (mob_id == null) ? 0 : mob_id;
     }
 
     public boolean canScroll(int scrollid, int itemid) {
@@ -659,87 +486,40 @@ public class MapleItemInformationProvider {
     }
 
     public String getName(int itemId) {
-        if (nameCache.containsKey(itemId)) {
-            return nameCache.get(itemId);
-        }
-        String ret = WzXML.STRING.loadItemName(itemId);
-        nameCache.put(itemId, ret);
-        return ret;
+        return cached(nameCache, itemId, WzXML.STRING::loadItemName);
     }
 
     public String getMsg(int itemId) {
-        if (msgCache.containsKey(itemId)) {
-            return msgCache.get(itemId);
-        }
-        String ret = WzXML.STRING.loadItemMsg(itemId);
-        msgCache.put(itemId, ret);
-        return ret;
+        return cached(msgCache, itemId, WzXML.STRING::loadItemMsg);
     }
 
     public short getItemMakeLevel(int itemId) {
-        if (itemMakeLevel.containsKey(itemId)) {
-            return itemMakeLevel.get(itemId);
-        }
-        short lvl = WzXML.ITEM.loadItemMakeLevel(itemId);
-        itemMakeLevel.put(itemId, lvl);
-        return lvl;
+        return cached(itemMakeLevel, itemId, WzXML.ITEM::loadItemMakeLevel);
     }
 
+    // 0 = not, 1 = consume on pickup, 2 = consume + party
     public byte isConsumeOnPickup(int itemId) {
-        // 0 = not, 1 = consume on pickup, 2 = consume + party
-        if (consumeOnPickupCache.containsKey(itemId)) {
-            return consumeOnPickupCache.get(itemId);
-        }
-        byte consume = WzXML.ITEM.loadConsumeOnPickup(itemId);
-        consumeOnPickupCache.put(itemId, consume);
-        return consume;
+        return cached(consumeOnPickupCache, itemId, WzXML.ITEM::loadConsumeOnPickup);
     }
 
     public boolean isDropRestricted(int itemId) {
-        if (dropRestrictionCache.containsKey(itemId)) {
-            return dropRestrictionCache.get(itemId);
-        }
-        boolean trade = WzXML.ITEM.loadDropRestricted(itemId);
-        dropRestrictionCache.put(itemId, trade);
-        return trade;
+        return cached(dropRestrictionCache, itemId, WzXML.ITEM::loadDropRestricted);
     }
 
     public boolean isPickupRestricted(int itemId) {
-        if (pickupRestrictionCache.containsKey(itemId)) {
-            return pickupRestrictionCache.get(itemId);
-        }
-        boolean bRestricted = WzXML.ITEM.loadPickupRestricted(itemId);
-
-        pickupRestrictionCache.put(itemId, bRestricted);
-        return bRestricted;
+        return cached(pickupRestrictionCache, itemId, WzXML.ITEM::loadPickupRestricted);
     }
 
     public boolean isAccountShared(int itemId) {
-        if (accCache.containsKey(itemId)) {
-            return accCache.get(itemId);
-        }
-        boolean bRestricted = WzXML.ITEM.loadAccountShared(itemId);
-
-        accCache.put(itemId, bRestricted);
-        return bRestricted;
+        return cached(accCache, itemId, WzXML.ITEM::loadAccountShared);
     }
 
     public int getStateChangeItem(int itemId) {
-        if (stateChangeCache.containsKey(itemId)) {
-            return stateChangeCache.get(itemId);
-        }
-        int triggerItem = WzXML.ITEM.loadStateChangeItem(itemId);
-        stateChangeCache.put(itemId, triggerItem);
-        return triggerItem;
+        return cached(stateChangeCache, itemId, WzXML.ITEM::loadStateChangeItem);
     }
 
     public int getMeso(int itemId) {
-        if (mesoCache.containsKey(itemId)) {
-            return mesoCache.get(itemId);
-        }
-        int triggerItem = WzXML.ITEM.loadMeso(itemId);
-        mesoCache.put(itemId, triggerItem);
-        return triggerItem;
+        return cached(mesoCache, itemId, WzXML.ITEM::loadMeso);
     }
 
     // info/damaとか
@@ -748,47 +528,20 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isPickupBlocked(int itemId) {
-        if (blockPickupCache.containsKey(itemId)) {
-            return blockPickupCache.get(itemId);
-        }
-        boolean iRestricted = WzXML.ITEM.loadPickupBlocked(itemId);
-
-        blockPickupCache.put(itemId, iRestricted);
-        return iRestricted;
+        return cached(blockPickupCache, itemId, WzXML.ITEM::loadPickupBlocked);
     }
 
-    public boolean cantSell(int itemId) { //true = cant sell, false = can sell
-        if (notSaleCache.containsKey(itemId)) {
-            return notSaleCache.get(itemId);
-        }
-        boolean bRestricted = WzXML.ITEM.loadCantSell(itemId);
-
-        notSaleCache.put(itemId, bRestricted);
-        return bRestricted;
+    // true = cant sell, false = can sell
+    public boolean cantSell(int itemId) {
+        return cached(notSaleCache, itemId, WzXML.ITEM::loadCantSell);
     }
 
     public Map<String, Integer> getSkillStats(int itemId) {
-        if (SkillStatsCache.containsKey(itemId)) {
-            return SkillStatsCache.get(itemId);
-        }
-        Map<String, Integer> ret = WzXML.ITEM.loadSkillStats(itemId);
-        if (ret == null) {
-            return null;
-        }
-        SkillStatsCache.put(itemId, ret);
-        return ret;
+        return cached(SkillStatsCache, itemId, WzXML.ITEM::loadSkillStats);
     }
 
     public SimpleImmutableEntry<Integer, List<Integer>> questItemInfo(int itemId) {
-        if (questItems.containsKey(itemId)) {
-            return questItems.get(itemId);
-        }
-        SimpleImmutableEntry<Integer, List<Integer>> questItem = WzXML.ITEM.loadQuestItemInfo(itemId);
-        if (questItem == null) {
-            return null;
-        }
-        questItems.put(itemId, questItem);
-        return questItem;
+        return cached(questItems, itemId, WzXML.ITEM::loadQuestItemInfo);
     }
 
     public boolean itemExists(int itemId) {
@@ -799,24 +552,10 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isCash(int itemId) {
-        if (getEquipStats(itemId) == null) {
-            return GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH;
+        if (GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH) {
+            return true;
         }
-        return GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH || getEquipStats(itemId).get("cash") > 0;
-    }
-
-    // パチンコ
-    // CMS v72から流用
-    /*
-     */
-
-    public static class StructRewardItem {
-
-        public int itemid;
-        public long period;
-        public short prob;
-        public short quantity;
-        public String effect;
-        public String worldmsg;
+        Map<String, Integer> stats = getEquipStats(itemId);
+        return stats != null && stats.get("cash") > 0;
     }
 }

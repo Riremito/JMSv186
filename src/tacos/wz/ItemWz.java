@@ -30,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleItemInformationProvider.StructRewardItem;
 
 /**
  *
@@ -689,35 +688,6 @@ public class ItemWz extends WzXML {
 
     public boolean loadCantSell(int itemId) { //true = cant sell, false = can sell
         return getResolvedItemData(itemId).getInt("info/notSale") == 1;
-    }
-
-    public SimpleImmutableEntry<Integer, List<StructRewardItem>> loadRewardItem(int itemid) {
-        MapleData data = getResolvedItemData(itemid);
-        if (data == null) {
-            return null;
-        }
-        MapleData rewards = data.getChildByPath("reward");
-        if (rewards == null) {
-            return null;
-        }
-        int totalprob = 0; // As there are some rewards with prob above 2000, we can't assume it's always 100
-        List<StructRewardItem> all = new ArrayList<>();
-
-        for (MapleData reward : rewards) {
-            StructRewardItem struct = new StructRewardItem();
-
-            struct.itemid = reward.getInt("item");
-            struct.prob = (byte) reward.getInt("prob");
-            struct.quantity = (short) reward.getInt("count");
-            struct.effect = reward.getString("Effect");
-            struct.worldmsg = reward.getString("worldMsg", null);
-            struct.period = reward.getInt("period", -1);
-
-            totalprob += struct.prob;
-
-            all.add(struct);
-        }
-        return new SimpleImmutableEntry<>(totalprob, all);
     }
 
     public Map<String, Integer> loadSkillStats(int itemId) {
