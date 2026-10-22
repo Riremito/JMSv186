@@ -19,38 +19,38 @@ import tacos.wz.WzXML;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<>();
-    protected final Map<Integer, Short> slotMaxCache = new HashMap<>();
-    protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
-    protected final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
-    protected final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<>();
-    protected final Map<Integer, Short> itemMakeLevel = new HashMap<>();
-    protected final Map<Integer, Equip> equipCache = new HashMap<>();
-    protected final Map<Integer, Double> priceCache = new HashMap<>();
-    protected final Map<Integer, Integer> wholePriceCache = new HashMap<>();
-    protected final Map<Integer, Integer> monsterBookID = new HashMap<>();
-    protected final Map<Integer, String> nameCache = new HashMap<>();
-    protected final Map<Integer, String> msgCache = new HashMap<>();
-    protected final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<>();
-    protected final Map<Integer, Byte> consumeOnPickupCache = new HashMap<>();
-    protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
-    protected final Map<Integer, Boolean> accCache = new HashMap<>();
-    protected final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
-    protected final Map<Integer, Integer> stateChangeCache = new HashMap<>();
-    protected final Map<Integer, Integer> mesoCache = new HashMap<>();
-    protected final Map<Integer, Boolean> notSaleCache = new HashMap<>();
-    protected final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
-    protected final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<>();
-    protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
-    protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
-    protected Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
-    protected final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
+    private final Map<Integer, List<Integer>> scrollReqCache = new HashMap<>();
+    private final Map<Integer, Short> slotMaxCache = new HashMap<>();
+    private final Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
+    private final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    private final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<>();
+    private final Map<Integer, Short> itemMakeLevel = new HashMap<>();
+    private final Map<Integer, Equip> equipCache = new HashMap<>();
+    private final Map<Integer, Double> priceCache = new HashMap<>();
+    private final Map<Integer, Integer> wholePriceCache = new HashMap<>();
+    private final Map<Integer, Integer> monsterBookID = new HashMap<>();
+    private final Map<Integer, String> nameCache = new HashMap<>();
+    private final Map<Integer, String> msgCache = new HashMap<>();
+    private final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<>();
+    private final Map<Integer, Byte> consumeOnPickupCache = new HashMap<>();
+    private final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
+    private final Map<Integer, Boolean> accCache = new HashMap<>();
+    private final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
+    private final Map<Integer, Integer> stateChangeCache = new HashMap<>();
+    private final Map<Integer, Integer> mesoCache = new HashMap<>();
+    private final Map<Integer, Boolean> notSaleCache = new HashMap<>();
+    private final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
+    private final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<>();
+    private final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
+    private final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
+    private Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
+    private final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
 
     public static MapleItemInformationProvider getInstance() {
         return instance;
     }
 
-    protected MapleData getItemData(int id) {
+    private MapleData getItemData(int id) {
         return WzXML.ITEM.getResolvedItemData(id);
     }
 

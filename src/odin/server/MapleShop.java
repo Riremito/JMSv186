@@ -196,7 +196,7 @@ public class MapleShop {
         return false;
     }
 
-    protected MapleShopItem findById(int itemId) {
+    private MapleShopItem findById(int itemId) {
         for (MapleShopItem item : items) {
             if (item.getItemId() == itemId) {
                 return item;

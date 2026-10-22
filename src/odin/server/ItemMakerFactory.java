@@ -10,15 +10,15 @@ import tacos.wz.WzXML;
 public class ItemMakerFactory {
 
     private final static ItemMakerFactory instance = new ItemMakerFactory();
-    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
-    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
+    private Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
+    private Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
         return instance;
     }
 
-    protected ItemMakerFactory() {
+    private ItemMakerFactory() {
         //System.out.println("Loading ItemMakerFactory :::");
         WzXML.ETC.loadItemMake(gemCache, createCache);
     }

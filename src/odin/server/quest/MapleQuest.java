@@ -20,22 +20,22 @@ import tacos.wz.WzXML;
 public class MapleQuest {
 
     private static final Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
-    protected int id;
-    protected List<MapleQuestRequirement> startReqs;
-    protected List<MapleQuestRequirement> completeReqs;
-    protected List<MapleQuestAction> startActs;
-    protected List<MapleQuestAction> completeActs;
-    protected Map<Integer, Integer> relevantMobs;
-    protected String name = "";
+    private int id;
+    private List<MapleQuestRequirement> startReqs;
+    private List<MapleQuestRequirement> completeReqs;
+    private List<MapleQuestAction> startActs;
+    private List<MapleQuestAction> completeActs;
+    private Map<Integer, Integer> relevantMobs;
+    private String name = "";
     private boolean autoStart = false;
     private boolean autoPreComplete = false;
     private boolean repeatable = false;
     private boolean customend = false;
     private int viewMedalItem = 0;
     private int selectedSkillID = 0;
-    protected Map<String, List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
+    private Map<String, List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
 
-    protected MapleQuest(int id) {
+    private MapleQuest(int id) {
         relevantMobs = new LinkedHashMap<>();
         startReqs = new LinkedList<>();
         completeReqs = new LinkedList<>();

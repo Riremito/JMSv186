@@ -44,7 +44,7 @@ public class MapleGuildAlliance {
     private int capacity; //make SQL for this auto-increment
     private String name;
     private String notice;
-    private String ranks[] = new String[5];
+    private String[] ranks = new String[5];
 
     public MapleGuildAlliance(int id) {
         super();

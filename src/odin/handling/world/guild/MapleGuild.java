@@ -55,7 +55,7 @@ public class MapleGuild {
         NONE, DISBAND, EMBELMCHANGE
     }
     private final List<MapleGuildCharacter> members = new CopyOnWriteArrayList<>();
-    private final String rankTitles[] = new String[5]; // 1 = master, 2 = jr, 5 = lowest member
+    private final String[] rankTitles = new String[5]; // 1 = master, 2 = jr, 5 = lowest member
     private String name;
     private String notice;
     private int id;

@@ -18,7 +18,7 @@ public class CashItemFactory {
         return instance;
     }
 
-    protected CashItemFactory() {
+    private CashItemFactory() {
     }
 
     public CashItemInfo getItem(int item_SN) {

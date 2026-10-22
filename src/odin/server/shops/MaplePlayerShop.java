@@ -51,21 +51,21 @@ public class MaplePlayerShop implements IPlayerShop {
     private Point position = new Point();
     private int objectId;
 
-    protected boolean open = false;
-    protected boolean available = false;
-    protected String ownerName;
-    protected String des;
-    protected String pass;
-    protected int ownerId;
-    protected int owneraccount;
-    protected int itemId;
-    protected int channel;
-    protected int map;
-    protected AtomicInteger meso = new AtomicInteger(0);
-    protected TacosCharacter chrs[];
-    protected List<String> visitors = new LinkedList<>();
-    protected List<BoughtItem> bought = new LinkedList<>();
-    protected List<MaplePlayerShopItem> items = new LinkedList<>();
+    private boolean open = false;
+    private boolean available = false;
+    private String ownerName;
+    private String des;
+    private String pass;
+    private int ownerId;
+    private int owneraccount;
+    private int itemId;
+    private int channel;
+    private int map;
+    private AtomicInteger meso = new AtomicInteger(0);
+    private TacosCharacter[] chrs;
+    private List<String> visitors = new LinkedList<>();
+    private List<BoughtItem> bought = new LinkedList<>();
+    private List<MaplePlayerShopItem> items = new LinkedList<>();
 
     private int boughtnumber = 0;
     private List<String> bannedList = new ArrayList<>();
