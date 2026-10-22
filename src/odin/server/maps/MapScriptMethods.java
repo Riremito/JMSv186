@@ -52,7 +52,7 @@ public class MapScriptMethods {
         "待ってたぞ！勇気が有り余ってるなら入ってこい！"
     };
 
-    private static enum onFirstUserEnter {
+    private enum FirstUserEnterScript {
 
         dojang_Eff,
         PinkBeen_before,
@@ -77,16 +77,16 @@ public class MapScriptMethods {
         PRaid_B_Fenter,
         NULL;
 
-        private static onFirstUserEnter fromString(String Str) {
+        private static FirstUserEnterScript fromString(String name) {
             try {
-                return valueOf(Str);
+                return valueOf(name);
             } catch (IllegalArgumentException ex) {
                 return NULL;
             }
         }
     };
 
-    private static enum onUserEnter {
+    private enum UserEnterScript {
 
         babyPigMap,
         crash_Dragon,
@@ -165,9 +165,9 @@ public class MapScriptMethods {
         PRaid_FailEnter,
         NULL;
 
-        private static onUserEnter fromString(String Str) {
+        private static UserEnterScript fromString(String name) {
             try {
-                return valueOf(Str);
+                return valueOf(name);
             } catch (IllegalArgumentException ex) {
                 return NULL;
             }
@@ -177,12 +177,12 @@ public class MapScriptMethods {
     public static void startScript_FirstUser(TacosCharacter chr, String scriptName) {
         if (chr == null) {
             return;
-        } //o_O
+        }
         TacosMap map = chr.getMap();
-        switch (onFirstUserEnter.fromString(scriptName)) {
+        switch (FirstUserEnterScript.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (chr.getMapId() - 925000000) / 100;
-                int stage = temp - ((temp / 100) * 100);
+                int stage = temp % 100;
 
                 sendDojoClock(chr.getClient(), getTiming(stage) * 60);
                 sendDojoStart(chr.getClient(), stage - getDojoStageDec(stage));
@@ -433,7 +433,7 @@ public class MapScriptMethods {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("onFirstUserEnter : " + scriptName);
+                DebugLogger.ErrorLog("FirstUserEnterScript : " + scriptName);
                 break;
             }
         }
@@ -444,7 +444,7 @@ public class MapScriptMethods {
             return;
         } //o_O
         String data = "";
-        switch (onUserEnter.fromString(scriptName)) {
+        switch (UserEnterScript.fromString(scriptName)) {
             case cygnusTest:
             case cygnusJobTutorial: {
                 showIntro(chr.getClient(), "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
@@ -698,7 +698,7 @@ public class MapScriptMethods {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("onUserEnter : " + scriptName);
+                DebugLogger.ErrorLog("UserEnterScript : " + scriptName);
                 break;
             }
         }
