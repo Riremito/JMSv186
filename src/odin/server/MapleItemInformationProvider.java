@@ -50,10 +50,6 @@ public class MapleItemInformationProvider {
         return instance;
     }
 
-    protected MapleData getStringData(int itemId) {
-        return WzXML.STRING.getItemStringData(itemId);
-    }
-
     protected MapleData getItemData(int id) {
         return WzXML.ITEM.getResolvedItemData(id);
     }
@@ -215,13 +211,6 @@ public class MapleItemInformationProvider {
             return 0;
         }
         return getEquipStats(itemId).get("tuc");
-    }
-
-    public int getSetItemID(int itemId) {
-        if (getEquipStats(itemId) == null) {
-            return 0;
-        }
-        return getEquipStats(itemId).get("setItemID");
     }
 
     public List<Integer> getScrollReqs(int itemId) {
@@ -778,18 +767,6 @@ public class MapleItemInformationProvider {
         return bRestricted;
     }
 
-    public SimpleImmutableEntry<Integer, List<StructRewardItem>> getRewardItem(int itemid) {
-        if (RewardItem.containsKey(itemid)) {
-            return RewardItem.get(itemid);
-        }
-        SimpleImmutableEntry<Integer, List<StructRewardItem>> toreturn = WzXML.ITEM.loadRewardItem(itemid);
-        if (toreturn == null) {
-            return null;
-        }
-        RewardItem.put(itemid, toreturn);
-        return toreturn;
-    }
-
     public Map<String, Integer> getSkillStats(int itemId) {
         if (SkillStatsCache.containsKey(itemId)) {
             return SkillStatsCache.get(itemId);
@@ -831,40 +808,6 @@ public class MapleItemInformationProvider {
     // パチンコ
     // CMS v72から流用
     /*
-    public MapleInventoryType getInventoryTypeCS(int itemId) {
-        if (inventoryTypeCache.containsKey(itemId)) {
-            return inventoryTypeCache.get(itemId);
-        }
-        MapleInventoryType ret;
-        String idStr = "0" + String.valueOf(itemId);
-        MapleDataDirectoryEntry root = itemData.getRoot();
-        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            for (MapleDataFileEntry iFile : topDir.getFiles()) {
-                if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-                    ret = MapleInventoryType.getByWZName(topDir.getName());
-                    inventoryTypeCache.put(itemId, ret);
-                    return ret;
-                } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
-                    ret = MapleInventoryType.getByWZName(topDir.getName());
-                    inventoryTypeCache.put(itemId, ret);
-                    return ret;
-                }
-            }
-        }
-        root = chrData.getRoot();
-        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            for (MapleDataFileEntry iFile : topDir.getFiles()) {
-                if (iFile.getName().equals(idStr + ".img")) {
-                    ret = MapleInventoryType.EQUIP;
-                    inventoryTypeCache.put(itemId, ret);
-                    return ret;
-                }
-            }
-        }
-        ret = MapleInventoryType.UNDEFINED;
-        inventoryTypeCache.put(itemId, ret);
-        return ret;
-    }
      */
 
     public static class StructRewardItem {

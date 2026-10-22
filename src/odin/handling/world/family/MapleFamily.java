@@ -304,10 +304,6 @@ public class MapleFamily {
         return members.get(cid);
     }
 
-    public int getMemberSize() {
-        return members.size();
-    }
-
     public static void setOfflineFamilyStatus(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
         DQ_Characters.setOfflineFamilyStatus(cid, familyid, seniorid, junior1, junior2, currentrep, totalrep);
     }

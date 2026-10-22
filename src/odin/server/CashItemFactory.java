@@ -53,18 +53,4 @@ public class CashItemFactory {
 
         return 0;
     }
-
-    public CashModInfo getModInfo(int sn) {
-        CashModInfo ret = itemMods.get(sn);
-        if (ret == null) {
-            if (initialized) {
-                return null;
-            }
-            ret = DQ_CashshopModifiedItems.load(sn);
-            if (ret != null) {
-                itemMods.put(sn, ret);
-            }
-        }
-        return ret;
-    }
 }

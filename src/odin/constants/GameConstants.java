@@ -269,10 +269,6 @@ public class GameConstants {
         return 60 + (level * 5);
     }
 
-    public static boolean isJobFamily(int baseJob, int currentJob) {
-        return currentJob >= baseJob && currentJob / 100 == baseJob / 100;
-    }
-
     public static boolean isKOC(int job) {
         return job >= 1000 && job < 2000;
     }

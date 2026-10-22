@@ -27,19 +27,6 @@ import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
 
-    public static void addRing(TacosCharacter chr, int itemId, int ringId, int sn) {
-        CashItemInfo csi = CashItemFactory.getInstance().getItem(sn);
-        if (csi == null) {
-            return;
-        }
-        Item ring = chr.getCashInventory().toItem(csi, ringId);
-        if (ring == null || ring.getUniqueId() != ringId || ring.getUniqueId() <= 0 || ring.getItemId() != itemId) {
-            return;
-        }
-        chr.getCashInventory().addToInventory(ring);
-        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(ring)));
-    }
-
     public static boolean addbyItem(TacosCharacter chr, Item item) {
         return addbyItem(chr, item, false) >= 0;
     }

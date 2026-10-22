@@ -181,10 +181,6 @@ public class MapleMonsterStats {
         this.mobile = mobile;
     }
 
-    public boolean getMobile() {
-        return mobile;
-    }
-
     public void setFly(boolean fly) {
         this.fly = fly;
     }

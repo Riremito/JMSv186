@@ -196,10 +196,6 @@ public class Skill {
         return element;
     }
 
-    public int getAnimationTime() {
-        return animationTime;
-    }
-
     public int getMasterLevel() {
         return masterLevel;
     }

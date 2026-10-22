@@ -715,10 +715,6 @@ public class MapleStatEffect {
         return null;
     }
 
-    public void setSourceId(int newid) {
-        sourceid = newid;
-    }
-
     private boolean isGmBuff() {
         switch (sourceid) {
             case 1005: // echo of hero acts like a gm buff
@@ -875,16 +871,8 @@ public class MapleStatEffect {
         return monsterStatus;
     }
 
-    public boolean isBeholder() {
-        return skill && sourceid == 1321007;
-    }
-
     public boolean isMPRecovery() {
         return skill && sourceid == 5101005;
-    }
-
-    public boolean isMagicDoor() {
-        return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
     }
 
     public boolean isPoison() {

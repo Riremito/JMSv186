@@ -50,12 +50,6 @@ public class MapleRing {
         return DQ_Rings.load(ringId, equipped);
     }
 
-    public static void addToDB(int itemid, TacosCharacter chr, String player, int id, int[] ringId) throws SQLException {
-        if (!DQ_Rings.add(itemid, chr, player, id, ringId)) {
-            throw new SQLException("Failed to insert into rings");
-        }
-    }
-
     public int getRingId() {
         return ringId;
     }
@@ -93,10 +87,6 @@ public class MapleRing {
         int hash = 5;
         hash = 53 * hash + this.ringId;
         return hash;
-    }
-
-    public static void removeRingFromDb(TacosCharacter player) {
-        DQ_Rings.remove(player);
     }
 
     public static class RingComparator implements Comparator<MapleRing> {
