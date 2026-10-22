@@ -52,6 +52,9 @@ public class MapleMiniGame implements IPlayerShop {
     public final static byte PLAYER_SHOP = 2;
     public final static byte OMOK = 3;
     public final static byte MATCH_CARD = 4;
+    // the win, tie and lose counts are kept in the custom data of these quests as "losses,ties,wins"
+    private static final int OMOK_RECORD_QUEST_ID = 122200;
+    private static final int MATCH_CARD_RECORD_QUEST_ID = 122210;
 
     private Point position = new Point();
     private int objectId;
@@ -633,18 +636,16 @@ public class MapleMiniGame implements IPlayerShop {
         if (z != null) {
             String[] data = getData(z).split(",");
             data[type] = String.valueOf(Integer.parseInt(data[type]) + 1);
-            StringBuilder newData = new StringBuilder();
-            for (int s = 0; s < data.length; s++) {
-                newData.append(data[s]);
-                newData.append(",");
-            }
-            String newDat = newData.toString();
-            z.getQuestNAdd(MapleQuest.getInstance(GameType == 1 ? 122200 : 122210)).setCustomData(newDat.substring(0, newDat.length() - 1));
+            z.getQuestNAdd(getRecordQuest()).setCustomData(String.join(",", data));
         }
     }
 
+    private MapleQuest getRecordQuest() {
+        return MapleQuest.getInstance(GameType == 1 ? OMOK_RECORD_QUEST_ID : MATCH_CARD_RECORD_QUEST_ID);
+    }
+
     public String getData(TacosCharacter chr) {
-        MapleQuest quest = MapleQuest.getInstance(GameType == 1 ? 122200 : 122210);
+        MapleQuest quest = getRecordQuest();
         MapleQuestStatus record;
         if (chr.getQuestNoAdd(quest) == null) {
             record = chr.getQuestNAdd(quest);
