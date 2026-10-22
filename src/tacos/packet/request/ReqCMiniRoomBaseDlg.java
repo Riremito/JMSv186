@@ -799,7 +799,7 @@ public class ReqCMiniRoomBaseDlg {
             return false;
         }
 
-        TacosMerchant merchant = (TacosMerchant) chr.getRemoteStore();
+        TacosMerchant merchant = chr.getRemoteStore();
         if (merchant == null) {
             // test
             //chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShopTest(chr));

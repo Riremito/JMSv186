@@ -2224,7 +2224,7 @@ public class TacosCharacter extends TacosPlayer {
     private transient MapleTrade trade;
     private transient IPlayerShop playerShop;
     // 雇用商人
-    private Object remoteStore = null;
+    private TacosMerchant remoteStore = null;
     private IDebugMan debugMan = null;
     private DebugShop debugShop = null;
 
@@ -3547,11 +3547,11 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // 雇用商人
-    public void setRemoteStore(Object playerShop) {
-        this.remoteStore = playerShop;
+    public void setRemoteStore(TacosMerchant merchant) {
+        this.remoteStore = merchant;
     }
 
-    public Object getRemoteStore() {
+    public TacosMerchant getRemoteStore() {
         return this.remoteStore;
     }
 
