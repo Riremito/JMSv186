@@ -41,6 +41,7 @@ import tacos.server.map.TacosMap;
  */
 public class ResCField {
 
+    // CField::OnTransferFieldReqIgnored
     public static ServerPacket TransferFieldReqIgnored(OpsTransferField ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferFieldReqIgnored);
 
@@ -48,6 +49,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnTransferChannelReqIgnored
     public static ServerPacket TransferChannelReqIgnored(OpsTransferChannel ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferChannelReqIgnored);
 
@@ -79,15 +81,17 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnGroupMessage
     public static ServerPacket GroupMessage(OpsChatGroup ops, String name, String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GroupMessage);
 
         sp.Encode1(ops.get());
-        sp.EncodeStr(name);
-        sp.EncodeStr(message);
+        sp.EncodeStr(name); // sFrom
+        sp.EncodeStr(message); // sMsg
         return sp;
     }
 
+    // CField::OnWhisper
     public static ServerPacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, TacosCharacter chr_from, String name_to, String message, TacosCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
 
@@ -145,6 +149,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnSummonItemInavailable
     public static ServerPacket MobSummonItemUseResult(boolean result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
 
@@ -152,6 +157,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnFieldEffect
     public static ServerPacket FieldEffect(OpsFieldEffect flag, PB_FieldEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
         sp.Encode1(flag.get());
@@ -214,6 +220,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnFieldObstacleOnOff
     public static ServerPacket FieldObstacleOnOff(String env, int mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
@@ -222,6 +229,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnFieldObstacleOnOffStatus
     public static ServerPacket FieldObstacleOnOffStatus(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
@@ -245,14 +253,16 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnPlayJukeBox
     public static ServerPacket PlayJukeBox(int item_id, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
 
-        sp.Encode4(item_id);
-        sp.EncodeStr(name);
+        sp.Encode4(item_id); // nItemID
+        sp.EncodeStr(name); // sCharacterName
         return sp;
     }
 
+    // LP_AdminResult
     public static ServerPacket AdminResult(int value) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
 
@@ -261,15 +271,17 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnQuiz
     public static ServerPacket Quiz(int questionSet, int questionId, boolean askQuestion) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
 
-        sp.Encode1(askQuestion ? 1 : 0);
-        sp.Encode1(questionSet);
+        sp.Encode1(askQuestion ? 1 : 0); // bQuestion
+        sp.Encode1(questionSet); // nCategory
         sp.Encode2(questionId);
         return sp;
     }
 
+    // CField::OnDesc
     public static ServerPacket Desc() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
 
@@ -277,30 +289,34 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnClock
     public static ServerPacket Clock(int hour, int min, int sec) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(1); // station clock
-        sp.Encode1(hour);
-        sp.Encode1(min);
-        sp.Encode1(sec);
+        sp.Encode1(hour); // nHour
+        sp.Encode1(min); // nMin
+        sp.Encode1(sec); // nSec
         return sp;
     }
 
+    // CField::OnClock
     public static ServerPacket Clock(int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(2); // timer
-        sp.Encode4(time);
+        sp.Encode4(time); // tDuration (sec)
         return sp;
     }
 
+    // CField::OnDestroyClock
     public static ServerPacket DestroyClock() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
         return sp;
     }
 
+    // CField::OnFootHoldInfo
     public static ServerPacket FootHoldInfo(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
@@ -325,6 +341,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnHontaleTimer
     public static ServerPacket HontaleTimer(boolean spawned, int time_minute) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
@@ -333,6 +350,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnChaosZakumTimer
     public static ServerPacket ChaosZakumTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
@@ -341,6 +359,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnHontailTimer
     public static ServerPacket HontailTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
 
@@ -349,6 +368,7 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnZakumTimer
     public static ServerPacket ZakumTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
 
