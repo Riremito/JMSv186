@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import odin.handling.channel.handler.AllianceHandler;
 import odin.handling.channel.handler.BBSHandler;
-import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.channel.handler.ItemMakerHandler;
@@ -769,62 +768,6 @@ public class ReqCUser {
             case CP_CashGachaponOpenRequest: {
                 long box_SN = cp.Decode8();
                 ReqCCashShop.OnGachaponOpen(chr, box_SN);
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean OnFamilyPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
-        if (chr == null) {
-            return true;
-        }
-
-        TacosMap map = chr.getMap();
-        if (map == null) {
-            return true;
-        }
-
-        switch (header) {
-            case CP_FamilyChartRequest: {
-                FamilyHandler.RequestFamily(cp, chr);
-                return true;
-            }
-            case CP_FamilyInfoRequest: {
-                FamilyHandler.OpenFamily(cp, chr);
-                return true;
-            }
-            case CP_FamilyRegisterJunior: {
-                FamilyHandler.FamilyOperation(cp, chr);
-                return true;
-            }
-            case CP_FamilyUnregisterJunior: {
-                FamilyHandler.DeleteJunior(cp, chr);
-                return true;
-            }
-            case CP_FamilyUnregisterParent: {
-                FamilyHandler.DeleteSenior(cp, chr);
-                return true;
-            }
-            case CP_FamilyJoinResult: {
-                FamilyHandler.AcceptFamily(cp, chr);
-                return true;
-            }
-            case CP_FamilyUsePrivilege: {
-                FamilyHandler.UseFamily(cp, chr);
-                return true;
-            }
-            case CP_FamilySetPrecept: {
-                FamilyHandler.FamilyPrecept(cp, chr);
-                return true;
-            }
-            case CP_FamilySummonResult: {
-                FamilyHandler.FamilySummon(cp, chr);
                 return true;
             }
             default: {
