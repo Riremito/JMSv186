@@ -4425,7 +4425,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public boolean StartPachinko(int type) {
-        SendPacket(Res_JMS_CField_Pachinko.openBeans(this, type));
+        SendPacket(Res_JMS_CField_Pachinko.PachinkoOpen(this, type));
         return true;
     }
 
