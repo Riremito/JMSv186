@@ -30,6 +30,7 @@ import tacos.packet.ops.OpsGoldHammer;
  */
 public class ResCUIGoldHammer {
 
+    // LP_GoldHammerResult
     public static ServerPacket GoldHammerResult(OpsGoldHammer m_nReturnResult, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
 

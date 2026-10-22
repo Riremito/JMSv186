@@ -63,7 +63,7 @@ public class ResCUser {
     }
 
     // CUser::OnMiniRoomBalloon
-    public static ServerPacket sendPlayerShopBox(TacosCharacter chr) {
+    public static ServerPacket UserMiniRoomBalloon(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
@@ -73,7 +73,7 @@ public class ResCUser {
 
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
-    public static ServerPacket getScrollEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
+    public static ServerPacket UserItemUpgradeEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Config.GreaterOrEqual(Region.JMS, 302)) {

@@ -33,6 +33,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCNpcPool {
 
+    // CNpcPool::OnNpcImitateData
     public static ServerPacket ImitatedNPCData(PlayerNPC pnpc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCData);
 
@@ -47,6 +48,7 @@ public class ResCNpcPool {
         return sp;
     }
 
+    // CNpcPool::OnNpcEnterField
     public static ServerPacket NpcEnterField(TacosNpc npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
 
@@ -71,6 +73,7 @@ public class ResCNpcPool {
         return data.getBytes();
     }
 
+    // CNpcPool::OnNpcLeaveField
     public static ServerPacket NpcLeaveField(TacosNpc npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcLeaveField);
 
@@ -78,6 +81,7 @@ public class ResCNpcPool {
         return sp;
     }
 
+    // CNpcPool::OnNpcChangeController
     public static ServerPacket NpcChangeController(TacosNpc npc, boolean is_local) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
 
@@ -92,6 +96,7 @@ public class ResCNpcPool {
         return sp;
     }
 
+    // CNpc::OnMove
     public static ServerPacket NpcMove(TacosNpc npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcMove);
 

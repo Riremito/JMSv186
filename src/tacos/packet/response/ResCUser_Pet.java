@@ -124,6 +124,7 @@ public class ResCUser_Pet {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
+    // CPet::OnMove
     public static ServerPacket PetMove(TacosCharacter chr, TacosPet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
@@ -139,6 +140,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
+    // CPet::OnAction
     public static ServerPacket PetAction(TacosCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
 
@@ -151,6 +153,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
+    // CPet::OnNameChanged
     public static ServerPacket PetNameChanged(TacosCharacter chr, TacosPet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
@@ -165,6 +168,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
+    // CPet::OnActionCommand
     public static ServerPacket PetActionCommand(TacosCharacter chr, byte command, int slot, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 

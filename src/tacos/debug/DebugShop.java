@@ -119,7 +119,7 @@ public class DebugShop {
             }
         }
         chr.setDebugShop(this);
-        chr.SendPacket(ResCShopDlg.OpenShopDlg_DS(this));
+        chr.SendPacket(ResCShopDlg.OpenShopDlg(this));
         return true;
     }
 

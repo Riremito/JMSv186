@@ -36,6 +36,7 @@ public class ResCField_Coconut {
         return sp;
     }
 
+    // CField_Coconut::OnCoconutScore
     public static ServerPacket CoconutScore(int[] coconutscore) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoconutScore);
         sp.Encode2(coconutscore[0]); // maple team score

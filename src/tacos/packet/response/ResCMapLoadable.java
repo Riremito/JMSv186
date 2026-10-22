@@ -27,6 +27,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMapLoadable {
 
+    // CMapLoadable::OnClearBackEffect
     public static ServerPacket ClearBackgroundEffect() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClearBackgroundEffect);
         return sp;

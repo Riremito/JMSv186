@@ -112,6 +112,7 @@ public class ResCParcelDlg {
         return sp;
     }
 
+    // CParcelDlg::OnPacket
     public static ServerPacket Send() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         sp.Encode1((byte) Action.SEND.Get());

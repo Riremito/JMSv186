@@ -28,6 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCEmployeePool {
 
+    // CEmployeePool::OnEmployeeEnterField
     public static ServerPacket EmployeeEnterField(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeEnterField);
 
@@ -38,6 +39,7 @@ public class ResCEmployeePool {
         return sp;
     }
 
+    // CEmployeePool::OnEmployeeLeaveField
     public static ServerPacket EmployeeLeaveField(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeLeaveField);
 
@@ -45,6 +47,7 @@ public class ResCEmployeePool {
         return sp;
     }
 
+    // CEmployeePool::OnEmployeeMiniRoomBalloon
     public static ServerPacket EmployeeMiniRoomBalloon(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeMiniRoomBalloon);
 

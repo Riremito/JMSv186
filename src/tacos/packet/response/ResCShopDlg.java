@@ -78,7 +78,7 @@ public class ResCShopDlg {
     }
 
     // CShopDlg::OnPacket
-    public static ServerPacket OpenShopDlg_DS(DebugShop ds) {
+    public static ServerPacket OpenShopDlg(DebugShop ds) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (Config.GreaterOrEqual(Region.EMS, 89)) {

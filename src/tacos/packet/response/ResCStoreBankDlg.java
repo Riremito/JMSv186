@@ -31,7 +31,8 @@ import java.util.ArrayList;
  */
 public class ResCStoreBankDlg {
 
-    public static ServerPacket merchItemStore(byte op) {
+    // CStoreBankDlg::OnPacket
+    public static ServerPacket StoreBankResult(int op) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         // [28 01] [22 01] - Invalid Asiasoft Passport
@@ -49,14 +50,8 @@ public class ResCStoreBankDlg {
         return sp;
     }
 
-    public static ServerPacket merchItem_Message(byte op) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
-
-        sp.Encode1(op);
-        return sp;
-    }
-
-    public static ServerPacket sendHiredMerchantMessage(byte type) {
+    // LP_StoreBankGetAllResult
+    public static ServerPacket StoreBankGetAllResult(int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         // 07 = send title box
@@ -68,7 +63,8 @@ public class ResCStoreBankDlg {
         return sp;
     }
 
-    public static ServerPacket merchItemStore_ItemData(MerchItemPackage pack) {
+    // CStoreBankDlg::OnPacket
+    public static ServerPacket StoreBankResult(MerchItemPackage pack) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         sp.Encode1(35);

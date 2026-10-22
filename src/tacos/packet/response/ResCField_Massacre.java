@@ -27,6 +27,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_Massacre {
 
+    // CField_Massacre::OnMassacreIncGauge
     public static ServerPacket MassacreIncGauge(int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MassacreIncGauge);
 

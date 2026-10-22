@@ -34,6 +34,7 @@ import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo.SummonDamage;
  */
 public class ResCSummonedPool {
 
+    // CSummonedPool::OnCreated
     public static ServerPacket SummonedEnterField(TacosSummon summon, boolean animated) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedEnterField);
 
@@ -46,6 +47,7 @@ public class ResCSummonedPool {
         return sp;
     }
 
+    // CSummonedPool::OnRemoved
     public static ServerPacket SummonedLeaveField(TacosSummon summon, boolean animated) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedLeaveField);
 
@@ -59,6 +61,7 @@ public class ResCSummonedPool {
         return sp;
     }
 
+    // CSummonedPool::OnMove
     public static ServerPacket SummonedMove(TacosSummon summon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedMove);
 
@@ -74,7 +77,7 @@ public class ResCSummonedPool {
         return sp;
     }
 
-    // CSummoned::OnAttack
+    // CSummonedPool::OnAttack
     public static ServerPacket SummonedAttack(TacosSummon summon, TacosSummonAttackInfo attack_info) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedAttack);
 
@@ -101,6 +104,7 @@ public class ResCSummonedPool {
         return sp;
     }
 
+    // CSummonedPool::OnSkill
     public static ServerPacket SummonedSkill(TacosSummon summon,/*int cid, int summonSkillId*/ int newStance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedSkill);
 
@@ -116,6 +120,7 @@ public class ResCSummonedPool {
         return sp;
     }
 
+    // CSummonedPool::OnHit
     public static ServerPacket SummonedHit(TacosSummon summon, int damage, int unkByte, int monsterIdFrom) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedHit);
 

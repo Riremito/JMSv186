@@ -27,6 +27,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_MassacreResult {
 
+    // CField_MassacreResult::OnMassacreResult
     public static ServerPacket MassacreResult(byte rank, int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MassacreResult);
 

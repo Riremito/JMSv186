@@ -1375,7 +1375,7 @@ public class ReqCUser {
             return true;
         }
         if (npc_info.getStorebank() != 0) {
-            chr.SendPacket(ResCStoreBankDlg.merchItemStore((byte) 0x22));
+            chr.SendPacket(ResCStoreBankDlg.StoreBankResult(0x22));
             chr.DebugMsg("OnUserSelectNpc (Storebank) : " + npc_script_id);
             return true;
         }
@@ -1653,7 +1653,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            map.splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
+            map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
@@ -1793,7 +1793,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
         }
-        map.splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit));
+        map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), scrollSuccess, legendarySpirit));
         // equipped item was scrolled and changed
         if (equip_slot < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();

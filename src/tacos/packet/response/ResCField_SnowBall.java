@@ -40,6 +40,7 @@ public class ResCField_SnowBall {
 
     }
 
+    // CField_SnowBall::OnSnowBallState
     public static ServerPacket SnowBallState(int m_nState, MapleSnowballs ball1, MapleSnowballs ball2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallState);
         sp.Encode1(m_nState); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
@@ -58,6 +59,7 @@ public class ResCField_SnowBall {
         return sp;
     }
 
+    // CField_SnowBall::OnSnowBallHit
     public static ServerPacket SnowBallHit(int nTarget, int nDamage, int unused, int tDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallHit);
         sp.Encode1(nTarget); // nTarget
@@ -66,6 +68,7 @@ public class ResCField_SnowBall {
         return sp;
     }
 
+    // CField_SnowBall::OnSnowBallMsg
     public static ServerPacket SnowBallMsg(int team, int message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallMsg);
         sp.Encode1(team); // 0 is down, 1 is up
@@ -73,6 +76,7 @@ public class ResCField_SnowBall {
         return sp;
     }
 
+    // CField_SnowBall::OnSnowBallTouch
     public static ServerPacket SnowBallTouch() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallTouch);
         return sp;

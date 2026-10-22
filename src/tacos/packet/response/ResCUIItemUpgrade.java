@@ -29,6 +29,7 @@ import tacos.packet.ops.OpsCashItem;
  */
 public class ResCUIItemUpgrade {
 
+    // CUIItemUpgrade::OnItemUpgradeResult
     public static ServerPacket ItemUpgradeResult(OpsCashItem m_nRet1, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
 

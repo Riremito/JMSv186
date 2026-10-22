@@ -110,7 +110,7 @@ public class ReqCMiniRoomBaseDlg {
                         game.setOpen(true);
                         game.send(chr);
                         map.addMiniGame(game);
-                        map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                        map.splitSendPacket(chr, ResCUser.UserMiniRoomBalloon(chr));
                         return true;
                     }
                     case MR_TradingRoom: {
@@ -317,7 +317,7 @@ public class ReqCMiniRoomBaseDlg {
                         } else if (ShopDispatch.getShopType(shop) == 2) {
                             ShopDispatch.setOpen(shop, true);
                             ShopDispatch.setAvailable(shop, true);
-                            map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                            map.splitSendPacket(chr, ResCUser.UserMiniRoomBalloon(chr));
                         }
                     }
                 }
@@ -624,7 +624,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
-                            map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                            map.splitSendPacket(chr, ResCUser.UserMiniRoomBalloon(chr));
                             game.checkExitAfterGame();
                         } else {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieResult());
@@ -645,7 +645,7 @@ public class ReqCMiniRoomBaseDlg {
                     game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
-                    map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                    map.splitSendPacket(chr, ResCUser.UserMiniRoomBalloon(chr));
                     game.checkExitAfterGame();
                 }
                 return true;
@@ -712,7 +712,7 @@ public class ReqCMiniRoomBaseDlg {
                         game.shuffleList();
                         game.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_Start(game, game.getLoser()));
                         game.setOpen(false);
-                        map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                        map.splitSendPacket(chr, ResCUser.UserMiniRoomBalloon(chr));
                     }
                 }
                 return true;
