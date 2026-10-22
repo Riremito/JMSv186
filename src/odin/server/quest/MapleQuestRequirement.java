@@ -14,11 +14,11 @@ import tacos.wz.QuestWz;
 
 public class MapleQuestRequirement {
 
-    private MapleQuest quest;
-    private MapleQuestRequirementType type;
-    private int intStore;
-    private String stringStore;
-    private List<SimpleImmutableEntry<Integer, Integer>> dataStore;
+    private final MapleQuest quest;
+    private final MapleQuestRequirementType type;
+    private final int intStore;
+    private final String stringStore;
+    private final List<SimpleImmutableEntry<Integer, Integer>> dataStore;
 
     public MapleQuestRequirement(MapleQuest quest, QuestWz.QuestRequirementInfo info) {
         this.type = info.getType();
@@ -85,9 +85,10 @@ public class MapleQuestRequirement {
             case lvmax:
                 return chr.getLevel() <= intStore;
             case end:
+                // yyyyMMddHH, Calendar months start at 0
                 String timeStr = stringStore;
                 Calendar cal = Calendar.getInstance();
-                cal.set(Integer.parseInt(timeStr.substring(0, 4)), Integer.parseInt(timeStr.substring(4, 6)), Integer.parseInt(timeStr.substring(6, 8)), Integer.parseInt(timeStr.substring(8, 10)), 0);
+                cal.set(Integer.parseInt(timeStr.substring(0, 4)), Integer.parseInt(timeStr.substring(4, 6)) - 1, Integer.parseInt(timeStr.substring(6, 8)), Integer.parseInt(timeStr.substring(8, 10)), 0);
                 return cal.getTimeInMillis() >= System.currentTimeMillis();
             case mob:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
@@ -101,15 +102,9 @@ public class MapleQuestRequirement {
             case npc:
                 return npc_id == null || npc_id == intStore;
             case fieldEnter:
-                if (intStore != -1) {
-                    return intStore == chr.getMapId();
-                }
-                return false;
+                return intStore != -1 && intStore == chr.getMapId();
             case mbmin:
-                if (chr.getMonsterBook().getTotal() >= intStore) {
-                    return true;
-                }
-                return false;
+                return chr.getMonsterBook().getTotal() >= intStore;
             case mbcard:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
                     int cardId = a.getKey();
@@ -120,7 +115,7 @@ public class MapleQuestRequirement {
                 }
                 return true;
             case pop:
-                return chr.getFame() <= intStore;
+                return chr.getFame() >= intStore; // minimum fame
             case questComplete:
                 return chr.getNumQuest() >= intStore;
             case interval:
@@ -139,33 +134,26 @@ public class MapleQuestRequirement {
     }
 
     public enum MapleQuestRequirementType {
-
-        UNDEFINED(-1),
-        job(0),
-        item(1),
-        quest(2),
-        lvmin(3),
-        lvmax(4),
-        end(5),
-        mob(6),
-        npc(7),
-        fieldEnter(8),
-        interval(9),
-        startscript(10),
-        endscript(10),
-        pet(11),
-        pettamenessmin(12),
-        mbmin(13),
-        questComplete(14),
-        pop(15),
-        skill(16),
-        mbcard(17);
-
-        final byte type;
-
-        private MapleQuestRequirementType(int type) {
-            this.type = (byte) type;
-        }
+        UNDEFINED,
+        job,
+        item,
+        quest,
+        lvmin,
+        lvmax,
+        end,
+        mob,
+        npc,
+        fieldEnter,
+        interval,
+        startscript,
+        endscript,
+        pet,
+        pettamenessmin,
+        mbmin,
+        questComplete,
+        pop,
+        skill,
+        mbcard;
 
         public static MapleQuestRequirementType getByWZName(String name) {
             try {

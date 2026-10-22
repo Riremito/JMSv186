@@ -45,9 +45,9 @@ import tacos.wz.QuestWz;
 
 public class MapleQuestAction {
 
-    private MapleQuestActionType type;
-    private QuestWz.QuestActionInfo info;
-    private MapleQuest quest;
+    private final MapleQuestActionType type;
+    private final QuestWz.QuestActionInfo info;
+    private final MapleQuest quest;
 
     public MapleQuestAction(QuestWz.QuestActionInfo info, MapleQuest quest) {
         this.type = info.getType();
@@ -61,26 +61,18 @@ public class MapleQuestAction {
             return false;
         }
         if (item.isHasJob()) {
-            List<Integer> code = getJobBy5ByteEncoding(item.getJob());
-            boolean jobFound = false;
-            for (int codec : code) {
-                if (codec / 100 == client.getJob() / 100) {
-                    jobFound = true;
-                    break;
-                }
-            }
-            if (!jobFound) {
-                List<Integer> codeEx = getJobBy5ByteEncoding(item.getJobEx());
-                for (int codec : codeEx) {
-                    if (codec / 100 == client.getJob() / 100) {
-                        jobFound = true;
-                        break;
-                    }
-                }
-            }
-            return jobFound;
+            return hasJob(item.getJob(), client.getJob()) || hasJob(item.getJobEx(), client.getJob());
         }
         return true;
+    }
+
+    private static boolean hasJob(int encoded, int job) {
+        for (int code : getJobBy5ByteEncoding(encoded)) {
+            if (code / 100 == job / 100) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // first check for randomness in item selection
@@ -240,106 +232,36 @@ public class MapleQuestAction {
         return finalJob;
     }
 
-    public void runStart(TacosCharacter chr, Integer extSelection) {
-        MapleQuestStatus status;
+    // rewards that are not given again after the quest was forfeited
+    private boolean isForfeitedReward(TacosCharacter chr) {
         switch (type) {
             case exp:
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                chr.gainExp(info.getValue() * GameConstants.getExpRate_Quest(chr.getLevel()), true, true, true);
-                break;
-            case item:
-                giveItems(chr, extSelection);
-                break;
             case nextQuest:
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                chr.SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getId(), status.getNpc(), info.getValue()));
-                break;
             case money:
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                chr.gainMeso(info.getValue(), true, false, true);
-                break;
-            case quest:
-                updateQuests(chr);
-                break;
-            case skill:
-                //TODO needs gain/lost message?
-                changeSkills(chr);
-                break;
             case pop:
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                gainFame(chr);
-                break;
             case buffItemID:
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                applyBuffItem(chr);
-                break;
-            case infoNumber: {
-//		System.out.println("quest : "+MapleDataTool.getInt(data, 0)+"");
-//		MapleQuest.getInstance(MapleDataTool.getInt(data, 0)).forceComplete(c, 0);
-                break;
-            }
             case sp: {
-                status = chr.getQuest(quest);
-                if (status.getForfeited() > 0) {
-                    break;
-                }
-                for (QuestWz.QuestActionSpInfo sp : info.getSps()) {
-                    int sp_val = sp.getSpValue();
-                    if (sp.getJob() != null) {
-                        int finalJob = getFinalJob(chr, sp.getJob());
-                        if (finalJob == 0) {
-                            chr.gainSP(sp_val);
-                        } else {
-                            chr.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
-                        }
-                    } else {
-                        chr.gainSP(sp_val);
-                    }
-                }
-                break;
+                return chr.getQuest(quest).getForfeited() > 0;
             }
-            default:
-                break;
+            default: {
+                return false;
+            }
         }
     }
 
-    public boolean checkEnd(TacosCharacter chr, Integer extSelection) {
-        switch (type) {
-            case item: {
-                return checkItems(chr, extSelection);
-            }
-            case money: {
-                int meso = info.getValue();
-                if (chr.getMeso() + meso < 0) { // Giving, overflow
-                    chr.Alert("Meso exceed the max amount, 2147483647.");
-                    return false;
-                }
-                if (meso < 0 && chr.getMeso() < Math.abs(meso)) { //remove meso
-                    chr.Alert("Insufficient meso.");
-                    return false;
-                }
-                return true;
+    private void gainSP(TacosCharacter chr) {
+        for (QuestWz.QuestActionSpInfo sp : info.getSps()) {
+            int sp_val = sp.getSpValue();
+            int finalJob = (sp.getJob() != null) ? getFinalJob(chr, sp.getJob()) : 0;
+            if (finalJob == 0) {
+                chr.gainSP(sp_val);
+            } else {
+                chr.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
             }
         }
-        return true;
     }
 
-    public void runEnd(TacosCharacter chr, Integer extSelection) {
+    private void run(TacosCharacter chr, Integer extSelection) {
         switch (type) {
             case exp: {
                 chr.gainExp(info.getValue() * GameConstants.getExpRate_Quest(chr.getLevel()), true, true, true);
@@ -373,110 +295,97 @@ public class MapleQuestAction {
                 applyBuffItem(chr);
                 break;
             }
-            case infoNumber: {
-//		System.out.println("quest : "+MapleDataTool.getInt(data, 0)+"");
-//		MapleQuest.getInstance(MapleDataTool.getInt(data, 0)).forceComplete(c, 0);
-                break;
-            }
             case sp: {
-                for (QuestWz.QuestActionSpInfo sp : info.getSps()) {
-                    int sp_val = sp.getSpValue();
-                    if (sp.getJob() != null) {
-                        chr.gainSP(sp_val, GameConstants.getSkillBook(getFinalJob(chr, sp.getJob())));
-                    } else {
-                        chr.gainSP(sp_val);
-                    }
-                }
+                gainSP(chr);
                 break;
             }
-            default:
+            default: {
                 break;
+            }
         }
     }
 
+    public void runStart(TacosCharacter chr, Integer extSelection) {
+        if (isForfeitedReward(chr)) {
+            return;
+        }
+        run(chr, extSelection);
+    }
+
+    public void runEnd(TacosCharacter chr, Integer extSelection) {
+        run(chr, extSelection);
+    }
+
+    public boolean checkEnd(TacosCharacter chr, Integer extSelection) {
+        switch (type) {
+            case item: {
+                return checkItems(chr, extSelection);
+            }
+            case money: {
+                int meso = info.getValue();
+                if (chr.getMeso() + meso < 0) { // Giving, overflow
+                    chr.Alert("Meso exceed the max amount, 2147483647.");
+                    return false;
+                }
+                if (meso < 0 && chr.getMeso() < Math.abs(meso)) { //remove meso
+                    chr.Alert("Insufficient meso.");
+                    return false;
+                }
+                return true;
+            }
+            default: {
+                return true;
+            }
+        }
+    }
+
+    // job bit -> job ids
+    private static final int[][] JOB_BITS = {
+        {0x1, 0},
+        {0x2, 100},
+        {0x4, 200},
+        {0x8, 300},
+        {0x10, 400},
+        {0x20, 500},
+        {0x400, 1000},
+        {0x800, 1100},
+        {0x1000, 1200},
+        {0x2000, 1300},
+        {0x4000, 1400},
+        {0x8000, 1500},
+        {0x20000, 2001, 2200}, // im not sure of this one
+        {0x100000, 2000, 2001},
+        {0x200000, 2100},
+        {0x400000, 2001, 2200},
+        {0x40000000, 3000, 3200, 3300, 3500}, // i haven't seen any higher than this o.o
+    };
+
     private static List<Integer> getJobBy5ByteEncoding(int encoded) {
         List<Integer> ret = new ArrayList<>();
-        if ((encoded & 0x1) != 0) {
-            ret.add(0);
-        }
-        if ((encoded & 0x2) != 0) {
-            ret.add(100);
-        }
-        if ((encoded & 0x4) != 0) {
-            ret.add(200);
-        }
-        if ((encoded & 0x8) != 0) {
-            ret.add(300);
-        }
-        if ((encoded & 0x10) != 0) {
-            ret.add(400);
-        }
-        if ((encoded & 0x20) != 0) {
-            ret.add(500);
-        }
-        if ((encoded & 0x400) != 0) {
-            ret.add(1000);
-        }
-        if ((encoded & 0x800) != 0) {
-            ret.add(1100);
-        }
-        if ((encoded & 0x1000) != 0) {
-            ret.add(1200);
-        }
-        if ((encoded & 0x2000) != 0) {
-            ret.add(1300);
-        }
-        if ((encoded & 0x4000) != 0) {
-            ret.add(1400);
-        }
-        if ((encoded & 0x8000) != 0) {
-            ret.add(1500);
-        }
-        if ((encoded & 0x20000) != 0) {
-            ret.add(2001); //im not sure of this one
-            ret.add(2200);
-        }
-        if ((encoded & 0x100000) != 0) {
-            ret.add(2000);
-            ret.add(2001); //?
-        }
-        if ((encoded & 0x200000) != 0) {
-            ret.add(2100);
-        }
-        if ((encoded & 0x400000) != 0) {
-            ret.add(2001); //?
-            ret.add(2200);
-        }
-
-        if ((encoded & 0x40000000) != 0) { //i haven't seen any higher than this o.o
-            ret.add(3000);
-            ret.add(3200);
-            ret.add(3300);
-            ret.add(3500);
+        for (int[] bit : JOB_BITS) {
+            if ((encoded & bit[0]) != 0) {
+                for (int i = 1; i < bit.length; i++) {
+                    ret.add(bit[i]);
+                }
+            }
         }
         return ret;
     }
 
     public enum MapleQuestActionType {
-
-        UNDEFINED(-1),
-        exp(0),
-        item(1),
-        nextQuest(2),
-        money(3),
-        quest(4),
-        skill(5),
-        pop(6),
-        buffItemID(7),
-        infoNumber(8),
-        yes(9),
-        no(10),
-        sp(11);
-        final byte type;
-
-        private MapleQuestActionType(int type) {
-            this.type = (byte) type;
-        }
+        UNDEFINED,
+        exp,
+        item,
+        nextQuest,
+        money,
+        quest,
+        skill,
+        pop,
+        buffItemID,
+        infoNumber,
+        yes,
+        no,
+        sp;
 
         public static MapleQuestActionType getByWZName(String name) {
             try {
