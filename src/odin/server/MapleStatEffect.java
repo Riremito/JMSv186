@@ -63,7 +63,7 @@ public class MapleStatEffect {
     private int exp; // gashaEXP, consume 237
     private boolean overTime;
     private boolean skill;
-    private final Map<OpsMobStat, Integer> monsterStatus = new EnumMap<>(OpsMobStat.class); // not loaded since the old buff code was removed
+    private final Map<OpsMobStat, Integer> monsterStatus = new EnumMap<>(OpsMobStat.class);
     private Point lt;
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
@@ -243,6 +243,124 @@ public class MapleStatEffect {
         }
     }
 
+    // the statuses this skill puts on monsters (applyMonsterBuff or on hit)
+    private void initMonsterStatus() {
+        switch (sourceid) {
+            case 4001002: // disorder
+            case 14001002: // cygnus disorder
+            case 1201006: { // threaten
+                monsterStatus.put(OpsMobStat.MS_PAD, x);
+                monsterStatus.put(OpsMobStat.MS_PDR, y);
+                break;
+            }
+            case 1211002: // charged blow
+            case 1111008: // shout
+            case 4211002: // assaulter
+            case 3101005: // arrow bomb
+            case 1111005: // coma: sword
+            case 1111006: // coma: axe
+            case 4221007: // boomerang step
+            case 5101002: // Backspin Blow
+            case 5101003: // Double Uppercut
+            case 5121004: // Demolition
+            case 5121005: // Snatch
+            case 5121007: // Barrage
+            case 5201004: // pirate blank shot
+            case 4121008: // Ninja Storm
+            case 22151001:
+            case 4201004: // steal
+            case 33101001:
+            case 33101002:
+            case 32111010:
+            case 32121004:
+            case 33111002:
+            case 33121002:
+            case 35101003:
+            case 35111015:
+            case 5111002: // energy blast
+            case 15101005:
+            case 4331005:
+            case 3211005: // golden eagle
+            case 3111005: // golden hawk
+            case 33111005:
+            case 35111002: {
+                monsterStatus.put(OpsMobStat.MS_Stun, 1);
+                break;
+            }
+            case 4321002: {
+                monsterStatus.put(OpsMobStat.MS_Darkness, 1);
+                break;
+            }
+            case 4221003:
+            case 4121003:
+            case 33121005: { // taunt
+                monsterStatus.put(OpsMobStat.MS_Showdown, x);
+                monsterStatus.put(OpsMobStat.MS_MDR, x);
+                monsterStatus.put(OpsMobStat.MS_PDR, x);
+                break;
+            }
+            case 2201004: // cold beam
+            case 2211002: // ice strike
+            case 3211003: // blizzard
+            case 2211006: // il elemental compo
+            case 2221007: // Blizzard
+            case 5211005: // Ice Splitter
+            case 2121006: // Paralyze
+            case 21120006: // Tempest
+            case 22121000:
+            case 3221005: // frostprey
+            case 2121005: { // elquines
+                monsterStatus.put(OpsMobStat.MS_Freeze, 1);
+                break;
+            }
+            case 2101003: // fp slow
+            case 2201003: // il slow
+            case 12101001:
+            case 22141003: // Slow
+            case 3121007: { // Hamstring
+                monsterStatus.put(OpsMobStat.MS_Speed, x);
+                break;
+            }
+            case 2101005: // poison breath
+            case 2111006: // fp elemental compo
+            case 2121003: // ice demon
+            case 2221003: // fire demon
+            case 3111003: // inferno
+            case 22161002: { // phantom imprint
+                monsterStatus.put(OpsMobStat.MS_Poison, 1);
+                break;
+            }
+            case 4121004: // Ninja ambush
+            case 4221004: {
+                monsterStatus.put(OpsMobStat.MS_Ambush, (int) damage);
+                break;
+            }
+            case 2311005: { // doom
+                monsterStatus.put(OpsMobStat.MS_Doom, 1);
+                break;
+            }
+            case 2211004: // il seal
+            case 2111004: // fp seal
+            case 12111002: { // cygnus seal
+                monsterStatus.put(OpsMobStat.MS_Seal, 1);
+                break;
+            }
+            case 4111003: // shadow web
+            case 14111001: {
+                monsterStatus.put(OpsMobStat.MS_Web, 1);
+                break;
+            }
+            case 3221006: // Blind
+            case 33111004: {
+                monsterStatus.put(OpsMobStat.MS_ACC, x);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
     private static MapleStatEffect loadFromData(StatEffectData source, int sourceid, boolean skill, boolean overTime, byte level) {
         MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
@@ -309,6 +427,9 @@ public class MapleStatEffect {
         ret.moveTo = source.getMoveTo();
 
         ret.initSecondaryStats();
+        if (skill) {
+            ret.initMonsterStatus();
+        }
         return ret;
     }
 
@@ -517,10 +638,8 @@ public class MapleStatEffect {
         int i = 0;
 
         for (TacosMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
-            if (makeChanceResult()) {
-                for (Map.Entry<OpsMobStat, Integer> stat : getMonsterStati().entrySet()) {
-                    monster.applyStatus(applyfrom, stat.getKey(), stat.getValue(), sourceid, isPoison(), getDuration(), false);
-                }
+            if (!monsterStatus.isEmpty() && makeChanceResult()) {
+                monster.applyStatus(applyfrom, monsterStatus, sourceid, getDuration());
             }
             i++;
             if (i >= mobCount) {
@@ -697,7 +816,7 @@ public class MapleStatEffect {
         return skill && (sourceid == 5110001 || sourceid == 15100004);
     }
 
-    private boolean isMonsterBuff() {
+    public boolean isMonsterBuff() {
         switch (sourceid) {
             case 1201006: // threaten
             case 2101003: // fp slow

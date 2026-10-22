@@ -997,10 +997,11 @@ public class ReqCUser {
 
         TacosMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
+        MapleStatEffect skill_effect = null;
         if (is_skill_attack) {
             Skill skill = WzXML.SKILL.getSkill().get(GameConstants.getLinkedAranSkill(attack.skill));
             int skillLevel = chr.getSkillLevel(skill);
-            MapleStatEffect skill_effect = attack.getAttackEffect(chr, skillLevel, skill);
+            skill_effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (skill_effect == null) {
                 DebugLogger.ErrorLog("attack : err 1.");
                 return false;
@@ -1055,6 +1056,10 @@ public class ReqCUser {
                 continue;
             }
             monster.damage(chr, total_damage, true, attack.skill);
+            // stun, freeze, poison etc. of the attack skill (area debuff skills are applied by MapleStatEffect.applyMonsterBuff)
+            if (skill_effect != null && !skill_effect.isMonsterBuff() && !skill_effect.getMonsterStati().isEmpty() && monster.isAlive() && skill_effect.makeChanceResult()) {
+                monster.applyStatus(chr, skill_effect.getMonsterStati(), attack.skill, skill_effect.getDuration());
+            }
             if (eaterSkill != null && 0 < eaterLevel) {
                 eaterSkill.getEffect(eaterLevel).applyPassive(chr, monster);
             }
