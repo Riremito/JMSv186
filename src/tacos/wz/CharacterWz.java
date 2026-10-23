@@ -61,7 +61,7 @@ public class CharacterWz extends WzXML {
     @Getter
     public class EquipInfoLevel {
 
-        private int exp;
+        private int exp; // no idea.
         private int incDEXMax;
         private int incDEXMin;
         private int incLUKMax;

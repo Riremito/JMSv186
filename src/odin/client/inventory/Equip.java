@@ -184,6 +184,21 @@ public class Equip extends Item {
         return this.potential3;
     }
 
+    public void incDEX(int value) {
+        this.dex += value;
+        this.dex = Math.min(Short.MAX_VALUE, this.dex);
+    }
+
+    public void incLUK(int value) {
+        this.luk += value;
+        this.luk = Math.min(Short.MAX_VALUE, this.luk);
+    }
+
+    public void incPAD(int value) {
+        this.watk += value;
+        this.watk = Math.min(Short.MAX_VALUE, this.watk);
+    }
+
     // nSocket1.
     // nSocket2.
     @Override

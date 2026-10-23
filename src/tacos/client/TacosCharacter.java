@@ -159,6 +159,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.shared.TacosSharedDate;
 import tacos.wz.CharacterWz;
+import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -2863,30 +2864,28 @@ public class TacosCharacter extends TacosPlayer {
         for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
             Equip equip = (Equip) item;
             ArrayList<CharacterWz.EquipInfoLevel> eils = WzXML.CHARACTER.getEquipLevelInfo(equip.getItemId());
-            int max_level = eils.size();
-            if (max_level == 0) {
-                continue;
+            if (!eils.isEmpty()) {
+                int nLevelUpType = equip.getLevelUpType();
+                int nLevel = Math.max(equip.getLevelLevel(), 1);
+                int nEXP = equip.getLevelEXP() + inc_exp;
+                if (TacosSharedExpTable.getExpNeededForLevel(120) <= nEXP) {
+                    nEXP = 0;
+                    if (nLevel < eils.size()) {
+                        EquipInfoLevel eil = eils.get(nLevel - 1);
+                        equip.incDEX(eil.getIncDEXMax());
+                        equip.incLUK(eil.getIncLUKMax());
+                        equip.incPAD(eil.getIncPADMax());
+                        nLevel++;
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .player(this)
+                                .build();
+                        SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+                        getMap().splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
+                    }
+                }
+                equip.setItemLevel(nLevelUpType, nLevel, nEXP);
+                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
             }
-            int nLevelUpType = equip.getLevelUpType();
-            int nLevel = equip.getLevelLevel();
-            int nEXP = equip.getLevelEXP() + inc_exp;
-            if (max_level <= nLevel) {
-                continue;
-            }
-            if (nLevel <= 0) {
-                nLevel = 1;
-            }
-            if (TacosSharedExpTable.getExpNeededForLevel(120) <= nEXP) {
-                nLevel++;
-                nEXP = 0;
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .player(this)
-                        .build();
-                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-                getMap().splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
-            }
-            equip.setItemLevel(nLevelUpType, nLevel, nEXP);
-            SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         }
         return true;
     }
