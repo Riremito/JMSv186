@@ -49,23 +49,23 @@ public class MapleItemInformationProvider {
 
     // equip stats by their wz name
     private enum EquipStat {
-        STR("STR", Equip::getStr, Equip::setStr),
-        DEX("DEX", Equip::getDex, Equip::setDex),
-        INT("INT", Equip::getInt, Equip::setInt),
-        LUK("LUK", Equip::getLuk, Equip::setLuk),
-        PAD("PAD", Equip::getWatk, Equip::setWatk),
-        PDD("PDD", Equip::getWdef, Equip::setWdef),
-        MAD("MAD", Equip::getMatk, Equip::setMatk),
-        MDD("MDD", Equip::getMdef, Equip::setMdef),
-        ACC("ACC", Equip::getAcc, Equip::setAcc),
-        EVA("EVA", Equip::getAvoid, Equip::setAvoid),
-        SPEED("Speed", Equip::getSpeed, Equip::setSpeed),
-        JUMP("Jump", Equip::getJump, Equip::setJump),
-        MHP("MHP", Equip::getHp, Equip::setHp),
-        MMP("MMP", Equip::getMp, Equip::setMp),
+        STR("STR", Equip::getIncSTR, Equip::setStr),
+        DEX("DEX", Equip::getIncDEX, Equip::setDex),
+        INT("INT", Equip::getIncINT, Equip::setInt),
+        LUK("LUK", Equip::getIncLUK, Equip::setLuk),
+        PAD("PAD", Equip::getIncPAD, Equip::setWatk),
+        PDD("PDD", Equip::getIncPDD, Equip::setWdef),
+        MAD("MAD", Equip::getIncMAD, Equip::setMatk),
+        MDD("MDD", Equip::getIncMDD, Equip::setMdef),
+        ACC("ACC", Equip::getIncACC, Equip::setAcc),
+        EVA("EVA", Equip::getIncEVA, Equip::setAvoid),
+        SPEED("Speed", Equip::getIncSpeed, Equip::setSpeed),
+        JUMP("Jump", Equip::getIncJump, Equip::setJump),
+        MHP("MHP", Equip::getIncMaxHP, Equip::setHp),
+        MMP("MMP", Equip::getIncMaxMP, Equip::setMp),
         MHPR("MHPr", Equip::getHpR, Equip::setHpR),
         MMPR("MMPr", Equip::getMpR, Equip::setMpR),
-        CRAFT("Craft", Equip::getHands, Equip::setHands);
+        CRAFT("Craft", Equip::getIncCraft, Equip::setHands);
 
         private final String name;
         private final ToIntFunction<Equip> getter;
@@ -207,8 +207,8 @@ public class MapleItemInformationProvider {
         Map<String, Integer> stats = getEquipStats(scroll_id);
         Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
         boolean always_success = GameConstants.isEquipScroll(scroll_id) || GameConstants.isPotentialScroll(scroll_id);
-        int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getLevel()) : (always_success ? 0 : stats.get("success"));
-        int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getLevel()) : (always_success ? 0 : stats.get("cursed"));
+        int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("success"));
+        int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("cursed"));
         int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
 
         if (scroll_id == 2049100) {
@@ -221,15 +221,15 @@ public class MapleItemInformationProvider {
         if (always_success || Randomizer.nextInt(100) <= success) {
             applyScroll(nEquip, scroll_id, stats, eqstats);
             if (uses_slot) {
-                nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
-                nEquip.setLevel((byte) (nEquip.getLevel() + 1));
+                nEquip.setUpgradeSlots((byte) (nEquip.getRUC() - 1));
+                nEquip.setLevel((byte) (nEquip.getCUC() + 1));
             }
             return equip;
         }
 
         // failed
         if (!ws && uses_slot && !ContentState.CS_LOCK_LOSING_UPGRADE_SLOT.get()) {
-            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+            nEquip.setUpgradeSlots((byte) (nEquip.getRUC() - 1));
         }
         if (Randomizer.nextInt(99) < curse && !ContentState.CS_LOCK_BOOM.get()) {
             return null; // boom
@@ -271,7 +271,7 @@ public class MapleItemInformationProvider {
         } else if (GameConstants.isEquipScroll(scroll_id)) {
             applyEnhanceScroll(nEquip);
         } else if (GameConstants.isPotentialScroll(scroll_id)) {
-            if (nEquip.getHidden() == 0 && nEquip.getRank() == 0) {
+            if (nEquip.getHidden() == 0 && nEquip.getGrade() == 0) {
                 nEquip.resetPotential(false, false);
             }
         } else {
@@ -280,8 +280,8 @@ public class MapleItemInformationProvider {
     }
 
     private void addUpgradeSlots(Equip nEquip, Map<String, Integer> eqstats, int slots) {
-        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqstats.get("tuc")) {
-            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() + slots));
+        if (nEquip.getCUC() + nEquip.getRUC() < eqstats.get("tuc")) {
+            nEquip.setUpgradeSlots((byte) (nEquip.getRUC() + slots));
         }
     }
 
@@ -325,7 +325,7 @@ public class MapleItemInformationProvider {
         enhanceStat(nEquip, EquipStat.JUMP, 10);
         enhanceStat(nEquip, EquipStat.MHP, 5);
         enhanceStat(nEquip, EquipStat.MMP, 5);
-        nEquip.setEnhance((byte) (nEquip.getEnhance() + 1));
+        nEquip.setEnhance((byte) (nEquip.getCHUC() + 1));
     }
 
     // normal scroll : add the stats of the scroll
@@ -417,12 +417,12 @@ public class MapleItemInformationProvider {
             }
         }
         // 戦士優遇
-        EquipStat.ACC.set(equip, (int) (equip.getAcc() + min + Math.floor(Math.random() * range)));
+        EquipStat.ACC.set(equip, (int) (equip.getIncACC() + min + Math.floor(Math.random() * range)));
         // 移動速度とジャンプ力は最大値に合わせる
-        if (r >= 3 || equip.getSpeed() != 0) {
+        if (r >= 3 || equip.getIncSpeed() != 0) {
             EquipStat.SPEED.add(equip, 40);
         }
-        if (r >= 3 || equip.getJump() != 0) {
+        if (r >= 3 || equip.getIncJump() != 0) {
             EquipStat.JUMP.add(equip, 23);
         }
         // その他

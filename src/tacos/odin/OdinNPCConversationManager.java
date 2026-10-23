@@ -1019,48 +1019,48 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             Equip eq = (Equip) item;
             if (takeSlot) {
-                if (eq.getUpgradeSlots() < 1) {
+                if (eq.getRUC() < 1) {
                     return false;
                 } else {
-                    eq.setUpgradeSlots((byte) (eq.getUpgradeSlots() - 1));
+                    eq.setUpgradeSlots((byte) (eq.getRUC() - 1));
                 }
             }
             if (type.equalsIgnoreCase("Slots")) {
-                eq.setUpgradeSlots((byte) (eq.getUpgradeSlots() + offset));
+                eq.setUpgradeSlots((byte) (eq.getRUC() + offset));
             } else if (type.equalsIgnoreCase("Level")) {
-                eq.setLevel((byte) (eq.getLevel() + offset));
+                eq.setLevel((byte) (eq.getCUC() + offset));
             } else if (type.equalsIgnoreCase("Hammer")) {
-                eq.setViciousHammer((byte) (eq.getViciousHammer() + offset));
+                eq.setViciousHammer((byte) (eq.getIUC() + offset));
             } else if (type.equalsIgnoreCase("STR")) {
-                eq.setStr((short) (eq.getStr() + offset));
+                eq.setStr((short) (eq.getIncSTR() + offset));
             } else if (type.equalsIgnoreCase("DEX")) {
-                eq.setDex((short) (eq.getDex() + offset));
+                eq.setDex((short) (eq.getIncDEX() + offset));
             } else if (type.equalsIgnoreCase("INT")) {
-                eq.setInt((short) (eq.getInt() + offset));
+                eq.setInt((short) (eq.getIncINT() + offset));
             } else if (type.equalsIgnoreCase("LUK")) {
-                eq.setLuk((short) (eq.getLuk() + offset));
+                eq.setLuk((short) (eq.getIncLUK() + offset));
             } else if (type.equalsIgnoreCase("HP")) {
-                eq.setHp((short) (eq.getHp() + offset));
+                eq.setHp((short) (eq.getIncMaxHP() + offset));
             } else if (type.equalsIgnoreCase("MP")) {
-                eq.setMp((short) (eq.getMp() + offset));
+                eq.setMp((short) (eq.getIncMaxMP() + offset));
             } else if (type.equalsIgnoreCase("WATK")) {
-                eq.setWatk((short) (eq.getWatk() + offset));
+                eq.setWatk((short) (eq.getIncPAD() + offset));
             } else if (type.equalsIgnoreCase("MATK")) {
-                eq.setMatk((short) (eq.getMatk() + offset));
+                eq.setMatk((short) (eq.getIncMAD() + offset));
             } else if (type.equalsIgnoreCase("WDEF")) {
-                eq.setWdef((short) (eq.getWdef() + offset));
+                eq.setWdef((short) (eq.getIncPDD() + offset));
             } else if (type.equalsIgnoreCase("MDEF")) {
-                eq.setMdef((short) (eq.getMdef() + offset));
+                eq.setMdef((short) (eq.getIncMDD() + offset));
             } else if (type.equalsIgnoreCase("ACC")) {
-                eq.setAcc((short) (eq.getAcc() + offset));
+                eq.setAcc((short) (eq.getIncACC() + offset));
             } else if (type.equalsIgnoreCase("Avoid")) {
-                eq.setAvoid((short) (eq.getAvoid() + offset));
+                eq.setAvoid((short) (eq.getIncEVA() + offset));
             } else if (type.equalsIgnoreCase("Hands")) {
-                eq.setHands((short) (eq.getHands() + offset));
+                eq.setHands((short) (eq.getIncCraft() + offset));
             } else if (type.equalsIgnoreCase("Speed")) {
-                eq.setSpeed((short) (eq.getSpeed() + offset));
+                eq.setSpeed((short) (eq.getIncSpeed() + offset));
             } else if (type.equalsIgnoreCase("Jump")) {
-                eq.setJump((short) (eq.getJump() + offset));
+                eq.setJump((short) (eq.getIncJump() + offset));
             } else if (type.equalsIgnoreCase("ItemEXP")) {
                 eq.setItemEXP(eq.getItemEXP() + offset);
             } else if (type.equalsIgnoreCase("Expiration")) {

@@ -413,13 +413,13 @@ public class ReqCUser_Item {
                     return false;
                 }
                 // TODO : supports 3+
-                if (2 <= equip.getViciousHammer()) {
+                if (2 <= equip.getIUC()) {
                     chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeErr, null));
                     return false;
                 }
 
-                equip.setViciousHammer(equip.getViciousHammer() + 1);
-                equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
+                equip.setViciousHammer(equip.getIUC() + 1);
+                equip.setUpgradeSlots(equip.getRUC() + 1);
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip));

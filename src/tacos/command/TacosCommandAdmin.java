@@ -271,6 +271,14 @@ public class TacosCommandAdmin {
                 target.getClient().getSession().close();
                 return true;
             }
+            case "/itemexp" -> {
+                int item_exp = TacosSharedExpTable.getExpNeededForLevel(120);
+                if (dcmd.check(1)) {
+                    item_exp = dcmd.getInt(1);
+                }
+                chr.gainExpToItem(item_exp);
+                return true;
+            }
             case "/drop" -> {
                 if (!dcmd.check(1)) {
                     return true;

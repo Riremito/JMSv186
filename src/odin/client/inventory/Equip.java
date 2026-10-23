@@ -73,6 +73,119 @@ public class Equip extends Item {
         super(id, position, (short) 1, flag, uniqueid);
     }
 
+    public int getRUC() {
+        return this.upgradeSlots;
+    }
+
+    public int getCUC() {
+        return this.level;
+    }
+
+    public int getIncSTR() {
+        return this.str;
+    }
+
+    public int getIncDEX() {
+        return this.dex;
+    }
+
+    public int getIncINT() {
+        return this._int;
+    }
+
+    public int getIncLUK() {
+        return this.luk;
+    }
+
+    public int getIncMaxHP() {
+        return this.hp;
+    }
+
+    public int getIncMaxMP() {
+        return this.mp;
+    }
+
+    public int getIncPAD() {
+        return this.watk;
+    }
+
+    public int getIncMAD() {
+        return this.matk;
+    }
+
+    public int getIncPDD() {
+        return this.wdef;
+    }
+
+    public int getIncMDD() {
+        return this.mdef;
+    }
+
+    public int getIncACC() {
+        return this.acc;
+    }
+
+    public int getIncEVA() {
+        return this.avoid;
+    }
+
+    public int getIncCraft() {
+        return this.hands;
+    }
+
+    public int getIncSpeed() {
+        return this.speed;
+    }
+
+    public int getIncJump() {
+        return this.jump;
+    }
+
+    // owner.
+    // nAttribute.
+    public int getLevelUpType() {
+        return this.nLevelUpType;
+    }
+
+    public int getLevelLevel() {
+        return this.nLevel;
+
+    }
+
+    public int getLevelEXP() {
+        return this.nEXP;
+    }
+
+    public int getDurability() {
+        return this.durability;
+    }
+
+    public int getIUC() {
+        return this.vicioushammer;
+    }
+
+    public int getGrade() {
+        return this.rank;
+    }
+
+    public int getCHUC() {
+        return this.enhance;
+    }
+
+    public int getOption1() {
+        return this.potential1;
+    }
+
+    public int getOption2() {
+        return this.potential2;
+    }
+
+    public int getOption3() {
+        return this.potential3;
+    }
+
+    // nSocket1.
+    // nSocket2.
     @Override
     public Item copy() {
         Equip ret = new Equip(getItemId(), getPosition(), getUniqueId(), getFlag());
@@ -115,70 +228,6 @@ public class Equip extends Item {
     @Override
     public byte getType() {
         return 1;
-    }
-
-    public int getUpgradeSlots() {
-        return upgradeSlots;
-    }
-
-    public int getStr() {
-        return str;
-    }
-
-    public int getDex() {
-        return dex;
-    }
-
-    public int getInt() {
-        return _int;
-    }
-
-    public int getLuk() {
-        return luk;
-    }
-
-    public int getHp() {
-        return hp;
-    }
-
-    public int getMp() {
-        return mp;
-    }
-
-    public int getWatk() {
-        return watk;
-    }
-
-    public int getMatk() {
-        return matk;
-    }
-
-    public int getWdef() {
-        return wdef;
-    }
-
-    public int getMdef() {
-        return mdef;
-    }
-
-    public int getAcc() {
-        return acc;
-    }
-
-    public int getAvoid() {
-        return avoid;
-    }
-
-    public int getHands() {
-        return hands;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public int getJump() {
-        return jump;
     }
 
     public void setStr(int str) {
@@ -245,16 +294,8 @@ public class Equip extends Item {
         this.upgradeSlots = upgradeSlots;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
     public void setLevel(int level) {
         this.level = level;
-    }
-
-    public int getViciousHammer() {
-        return vicioushammer;
     }
 
     public void setViciousHammer(int ham) {
@@ -325,6 +366,16 @@ public class Equip extends Item {
         return (GameConstants.getStatFromWeapon(getItemId()) == null ? 1 : 0);
     }
 
+    private int nLevelUpType = 0; // nLevelUpType
+    private int nLevel = 0; // nLevel
+    private int nEXP = 0; // nEXP
+
+    public void setItemLevel(int nLevelUpType, int nLevel, int nEXP) {
+        this.nLevelUpType = nLevelUpType;
+        this.nLevel = nLevel;
+        this.nEXP = nEXP;
+    }
+
     @Override
     public void setQuantity(short quantity) {
         if (quantity < 0 || quantity > 1) {
@@ -333,48 +384,24 @@ public class Equip extends Item {
         super.setQuantity(quantity);
     }
 
-    public int getDurability() {
-        return this.durability;
-    }
-
     public void setDurability(int dur) {
         this.durability = dur;
-    }
-
-    public int getEnhance() {
-        return enhance;
     }
 
     public void setEnhance(int en) {
         this.enhance = en;
     }
 
-    public int getPotential1() {
-        return potential1;
-    }
-
     public void setPotential1(int en) {
         this.potential1 = en;
-    }
-
-    public int getPotential2() {
-        return potential2;
     }
 
     public void setPotential2(int en) {
         this.potential2 = en;
     }
 
-    public int getPotential3() {
-        return potential3;
-    }
-
     public void setPotential3(int en) {
         this.potential3 = en;
-    }
-
-    public int getRank() {
-        return rank;
     }
 
     public void setRank(int rank) {
@@ -391,11 +418,11 @@ public class Equip extends Item {
 
     public int getNewLines() {
         // 3行
-        if (getPotential3() != 0) {
+        if (getOption3() != 0) {
             return 3;
         }
         // 初回抽選
-        if (getPotential1() == 0) {
+        if (getOption1() == 0) {
             // 初回は50%で3行 (テスト)
             if (50 <= Randomizer.nextInt(100)) {
                 return 3;
@@ -407,11 +434,11 @@ public class Equip extends Item {
 
     public int getNewRank(boolean master) {
         // エピック抽選
-        if (2 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+        if (2 <= getGrade() || 50 <= Randomizer.nextInt(100)) {
             // ユニーク抽選
-            if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+            if (3 <= getGrade() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
-                if (master && (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) && (4 <= getRank() || 50 <= Randomizer.nextInt(100))) {
+                if (master && (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) && (4 <= getGrade() || 50 <= Randomizer.nextInt(100))) {
                     return 4;
                 }
                 return 3;

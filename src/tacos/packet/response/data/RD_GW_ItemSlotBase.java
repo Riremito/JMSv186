@@ -88,7 +88,7 @@ public class RD_GW_ItemSlotBase {
         if (equip.getHidden() != 0) {
             return 1;
         }
-        int rank = equip.getRank();
+        int rank = equip.getGrade();
         // JMSv 186 :  5,  6,  7
         // JMS v302 : 17, 18, 19, 20
 
@@ -133,23 +133,23 @@ public class RD_GW_ItemSlotBase {
                     break;
                 }
 
-                data.Encode1(equip.getUpgradeSlots());
-                data.Encode1(equip.getLevel());
-                data.Encode2(equip.getStr());
-                data.Encode2(equip.getDex());
-                data.Encode2(equip.getInt());
-                data.Encode2(equip.getLuk());
-                data.Encode2(equip.getHp());
-                data.Encode2(equip.getMp());
-                data.Encode2(equip.getWatk());
-                data.Encode2(equip.getMatk());
-                data.Encode2(equip.getWdef());
-                data.Encode2(equip.getMdef());
-                data.Encode2(equip.getAcc());
-                data.Encode2(equip.getAvoid());
-                data.Encode2(equip.getHands());
-                data.Encode2(equip.getSpeed());
-                data.Encode2(equip.getJump());
+                data.Encode1(equip.getRUC()); // nRUC
+                data.Encode1(equip.getCUC()); // nCUC
+                data.Encode2(equip.getIncSTR()); // niSTR
+                data.Encode2(equip.getIncDEX()); // niDEX
+                data.Encode2(equip.getIncINT()); // niINT
+                data.Encode2(equip.getIncLUK()); // niLUK
+                data.Encode2(equip.getIncMaxHP()); // niMaxHP
+                data.Encode2(equip.getIncMaxMP()); // niMaxMP
+                data.Encode2(equip.getIncPAD()); // niPAD
+                data.Encode2(equip.getIncMAD()); // niMAD
+                data.Encode2(equip.getIncPDD()); // niPDD
+                data.Encode2(equip.getIncMDD()); // niMDD
+                data.Encode2(equip.getIncACC()); // niACC
+                data.Encode2(equip.getIncEVA()); // niEVA
+                data.Encode2(equip.getIncCraft()); // niCraft
+                data.Encode2(equip.getIncSpeed()); // niSpeed
+                data.Encode2(equip.getIncJump()); // niJump
                 data.EncodeStr(equip.getOwner());
 
                 if (Config.LessOrEqual(Region.KMS, 3)) {
@@ -162,20 +162,20 @@ public class RD_GW_ItemSlotBase {
                 }
 
                 if (Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
-                    data.Encode4(equip.getFlag());
+                    data.Encode4(equip.getFlag()); // nAttribute
                 } else {
-                    data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
+                    data.Encode2(equip.getFlag()); // nAttribute
                 }
                 // リバース武器
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()) {
-                    data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
-                    data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
-                    data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+                    data.Encode1(equip.getLevelUpType()); // nLevelUpType
+                    data.Encode1(equip.getLevelLevel()); // nLevel
+                    data.Encode4(equip.getLevelEXP()); // nEXP
                 }
                 // 耐久度
-                data.Encode4(equip.getDurability(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 84) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // item._ZtlSecureTear_nDurability
+                data.Encode4(equip.getDurability(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 84) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nDurability
                 // ビシャスのハンマー
-                data.Encode4(equip.getViciousHammer(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+                data.Encode4(equip.getIUC(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()); // nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                 data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
                 if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
@@ -185,13 +185,13 @@ public class RD_GW_ItemSlotBase {
                 }
                 // 潜在能力, 装備強化 (星)
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                    data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
-                    data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
-                    data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
-                    data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
-                    data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
-                    data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
-                    data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
+                    data.Encode1(getPotentialRank(equip)); // nGrade
+                    data.Encode1(equip.getCHUC()); // nCHUC
+                    data.Encode2(equip.getOption1()); // nOption1
+                    data.Encode2(equip.getOption2()); // nOption2
+                    data.Encode2(equip.getOption3()); // nOption3
+                    data.Encode2(0); // nSocket1, v302 潜在能力4個目?
+                    data.Encode2(0); // nSocket2, v302 カナトコ?
                 }
                 data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
                 data.Encode2(0, Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
@@ -207,11 +207,11 @@ public class RD_GW_ItemSlotBase {
                     data.Encode4(0);
                 }
                 if (!hasUniqueId) {
-                    data.Encode8(0);
+                    data.Encode8(0); // liSN
                 }
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-                    data.Encode8(0);
-                    data.Encode4(-1);
+                    data.Encode8(0); // ftEquipped
+                    data.Encode4(-1); // nPrevBonusExpRate
                 }
 
                 // CMS
@@ -321,34 +321,34 @@ public class RD_GW_ItemSlotBase {
     public static byte[] EncodeEquip_JMS184(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(equip.getUpgradeSlots());
-        data.Encode1(equip.getLevel());
+        data.Encode1(equip.getRUC());
+        data.Encode1(equip.getCUC());
         data.Encode1(getPotentialRank(equip));
-        data.Encode2(equip.getStr());
-        data.Encode2(equip.getDex());
-        data.Encode2(equip.getInt());
-        data.Encode2(equip.getLuk());
-        data.Encode2(equip.getHp());
-        data.Encode2(equip.getMp());
-        data.Encode2(equip.getWatk());
-        data.Encode2(equip.getMatk());
-        data.Encode2(equip.getWdef());
-        data.Encode2(equip.getMdef());
-        data.Encode2(equip.getAcc());
-        data.Encode2(equip.getAvoid());
-        data.Encode2(equip.getHands());
-        data.Encode2(equip.getSpeed());
-        data.Encode2(equip.getJump());
+        data.Encode2(equip.getIncSTR());
+        data.Encode2(equip.getIncDEX());
+        data.Encode2(equip.getIncINT());
+        data.Encode2(equip.getIncLUK());
+        data.Encode2(equip.getIncMaxHP());
+        data.Encode2(equip.getIncMaxMP());
+        data.Encode2(equip.getIncPAD());
+        data.Encode2(equip.getIncMAD());
+        data.Encode2(equip.getIncPDD());
+        data.Encode2(equip.getIncMDD());
+        data.Encode2(equip.getIncACC());
+        data.Encode2(equip.getIncEVA());
+        data.Encode2(equip.getIncCraft());
+        data.Encode2(equip.getIncSpeed());
+        data.Encode2(equip.getIncJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag());
         data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
         data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
         data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
-        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
-        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
-        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
-        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+        data.Encode1(equip.getCHUC()); // option._ZtlSecureTear_nCHUC
+        data.Encode2(equip.getOption1()); // option._ZtlSecureTear_nOption1
+        data.Encode2(equip.getOption2()); // option._ZtlSecureTear_nOption2
+        data.Encode2(equip.getOption3()); // option._ZtlSecureTear_nOption3
         data.Encode2(0); // option._ZtlSecureTear_nSocket1
         data.Encode2(0); // option._ZtlSecureTear_nSocket2
         if (!hasUniqueId) {
@@ -362,36 +362,36 @@ public class RD_GW_ItemSlotBase {
     public static byte[] EncodeEquip_EMS89(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(equip.getUpgradeSlots());
-        data.Encode1(equip.getLevel());
-        data.Encode2(equip.getStr());
-        data.Encode2(equip.getDex());
-        data.Encode2(equip.getInt());
-        data.Encode2(equip.getLuk());
-        data.Encode2(equip.getHp());
-        data.Encode2(equip.getMp());
-        data.Encode2(equip.getWatk());
-        data.Encode2(equip.getMatk());
-        data.Encode2(equip.getWdef());
-        data.Encode2(equip.getMdef());
-        data.Encode2(equip.getAcc());
-        data.Encode2(equip.getAvoid());
-        data.Encode2(equip.getHands());
-        data.Encode2(equip.getSpeed());
-        data.Encode2(equip.getJump());
+        data.Encode1(equip.getRUC());
+        data.Encode1(equip.getCUC());
+        data.Encode2(equip.getIncSTR());
+        data.Encode2(equip.getIncDEX());
+        data.Encode2(equip.getIncINT());
+        data.Encode2(equip.getIncLUK());
+        data.Encode2(equip.getIncMaxHP());
+        data.Encode2(equip.getIncMaxMP());
+        data.Encode2(equip.getIncPAD());
+        data.Encode2(equip.getIncMAD());
+        data.Encode2(equip.getIncPDD());
+        data.Encode2(equip.getIncMDD());
+        data.Encode2(equip.getIncACC());
+        data.Encode2(equip.getIncEVA());
+        data.Encode2(equip.getIncCraft());
+        data.Encode2(equip.getIncSpeed());
+        data.Encode2(equip.getIncJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
         data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
         data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
         data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
-        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+        data.Encode4(equip.getIUC()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
         data.Encode2(0);
         data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
-        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
-        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
-        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
-        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+        data.Encode1(equip.getCHUC()); // option._ZtlSecureTear_nCHUC
+        data.Encode2(equip.getOption1()); // option._ZtlSecureTear_nOption1
+        data.Encode2(equip.getOption2()); // option._ZtlSecureTear_nOption2
+        data.Encode2(equip.getOption3()); // option._ZtlSecureTear_nOption3
         data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
         data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ
         data.Encode2(0);
@@ -421,56 +421,56 @@ public class RD_GW_ItemSlotBase {
             long flag2 = -1;
             data.Encode4((int) flag1);
             if ((flag1 & 0x01) != 0) {
-                data.Encode1(equip.getUpgradeSlots());
+                data.Encode1(equip.getRUC());
             }
             if ((flag1 & 0x02) != 0) {
-                data.Encode1(equip.getLevel());
+                data.Encode1(equip.getCUC());
             }
             // x16
             if ((flag1 & 0x04) != 0) {
-                data.Encode2(equip.getStr());
+                data.Encode2(equip.getIncSTR());
             }
             if ((flag1 & 0x08) != 0) {
-                data.Encode2(equip.getDex());
+                data.Encode2(equip.getIncDEX());
             }
             if ((flag1 & 0x10) != 0) {
-                data.Encode2(equip.getInt());
+                data.Encode2(equip.getIncINT());
             }
             if ((flag1 & 0x20) != 0) {
-                data.Encode2(equip.getLuk());
+                data.Encode2(equip.getIncLUK());
             }
             if ((flag1 & 0x40) != 0) {
-                data.Encode2(equip.getHp());
+                data.Encode2(equip.getIncMaxHP());
             }
             if ((flag1 & 0x80) != 0) {
-                data.Encode2(equip.getMp());
+                data.Encode2(equip.getIncMaxMP());
             }
             if ((flag1 & 0x100) != 0) {
-                data.Encode2(equip.getWatk());
+                data.Encode2(equip.getIncPAD());
             }
             if ((flag1 & 0x200) != 0) {
-                data.Encode2(equip.getMatk());
+                data.Encode2(equip.getIncMAD());
             }
             if ((flag1 & 0x400) != 0) {
-                data.Encode2(equip.getWdef());
+                data.Encode2(equip.getIncPDD());
             }
             if ((flag1 & 0x800) != 0) {
-                data.Encode2(equip.getMdef());
+                data.Encode2(equip.getIncMDD());
             }
             if ((flag1 & 0x1000) != 0) {
-                data.Encode2(equip.getAcc());
+                data.Encode2(equip.getIncACC());
             }
             if ((flag1 & 0x2000) != 0) {
-                data.Encode2(equip.getAvoid());
+                data.Encode2(equip.getIncEVA());
             }
             if ((flag1 & 0x4000) != 0) {
-                data.Encode2(equip.getHands());
+                data.Encode2(equip.getIncCraft());
             }
             if ((flag1 & 0x8000) != 0) {
-                data.Encode2(equip.getSpeed());
+                data.Encode2(equip.getIncSpeed());
             }
             if ((flag1 & 0x10000) != 0) {
-                data.Encode2(equip.getJump()); // niJump
+                data.Encode2(equip.getIncJump()); // niJump
             }
             if ((flag1 & 0x20000) != 0) {
                 data.Encode2(equip.getFlag()); // nAttribute
@@ -488,7 +488,7 @@ public class RD_GW_ItemSlotBase {
                 data.Encode4(equip.getDurability()); // nDurability
             }
             if ((flag1 & 0x400000) != 0) {
-                data.Encode4(equip.getViciousHammer()); // nIUC
+                data.Encode4(equip.getIUC()); // nIUC
             }
             if ((flag1 & 0x800000) != 0) {
                 data.Encode2(0); // niPVPDamage
@@ -537,10 +537,10 @@ public class RD_GW_ItemSlotBase {
 
         data.EncodeStr(equip.getOwner()); // title
         data.Encode1(getPotentialRank(equip)); // nGrade
-        data.Encode1(equip.getEnhance()); // nCHUC
-        data.Encode2(equip.getPotential1()); // nOption1
-        data.Encode2(equip.getPotential2()); // nOption2
-        data.Encode2(equip.getPotential3()); // nOption3
+        data.Encode1(equip.getCHUC()); // nCHUC
+        data.Encode2(equip.getOption1()); // nOption1
+        data.Encode2(equip.getOption2()); // nOption2
+        data.Encode2(equip.getOption3()); // nOption3
         data.Encode2(0); // nOption4
         data.Encode2(0); // nOption6
         data.Encode2(0); // nOption7

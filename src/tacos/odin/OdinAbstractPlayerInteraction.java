@@ -440,7 +440,7 @@ public abstract class OdinAbstractPlayerInteraction {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
                 if (slots > 0) {
-                    item.setUpgradeSlots((byte) (item.getUpgradeSlots() + slots));
+                    item.setUpgradeSlots((byte) (item.getRUC() + slots));
                 }
                 if (owner != null) {
                     item.setOwner(owner);

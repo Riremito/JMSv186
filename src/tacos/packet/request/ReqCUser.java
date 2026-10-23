@@ -1592,11 +1592,11 @@ public class ReqCUser {
         if (toScroll == null) {
             return false;
         }
-        byte oldLevel = (byte) toScroll.getLevel();
-        byte oldEnhance = (byte) toScroll.getEnhance();
+        byte oldLevel = (byte) toScroll.getCUC();
+        byte oldEnhance = (byte) toScroll.getCHUC();
         byte oldState = (byte) toScroll.getHidden();
         byte oldFlag = (byte) toScroll.getFlag();
-        byte oldSlots = (byte) toScroll.getUpgradeSlots();
+        byte oldSlots = (byte) toScroll.getRUC();
         Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (scroll == null) {
             chr.updateInv();
@@ -1605,12 +1605,12 @@ public class ReqCUser {
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
             Equip toHammer = (Equip) toScroll;
-            if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
+            if (toHammer.getIUC() >= 2 || toHammer.getRUC() > 120) {
                 chr.updateInv();
                 return false;
             }
-            toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
-            toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
+            toHammer.setViciousHammer((byte) (toHammer.getIUC() + 1));
+            toHammer.setUpgradeSlots((byte) (toHammer.getRUC() + 1));
             {
                 PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
@@ -1626,17 +1626,17 @@ public class ReqCUser {
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() < 1) {
+            if (toScroll.getRUC() < 1) {
                 chr.updateInv();
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if (toScroll.getRUC() >= 1 || toScroll.getCHUC() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
                 chr.updateInv();
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getHidden() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if (toScroll.getHidden() >= 1 || (toScroll.getCUC() == 0 && toScroll.getRUC() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
                 chr.updateInv();
                 return false;
             }
@@ -1722,9 +1722,9 @@ public class ReqCUser {
         Equip.ScrollResult scrollSuccess;
         if (scrolled == null) {
             scrollSuccess = Equip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getHidden() > oldState || scrolled.getFlag() > oldFlag) {
+        } else if (scrolled.getCUC() > oldLevel || scrolled.getCHUC() > oldEnhance || scrolled.getHidden() > oldState || scrolled.getFlag() > oldFlag) {
             scrollSuccess = Equip.ScrollResult.SUCCESS;
-        } else if (GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots) {
+        } else if (GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getRUC() > oldSlots) {
             scrollSuccess = Equip.ScrollResult.SUCCESS;
         } else {
             scrollSuccess = Equip.ScrollResult.FAIL;

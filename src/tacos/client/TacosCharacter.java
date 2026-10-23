@@ -158,6 +158,7 @@ import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.shared.TacosSharedDate;
+import tacos.wz.CharacterWz;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -2511,10 +2512,6 @@ public class TacosCharacter extends TacosPlayer {
         }
 
         sendStatChanged();
-
-        if (!stats.checkEquipDurabilitys(-100)) { //i guess this is how it works ?
-            Notice("An item has run out of durability but has no inventory room to go to.");
-        } //lol
         if (getPyramidSubway() != null) {
             stats.setHp((short) 50);
             getPyramidSubway().fail(this);
@@ -2620,7 +2617,6 @@ public class TacosCharacter extends TacosPlayer {
             if (show) { // still show the expgain even if it's not there
                 SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
-            stats.checkEquipLevels(total);
         }
     }
 
@@ -2857,6 +2853,42 @@ public class TacosCharacter extends TacosPlayer {
 
         // レベルアップ時にDBへ反映する
         saveToDB(false);
+    }
+
+    // item level.
+    public boolean gainExpToItem(int inc_exp) {
+        if (inc_exp <= 0) {
+            return false;
+        }
+        for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
+            Equip equip = (Equip) item;
+            ArrayList<CharacterWz.EquipInfoLevel> eils = WzXML.CHARACTER.getEquipLevelInfo(equip.getItemId());
+            int max_level = eils.size();
+            if (max_level == 0) {
+                continue;
+            }
+            int nLevelUpType = equip.getLevelUpType();
+            int nLevel = equip.getLevelLevel();
+            int nEXP = equip.getLevelEXP() + inc_exp;
+            if (max_level <= nLevel) {
+                continue;
+            }
+            if (nLevel <= 0) {
+                nLevel = 1;
+            }
+            if (TacosSharedExpTable.getExpNeededForLevel(120) <= nEXP) {
+                nLevel++;
+                nEXP = 0;
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .player(this)
+                        .build();
+                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+                getMap().splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
+            }
+            equip.setItemLevel(nLevelUpType, nLevel, nEXP);
+            SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+        }
+        return true;
     }
 
     public FameStatus canGiveFame(TacosCharacter from) {
@@ -4058,49 +4090,43 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public void gainExp(int total, boolean show, boolean inChat, boolean white) {
-        try {
-            int prevexp = getExp();
-            int needed = TacosSharedExpTable.getExpNeededForLevel(level);
-            if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
-                if (exp + total > needed) {
+        int prevexp = getExp();
+        int needed = TacosSharedExpTable.getExpNeededForLevel(level);
+        if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
+            if (exp + total > needed) {
+                setExp(needed);
+            } else {
+                exp += total;
+            }
+        } else {
+            boolean leveled = false;
+            if (exp + total >= needed) {
+                exp += total;
+                levelUp();
+                leveled = true;
+                needed = TacosSharedExpTable.getExpNeededForLevel(level);
+                if (exp > needed) {
                     setExp(needed);
-                } else {
-                    exp += total;
                 }
             } else {
-                boolean leveled = false;
-                if (exp + total >= needed) {
-                    exp += total;
-                    levelUp();
-                    leveled = true;
-                    needed = TacosSharedExpTable.getExpNeededForLevel(level);
-                    if (exp > needed) {
-                        setExp(needed);
-                    }
-                } else {
-                    exp += total;
-                }
+                exp += total;
+            }
+            if (total > 0) {
+                familyRep(prevexp, needed, leveled);
+            }
+        }
+        if (total != 0) {
+            if (exp < 0) { // After adding, and negative
                 if (total > 0) {
-                    familyRep(prevexp, needed, leveled);
+                    setExp(needed);
+                } else if (total < 0) {
+                    setExp(0);
                 }
             }
-            if (total != 0) {
-                if (exp < 0) { // After adding, and negative
-                    if (total > 0) {
-                        setExp(needed);
-                    } else if (total < 0) {
-                        setExp(0);
-                    }
-                }
-                sendStatChanged();
-                if (show) { // still show the expgain even if it's not there
-                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
-                }
-                if (total > 0) {
-                    stats.checkEquipLevels(total); //gms like
-                }
+            sendStatChanged();
+            if (show) { // still show the expgain even if it's not there
+                SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
             }
-        } catch (Exception e) {
         }
     }
 
@@ -4425,7 +4451,6 @@ public class TacosCharacter extends TacosPlayer {
             e.printStackTrace();
             System.out.println("endPartyQuest error");
         }
-
     }
 
     // used by script
@@ -4629,14 +4654,14 @@ public class TacosCharacter extends TacosPlayer {
 
             for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
                 Equip equip = (Equip) item;
-                localmaxhp_ += equip.getHp();
-                localmaxmp_ += equip.getMp();
-                localdex += equip.getDex();
-                localint_ += equip.getInt();
-                localstr += equip.getStr();
-                localluk += equip.getLuk();
-                magic += equip.getMatk() + equip.getInt();
-                watk += equip.getWatk();
+                localmaxhp_ += equip.getIncMaxHP();
+                localmaxmp_ += equip.getIncMaxMP();
+                localdex += equip.getIncDEX();
+                localint_ += equip.getIncINT();
+                localstr += equip.getIncSTR();
+                localluk += equip.getIncLUK();
+                magic += equip.getIncMAD() + equip.getIncINT();
+                watk += equip.getIncPAD();
                 if (equip.getItemId() == 1112127) {
                     equippedWelcomeBackRing = true;
                 } else {
@@ -4751,79 +4776,6 @@ public class TacosCharacter extends TacosPlayer {
                 return 0;
             }
             return expert.getEffect(boostLevel).getX();
-        }
-
-        public boolean checkEquipLevels(int gain) {
-            boolean changed = false;
-            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            for (Equip eq : new ArrayList<>(equipLevelHandling)) {
-                int lvlz = eq.getEquipLevel();
-                eq.setItemEXP(eq.getItemEXP() + gain);
-
-                if (eq.getEquipLevel() > lvlz) { // lvlup
-                    for (int i = eq.getEquipLevel() - lvlz; i > 0; i--) {
-                        int equip_level = lvlz + i;
-                        // now for the equipment increments...
-                        Map<Integer, Map<String, Integer>> inc = ii.getEquipIncrements(eq.getItemId());
-                        if (inc != null && inc.containsKey(equip_level)) { // flair = 1
-                            eq = ii.levelUpEquip(eq, inc.get(equip_level));
-                        }
-                        if (GameConstants.getStatFromWeapon(eq.getItemId()) == null) {
-                            learnEquipSkills(ii.getEquipSkills(eq.getItemId()), equip_level);
-                        }
-                    }
-                    changed = true;
-                }
-                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eq.copy()).build()));
-            }
-            if (changed) {
-                equipChanged();
-
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .player(TacosCharacter.this)
-                        .build();
-                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-                getMap().splitSendPacket(TacosCharacter.this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
-            }
-            return changed;
-        }
-
-        // skills of the equip level : 10% chance to learn each skill
-        private void learnEquipSkills(Map<Integer, List<Integer>> ins, int equip_level) {
-            if (ins == null || !ins.containsKey(equip_level)) {
-                return;
-            }
-            for (Integer z : ins.get(equip_level)) {
-                if (Math.random() >= 0.1) { // 10% chance
-                    continue;
-                }
-                Skill skil = WzXML.SKILL.getSkill().get(z);
-                if (skil != null && skil.canBeLearnedBy(job) && getSkillLevel(skil) < getMasterLevel(skil)) { // dont go over masterlevel
-                    changeSkillLevel(skil, (byte) (getSkillLevel(skil) + 1), getMasterLevel(skil));
-                }
-            }
-        }
-
-        public boolean checkEquipDurabilitys(int gain) {
-            for (Equip item : durabilityHandling) {
-                item.setDurability(Math.max(0, item.getDurability() + gain));
-            }
-            for (Equip eqq : new ArrayList<>(durabilityHandling)) {
-                if (eqq.getDurability() != 0) {
-                    SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eqq.copy()).build()));
-                    continue;
-                }
-                if (getInventory(MapleInventoryType.EQUIP).isFull()) {
-                    updateInv();
-                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
-                    return false;
-                }
-                durabilityHandling.remove(eqq);
-                short pos = getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
-                MapleInventoryManipulator.unequip(TacosCharacter.this, eqq.getPosition(), pos);
-                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
-            }
-            return true;
         }
     }
 }

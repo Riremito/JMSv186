@@ -18,6 +18,9 @@
  */
 package tacos.wz;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import lombok.Getter;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 
@@ -53,5 +56,46 @@ public class CharacterWz extends WzXML {
 
         DebugLogger.XmlLog("getItemData : not found, " + id);
         return null;
+    }
+
+    @Getter
+    public class EquipInfoLevel {
+
+        private int exp;
+        private int incDEXMax;
+        private int incDEXMin;
+        private int incLUKMax;
+        private int incLUKMin;
+        private int incPADMax;
+        private int incPADMin;
+    }
+
+    private final HashMap<Integer, ArrayList<EquipInfoLevel>> equip_info_levels = new HashMap<>();
+
+    public ArrayList<EquipInfoLevel> getEquipLevelInfo(int item_id) {
+        ArrayList<EquipInfoLevel> growth = this.equip_info_levels.get(item_id);
+        if (growth != null) {
+            return growth;
+        }
+        growth = new ArrayList<>();
+        MapleData equip_img = getItemData(item_id);
+        if (equip_img != null) {
+            MapleData info_level = equip_img.getChildByPath("info/level/info");
+            if (info_level != null) {
+                for (MapleData level_node : info_level.getChildren()) {
+                    EquipInfoLevel eil = new EquipInfoLevel();
+                    eil.exp = level_node.getInt("exp");
+                    eil.incDEXMax = level_node.getInt("incDEXMax");
+                    eil.incDEXMin = level_node.getInt("incDEXMin");
+                    eil.incLUKMax = level_node.getInt("incLUKMax");
+                    eil.incLUKMin = level_node.getInt("incLUKMin");
+                    eil.incPADMax = level_node.getInt("incPADMax");
+                    eil.incPADMin = level_node.getInt("incPADMin");
+                    growth.add(eil);
+                }
+            }
+        }
+        this.equip_info_levels.put(item_id, growth);
+        return growth;
     }
 }

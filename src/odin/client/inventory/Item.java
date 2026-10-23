@@ -38,7 +38,6 @@ public class Item {
     private String giftFrom = "";
 
     public Item(int id, short position, short quantity, byte flag, int uniqueid) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -47,7 +46,6 @@ public class Item {
     }
 
     public Item(int id, short position, short quantity, byte flag) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -55,7 +53,6 @@ public class Item {
     }
 
     public Item(int id, byte position, short quantity) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -188,7 +185,6 @@ public class Item {
     public short getQuantity() {
         return quantity;
     }
-
 
     public enum ItemFlag {
 

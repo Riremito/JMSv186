@@ -82,12 +82,12 @@ public class ReqCUIGoldHammer {
         if (!GameConstants.canHammer(equip.getItemId()) || MapleItemInformationProvider.getInstance().getSlots(equip.getItemId()) <= 0) {
             return false;
         }
-        if (2 <= equip.getViciousHammer()) {
+        if (2 <= equip.getIUC()) {
             // max count in KMS is 1.
             return false;
         }
-        equip.setViciousHammer(equip.getViciousHammer() + 1);
-        equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
+        equip.setViciousHammer(equip.getIUC() + 1);
+        equip.setUpgradeSlots(equip.getRUC() + 1);
         item_use.run();
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success, equip));

@@ -361,7 +361,7 @@ public class MapleInventoryManipulator {
         }
         if (before instanceof Equip) {
             Equip eq = (Equip) before;
-            if (eq.getHidden() == 0 && (eq.getUpgradeSlots() >= 1 || eq.getLevel() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
+            if (eq.getHidden() == 0 && (eq.getRUC() >= 1 || eq.getCUC() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
                 eq.resetPotential(false, false);
                 // 未確認アイテム獲得 (?)
             }
