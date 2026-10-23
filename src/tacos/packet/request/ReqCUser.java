@@ -3493,6 +3493,11 @@ public class ReqCUser {
             if (door.getOwnerId() == door_character_id) {
                 // the party slot can change after the door is created, the client draws the town door on the current slot.
                 TacosCharacter owner = chr.getWorld().findOnlinePlayerById(door_character_id);
+                // only the owner and the owner's party members can use the door
+                if (door_character_id != chr.getId() && (owner == null || owner.getParty() == null || chr.getParty() == null || owner.getParty().getId() != chr.getParty().getId())) {
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+                    return true;
+                }
                 if (is_town_to_field) {
                     TacosMap map_to = chr.getChannelServer().findMap(door.getFieldMapId());
                     if (map_to == null) {

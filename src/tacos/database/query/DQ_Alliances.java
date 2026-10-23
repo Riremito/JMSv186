@@ -94,7 +94,7 @@ public class DQ_Alliances {
             try (PreparedStatement ps = con.prepareStatement("SELECT id FROM " + DB_TABLE_NAME + " WHERE name = ?")) {
                 ps.setString(1, name);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {// name taken
+                    if (rs.next()) { // name taken
                         return ret;
                     }
                 }
