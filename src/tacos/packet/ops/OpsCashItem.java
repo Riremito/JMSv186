@@ -362,19 +362,19 @@ public enum OpsCashItem implements IPacketOps {
         }
     }
 
-    // JMS v147 (CCashShop::OnCashItemResult)
+    // JMS v147 (CCashShop::OnCashItemResult), the requests are sent by CCashShop (CP_CashShopCashItemRequest).
     private static void initJMS147() {
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);
         CashItemReq_SetWish.set(5);
         CashItemReq_IncSlotCount.set(6);
         CashItemReq_IncTrunkCount.set(7);
-        CashItemReq_MoveLtoS.set(14);
-        CashItemReq_MoveStoL.set(15);
-        CashItemReq_Destroy.set(27);
-        CashItemReq_BuyPackage.set(31);
-        CashItemReq_BuyNormal.set(33);
-        CashItemReq_FreeCashItem.set(42);
+        CashItemReq_MoveLtoS.set(12);
+        CashItemReq_MoveStoL.set(13);
+        CashItemReq_Destroy.set(24);
+        CashItemReq_BuyPackage.set(28);
+        CashItemReq_BuyNormal.set(30);
+        CashItemReq_FreeCashItem.set(38);
         CashItemReq_ItemUpgrade.set(51);
         CashItemRes_ItemUpgradeSuccess.set(52);
         CashItemReq_ItemUpgradeFail.set(53);
