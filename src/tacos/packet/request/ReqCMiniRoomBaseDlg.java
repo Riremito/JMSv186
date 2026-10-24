@@ -19,6 +19,8 @@
 package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
+import java.util.ArrayList;
+import tacos.packet.ops.OpsMREnterResult;
 import tacos.client.TacosStoreBank;
 import odin.server.shops.IPlayerShop;
 import tacos.packet.ops.OpsMRLeave;
@@ -204,6 +206,24 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
 
+                // 個人商店
+                MaplePlayerShop player_shop = map.getPlayerShopByOid(object_id);
+                if (player_shop != null) {
+                    byte is_private = cp.Decode1();
+                    if (is_private != 0) {
+                        String password = cp.DecodeStr(); // personal shops have no password
+                    }
+                    if (chr.getPlayerShop() != null || chr.getTrade() != null || player_shop.isOwner(chr)) {
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Busy));
+                        return true;
+                    }
+                    OpsMREnterResult result = player_shop.enter(chr);
+                    if (result != OpsMREnterResult.MREnterResult_Success) {
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(result));
+                    }
+                    return true;
+                }
+
                 // new code
                 /*
                 int miniroom_id = cp.Decode4();
@@ -306,8 +326,7 @@ public class ReqCMiniRoomBaseDlg {
                     if (ips.isOwner(chr)) {
                         ips.closeShop(false, true, OpsMRLeave.MRLeave_HostOut.get());
                     } else {
-                        ips.removeVisitor(chr);
-                        chr.setPlayerShop(null);
+                        ((MaplePlayerShop) ips).leave(chr);
                     }
                     return true;
                 }
@@ -454,18 +473,20 @@ public class ReqCMiniRoomBaseDlg {
                 if (shop == null || shop.isOwner(chr) || shop instanceof MapleMiniGame) {
                     return true;
                 }
+                if (item < 0 || shop.getItems().size() <= item) {
+                    chr.updateStat();
+                    return true;
+                }
                 MaplePlayerShopItem tobuy = shop.getItems().get(item);
-                if (tobuy == null) {
+                long total_quantity = (long) tobuy.item.getQuantity() * quantity;
+                long price = (long) tobuy.price * quantity;
+                if (quantity <= 0 || tobuy.bundles < quantity || 32767 < total_quantity || Integer.MAX_VALUE < price) {
+                    chr.updateStat();
                     return true;
                 }
-                long check = tobuy.bundles * quantity;
-                long check2 = tobuy.price * quantity;
-                long check3 = tobuy.item.getQuantity() * quantity;
-                if (check > 32767 || check <= 0 || check2 > 2147483647 || check2 <= 0 || check3 > 32767 || check3 <= 0) { //This is the better way to check.
-                    return true;
-                }
-                if (quantity <= 0 || tobuy.bundles < quantity || (tobuy.bundles % quantity != 0 && GameConstants.isEquip(tobuy.item.getItemId())) // Buying
-                        || chr.getMeso() - (check2) < 0 || shop.getMeso() + (check2) < 0) {
+                // the personal shop sends its own buy result.
+                if (shop instanceof TacosMerchant && (chr.getMeso() < price || shop.getMeso() + price > Integer.MAX_VALUE)) {
+                    chr.updateStat();
                     return true;
                 }
                 shop.buy(chr, item, quantity);
@@ -504,15 +525,27 @@ public class ReqCMiniRoomBaseDlg {
                 byte visitor_slot = cp.Decode1();
                 String visitor_name = cp.DecodeStr();
                 IPlayerShop ips = chr.getPlayerShop();
-                if (ips != null) {
-                    for (SimpleImmutableEntry<Byte, TacosCharacter> visitors : ips.getVisitors()) {
-                        if (visitors.getValue().getName().equals(visitor_name)) {
-                            visitors.getValue().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(visitor_slot, OpsMRLeave.MRLeave_Kicked));
-                            visitors.getValue().setPlayerShop(null);
-                            ips.removeVisitor(visitors.getValue());
-                            return true;
-                        }
+                if (!(ips instanceof MaplePlayerShop) || !ips.isOwner(chr)) {
+                    return true;
+                }
+                for (SimpleImmutableEntry<Byte, TacosCharacter> visitor : ips.getVisitors()) {
+                    if (visitor.getValue().getName().equals(visitor_name)) {
+                        ((MaplePlayerShop) ips).ban(visitor.getValue());
+                        return true;
                     }
+                }
+                return true;
+            }
+            case PSP_DeliverBlackList: {
+                // 営業許可証 ブラックリスト (クライアントの設定)
+                short count = cp.Decode2();
+                List<String> names = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    names.add(cp.DecodeStr());
+                }
+                IPlayerShop ips = chr.getPlayerShop();
+                if (ips instanceof MaplePlayerShop && ips.isOwner(chr)) {
+                    ((MaplePlayerShop) ips).setBlackList(names);
                 }
                 return true;
             }

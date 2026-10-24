@@ -32,8 +32,8 @@ public class RD_Structure {
     public static byte[] AnnounceBox(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
-            data.EncodeBuffer(Interaction(chr.getPlayerShop()));
+        if (chr.getBalloonShop() != null) {
+            data.EncodeBuffer(Interaction(chr.getBalloonShop()));
         } else {
             data.Encode1(0);
         }

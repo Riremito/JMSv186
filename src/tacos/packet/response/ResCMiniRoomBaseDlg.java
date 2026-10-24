@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import tacos.client.TacosCharacter;
+import tacos.packet.ops.OpsPSBuy;
 import odin.server.shops.IPlayerShop;
 import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsMRLeave;
@@ -400,6 +401,26 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.TRP_Trade.get());
+        return sp;
+    }
+
+    // PSP_BuyResult : CPersonalShopDlg::OnBuyResult, the buyer gets it when the purchase fails.
+    public static ServerPacket MiniRoom_PSP_BuyResult(OpsPSBuy result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.PSP_BuyResult.get());
+        sp.Encode1(result.get());
+        return sp;
+    }
+
+    // PSP_AddSoldItem : CPersonalShopDlg::OnSoldItemResult, the owner gets it.
+    public static ServerPacket MiniRoom_PSP_AddSoldItem(int item_index, int bundles, String buyer) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.PSP_AddSoldItem.get());
+        sp.Encode1(item_index);
+        sp.Encode2(bundles); // nNumber = nSet * bundles
+        sp.EncodeStr(buyer); // sBuyerName
         return sp;
     }
 

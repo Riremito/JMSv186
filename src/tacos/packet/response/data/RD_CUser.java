@@ -74,7 +74,7 @@ public class RD_CUser {
     public static byte[] CUserRemote_Init(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        IPlayerShop shop = chr.getPlayerShop();
+        IPlayerShop shop = chr.getBalloonShop();
         MapleGuild guild = null;
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
@@ -193,7 +193,7 @@ public class RD_CUser {
 
     public static byte[] CUserRemote_Init_JMS302(TacosCharacter chr) {
         MapleGuild guild = null;
-        IPlayerShop shop = chr.getPlayerShop();
+        IPlayerShop shop = chr.getBalloonShop();
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }

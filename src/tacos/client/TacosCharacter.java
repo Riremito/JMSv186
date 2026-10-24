@@ -19,6 +19,7 @@
 package tacos.client;
 
 import tacos.packet.ops.OpsMRLeave;
+import odin.server.shops.MaplePlayerShop;
 import odin.handling.channel.handler.PachinkoHandler;
 import odin.server.shops.IPlayerShop;
 import tacos.server.map.object.TacosDragon;
@@ -3247,6 +3248,14 @@ public class TacosCharacter extends TacosPlayer {
         return this.miniroom_inventory.isEmpty();
     }
 
+    // the mini room shown over its owner, a hired merchant has a balloon of its own.
+    public IPlayerShop getBalloonShop() {
+        if (playerShop == null || !playerShop.isOwner(this) || playerShop.getShopType() == 1 || !playerShop.isAvailable()) {
+            return null;
+        }
+        return playerShop;
+    }
+
     public IPlayerShop getPlayerShop() {
         return playerShop;
     }
@@ -3798,7 +3807,9 @@ public class TacosCharacter extends TacosPlayer {
             }
 
             IPlayerShop shop = this.getPlayerShop();
-            if (shop != null) {
+            if (shop instanceof MaplePlayerShop && !shop.isOwner(this)) {
+                ((MaplePlayerShop) shop).leave(this);
+            } else if (shop != null) {
                 shop.removeVisitor(this);
                 // a personal shop gives the items back, a hired merchant being managed goes to the store bank.
                 if (shop.isOwner(this)) {

@@ -21,6 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import tacos.packet.response.ResCUser;
+import tacos.packet.ops.OpsMREnterResult;
+import odin.server.MapleItemInformationProvider;
+import tacos.packet.ops.OpsPSBuy;
 import tacos.client.TacosHoldInventory;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
@@ -66,7 +70,6 @@ public class MaplePlayerShop implements IPlayerShop {
     private List<BoughtItem> bought = new LinkedList<>();
     private List<MaplePlayerShopItem> items = new LinkedList<>();
 
-    private int boughtnumber = 0;
     private List<String> bannedList = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
@@ -196,7 +199,7 @@ public class MaplePlayerShop implements IPlayerShop {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1, error)); // the reason is read only for the own slot
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
@@ -325,41 +328,55 @@ public class MaplePlayerShop implements IPlayerShop {
     }
 
     public void buy(TacosCharacter chr, int item, short quantity) {
-        MaplePlayerShopItem pItem = items.get(item);
-        if (pItem.bundles > 0) {
-            Item newItem = pItem.item.copy();
-            newItem.setQuantity((short) (quantity * newItem.getQuantity()));
-            byte flag = newItem.getFlag();
-
-            if (ItemFlag.KARMA_EQ.check(flag)) {
-                newItem.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-            } else if (ItemFlag.KARMA_USE.check(flag)) {
-                newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
-            }
-            int gainmeso = pItem.price * quantity;
-            if (chr.getMeso() >= gainmeso) {
-                if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
-                    pItem.bundles -= quantity;
-                    hold.setItems(getStocks(items));
-                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, chr.getName()));
-                    chr.gainMeso(-gainmeso, false);
-                    getMCOwner().gainMeso(gainmeso, false);
-                    if (pItem.bundles <= 0) {
-                        boughtnumber++;
-                        if (boughtnumber == items.size()) {
-                            closeShop(false, true, OpsMRLeave.PSLeave_NoMoreItem.get());
-                            return;
-                        }
-                    }
-                } else {
-                    chr.Alert("Your inventory is full.");
-                }
-            } else {
-                chr.Alert("You do not have enough mesos.");
-                //}
-            }
-            getMCOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(this));
+        OpsPSBuy result = buyItem(chr, item, quantity);
+        // CWvsContext::SetExclRequestSent is cleared by the stat update.
+        chr.updateStat();
+        if (result != OpsPSBuy.PSBuy_Success) {
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_BuyResult(result));
+            return;
         }
+        for (MaplePlayerShopItem shop_item : items) {
+            if (0 < shop_item.bundles) {
+                return;
+            }
+        }
+        closeShop(false, true, OpsMRLeave.PSLeave_NoMoreItem.get());
+    }
+
+    private OpsPSBuy buyItem(TacosCharacter chr, int item, short quantity) {
+        MaplePlayerShopItem pItem = items.get(item);
+        if (pItem.bundles < quantity) {
+            return OpsPSBuy.PSBuy_NoStock;
+        }
+        Item newItem = pItem.item.copy();
+        newItem.setQuantity((short) (quantity * newItem.getQuantity()));
+        byte flag = newItem.getFlag();
+
+        if (ItemFlag.KARMA_EQ.check(flag)) {
+            newItem.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
+        } else if (ItemFlag.KARMA_USE.check(flag)) {
+            newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
+        }
+        int price = pItem.price * quantity;
+        if (chr.getMeso() < price) {
+            return OpsPSBuy.PSBuy_NoMoney;
+        }
+        if (owner.getMeso() + price < 0) {
+            return OpsPSBuy.PSBuy_HostTooMuchMoney;
+        }
+        if (MapleItemInformationProvider.getInstance().isPickupRestricted(newItem.getItemId()) && chr.haveItem(newItem.getItemId(), 1, true, false)) {
+            return OpsPSBuy.PSBuy_OnlyItem;
+        }
+        if (!MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) || !MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
+            return OpsPSBuy.PSBuy_NoSlot;
+        }
+        pItem.bundles -= quantity;
+        hold.setItems(getStocks(items));
+        bought.add(new BoughtItem(newItem.getItemId(), quantity, price, chr.getName()));
+        chr.gainMeso(-price, false);
+        owner.gainMeso(price, false);
+        owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_AddSoldItem(item, quantity, chr.getName()));
+        return OpsPSBuy.PSBuy_Success;
     }
 
     public byte getShopType() {
@@ -377,6 +394,59 @@ public class MaplePlayerShop implements IPlayerShop {
 
         owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, reason));
         owner.setPlayerShop(null);
+        updateBalloon();
+    }
+
+    // the number of users, or no balloon after the shop is closed.
+    private void updateBalloon() {
+        getMap().splitSendPacket(owner, ResCUser.UserMiniRoomBalloon(owner));
+    }
+
+    // MRP_Enter from a visitor.
+    public OpsMREnterResult enter(TacosCharacter visitor) {
+        if (!isOpen() || !isAvailable()) {
+            return OpsMREnterResult.MREnterResult_NoRoom;
+        }
+        if (isBanned(visitor.getName())) {
+            return OpsMREnterResult.MREnterResult_OnBlockedList;
+        }
+        if (getFreeSlot() == -1) {
+            return OpsMREnterResult.MREnterResult_Full;
+        }
+        visitor.setPlayerShop(this);
+        addVisitor(visitor);
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(visitor));
+        updateBalloon();
+        return OpsMREnterResult.MREnterResult_Success;
+    }
+
+    // MRP_Leave from a visitor, the visitor's dialog is already closed.
+    public void leave(TacosCharacter visitor) {
+        removeVisitor(visitor);
+        visitor.setPlayerShop(null);
+        updateBalloon();
+    }
+
+    // PSP_Ban, the visitor can not enter again.
+    public void ban(TacosCharacter visitor) {
+        byte slot = getVisitorSlot(visitor);
+        if (slot <= 0) {
+            return;
+        }
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot, OpsMRLeave.MRLeave_Kicked));
+        leave(visitor);
+        if (!bannedList.contains(visitor.getName())) {
+            bannedList.add(visitor.getName());
+        }
+    }
+
+    // PSP_DeliverBlackList, the owner's black list from the client config.
+    public void setBlackList(List<String> names) {
+        for (String name : names) {
+            if (!bannedList.contains(name)) {
+                bannedList.add(name);
+            }
+        }
     }
 
     public boolean isBanned(String name) {
