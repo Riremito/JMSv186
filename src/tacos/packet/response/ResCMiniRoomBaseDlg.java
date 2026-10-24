@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import tacos.client.TacosCharacter;
+import tacos.packet.ops.OpsESWithdrawAll;
 import tacos.packet.ops.OpsPSBuy;
 import odin.server.shops.IPlayerShop;
 import tacos.packet.ops.OpsMREnterResult;
@@ -172,8 +173,9 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(0); // chat count
         sp.EncodeStr(merch.getOwnerName());
         if (merch.isOwner(chr)) {
-            sp.Encode4(merch.getTimeLeft());
-            sp.Encode1(firstTime ? 1 : 0);
+            sp.Encode4(merch.getPassedTime()); // m_tPass, the client shows the time left of 24 hours
+            sp.Encode1(firstTime ? 1 : 0); // 1 = not opened yet, shows the start button
+            // CEntrustedShopDlg::DecodeSoldItemList
             sp.Encode1(merch.getBoughtItems().size());
             for (TacosMerchant.BoughtItem sold_item : merch.getBoughtItems()) {
                 sp.Encode4(sold_item.id);
@@ -181,7 +183,9 @@ public class ResCMiniRoomBaseDlg {
                 sp.Encode4(sold_item.totalPrice); // total price
                 sp.EncodeStr(sold_item.buyer); // name of the buyer
             }
-            sp.Encode4(merch.getMeso());
+            // m_nTotReceived, 8 bytes on GMS95, 4 bytes on JMS186, JMS187 and KMST330
+            sp.Encode8(merch.getMeso(), Config.GreaterOrEqual(Region.GMS, 95));
+            sp.Encode4(merch.getMeso(), !Config.GreaterOrEqual(Region.GMS, 95));
         }
         sp.EncodeStr(merch.getDescription()); // m_sTitle
         sp.Encode1(10); // m_nItemMaxCount
@@ -431,7 +435,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
         // CEntrustedShopDlg::OnRefresh
         if (shop.getShopType() == 1) {
-            sp.Encode4(0); // m_nMoney
+            sp.Encode4(shop.getMeso()); // m_nMoney
         }
         // CPersonalShopDlg::OnRefresh
         sp.Encode1(shop.getItems().size());
@@ -441,6 +445,32 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode4(item.price); // nPrice
             sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
         }
+        return sp;
+    }
+
+    // ESP_ArrangeItem : CEntrustedShopDlg::OnArrangeItemResult, the client removes the sold out items.
+    public static ServerPacket MiniRoom_ESP_ArrangeItemResult(int money) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.ESP_ArrangeItem.get());
+        sp.Encode4(money); // m_nMoney
+        return sp;
+    }
+
+    // ESP_WithdrawAllResult : CEntrustedShopDlg::OnWithdrawAllResult, the dialog is closed.
+    public static ServerPacket MiniRoom_ESP_WithdrawAllResult(OpsESWithdrawAll result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.ESP_WithdrawAllResult.get());
+        sp.Encode1(result.get());
+        return sp;
+    }
+
+    // ESP_WithdrawMoneyResult : CEntrustedShopDlg::OnWithdrawMoneyResult, m_nMoney = 0
+    public static ServerPacket MiniRoom_ESP_WithdrawMoneyResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.ESP_WithdrawMoneyResult.get());
         return sp;
     }
 

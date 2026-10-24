@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import tacos.server.map.object.TacosPet;
+import tacos.packet.ops.OpsMREnterResult;
 import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
@@ -53,7 +54,6 @@ import odin.server.RandomRewards;
 import odin.server.maps.SavedLocationType;
 import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
-import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.wz.WzXML;
@@ -104,31 +104,17 @@ public class ReqCUser_Item {
 
     private static void visitOwlMerchant(TacosCharacter chr, TacosMerchant merchant) {
         if (merchant == null) {
-            chr.Alert("This shop is in maintenance, please come by later.");
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_NoRoom));
             return;
         }
-        if (merchant.isOwner(chr)) {
-            merchant.setOpen(false);
-            merchant.removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
-            chr.setPlayerShop(merchant);
-            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
+        if (chr.getPlayerShop() != null || chr.getTrade() != null) {
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Busy));
             return;
         }
-        if (!merchant.isOpen() || !merchant.isAvailable()) {
-            chr.Alert("This shop is in maintenance, please come by later.");
-            return;
+        OpsMREnterResult result = merchant.enter(chr);
+        if (result != OpsMREnterResult.MREnterResult_Success) {
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(result));
         }
-        if (merchant.getFreeSlot() == -1) {
-            chr.Alert("This shop has reached it's maximum capacity, please come by later.");
-            return;
-        }
-        if (merchant.isInBlackList(chr.getName())) {
-            chr.Alert("You have been banned from this store.");
-            return;
-        }
-        chr.setPlayerShop(merchant);
-        merchant.addVisitor(chr);
-        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
     }
 
     // script item.

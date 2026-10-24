@@ -19,6 +19,8 @@
 package tacos.server.map.object;
 
 import java.util.AbstractMap;
+import tacos.packet.ops.OpsMREnterResult;
+import tacos.packet.ops.OpsESWithdrawAll;
 import odin.server.shops.MaplePlayerShop;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.InvTypeDB;
@@ -59,30 +61,28 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         return this.room_id;
     }
 
-    public boolean enter(TacosCharacter visitor) {
+    // the owner starts managing the shop and the visitors are sent out.
+    public OpsMREnterResult enter(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(false);
-            removeAllVisitors(OpsMRLeave.MRLeave_UserRequest.get(), 0);
+            removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
             visitor.setPlayerShop(this);
             visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
-            return true;
+            return OpsMREnterResult.MREnterResult_Success;
         }
         if (!isOpen()) {
-            visitor.DebugMsg("商店の主人が物品整理中でございます。もうしばらく後でご利用ください。");
-            return false;
+            return OpsMREnterResult.MREnterResult_IsManaging; // 商店の主人が物品整理中でございます。
         }
         if (getFreeSlot() == -1) {
-            visitor.DebugMsg("This shop has reached it's maximum capacity, please come by later.");
-            return false;
+            return OpsMREnterResult.MREnterResult_Full;
         }
         if (isInBlackList(visitor.getName())) {
-            visitor.DebugMsg("You have been banned from this store.");
-            return false;
+            return OpsMREnterResult.MREnterResult_OnBlockedList;
         }
         visitor.setPlayerShop(this);
         addVisitor(visitor);
         visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
-        return true;
+        return OpsMREnterResult.MREnterResult_Success;
     }
 
     public boolean leave(TacosCharacter visitor) {
@@ -151,8 +151,8 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     public void removeVisitor(TacosCharacter visitor) {
         byte slot = getVisitorSlot(visitor);
         if (0 < slot) {
-            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot));
             visitors[slot - 1] = null;
+            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot));
         }
     }
 
@@ -172,12 +172,13 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         for (int i = 0; i < visitors.length; i++) {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
-                if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
-                }
-                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)));
-                visitor.setPlayerShop(null);
                 visitors[i] = null;
+                if (type != -1) {
+                    // the reason is read only for the own slot, an unknown reason shows an empty notice.
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1, error));
+                }
+                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1));
+                visitor.setPlayerShop(null);
             }
         }
     }
@@ -451,6 +452,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
             TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
         }
         getMap().removeMerchant(this);
+        TacosWorld.find(0).removeRoom(this.room_id);
     }
 
     // what is left goes to the store bank.
@@ -469,25 +471,73 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         storeGoods();
     }
 
-    // the goods go back to the owner if all of them fit, otherwise all of them go to the store bank.
-    public void closeByOwner(TacosCharacter owner) {
+    // the owner pressed the start button, the employee appears on the map.
+    public void open(TacosCharacter owner) {
+        setStoreid(owner.getChannelServer().addMerchant(this));
+        setOpen(true);
+        setAvailable(true);
+        owner.setPlayerShop(null);
+        getMap().addMerchant(this);
+    }
+
+    public boolean isOnMap() {
+        return getMap().getMerchantByOid(getObjectId()) == this;
+    }
+
+    // the meso of the sales go to the owner.
+    public boolean withdrawMoney(TacosCharacter owner) {
+        if (getMeso() <= 0 || !goods.hasMesoRoomIn(owner) || !owner.gainMeso(getMeso(), false)) {
+            return false;
+        }
+        setMeso(0);
+        owner.saveToDB(false);
+        return true;
+    }
+
+    // the sold out items are removed and the meso go to the owner.
+    public void arrangeItems(TacosCharacter owner) {
+        items.removeIf(item -> item.bundles <= 0);
+        save();
+        withdrawMoney(owner);
+    }
+
+    // the meso go back to the owner if they fit, the items go back if all of them fit, the rest goes to the store bank.
+    public OpsESWithdrawAll closeByOwner(TacosCharacter owner) {
         remove(true, OpsMRLeave.ESLeave_DestoryByAdmin.get());
-        if (goods.canReturnTo(owner)) {
-            goods.returnTo(owner);
+        OpsESWithdrawAll result = OpsESWithdrawAll.ESWithdrawAll_Done;
+        if (!goods.hasMesoRoomIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_OverPrice;
+        } else if (goods.hasOnlyItemIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_OnlyItem;
+        } else if (!goods.hasRoomIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_NoSlot;
+        }
+        if (result != OpsESWithdrawAll.ESWithdrawAll_OverPrice) {
+            if (0 < goods.getMeso() && owner.gainMeso(goods.getMeso(), false)) {
+                goods.setMeso(0);
+            }
+            if (result == OpsESWithdrawAll.ESWithdrawAll_Done) {
+                goods.returnTo(owner);
+                if (!goods.getItems().isEmpty()) {
+                    result = OpsESWithdrawAll.ESWithdrawAll_Unknown;
+                }
+            }
             saveGoods();
             owner.saveToDB(false);
         }
         storeGoods();
         owner.setPlayerShop(null);
         owner.setRemoteStore(null);
+        return result;
     }
 
     public int getChannel() {
         return channel;
     }
 
-    public int getTimeLeft() {
-        return (int) ((System.currentTimeMillis() - start) / 1000);
+    // milliseconds since the shop was created.
+    public int getPassedTime() {
+        return (int) (System.currentTimeMillis() - start);
     }
 
     public int getStoreId() {

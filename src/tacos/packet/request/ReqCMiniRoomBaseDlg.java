@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
+import tacos.packet.ops.OpsESWithdrawAll;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsMREnterResult;
 import tacos.client.TacosStoreBank;
@@ -42,7 +43,6 @@ import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMiniRoomType;
-import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCUser;
 import tacos.server.TacosRoom;
 import tacos.server.TacosWorld;
@@ -160,7 +160,7 @@ public class ReqCMiniRoomBaseDlg {
                         TacosMerchant merch = new TacosMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
-                        map.addMerchant(merch);
+                        // the employee appears on the map when the start button is pressed (MRP_Balloon).
                         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merch, true));
                         return true;
                     }
@@ -192,10 +192,18 @@ public class ReqCMiniRoomBaseDlg {
                 // 雇用商人
                 TacosMerchant merchant = map.getMerchantByOid(object_id);
                 if (merchant != null) {
+                    if (chr.getPlayerShop() != null || chr.getTrade() != null) {
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Busy));
+                        return true;
+                    }
+                    OpsMREnterResult result = merchant.enter(chr);
+                    if (result != OpsMREnterResult.MREnterResult_Success) {
+                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(result));
+                        return true;
+                    }
                     TacosRoom room = world.getRoom(merchant.getRoomId());
                     if (room != null) {
                         room.addPlayer(chr);
-                        merchant.enter(chr);
                     }
                     return true;
                 }
@@ -306,12 +314,7 @@ public class ReqCMiniRoomBaseDlg {
             case MRP_Leave: {
                 TacosRoom room = world.findRoom(chr);
                 if (room != null) {
-                    TacosMerchant merchant = room.getMerchant();
-                    if (merchant != null) {
-                        merchant.leave(chr);
-                        room.removePlayer(chr);
-                    }
-                    return true;
+                    room.removePlayer(chr);
                 }
                 if (chr.getTrade() != null) {
                     MapleTrade.cancelTrade(chr.getTrade(), chr.getClient());
@@ -319,6 +322,11 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 IPlayerShop ips = chr.getPlayerShop();
                 if (ips == null) {
+                    return true;
+                }
+                // hired merchant, the owner managing it from the shop or the remote controller, or a visitor.
+                if (ips instanceof TacosMerchant) {
+                    ((TacosMerchant) ips).leave(chr);
                     return true;
                 }
                 // personal shop, the owner closes it and gets the items back.
@@ -346,13 +354,11 @@ public class ReqCMiniRoomBaseDlg {
                     if (map.allowPersonalShop()) {
 
                         if (shop.getShopType() == 1) {
+                            // CEntrustedShopDlg::OnCorrectSSN2, the start button is pressed once, the dialog is closed with MRP_Leave after this.
                             TacosMerchant merchant = (TacosMerchant) shop;
-                            merchant.setStoreid(chr.getChannelServer().addMerchant(merchant));
-                            merchant.setOpen(true);
-                            merchant.setAvailable(true);
-                            chr.setPlayerShop(null);
-                            map.splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((TacosMerchant) shop));
-
+                            if (!merchant.isOnMap()) {
+                                merchant.open(chr);
+                            }
                         } else if (shop.getShopType() == 2) {
                             shop.setOpen(true);
                             shop.setAvailable(true);
@@ -498,6 +504,7 @@ public class ReqCMiniRoomBaseDlg {
                 int slot = cp.Decode2();
                 IPlayerShop shop = chr.getPlayerShop();
                 if (shop == null || !shop.isOwner(chr) || shop instanceof MapleMiniGame || shop.getItems().size() <= 0 || shop.getItems().size() <= slot || slot < 0) {
+                    chr.updateStat();
                     return true;
                 }
                 MaplePlayerShopItem item = shop.getItems().get(slot);
@@ -507,6 +514,7 @@ public class ReqCMiniRoomBaseDlg {
                         Item item_get = item.item.copy();
                         long check = item.bundles * item.item.getQuantity();
                         if (check <= 0 || check > 32767) {
+                            chr.updateStat();
                             return true;
                         }
                         item_get.setQuantity((short) check);
@@ -518,6 +526,7 @@ public class ReqCMiniRoomBaseDlg {
                     }
                 }
                 chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(shop));
+                chr.updateStat(); // CWvsContext::SetExclRequestSent
                 return true;
             }
             case PSP_Ban: {
@@ -550,47 +559,41 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_GoOut: {
-                TacosRoom room = world.findRoom(chr);
-                if (room != null) {
-                    TacosMerchant merchant = room.getMerchant();
-                    if (merchant != null) {
-                    }
-                    return true;
-                }
+                // the owner leaves the shop opened, MRP_Leave follows this.
                 return true;
             }
             case ESP_ArrangeItem: {
-                IPlayerShop imps = chr.getPlayerShop();
-                if (imps != null && imps.isOwner(chr) && !(imps instanceof MapleMiniGame)) {
-                    for (int i = 0; i < imps.getItems().size(); i++) {
-                        if (imps.getItems().get(i).bundles == 0) {
-                            imps.getItems().remove(i);
-                        }
-                    }
-                    if (chr.getMeso() + imps.getMeso() < 0) {
-                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(imps));
-                    } else {
-                        chr.gainMeso(imps.getMeso(), false);
-                        imps.setMeso(0);
-                        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(imps));
-                    }
+                // 雇用商人 "整理", sold out items are removed and the meso are withdrawn.
+                TacosMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant == null) {
+                    chr.updateStat();
+                    return true;
                 }
+                merchant.arrangeItems(chr);
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_ArrangeItemResult(merchant.getMeso()));
+                chr.updateStat();
                 return true;
             }
             case ESP_WithdrawAll: {
                 // 雇用商人 "商店とクローズ"
                 // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
-                // ダイアログを出さずに閉じる処理が必要となる
-                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, OpsMRLeave.ESLeave_DestoryByAdmin));
-
+                // closing the dialog of a shop that is not opened yet sends this without the question.
                 TacosMerchant merchant = chr.getMyHiredMerchant();
-                if (merchant != null) {
-                    // 全てインベントリに入らない場合は全てストアーバンクへ
-                    merchant.closeByOwner(chr);
+                if (merchant == null) {
+                    chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_WithdrawAllResult(OpsESWithdrawAll.ESWithdrawAll_NoMessage));
+                    return true;
                 }
-
-                chr.setPlayerShop(null);
-                chr.setRemoteStore(null);
+                // the meso and the items that do not fit go to the store bank.
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_WithdrawAllResult(merchant.closeByOwner(chr)));
+                return true;
+            }
+            case ESP_WithdrawMoney: {
+                // 雇用商人 "メル回収"
+                TacosMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant != null && merchant.withdrawMoney(chr)) {
+                    chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_WithdrawMoneyResult());
+                }
+                chr.updateStat();
                 return true;
             }
             case ESP_AdminChangeTitle: {
@@ -851,18 +854,8 @@ public class ReqCMiniRoomBaseDlg {
             return false;
         }
 
-        merchant.setOpen(false);
-
-        // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-        List<SimpleImmutableEntry<Byte, TacosCharacter>> visitors = merchant.getVisitors();
-        for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getValue().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave((byte) i + 1, OpsMRLeave.ESLeave_StartManage));
-            visitors.get(i).getValue().setPlayerShop(null);
-            merchant.removeVisitor(visitors.get(i).getValue());
-        }
-
-        chr.setPlayerShop(merchant);
-        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, merchant, false));
+        // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。" for the visitors.
+        merchant.enter(chr);
         return true;
     }
 }

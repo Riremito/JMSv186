@@ -1227,8 +1227,10 @@ public class TacosMap extends TacosMapData {
     }
 
     public void removeMerchant(TacosMerchant merchant) {
-        this.merchants.remove(merchant.getObjectId());
-        broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
+        // a shop that was never opened is not on the map.
+        if (this.merchants.remove(merchant.getObjectId(), merchant)) {
+            broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
+        }
     }
 
     public List<TacosMerchant> getAllMerchants() {
