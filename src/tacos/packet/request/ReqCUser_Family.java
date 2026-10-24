@@ -95,9 +95,11 @@ public class ReqCUser_Family {
 
     public static void OnFamilyChartRequest(ClientPacket cp, TacosCharacter chr) {
         TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-        if (target != null) {
-            chr.SendPacket(ResCWvsContext.FamilyChartResult(target));
+        if (target == null) {
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_WrongName));
+            return;
         }
+        chr.SendPacket(ResCWvsContext.FamilyChartResult(target));
     }
 
     public static void OnFamilyInfoRequest(ClientPacket cp, TacosCharacter chr) {
@@ -105,9 +107,6 @@ public class ReqCUser_Family {
     }
 
     public static void OnFamilyRegisterJunior(ClientPacket cp, TacosCharacter chr) {
-        if (chr == null) {
-            return;
-        }
         TacosCharacter addChr = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_WrongName));
@@ -125,7 +124,9 @@ public class ReqCUser_Family {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_MinLevel));
         } else if (chr.getJunior1() > 0 && chr.getJunior2() > 0) {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_CanNotRegister));
-        } else if (chr.isGM() || !addChr.isGM()) {
+        } else if (addChr.isGM() && !chr.isGM()) {
+            chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_CanNotRegister));
+        } else {
             addChr.SendPacket(ResCWvsContext.FamilyJoinRequest(chr.getId(), chr.getLevel(), chr.getJob(), chr.getName()));
         }
         chr.updateStat();
@@ -138,8 +139,11 @@ public class ReqCUser_Family {
         }
         //junior is not required to be online.
         MapleFamily fam = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
-        MapleFamilyCharacter other = fam.getMFC(juniorid);
+        MapleFamilyCharacter other = (fam != null) ? fam.getMFC(juniorid) : null;
         MapleFamilyCharacter oth = chr.getMFC();
+        if (other == null || oth == null) {
+            return;
+        }
         boolean junior2 = oth.getJunior2() == juniorid;
         if (junior2) {
             oth.setJunior2(0);
@@ -158,6 +162,7 @@ public class ReqCUser_Family {
             fam.resetPedigree();
         }
         chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Success_Unregister));
+        chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
         chr.updateStat();
     }
 
@@ -167,8 +172,11 @@ public class ReqCUser_Family {
         }
         //not required to be online
         MapleFamily fam = chr.getWorld().getFamily().getFamily(chr.getFamilyId()); //this is old family
-        MapleFamilyCharacter mgc = fam.getMFC(chr.getSeniorId());
+        MapleFamilyCharacter mgc = (fam != null) ? fam.getMFC(chr.getSeniorId()) : null;
         MapleFamilyCharacter mgc_ = chr.getMFC();
+        if (mgc == null || mgc_ == null) {
+            return;
+        }
         mgc_.setSeniorId(0);
         boolean junior2 = mgc.getJunior2() == chr.getId();
         if (junior2) {
@@ -187,18 +195,21 @@ public class ReqCUser_Family {
             fam.resetPedigree();
         }
         chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Success_Unregister));
+        chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
         chr.updateStat();
     }
 
     public static void OnFamilyJoinResult(ClientPacket cp, TacosCharacter chr) {
-        TacosCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
-        // note : the name is decoded only when the preceding conditions are true.
+        // CWvsContext::SendFamilyInviteResult
+        int inviter_id = cp.Decode4();
+        String inviter_name = cp.DecodeStr();
+        boolean accepted = cp.Decode1() > 0;
+        TacosCharacter inviter = chr.getMap().getPlayerById(inviter_id);
         if (!(inviter != null && chr.getSeniorId() == 0
-                && inviter.getLevel() - 20 < chr.getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
+                && inviter.getLevel() - 20 < chr.getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(inviter_name) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && chr.getLevel() >= 10)) {
             return;
         }
-        boolean accepted = cp.Decode1() > 0;
         inviter.SendPacket(ResCWvsContext.FamilyJoinRequestResult(accepted, chr.getName()));
         if (!accepted) {
             return;
@@ -211,6 +222,7 @@ public class ReqCUser_Family {
             createFamily(chr.getClient(), chr, inviter, old);
         }
         chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
+        inviter.SendPacket(ResCWvsContext.FamilyInfoResult(inviter));
     }
 
     public static void OnFamilyUsePrivilege(ClientPacket cp, TacosCharacter chr) {
@@ -223,7 +235,8 @@ public class ReqCUser_Family {
             return;
         }
         boolean success = true;
-        switch (type) {
+        // the client sends the name for SP_Jump and SP_Summon.
+        switch (entry.type) {
             case 0: { // SP_Jump : move to a family member
                 success = teleportToFamily(chr, cp.DecodeStr());
                 break;
@@ -243,6 +256,8 @@ public class ReqCUser_Family {
         chr.setCurrentRep(chr.getCurrentRep() - entry.rep);
         chr.SendPacket(ResCWvsContext.FamilyFamousPointIncResult(-entry.rep, chr.getName()));
         chr.useFamilyBuff(entry);
+        // update the rep and the privilege use count in the family window.
+        chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
     }
 
     public static void OnFamilySetPrecept(ClientPacket cp, TacosCharacter chr) {
@@ -267,6 +282,7 @@ public class ReqCUser_Family {
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
                 tt.SendPacket(ResCWvsContext.FamilyFamousPointIncResult(-cost.rep, tt.getName()));
                 tt.useFamilyBuff(cost);
+                tt.SendPacket(ResCWvsContext.FamilyInfoResult(tt));
             } else {
                 tt.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
             }

@@ -118,4 +118,11 @@ public class ResCParcelDlg {
         sp.Encode1((byte) Action.SEND.Get());
         return sp;
     }
+
+    // CParcelDlg::OnPacket, CParcelDlg::NoticeResult
+    public static ServerPacket Parcel_Failed() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
+        sp.Encode1(Action.ERROR_14.Get());
+        return sp;
+    }
 }

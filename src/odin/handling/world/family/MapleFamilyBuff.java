@@ -62,6 +62,9 @@ public class MapleFamilyBuff {
     }
 
     public static MapleFamilyBuffEntry getBuffEntry(int i) {
+        if (i < 0 || buffEntries.size() <= i) {
+            return null;
+        }
         return buffEntries.get(i);
     }
 
