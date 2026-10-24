@@ -39,11 +39,11 @@ public class EtcWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
     }
 
-    public MapleData getForbiddenName() {
+    private MapleData getForbiddenName() {
         return getData("ForbiddenName.img");
     }
 
-    public MapleData getNpcLocation() {
+    private MapleData getNpcLocation() {
         return getData("NpcLocation.img");
     }
 
@@ -64,7 +64,7 @@ public class EtcWz extends WzXML {
         return ret;
     }
 
-    public MapleData getItemMake() {
+    private MapleData getItemMake() {
         return getData("ItemMake.img");
     }
 
@@ -137,7 +137,7 @@ public class EtcWz extends WzXML {
         }
     }
 
-    public MapleData getCommodity() {
+    private MapleData getCommodity() {
         return getData("Commodity.img");
     }
 
@@ -176,11 +176,11 @@ public class EtcWz extends WzXML {
         return null;
     }
 
-    public MapleData getCashPackage() {
+    private MapleData getCashPackage() {
         return getData("CashPackage.img");
     }
 
-    public MapleData getSetItemInfo() {
+    private MapleData getSetItemInfo() {
         return getData("SetItemInfo.img");
     }
 

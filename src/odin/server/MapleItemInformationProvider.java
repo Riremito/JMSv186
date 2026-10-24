@@ -16,7 +16,6 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
 import tacos.wz.WzXML;
 
 public class MapleItemInformationProvider {
@@ -116,10 +115,6 @@ public class MapleItemInformationProvider {
             }
         }
         return value;
-    }
-
-    private MapleData getItemData(int id) {
-        return WzXML.ITEM.getResolvedItemData(id);
     }
 
     /**
@@ -462,7 +457,7 @@ public class MapleItemInformationProvider {
     }
 
     public MapleStatEffect getItemEffect(int itemId) {
-        return cached(itemEffects, itemId, id -> (getItemData(id) == null) ? null : MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(id), id));
+        return cached(itemEffects, itemId, id -> !WzXML.ITEM.hasItemData(id) ? null : MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(id), id));
     }
 
     public List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(int itemId) {
@@ -548,7 +543,7 @@ public class MapleItemInformationProvider {
         if (GameConstants.getInventoryType(itemId) == MapleInventoryType.UNDEFINED) {
             return false;
         }
-        return getItemData(itemId) != null;
+        return WzXML.ITEM.hasItemData(itemId);
     }
 
     public boolean isCash(int itemId) {

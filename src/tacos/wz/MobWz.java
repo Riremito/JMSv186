@@ -118,7 +118,7 @@ public class MobWz extends WzXML {
         private String portal;
     }
 
-    public MapleMonsterStats loadMonsterStats(int mob_id) {
+    private MapleMonsterStats loadMonsterStats(int mob_id) {
         MapleData monsterData = getImg(mob_id);
         if (monsterData == null) {
             return null;

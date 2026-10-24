@@ -42,7 +42,7 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public MapleData getItemStringData(int itemId) {
+    private MapleData getItemStringData(int itemId) {
         String cat = null;
         MapleData data;
 
@@ -145,7 +145,7 @@ public class StringWz extends WzXML {
         return getData("Npc.img");
     }
 
-    public String getNpcName(int npc_id) {
+    private String getNpcName(int npc_id) {
         return getNpc().getString(npc_id + "/name", "MISSINGNO");
     }
 

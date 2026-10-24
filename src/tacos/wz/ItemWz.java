@@ -80,7 +80,7 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public MapleData getItemImg(int item_sub_type) {
+    private MapleData getItemImg(int item_sub_type) {
         if (item_sub_type < 200) {
             return null;
         }
@@ -109,7 +109,7 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public MapleData getItemData_Pet(int id) {
+    private MapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
             return null;
@@ -141,11 +141,11 @@ public class ItemWz extends WzXML {
     ArrayList<Integer> list_UniquePotential = null;
     ArrayList<Integer> list_LegendaryPotential = null;
 
-    public MapleData getItemOption() {
+    private MapleData getItemOption() {
         return getData("ItemOption.img");
     }
 
-    public boolean loadItemOpton() {
+    private boolean loadItemOpton() {
         if (this.list_RarePotential != null) {
             return true;
         }
@@ -310,7 +310,7 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public int getHunger(int petId) {
+    private int getHunger(int petId) {
         if (map_petHunger == null) {
             map_petHunger = new HashMap<>();
         }
@@ -324,7 +324,24 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public MapleData getResolvedItemData(int id) {
+    // item ids of one item sub type (the children of Item.wz/xxxx/xxxx.img)
+    public List<Integer> getItemIds(int item_sub_type) {
+        List<Integer> ids = new ArrayList<>();
+        MapleData md_item_sub_type = getItemImg(item_sub_type);
+        if (md_item_sub_type != null) {
+            for (MapleData md_item : md_item_sub_type.getChildren()) {
+                ids.add(Integer.parseInt(md_item.getName()));
+            }
+        }
+        return ids;
+    }
+
+    // the item exists in Character.wz or Item.wz
+    public boolean hasItemData(int id) {
+        return getResolvedItemData(id) != null;
+    }
+
+    private MapleData getResolvedItemData(int id) {
         MapleData md_character = WzXML.CHARACTER.getItemData(id);
         if (md_character != null) {
             return md_character;

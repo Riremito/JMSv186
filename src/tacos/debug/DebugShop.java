@@ -32,7 +32,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import tacos.wz.MapleData;
 import tacos.config.Config;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
@@ -194,12 +193,8 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
-            if (md_item_sub_type != null) {
-                for (MapleData md_item : md_item_sub_type.getChildren()) {
-                    int item_id = Integer.parseInt(md_item.getName());
-                    this.addItemRecharge(item_id, item_recharge_price);
-                }
+            for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
+                this.addItemRecharge(item_id, item_recharge_price);
             }
         }
         return true;
@@ -207,13 +202,9 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
-        if (md_item_sub_type != null) {
-            for (MapleData md_item : md_item_sub_type.getChildren()) {
-                int item_id = Integer.parseInt(md_item.getName());
-                this.addItem(item_id);
-                item_count++;
-            }
+        for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
+            this.addItem(item_id);
+            item_count++;
         }
 
         DebugLogger.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");

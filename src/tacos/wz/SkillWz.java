@@ -629,7 +629,7 @@ public class SkillWz extends WzXML {
     }
 
     // common_level : 0 = not an expression (pre-bb).
-    public SkillEffectInfo loadSkillEffect(MapleData source, int common_level) {
+    private SkillEffectInfo loadSkillEffect(MapleData source, int common_level) {
         if (source == null) {
             return null;
         }

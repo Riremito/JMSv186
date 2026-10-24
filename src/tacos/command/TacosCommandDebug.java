@@ -32,7 +32,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
-import tacos.wz.MapleData;
 import tacos.client.TacosMonsterBook;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -435,14 +434,7 @@ public class TacosCommandDebug {
                 return true;
             }
             case "/hm" -> {
-                List<Integer> ids = new ArrayList<>();
-                MapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
-                if (md_item_sub_type != null) {
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
-                        int item_id = Integer.parseInt(md_item.getName());
-                        ids.add(item_id);
-                    }
-                }
+                List<Integer> ids = WzXML.ITEM.getItemIds(503);
 
                 if (chr.getFootholdId() <= 0) {
                     return true;
