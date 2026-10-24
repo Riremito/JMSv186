@@ -1992,154 +1992,161 @@ public class TacosCharacter extends TacosPlayer {
         ret.id = character_id;
         ret.loadCharacterData(channelserver);
 
-        try {
-            DQ_Characters.loadStat(ret);
-            DQ_Characters.ExtrasRow extras = DQ_Characters.loadExtras(character_id);
+        DQ_Characters.loadStat(ret);
+        DQ_Characters.ExtrasRow extras = DQ_Characters.loadExtras(character_id);
+        if (extras == null) {
+            DebugLogger.ErrorLog("loadCharFromDB : extras " + character_id);
+            return ret;
+        }
 
-            if (channelserver) {
-                ret.updateMapById(ret.dwPosMap, ret.nPortal);
+        if (channelserver) {
+            ret.updateMapById(ret.dwPosMap, ret.nPortal);
 
-                int partyid = extras.party;
-                if (partyid >= 0) {
-                    MapleParty party = client.getWorld().getParty().getParty(partyid);
-                    if (party != null && party.getMemberById(ret.id) != null) {
-                        ret.party = party;
-                    }
-                }
-
-                int cover = extras.monsterbookcover;
-                ret.getMonsterBook().setCover(cover);
-
-                ret.dojo = extras.dojo;
-                ret.dojoRecord = extras.dojoRecord;
-                String[] pets = extras.pets.split(",");
-                for (int i = 0; i < ret.petStore.length; i++) {
-                    ret.petStore[i] = Byte.parseByte(pets[i]);
+            int partyid = extras.party;
+            if (partyid >= 0) {
+                MapleParty party = client.getWorld().getParty().getParty(partyid);
+                if (party != null && party.getMemberById(ret.id) != null) {
+                    ret.party = party;
                 }
             }
 
-            boolean compensate_previousEvans = false;
-            ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
-            for (MapleQuestStatus loadedStatus : ret.quests.values()) {
-                if (loadedStatus.getQuest().getId() == 170000) {
-                    compensate_previousEvans = true;
-                    break;
+            int cover = extras.monsterbookcover;
+            ret.getMonsterBook().setCover(cover);
+
+            ret.dojo = extras.dojo;
+            ret.dojoRecord = extras.dojoRecord;
+            String[] pets = extras.pets.split(",");
+            for (int i = 0; i < ret.petStore.length; i++) {
+                ret.petStore[i] = Byte.parseByte(pets[i]);
+            }
+        }
+
+        boolean compensate_previousEvans = false;
+        ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
+        for (MapleQuestStatus loadedStatus : ret.quests.values()) {
+            if (loadedStatus.getQuest().getId() == 170000) {
+                compensate_previousEvans = true;
+                break;
+            }
+        }
+
+        if (channelserver) {
+            DQ_Accounts.AccountLoginRow acc = DQ_Accounts.loadForCharacterLogin(ret.accountid);
+            if (acc != null) {
+                ret.getClient().setMapleId(acc.name);
+                ret.nexonPoint = acc.acash;
+                ret.maplePoint = acc.mpoints;
+                ret.points = acc.points;
+                ret.vpoints = acc.vpoints;
+
+                if (acc.lastlogon != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(acc.lastlogon.getTime());
+                    if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+                        ret.nexonPoint += 500;
+                    }
+                }
+
+                DQ_Accounts.updateLastLogon(ret.accountid);
+            }
+
+            ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
+
+            Skill skil;
+            for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
+                skil = WzXML.SKILL.getSkill().get(row.skillId);
+                if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
+                    ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
+                } else if (skil == null) { //doesnt. exist. e.g. bb
+                    ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
                 }
             }
 
-            if (channelserver) {
-                DQ_Accounts.AccountLoginRow acc = DQ_Accounts.loadForCharacterLogin(ret.accountid);
-                if (acc != null) {
-                    ret.getClient().setMapleId(acc.name);
-                    ret.nexonPoint = acc.acash;
-                    ret.maplePoint = acc.mpoints;
-                    ret.points = acc.points;
-                    ret.vpoints = acc.vpoints;
+            // Bless of Fairy handling
+            byte maxlevel_ = 0;
+            for (DQ_Characters.BlessOfFairyRow row : DQ_Characters.loadOtherCharactersForBlessOfFairy(ret.accountid)) {
+                if (row.id != character_id) { // Not this character
+                    byte maxlevel = (byte) (row.level / 10);
 
-                    if (acc.lastlogon != null) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(acc.lastlogon.getTime());
-                        if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.nexonPoint += 500;
-                        }
+                    if (maxlevel > 20) {
+                        maxlevel = 20;
+                    }
+                    if (maxlevel > maxlevel_) {
+                        maxlevel_ = maxlevel;
+                        ret.BlessOfFairy_Origin = row.name;
                     }
 
-                    DQ_Accounts.updateLastLogon(ret.accountid);
-                }
-
-                ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
-
-                Skill skil;
-                for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
-                    skil = WzXML.SKILL.getSkill().get(row.skillId);
-                    if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
-                        ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
-                    } else if (skil == null) { //doesnt. exist. e.g. bb
-                        ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
+                } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
+                    for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
+                        ret.remainingSp[i] += 2; //2 that they missed. gg
                     }
+                    ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
                 }
+            }
 
-                // Bless of Fairy handling
-                byte maxlevel_ = 0;
-                for (DQ_Characters.BlessOfFairyRow row : DQ_Characters.loadOtherCharactersForBlessOfFairy(ret.accountid)) {
-                    if (row.id != character_id) { // Not this character
-                        byte maxlevel = (byte) (row.level / 10);
+            // 精霊の祝福
+            Skill bofskill = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(ret.job));
 
-                        if (maxlevel > 20) {
-                            maxlevel = 20;
-                        }
-                        if (maxlevel > maxlevel_) {
-                            maxlevel_ = maxlevel;
-                            ret.BlessOfFairy_Origin = row.name;
-                        }
+            if (bofskill != null) {
+                ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
+            }
+            // END
 
-                    } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
-                        for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
-                            ret.remainingSp[i] += 2; //2 that they missed. gg
-                        }
-                        ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
-                    }
-                }
+            DQ_Skillmacros.loadAll(ret);
 
-                // 精霊の祝福
-                Skill bofskill = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(ret.job));
+            for (Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
+                ret.savedLocations[e.getKey()] = e.getValue();
+            }
 
-                if (bofskill != null) {
-                    ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
-                }
-                // END
-
-                DQ_Skillmacros.loadAll(ret);
-
-                for (Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
-                    ret.savedLocations[e.getKey()] = e.getValue();
-                }
-
-                DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+            DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+            if (recentFame != null) {
                 ret.lastfametime = recentFame.lastFameTime;
                 ret.lastmonthfameids = recentFame.lastMonthFameIds;
-
-                ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
-
-                int i = 0;
-                for (int sn : DQ_Wishlist.loadAll(character_id)) {
-                    ret.wishlist[i] = sn;
-                    i++;
-                }
-                while (i < 10) {
-                    ret.wishlist[i] = 0;
-                    i++;
-                }
-
-                int r = 0;
-                for (int mapid : DQ_Trocklocations.loadAll(character_id)) {
-                    ret.rocks[r] = mapid;
-                    r++;
-                }
-                while (r < 10) {
-                    ret.rocks[r] = 999999999;
-                    r++;
-                }
-
-                r = 0;
-                for (int mapid : DQ_Regrocklocations.loadAll(character_id)) {
-                    ret.regrocks[r] = mapid;
-                    r++;
-                }
-                while (r < 5) {
-                    ret.regrocks[r] = 999999999;
-                    r++;
-                }
-
-                DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
-                Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
-                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, mountRow.fatigue, mountRow.level, mountRow.exp);
-
-                ret.stats.recalcLocalStats(true);
+            } else {
+                ret.lastmonthfameids = new ArrayList<>();
             }
-        } catch (SQLException ess) {
-            ess.printStackTrace();
-            System.out.println("Failed to load character..");
+
+            ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
+
+            int i = 0;
+            for (int sn : DQ_Wishlist.loadAll(character_id)) {
+                ret.wishlist[i] = sn;
+                i++;
+            }
+            while (i < 10) {
+                ret.wishlist[i] = 0;
+                i++;
+            }
+
+            int r = 0;
+            for (int mapid : DQ_Trocklocations.loadAll(character_id)) {
+                ret.rocks[r] = mapid;
+                r++;
+            }
+            while (r < 10) {
+                ret.rocks[r] = 999999999;
+                r++;
+            }
+
+            r = 0;
+            for (int mapid : DQ_Regrocklocations.loadAll(character_id)) {
+                ret.regrocks[r] = mapid;
+                r++;
+            }
+            while (r < 5) {
+                ret.regrocks[r] = 999999999;
+                r++;
+            }
+
+            DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
+            Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+            if (mountRow != null) {
+                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, mountRow.fatigue, mountRow.level, mountRow.exp);
+            } else {
+                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, 0, 1, 0);
+            }
+
+            ret.stats.recalcLocalStats(true);
         }
         return ret;
     }
@@ -2204,23 +2211,30 @@ public class TacosCharacter extends TacosPlayer {
                 throw new DatabaseException("Character not in database (" + id + ")");
             }
 
-            DQ_Skillmacros.deleteAndSaveAll(con, this);
-            DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
-            DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
-            DQ_Skills.deleteAndSaveAll(con, id, skills);
-            DQ_Savedlocations.deleteAndSaveAll(con, id, savedLocations);
-            DQ_Achievements.deleteByAccountId(con, accountid);
-            DQ_Accounts.updatePoints(con, client.getId(), nexonPoint, maplePoint, points, vpoints);
+            // the query classes log a failure and return false, the whole save is rolled back then.
+            boolean saved = true;
+            saved &= DQ_Skillmacros.deleteAndSaveAll(con, this);
+            saved &= DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
+            saved &= DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
+            saved &= DQ_Skills.deleteAndSaveAll(con, id, skills);
+            saved &= DQ_Savedlocations.deleteAndSaveAll(con, id, savedLocations);
+            saved &= DQ_Achievements.deleteByAccountId(con, accountid);
+            saved &= DQ_Accounts.updatePoints(con, client.getId(), nexonPoint, maplePoint, points, vpoints);
 
             if (cs != null) {
-                cs.save();
+                saved &= cs.save();
             }
             mount.saveMount(id);
 
-            DQ_Wishlist.deleteAndSaveAll(con, id, wishlist, getWishlistSize());
-            DQ_Trocklocations.deleteAndSaveAll(con, id, rocks);
-            DQ_Regrocklocations.deleteAndSaveAll(con, id, regrocks);
+            saved &= DQ_Wishlist.deleteAndSaveAll(con, id, wishlist, getWishlistSize());
+            saved &= DQ_Trocklocations.deleteAndSaveAll(con, id, rocks);
+            saved &= DQ_Regrocklocations.deleteAndSaveAll(con, id, regrocks);
 
+            if (!saved) {
+                DebugLogger.ErrorLog("saveToDB : rolling back, character " + id);
+                con.rollback();
+                return;
+            }
             con.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -3058,20 +3072,7 @@ public class TacosCharacter extends TacosPlayer {
     /*
     // TODO : remove last, and first.
     public void showNote() {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-                ps.setString(1, getName());
-                try (ResultSet rs = ps.executeQuery()) {
-                    rs.last();
-                    int count = rs.getRow();
-                    rs.first();
-                    client.SendPacket(ResCWvsContext.MemoResult(rs, count));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Unable to show note" + e);
-        }
+        client.SendPacket(ResCWvsContext.MemoResult(DQ_Notes.loadByReceiver(getName())));
     }
      */
     public void deleteNote(int id, int fame) {

@@ -19,14 +19,11 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.debug.DebugLogger;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * NOTE: {@code deleteByAccountId} declares {@code throws SQLException} instead
- * of catching it internally, since it is called from TacosCharacter.saveToDB,
- * which manages its own outer transaction and must see any failure in order to
- * roll back correctly.
  *
  * @author Riremito
  */
@@ -34,11 +31,17 @@ public class DQ_Achievements {
 
     public static final String DB_TABLE_NAME = "achievements";
 
-    public static void deleteByAccountId(Connection con, int accountId) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE accountid = ?")) {
-            ps.setInt(1, accountId);
-            ps.executeUpdate();
+    public static boolean deleteByAccountId(Connection con, int accountId) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE accountid = ?")) {
+                ps.setInt(1, accountId);
+                ps.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteByAccountId");
         }
+        return false;
     }
 
 }

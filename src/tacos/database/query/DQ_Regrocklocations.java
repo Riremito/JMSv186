@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.debug.DebugLogger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,9 +28,6 @@ import java.util.List;
 import tacos.database.DatabaseConnection;
 
 /**
- * NOTE: load/save here declare {@code throws SQLException} instead of
- * catching it internally, matching the original TacosCharacter behavior
- * (see DQ_Questinfo for the same rationale).
  *
  * @author Riremito
  */
@@ -37,35 +35,46 @@ public class DQ_Regrocklocations {
 
     public static final String DB_TABLE_NAME = "regrocklocations";
 
-    public static List<Integer> loadAll(int characterId) throws SQLException {
-        List<Integer> ret = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT mapid FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.add(rs.getInt("mapid"));
+    public static List<Integer> loadAll(int characterId) {
+        try {
+            List<Integer> ret = new ArrayList<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT mapid FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(rs.getInt("mapid"));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new ArrayList<>();
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, int[] regrocks) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-        }
+    public static boolean deleteAndSaveAll(Connection con, int characterId, int[] regrocks) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                ps.executeUpdate();
+            }
 
-        for (int i = 0; i < regrocks.length; i++) {
-            if (regrocks[i] != 999999999) {
-                try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + "(characterid, mapid) VALUES(?, ?) ")) {
-                    ps.setInt(1, characterId);
-                    ps.setInt(2, regrocks[i]);
-                    ps.execute();
+            for (int i = 0; i < regrocks.length; i++) {
+                if (regrocks[i] != 999999999) {
+                    try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + "(characterid, mapid) VALUES(?, ?) ")) {
+                        ps.setInt(1, characterId);
+                        ps.setInt(2, regrocks[i]);
+                        ps.execute();
+                    }
                 }
             }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteAndSaveAll");
         }
+        return false;
     }
 
 }

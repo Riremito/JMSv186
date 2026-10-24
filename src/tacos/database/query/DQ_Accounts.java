@@ -59,52 +59,53 @@ public class DQ_Accounts {
         return false;
     }
 
-    /**
-     * NOTE: unlike most methods in this class, this declares
-     * {@code throws SQLException} instead of catching it internally,
-     * matching the original TacosCharacter.loadCharFromDB behavior, which
-     * relies on the exception propagating to its own outer catch block.
-     */
-    public static AccountLoginRow loadForCharacterLogin(int accountId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
-            ps.setInt(1, accountId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    return null;
+    public static AccountLoginRow loadForCharacterLogin(int accountId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+                ps.setInt(1, accountId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        return null;
+                    }
+                    return new AccountLoginRow(rs.getString("name"), rs.getInt("ACash"), rs.getInt("mPoints"), rs.getInt("points"), rs.getInt("vpoints"), rs.getTimestamp("lastlogon"));
                 }
-                return new AccountLoginRow(rs.getString("name"), rs.getInt("ACash"), rs.getInt("mPoints"), rs.getInt("points"), rs.getInt("vpoints"), rs.getTimestamp("lastlogon"));
             }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadForCharacterLogin");
         }
+        return null;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} for the same reason
-     * as {@code loadForCharacterLogin} above.
-     */
-    public static void updateLastLogon(int accountId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET lastlogon = CURRENT_TIMESTAMP() WHERE id = ?")) {
-            ps.setInt(1, accountId);
-            ps.executeUpdate();
+    public static boolean updateLastLogon(int accountId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET lastlogon = CURRENT_TIMESTAMP() WHERE id = ?")) {
+                ps.setInt(1, accountId);
+                ps.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateLastLogon");
         }
+        return false;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} instead of catching
-     * it internally, since it is called from TacosCharacter.saveToDB, which
-     * manages its own outer transaction and must see any failure in order
-     * to roll back correctly.
-     */
-    public static void updatePoints(Connection con, int accountId, int acash, int mpoints, int points, int vpoints) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?")) {
-            ps.setInt(1, acash);
-            ps.setInt(2, mpoints);
-            ps.setInt(3, points);
-            ps.setInt(4, vpoints);
-            ps.setInt(5, accountId);
-            ps.execute();
+    public static boolean updatePoints(Connection con, int accountId, int acash, int mpoints, int points, int vpoints) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?")) {
+                ps.setInt(1, acash);
+                ps.setInt(2, mpoints);
+                ps.setInt(3, points);
+                ps.setInt(4, vpoints);
+                ps.setInt(5, accountId);
+                ps.execute();
+            }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updatePoints");
         }
+        return false;
     }
 
     public static MapleClientState getLoginState(TacosClient client) {

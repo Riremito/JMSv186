@@ -28,9 +28,6 @@ import java.util.List;
 import tacos.database.DatabaseConnection;
 
 /**
- * NOTE: load/save here declare {@code throws SQLException} instead of
- * catching it internally, matching the original TacosCharacter behavior
- * (see DQ_Questinfo for the same rationale).
  *
  * @author Riremito
  */
@@ -38,33 +35,44 @@ public class DQ_Wishlist {
 
     public static final String DB_TABLE_NAME = "wishlist";
 
-    public static List<Integer> loadAll(int characterId) throws SQLException {
-        List<Integer> ret = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT sn FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.add(rs.getInt("sn"));
+    public static List<Integer> loadAll(int characterId) {
+        try {
+            List<Integer> ret = new ArrayList<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT sn FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(rs.getInt("sn"));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new ArrayList<>();
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, int[] wishlist, int wishlistSize) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-        }
-
-        for (int i = 0; i < wishlistSize; i++) {
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + "(characterid, sn) VALUES(?, ?) ")) {
+    public static boolean deleteAndSaveAll(Connection con, int characterId, int[] wishlist, int wishlistSize) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
                 ps.setInt(1, characterId);
-                ps.setInt(2, wishlist[i]);
-                ps.execute();
+                ps.executeUpdate();
             }
+
+            for (int i = 0; i < wishlistSize; i++) {
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + "(characterid, sn) VALUES(?, ?) ")) {
+                    ps.setInt(1, characterId);
+                    ps.setInt(2, wishlist[i]);
+                    ps.execute();
+                }
+            }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteAndSaveAll");
         }
+        return false;
     }
 
     public static boolean deleteByCharacterId(int character_id) {

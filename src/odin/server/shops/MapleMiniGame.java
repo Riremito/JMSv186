@@ -198,12 +198,7 @@ public class MapleMiniGame implements IPlayerShop {
             item.setQuantity((short) (item.getQuantity() * pItems.bundles));
             iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
-        try {
-            ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
-            return true;
-        } catch (SQLException se) {
-        }
-        return false;
+        return ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
     }
 
     public TacosCharacter getVisitor(int num) {

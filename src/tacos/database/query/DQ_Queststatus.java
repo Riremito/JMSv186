@@ -38,68 +38,71 @@ public class DQ_Queststatus {
 
     public static final String DB_TABLE_NAME = "queststatus";
 
-    /**
-     * NOTE: unlike {@code add}, load/save here declare
-     * {@code throws SQLException} instead of catching it internally, since
-     * these are called from TacosCharacter.loadCharFromDB/saveToDB, which
-     * manage their own outer try/catch and (for saveToDB) an explicit
-     * transaction that must see any failure in order to roll back
-     * correctly.
-     */
-    public static Map<MapleQuest, MapleQuestStatus> loadAll(int characterId) throws SQLException {
-        Map<MapleQuest, MapleQuestStatus> ret = new LinkedHashMap<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
-                    MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
-                    long cTime = rs.getLong("time");
-                    if (cTime > -1) {
-                        status.setCompletionTime(cTime * 1000);
+    public static Map<MapleQuest, MapleQuestStatus> loadAll(int characterId) {
+        try {
+            Map<MapleQuest, MapleQuestStatus> ret = new LinkedHashMap<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
+                        MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
+                        long cTime = rs.getLong("time");
+                        if (cTime > -1) {
+                            status.setCompletionTime(cTime * 1000);
+                        }
+                        status.setForfeited(rs.getInt("forfeited"));
+                        status.setCustomData(rs.getString("customData"));
+                        for (Map.Entry<Integer, Integer> mobKill : DQ_Queststatusmobs.loadAll(rs.getInt("queststatusid")).entrySet()) {
+                            status.setMobKills(mobKill.getKey(), mobKill.getValue());
+                        }
+                        ret.put(q, status);
                     }
-                    status.setForfeited(rs.getInt("forfeited"));
-                    status.setCustomData(rs.getString("customData"));
-                    for (Map.Entry<Integer, Integer> mobKill : DQ_Queststatusmobs.loadAll(rs.getInt("queststatusid")).entrySet()) {
-                        status.setMobKills(mobKill.getKey(), mobKill.getValue());
-                    }
-                    ret.put(q, status);
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new LinkedHashMap<>();
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, java.util.Collection<MapleQuestStatus> quests) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-        }
-
-        try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS); PreparedStatement pse = con.prepareStatement("INSERT INTO " + DQ_Queststatusmobs.DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?)")) {
-            ps.setInt(1, characterId);
-            for (MapleQuestStatus q : quests) {
-                ps.setInt(2, q.getQuest().getId());
-                ps.setInt(3, q.getStatus());
-                ps.setInt(4, (int) (q.getCompletionTime() / 1000));
-                ps.setInt(5, q.getForfeited());
-                ps.setString(6, q.getCustomData());
+    public static boolean deleteAndSaveAll(Connection con, int characterId, java.util.Collection<MapleQuestStatus> quests) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
                 ps.executeUpdate();
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    rs.next();
+            }
 
-                    if (q.hasMobKills()) {
-                        for (int mob : q.getMobKills().keySet()) {
-                            pse.setInt(1, rs.getInt(1));
-                            pse.setInt(2, mob);
-                            pse.setInt(3, q.getMobKills(mob));
-                            pse.executeUpdate();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS); PreparedStatement pse = con.prepareStatement("INSERT INTO " + DQ_Queststatusmobs.DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?)")) {
+                ps.setInt(1, characterId);
+                for (MapleQuestStatus q : quests) {
+                    ps.setInt(2, q.getQuest().getId());
+                    ps.setInt(3, q.getStatus());
+                    ps.setInt(4, (int) (q.getCompletionTime() / 1000));
+                    ps.setInt(5, q.getForfeited());
+                    ps.setString(6, q.getCustomData());
+                    ps.executeUpdate();
+                    try (ResultSet rs = ps.getGeneratedKeys()) {
+                        rs.next();
+
+                        if (q.hasMobKills()) {
+                            for (int mob : q.getMobKills().keySet()) {
+                                pse.setInt(1, rs.getInt(1));
+                                pse.setInt(2, mob);
+                                pse.setInt(3, q.getMobKills(mob));
+                                pse.executeUpdate();
+                            }
                         }
                     }
                 }
             }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteAndSaveAll");
         }
+        return false;
     }
 
     public static boolean add(TacosCharacter chr) {

@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleQuestStatus;
+import tacos.database.query.DQ_Notes;
 import tacos.server.TacosExpedition;
 import tacos.server.map.object.TacosMysticDoor;
 import odin.client.inventory.Item;
@@ -593,18 +594,17 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMemoResult
-    public static ServerPacket MemoResult(ResultSet notes, int count) throws SQLException {
+    public static ServerPacket MemoResult(List<DQ_Notes.NoteRow> notes) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
 
         sp.Encode1(3);
-        sp.Encode1(count);
-        for (int i = 0; i < count; i++) {
-            sp.Encode4(notes.getInt("id"));
-            sp.EncodeStr(notes.getString("from"));
-            sp.EncodeStr(notes.getString("message"));
-            sp.Encode8(TacosSharedDate.getTimestamp(notes.getLong("timestamp")));
-            sp.Encode1(notes.getInt("gift"));
-            notes.next();
+        sp.Encode1(notes.size());
+        for (DQ_Notes.NoteRow note : notes) {
+            sp.Encode4(note.id);
+            sp.EncodeStr(note.from);
+            sp.EncodeStr(note.message);
+            sp.Encode8(TacosSharedDate.getTimestamp(note.timestamp));
+            sp.Encode1(note.gift);
         }
         return sp;
     }

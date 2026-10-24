@@ -32,9 +32,6 @@ import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 
 /**
- * NOTE: load/save here declare {@code throws SQLException} instead of
- * catching it internally, matching the original TacosCharacter behavior
- * (see DQ_Questinfo for the same rationale).
  *
  * @author Riremito
  */
@@ -42,40 +39,51 @@ public class DQ_Skills {
 
     public static final String DB_TABLE_NAME = "skills";
 
-    public static List<SkillRow> loadAll(int characterId) throws SQLException {
-        List<SkillRow> ret = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT skillid, skilllevel, masterlevel, expiration FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.add(new SkillRow(rs.getInt("skillid"), rs.getByte("skilllevel"), rs.getByte("masterlevel"), rs.getLong("expiration")));
+    public static List<SkillRow> loadAll(int characterId) {
+        try {
+            List<SkillRow> ret = new ArrayList<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT skillid, skilllevel, masterlevel, expiration FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new SkillRow(rs.getInt("skillid"), rs.getByte("skilllevel"), rs.getByte("masterlevel"), rs.getLong("expiration")));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new ArrayList<>();
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, Map<Skill, SkillEntry> skills) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-        }
+    public static boolean deleteAndSaveAll(Connection con, int characterId, Map<Skill, SkillEntry> skills) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                ps.executeUpdate();
+            }
 
-        try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)")) {
-            ps.setInt(1, characterId);
-            for (Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
-                if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
-                    ps.setInt(2, skill.getKey().getId());
-                    ps.setByte(3, skill.getValue().skillevel);
-                    ps.setByte(4, skill.getValue().masterlevel);
-                    ps.setLong(5, skill.getValue().expiration);
-                    ps.execute();
-                } else {
-                    DebugLogger.ErrorLog("ApplicableSkill : error = " + skill.getKey().getId());
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)")) {
+                ps.setInt(1, characterId);
+                for (Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
+                    if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
+                        ps.setInt(2, skill.getKey().getId());
+                        ps.setByte(3, skill.getValue().skillevel);
+                        ps.setByte(4, skill.getValue().masterlevel);
+                        ps.setLong(5, skill.getValue().expiration);
+                        ps.execute();
+                    } else {
+                        DebugLogger.ErrorLog("ApplicableSkill : error = " + skill.getKey().getId());
+                    }
                 }
             }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteAndSaveAll");
         }
+        return false;
     }
 
     public static final class SkillRow {

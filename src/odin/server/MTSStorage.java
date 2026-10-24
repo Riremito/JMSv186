@@ -157,29 +157,21 @@ public class MTSStorage {
         if (isShutDown) {
             DebugLogger.InfoLog("Saving MTS items...");
         }
-        try {
-            for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
-                ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
-            }
-        } catch (SQLException e) {
-            DebugLogger.ExceptionLog(e.toString());
+        for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
+            ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
         }
         if (isShutDown) {
             DebugLogger.InfoLog("Saving MTS carts...");
         }
-        try {
-            for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
-                for (int i : toRemove) {
-                    c.getValue().removeFromCart(i);
-                    c.getValue().removeFromNotYetSold(i);
-                }
-                for (Item item : expire.getOrDefault(c.getKey(), new ArrayList<>())) {
-                    c.getValue().addToInventory(item);
-                }
-                c.getValue().save();
+        for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
+            for (int i : toRemove) {
+                c.getValue().removeFromCart(i);
+                c.getValue().removeFromNotYetSold(i);
             }
-        } catch (SQLException e) {
-            DebugLogger.ExceptionLog(e.toString());
+            for (Item item : expire.getOrDefault(c.getKey(), new ArrayList<>())) {
+                c.getValue().addToInventory(item);
+            }
+            c.getValue().save();
         }
         lastUpdate = System.currentTimeMillis();
     }
@@ -193,12 +185,8 @@ public class MTSStorage {
     public MTSCart getCart(int characterId) {
         MTSCart ret = idToCart.get(characterId);
         if (ret == null) {
-            try {
-                ret = new MTSCart(characterId);
-                idToCart.put(characterId, ret);
-            } catch (SQLException e) {
-                DebugLogger.ExceptionLog(e.toString());
-            }
+            ret = new MTSCart(characterId);
+            idToCart.put(characterId, ret);
         }
         return ret;
     }

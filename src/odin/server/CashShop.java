@@ -45,7 +45,7 @@ public class CashShop {
     private List<Item> inventory = new ArrayList<>();
     private List<Integer> uniqueids = new ArrayList<>();
 
-    public CashShop(int accountId, int characterId, int jobType) throws SQLException {
+    public CashShop(int accountId, int characterId, int jobType) {
         this.accountId = accountId;
         this.characterId = characterId;
 
@@ -187,13 +187,13 @@ public class CashShop {
         }
     }
 
-    public void save() throws SQLException {
+    public boolean save() {
         List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : inventory) {
             itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
-        factory.saveItems(itemsWithType, accountId);
+        return factory.saveItems(itemsWithType, accountId);
     }
 }

@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -58,7 +57,7 @@ public enum ItemLoader {
         this.arg = Arrays.asList(arg);
     }
 
-    public Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
+    public Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> loadItems(boolean login, Integer... id) {
         switch (this) {
             case CASHSHOP_EXPLORER:
             case CASHSHOP_CYGNUS:
@@ -80,12 +79,11 @@ public enum ItemLoader {
         }
     }
 
-    public void saveItems(List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Integer... id) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        saveItems(items, con, id);
+    public boolean saveItems(List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Integer... id) {
+        return saveItems(items, DatabaseConnection.getConnection(), id);
     }
 
-    public void saveItems(List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
+    public boolean saveItems(List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Connection con, Integer... id) {
         switch (this) {
             case CASHSHOP_EXPLORER:
             case CASHSHOP_CYGNUS:
@@ -93,20 +91,15 @@ public enum ItemLoader {
             case CASHSHOP_EVAN:
             case CASHSHOP_DB:
             case CASHSHOP_RESIST:
-                DQ_Csitems.save(value, arg, items, con, id);
-                return;
+                return DQ_Csitems.save(value, arg, items, con, id);
             case HIRED_MERCHANT:
-                DQ_Hiredmerchitems.save(value, arg, items, con, id);
-                return;
+                return DQ_Hiredmerchitems.save(value, arg, items, con, id);
             case DUEY:
-                DQ_Dueyitems.save(value, arg, items, con, id);
-                return;
+                return DQ_Dueyitems.save(value, arg, items, con, id);
             case MTS:
-                DQ_MtsStorageItems.save(value, arg, items, con, id);
-                return;
+                return DQ_MtsStorageItems.save(value, arg, items, con, id);
             case MTS_TRANSFER:
-                DQ_MtsTransferItems.save(value, arg, items, con, id);
-                return;
+                return DQ_MtsTransferItems.save(value, arg, items, con, id);
             default:
                 throw new IllegalStateException("Unhandled ItemLoader constant: " + this);
         }

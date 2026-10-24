@@ -112,53 +112,52 @@ public class DQ_Characters {
         return false;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} instead of catching
-     * it internally, since it is called from TacosCharacter.saveToDB, which
-     * manages its own outer transaction and must see any failure in order
-     * to roll back correctly.
-     */
-    public static boolean updateStat(Connection con, CharacterSaveRow row) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ?, tama = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, row.level);
-            ps.setInt(2, row.fame);
-            ps.setInt(3, row.str);
-            ps.setInt(4, row.dex);
-            ps.setInt(5, row.luk);
-            ps.setInt(6, row.intel);
-            ps.setInt(7, row.exp);
-            ps.setInt(8, row.hp);
-            ps.setInt(9, row.mp);
-            ps.setInt(10, row.maxhp);
-            ps.setInt(11, row.maxmp);
-            ps.setString(12, row.sp);
-            ps.setInt(13, row.ap);
-            ps.setByte(14, row.gm);
-            ps.setByte(15, row.skinColor);
-            ps.setByte(16, row.gender);
-            ps.setInt(17, row.job);
-            ps.setInt(18, row.hair);
-            ps.setInt(19, row.face);
-            ps.setInt(20, row.map);
-            ps.setInt(21, row.meso);
-            ps.setInt(22, row.hpApUsed);
-            ps.setByte(23, row.spawnpoint);
-            ps.setInt(24, row.party);
-            ps.setShort(25, row.buddyCapacity);
-            ps.setInt(26, row.monsterbookcover);
-            ps.setInt(27, row.dojo);
-            ps.setInt(28, row.dojoRecord);
-            ps.setString(29, row.pets);
-            ps.setInt(30, row.subcategory);
-            ps.setInt(31, row.marriageId);
-            ps.setInt(32, row.currentrep);
-            ps.setInt(33, row.totalrep);
-            ps.setString(34, row.name);
-            ps.setInt(35, row.tama);
-            ps.setInt(36, row.id);
+    public static boolean updateStat(Connection con, CharacterSaveRow row) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ?, tama = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, row.level);
+                ps.setInt(2, row.fame);
+                ps.setInt(3, row.str);
+                ps.setInt(4, row.dex);
+                ps.setInt(5, row.luk);
+                ps.setInt(6, row.intel);
+                ps.setInt(7, row.exp);
+                ps.setInt(8, row.hp);
+                ps.setInt(9, row.mp);
+                ps.setInt(10, row.maxhp);
+                ps.setInt(11, row.maxmp);
+                ps.setString(12, row.sp);
+                ps.setInt(13, row.ap);
+                ps.setByte(14, row.gm);
+                ps.setByte(15, row.skinColor);
+                ps.setByte(16, row.gender);
+                ps.setInt(17, row.job);
+                ps.setInt(18, row.hair);
+                ps.setInt(19, row.face);
+                ps.setInt(20, row.map);
+                ps.setInt(21, row.meso);
+                ps.setInt(22, row.hpApUsed);
+                ps.setByte(23, row.spawnpoint);
+                ps.setInt(24, row.party);
+                ps.setShort(25, row.buddyCapacity);
+                ps.setInt(26, row.monsterbookcover);
+                ps.setInt(27, row.dojo);
+                ps.setInt(28, row.dojoRecord);
+                ps.setString(29, row.pets);
+                ps.setInt(30, row.subcategory);
+                ps.setInt(31, row.marriageId);
+                ps.setInt(32, row.currentrep);
+                ps.setInt(33, row.totalrep);
+                ps.setString(34, row.name);
+                ps.setInt(35, row.tama);
+                ps.setInt(36, row.id);
 
-            return ps.executeUpdate() >= 1;
+                return ps.executeUpdate() >= 1;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateStat");
         }
+        return false;
     }
 
     public static boolean loadStat(TacosCharacter ret) {
@@ -268,42 +267,41 @@ public class DQ_Characters {
         return true;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} instead of catching
-     * it internally (unlike most methods in this class), matching the
-     * original TacosCharacter.loadCharFromDB behavior, which relies on the
-     * exception (and the not-found RuntimeException below) propagating to
-     * its own outer catch block.
-     */
-    public static ExtrasRow loadExtras(int characterId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new RuntimeException("Loading the Char Failed (char not found)");
+    public static ExtrasRow loadExtras(int characterId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new RuntimeException("Loading the Char Failed (char not found)");
+                    }
+                    return new ExtrasRow(rs.getInt("party"), rs.getInt("monsterbookcover"), rs.getInt("dojo_pts"), rs.getByte("dojoRecord"), rs.getString("pets"));
                 }
-                return new ExtrasRow(rs.getInt("party"), rs.getInt("monsterbookcover"), rs.getInt("dojo_pts"), rs.getByte("dojoRecord"), rs.getString("pets"));
             }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadExtras");
         }
+        return null;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} for the same reason
-     * as {@code loadExtras} above.
-     */
-    public static List<BlessOfFairyRow> loadOtherCharactersForBlessOfFairy(int accountId) throws SQLException {
-        List<BlessOfFairyRow> ret = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accountid = ? ORDER BY level DESC")) {
-            ps.setInt(1, accountId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.add(new BlessOfFairyRow(rs.getInt("id"), rs.getShort("level"), rs.getString("name")));
+    public static List<BlessOfFairyRow> loadOtherCharactersForBlessOfFairy(int accountId) {
+        try {
+            List<BlessOfFairyRow> ret = new ArrayList<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accountid = ? ORDER BY level DESC")) {
+                ps.setInt(1, accountId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new BlessOfFairyRow(rs.getInt("id"), rs.getShort("level"), rs.getString("name")));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadOtherCharactersForBlessOfFairy");
         }
-        return ret;
+        return new ArrayList<>();
     }
 
     public static boolean updateFamilyStatus(int characterId, int familyId, int seniorId, int junior1, int junior2) {

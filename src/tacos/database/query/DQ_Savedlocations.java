@@ -29,9 +29,6 @@ import odin.server.maps.SavedLocationType;
 import tacos.database.DatabaseConnection;
 
 /**
- * NOTE: load/save here declare {@code throws SQLException} instead of
- * catching it internally, matching the original TacosCharacter behavior
- * (see DQ_Questinfo for the same rationale).
  *
  * @author Riremito
  */
@@ -39,36 +36,47 @@ public class DQ_Savedlocations {
 
     public static final String DB_TABLE_NAME = "savedlocations";
 
-    public static Map<Integer, Integer> loadAll(int characterId) throws SQLException {
-        Map<Integer, Integer> ret = new LinkedHashMap<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT `locationtype`,`map` FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.put(rs.getInt("locationtype"), rs.getInt("map"));
+    public static Map<Integer, Integer> loadAll(int characterId) {
+        try {
+            Map<Integer, Integer> ret = new LinkedHashMap<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT `locationtype`,`map` FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.put(rs.getInt("locationtype"), rs.getInt("map"));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new LinkedHashMap<>();
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, int[] savedLocations) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-        }
+    public static boolean deleteAndSaveAll(Connection con, int characterId, int[] savedLocations) {
+        try {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                ps.executeUpdate();
+            }
 
-        try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, `locationtype`, `map`) VALUES (?, ?, ?)")) {
-            ps.setInt(1, characterId);
-            for (SavedLocationType savedLocationType : SavedLocationType.values()) {
-                if (savedLocations[savedLocationType.getValue()] != -1) {
-                    ps.setInt(2, savedLocationType.getValue());
-                    ps.setInt(3, savedLocations[savedLocationType.getValue()]);
-                    ps.execute();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, `locationtype`, `map`) VALUES (?, ?, ?)")) {
+                ps.setInt(1, characterId);
+                for (SavedLocationType savedLocationType : SavedLocationType.values()) {
+                    if (savedLocations[savedLocationType.getValue()] != -1) {
+                        ps.setInt(2, savedLocationType.getValue());
+                        ps.setInt(3, savedLocations[savedLocationType.getValue()]);
+                        ps.execute();
+                    }
                 }
             }
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteAndSaveAll");
         }
+        return false;
     }
 
     public static boolean deleteByCharacterId(int character_id) {

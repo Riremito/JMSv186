@@ -61,24 +61,22 @@ public class DQ_Mountdata {
         return false;
     }
 
-    /**
-     * NOTE: this declares {@code throws SQLException} instead of catching
-     * it internally (unlike {@code add}/{@code update} above), matching the
-     * original TacosCharacter.loadCharFromDB behavior, which relies on the
-     * exception (and the not-found RuntimeException below) propagating to
-     * its own outer catch block.
-     */
-    public static Row load(int characterId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new RuntimeException("No mount data found on SQL column");
+    public static Row load(int characterId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new RuntimeException("No mount data found on SQL column");
+                    }
+                    return new Row(rs.getByte("Fatigue"), rs.getByte("Level"), rs.getInt("Exp"));
                 }
-                return new Row(rs.getByte("Fatigue"), rs.getByte("Level"), rs.getInt("Exp"));
             }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "load");
         }
+        return null;
     }
 
     public static boolean update(MapleMount mount, int characterId) {

@@ -28,11 +28,6 @@ import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 
 /**
- * NOTE: {@code loadRecent} declares {@code throws SQLException} instead of
- * catching it internally, matching the original TacosCharacter.loadCharFromDB
- * behavior (see DQ_Questinfo for the same rationale). {@code insert} instead
- * catches internally (matching the original TacosCharacter.hasGivenFame,
- * which also swallowed the exception).
  *
  * @author Riremito
  */
@@ -40,20 +35,25 @@ public class DQ_Famelog {
 
     public static final String DB_TABLE_NAME = "famelog";
 
-    public static RecentFame loadRecent(int characterId) throws SQLException {
-        long lastfametime = 0;
-        List<Integer> lastmonthfameids = new ArrayList<>(31);
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM " + DB_TABLE_NAME + " WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30")) {
-            ps.setInt(1, characterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lastfametime = Math.max(lastfametime, rs.getTimestamp("when").getTime());
-                    lastmonthfameids.add(Integer.valueOf(rs.getInt("characterid_to")));
+    public static RecentFame loadRecent(int characterId) {
+        try {
+            long lastfametime = 0;
+            List<Integer> lastmonthfameids = new ArrayList<>(31);
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM " + DB_TABLE_NAME + " WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        lastfametime = Math.max(lastfametime, rs.getTimestamp("when").getTime());
+                        lastmonthfameids.add(Integer.valueOf(rs.getInt("characterid_to")));
+                    }
                 }
             }
+            return new RecentFame(lastfametime, lastmonthfameids);
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadRecent");
         }
-        return new RecentFame(lastfametime, lastmonthfameids);
+        return null;
     }
 
     public static boolean insert(int characterId, int characterIdTo) {

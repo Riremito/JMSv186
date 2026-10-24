@@ -35,24 +35,23 @@ public class DQ_Queststatusmobs {
 
     public static final String DB_TABLE_NAME = "queststatusmobs";
 
-    /**
-     * NOTE: unlike {@code add}, this declares {@code throws SQLException}
-     * instead of catching it internally, since it is called from
-     * TacosCharacter.loadCharFromDB (via DQ_Queststatus.loadAll), which
-     * relies on the exception propagating to its own outer catch block.
-     */
-    public static Map<Integer, Integer> loadAll(int queststatusid) throws SQLException {
-        Map<Integer, Integer> ret = new LinkedHashMap<>();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE queststatusid = ?")) {
-            ps.setInt(1, queststatusid);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.put(rs.getInt("mob"), rs.getInt("count"));
+    public static Map<Integer, Integer> loadAll(int queststatusid) {
+        try {
+            Map<Integer, Integer> ret = new LinkedHashMap<>();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE queststatusid = ?")) {
+                ps.setInt(1, queststatusid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.put(rs.getInt("mob"), rs.getInt("count"));
+                    }
                 }
             }
+            return ret;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadAll");
         }
-        return ret;
+        return new LinkedHashMap<>();
     }
 
     public static boolean add(int queststatusid, Map<Integer, Integer> killedMobs) {
