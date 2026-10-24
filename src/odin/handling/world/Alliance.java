@@ -222,11 +222,17 @@ public class Alliance {
                     }
                     continue; //just skip
                 }
-                if (g_ == null || gid == alliance.getGuildId(i)) {
+                if (g_ == null) {
+                    // the alliance is disbanded
                     guild.changeARank(5);
                     guild.setAllianceId(0);
                     guild.broadcast(ResCWvsContext.AllianceResult_Destroy_Done(allianceid));
-                } else if (g_ != null) {
+                } else if (gid == alliance.getGuildId(i)) {
+                    // the guild that left reads its guild data (no alliance) and shows the client message (left / kicked)
+                    guild.changeARank(5);
+                    guild.setAllianceId(0);
+                    guild.broadcast(ResCWvsContext.AllianceResult_Withdraw_Done(alliance, guild, expelled));
+                } else {
                     guild.broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + g_.getName() + "] Guild has left the alliance.").build()));
                     guild.broadcast(ResCWvsContext.AllianceResult_Withdraw_Done(alliance, g_, expelled));
                 }

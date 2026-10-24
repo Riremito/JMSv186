@@ -751,7 +751,7 @@ public class ResCWvsContext {
         String sCommunity = "-";
         String sAlliance = "";
         // Guild
-        if (player.getGuildId() <= 0) {
+        if (player.getGuildId() > 0) {
             MapleGuild guild = player.getWorld().getGuild().getGuild(player.getGuildId());
             if (guild != null) {
                 sCommunity = guild.getName();
