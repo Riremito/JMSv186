@@ -412,11 +412,14 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
   `itemEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` tinyint NOT NULL DEFAULT '0',
+  `rank` int NOT NULL DEFAULT '0',
+  `hidden` int NOT NULL DEFAULT '0',
   `potential1` smallint NOT NULL DEFAULT '0',
   `potential2` smallint NOT NULL DEFAULT '0',
   `potential3` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `incattackSpeed` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
