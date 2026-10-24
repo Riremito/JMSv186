@@ -61,34 +61,6 @@ public class ReqCMiniRoomBaseDlg {
         TacosWorld world = chr.getWorld();
         switch (OpsMiniRoomProtocol.find(protocol_req)) {
             case MRP_Create: {
-                // new code.
-                /*
-                byte miniroom_type = cp.Decode1();
-                if (OpsMiniRoomType.find(miniroom_type) == OpsMiniRoomType.MR_EntrustedShop) {
-                    String title = cp.DecodeStr();
-                    byte es_req = cp.Decode1();
-                    if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
-                        return false;
-                    }
-                    short cash_item_slot = cp.Decode2();
-                    int cash_item_id = cp.Decode4();
-
-                    int cash_item_type = cash_item_id / 10000;
-                    if (cash_item_type != 503 || !DWI_LoadXML.getItem().isValidID(cash_item_id)) {
-                        return false;
-                    }
-
-                    Runnable item_use = chr.checkItemSlot(cash_item_slot, cash_item_id);
-                    if (item_use == null) {
-                        return false;
-                    }
-
-                    return true;
-                }
-                return false;
-                 */
-                // old code
-
                 byte miniroom_type = cp.Decode1();
 
                 switch (OpsMiniRoomType.find(miniroom_type)) {
@@ -207,13 +179,11 @@ public class ReqCMiniRoomBaseDlg {
                     }
                     return true;
                 }
-
                 // 交換
                 if (chr.getTrade() != null && chr.getTrade().getPartner() != null) {
                     MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().isPointTrade());
                     return true;
                 }
-
                 // 個人商店
                 MaplePlayerShop player_shop = map.getPlayerShopByOid(object_id);
                 if (player_shop != null) {
@@ -231,60 +201,6 @@ public class ReqCMiniRoomBaseDlg {
                     }
                     return true;
                 }
-
-                // new code
-                /*
-                int miniroom_id = cp.Decode4();
-                byte unk = cp.Decode1();
-
-                TacosMerchant hm = (TacosMerchant) chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
-                if (hm == null) {
-                    DebugLogger.ErrorLog("hm == null.");
-                    return false;
-                }
-                //hm.addVisitor(chr);
-                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(chr, hm, true));
-                 */
-                // old code
-                /*
-                {
-                    Object ob = chr.getMap().getMiniGameByOid(object_id);
-                    if (ob == null) {
-                        ob = chr.getMap().getPlayerShopByOid(object_id);
-                    }
-
-                    if ((ob instanceof MaplePlayerShop || ob instanceof MapleMiniGame) && chr.getPlayerShop() == null) {
-                        final IPlayerShop ips = (IPlayerShop) ob;
-                        if (ips instanceof MaplePlayerShop && ((MaplePlayerShop) ips).isBanned(chr.getName())) {
-                            chr.Alert("You have been banned from this store.");
-                            return true;
-                        } else {
-                            if (ips.getFreeSlot() < 0 || ips.getVisitorSlot(chr) > -1 || !ips.isOpen() || !ips.isAvailable()) {
-                                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Full));
-                            } else {
-                                byte unk1 = cp.Decode1();
-                                if (unk1 > 0) { //a password has been entered
-                                    String pass = cp.DecodeStr();
-                                    if (!pass.equals(ips.getPassword())) {
-                                        chr.Alert("The password you entered is incorrect.");
-                                        return true;
-                                    }
-                                } else if (ips.getPassword().length() > 0) {
-                                    chr.Alert("The password you entered is incorrect.");
-                                    return true;
-                                }
-                                chr.setPlayerShop(ips);
-                                ips.addVisitor(chr);
-                                if (ips instanceof MapleMiniGame) {
-                                    ((MapleMiniGame) ips).send(chr.getClient());
-                                } else {
-                                    chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(chr));
-                                }
-                            }
-                        }
-                    }
-                }
-                 */
                 return true;
             }
             case MRP_Chat: {
@@ -338,14 +254,6 @@ public class ReqCMiniRoomBaseDlg {
                     }
                     return true;
                 }
-                /*
-                if (!ips.isAvailable() || (ips.isOwner(chr) && ips.getShopType() != 1)) {
-                    ips.closeShop(false, ips.isAvailable(), OpsMRLeave.MRLeave_HostOut.get());
-                } else {
-                    ips.removeVisitor(chr);
-                }
-                chr.setPlayerShop(null);
-                 */
                 return true;
             }
             case MRP_Balloon: {
@@ -846,9 +754,6 @@ public class ReqCMiniRoomBaseDlg {
 
         TacosMerchant merchant = chr.getRemoteStore();
         if (merchant == null) {
-            // test
-            //chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShopTest(chr));
-
             TacosMerchant hm = new TacosMerchant(chr, 5030000, "DebugHiredMarchant");
             chr.getMap().addMerchant(hm);
             return false;
