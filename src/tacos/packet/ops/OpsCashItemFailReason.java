@@ -19,6 +19,7 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
+import tacos.config.Config;
 
 /**
  *
@@ -137,8 +138,12 @@ public enum OpsCashItemFailReason implements IPacketOps {
         if (!Region.JMS.check()) {
             return;
         }
-        // JMS v186
         clear();
+        if (Config.LessOrEqual(Region.JMS, 147)) {
+            initJMS147();
+            return;
+        }
+        // JMS v186
         CashItemFailReason_Timeout.set(178);
         CashItemFailReason_NoRemainCash.set(180);
         CashItemFailReason_GiftUnderAge.set(181);
@@ -183,5 +188,41 @@ public enum OpsCashItemFailReason implements IPacketOps {
         CashItemFailReason_OnlyNXCash.set(236);
         CashItemFailReason_TryAgainRandomBox.set(237); // しばらく後もう一度行ってください。
         // 0xE8 Lv30以上, 0xE9 Lv70以上
+    }
+
+    // JMS v147 (CCashShop::NoticeFailReason), other reasons are shown by the default message.
+    private static void initJMS147() {
+        CashItemFailReason_Timeout.set(137);
+        CashItemFailReason_NoRemainCash.set(139);
+        CashItemFailReason_GiftUnderAge.set(140);
+        CashItemFailReason_GiftLimitOver.set(141);
+        CashItemFailReason_BuyStoredProcFailed.set(142);
+        CashItemFailReason_InvalidCoupon.set(144);
+        CashItemFailReason_ExpiredCoupon.set(145);
+        CashItemFailReason_UsedCoupon.set(146);
+        CashItemFailReason_CouponForCafeOnly.set(147);
+        CashItemFailReason_CouponForCafeOnly_Used.set(148);
+        CashItemFailReason_CouponForCafeOnly_Expired.set(149);
+        CashItemFailReason_NotAvailableCoupon.set(150);
+        CashItemFailReason_GenderMisMatch.set(151);
+        CashItemFailReason_GiftNormalItem.set(152);
+        CashItemFailReason_GiftMaplePoint.set(153);
+        CashItemFailReason_NoEmptyPos.set(154);
+        CashItemFailReason_ForPremiumUserOnly.set(155);
+        CashItemFailReason_BuyCoupleStoredProcFailed.set(156);
+        CashItemFailReason_BuyFriendshipStoredProcFailed.set(157);
+        CashItemFailReason_NotAvailableTime.set(158);
+        CashItemFailReason_NoStock.set(159);
+        CashItemFailReason_PurchaseLimitOver.set(160);
+        CashItemFailReason_NoRemainMeso.set(161);
+        CashItemFailReason_InvalidPassportID.set(162);
+        CashItemFailReason_IncorrectSSN2.set(163);
+        CashItemFailReason_ForNoPurchaseExpUsersOnly.set(164);
+        CashItemFailReason_GachaponLimitOver.set(169);
+        CashItemFailReason_CouponLimitError.set(172);
+        CashItemFailReason_Account_Age_limit.set(174);
+        CashItemFailReason_GiftNoMoney.set(175);
+        CashItemFailReason_ExceedLimit.set(177);
+        CashItemFailReason_UnknownError.set(179); // default message
     }
 }

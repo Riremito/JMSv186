@@ -262,8 +262,16 @@ public enum OpsCashItem implements IPacketOps {
         if (!Region.JMS.check()) {
             return;
         }
-        // JMS v186 (CCashShop::OnCashItemResult), others are not used.
         clear();
+        if (Config.LessOrEqual(Region.JMS, 147)) {
+            initJMS147();
+            return;
+        }
+        if (Config.LessOrEqual(Region.JMS, 164)) {
+            initJMS164();
+            return;
+        }
+        // JMS v186 (CCashShop::OnCashItemResult), others are not used.
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);
         CashItemReq_SetWish.set(5);
@@ -320,14 +328,6 @@ public enum OpsCashItem implements IPacketOps {
         CashItemRes_FreeCashItem_Done.set(165);
         CashItemRes_GashItemGachapon_Failed.set(234);
         CashItemRes_CashItemGachapon_Done.set(235);
-        // JMS v147 : the results from 0x4A to 0x6D are 28 smaller.
-        if (Config.LessOrEqual(Region.JMS, 164)) {
-            for (OpsCashItem ops : values()) {
-                if (0x4A <= ops.get() && ops.get() <= 0x6D && ops.name().startsWith("CashItemRes_")) {
-                    ops.set(ops.get() - 28);
-                }
-            }
-        }
         if (Config.GreaterOrEqual(Region.JMS, 187)) {
             CashItemReq_ItemUpgrade.set(52);
             CashItemRes_ItemUpgradeSuccess.set(53);
@@ -360,5 +360,119 @@ public enum OpsCashItem implements IPacketOps {
             CashItemRes_VegaErr_InvalidItem.set(CashItemReq_ItemUpgrade.get() + 12);
             CashItemRes_VegaFail.set(CashItemReq_ItemUpgrade.get() + 13);
         }
+    }
+
+    // JMS v147 (CCashShop::OnCashItemResult)
+    private static void initJMS147() {
+        CashItemReq_Buy.set(3);
+        CashItemReq_Gift.set(4);
+        CashItemReq_SetWish.set(5);
+        CashItemReq_IncSlotCount.set(6);
+        CashItemReq_IncTrunkCount.set(7);
+        CashItemReq_MoveLtoS.set(14);
+        CashItemReq_MoveStoL.set(15);
+        CashItemReq_Destroy.set(27);
+        CashItemReq_BuyPackage.set(31);
+        CashItemReq_BuyNormal.set(33);
+        CashItemReq_FreeCashItem.set(42);
+        CashItemReq_ItemUpgrade.set(51);
+        CashItemRes_ItemUpgradeSuccess.set(52);
+        CashItemReq_ItemUpgradeFail.set(53);
+        CashItemReq_ItemUpgradeReq.set(54);
+        CashItemReq_ItemUpgradeDone.set(55);
+        CashItemRes_ItemUpgradeDone.set(56);
+        CashItemRes_ItemUpgradeErr.set(57);
+        CashItemReq_Vega.set(58);
+        CashItemRes_VegaSuccess1.set(59);
+        CashItemRes_VegaSuccess2.set(60);
+        CashItemRes_VegaErr.set(61);
+        CashItemRes_VegaErr2.set(62);
+        CashItemRes_VegaErr_InvalidItem.set(63);
+        CashItemRes_VegaFail.set(64);
+        CashItemRes_LoadLocker_Done.set(50);
+        CashItemRes_LoadLocker_Failed.set(51);
+        CashItemRes_LoadGift_Done.set(52);
+        CashItemRes_LoadGift_Failed.set(53);
+        CashItemRes_LoadWish_Done.set(54);
+        CashItemRes_LoadWish_Failed.set(55);
+        CashItemRes_SetWish_Done.set(58);
+        CashItemRes_SetWish_Failed.set(59);
+        CashItemRes_Buy_Done.set(60);
+        CashItemRes_Buy_Failed.set(61);
+        CashItemRes_UseCoupon_Done.set(62);
+        CashItemRes_GiftCoupon_Done.set(64);
+        CashItemRes_UseCoupon_Failed.set(65);
+        CashItemRes_IncSlotCount_Done.set(69);
+        CashItemRes_IncSlotCount_Failed.set(70);
+        CashItemRes_IncTrunkCount_Done.set(71);
+        CashItemRes_IncTrunkCount_Failed.set(72);
+        CashItemRes_MoveLtoS_Done.set(75);
+        CashItemRes_MoveLtoS_Failed.set(76);
+        CashItemRes_MoveStoL_Done.set(77);
+        CashItemRes_MoveStoL_Failed.set(78);
+        CashItemRes_Destroy_Done.set(79);
+        CashItemRes_Destroy_Failed.set(80);
+        CashItemRes_Expire_Done.set(81);
+        CashItemRes_BuyNormal_Done.set(110);
+        CashItemRes_BuyNormal_Failed.set(111);
+        CashItemRes_FreeCashItem_Done.set(126);
+    }
+
+    // JMS v164, not checked (the results from 0x4A to 0x6D of JMS v186 are 28 smaller).
+    private static void initJMS164() {
+        CashItemReq_Buy.set(3);
+        CashItemReq_Gift.set(4);
+        CashItemReq_SetWish.set(5);
+        CashItemReq_IncSlotCount.set(6);
+        CashItemReq_IncTrunkCount.set(7);
+        CashItemReq_MoveLtoS.set(14);
+        CashItemReq_MoveStoL.set(15);
+        CashItemReq_Destroy.set(27);
+        CashItemReq_BuyPackage.set(31);
+        CashItemReq_BuyNormal.set(33);
+        CashItemReq_FreeCashItem.set(42);
+        CashItemReq_ItemUpgrade.set(51);
+        CashItemRes_ItemUpgradeSuccess.set(52);
+        CashItemReq_ItemUpgradeFail.set(53);
+        CashItemReq_ItemUpgradeReq.set(54);
+        CashItemReq_ItemUpgradeDone.set(55);
+        CashItemRes_ItemUpgradeDone.set(56);
+        CashItemRes_ItemUpgradeErr.set(57);
+        CashItemReq_Vega.set(58);
+        CashItemRes_VegaSuccess1.set(59);
+        CashItemRes_VegaSuccess2.set(60);
+        CashItemRes_VegaErr.set(61);
+        CashItemRes_VegaErr2.set(62);
+        CashItemRes_VegaErr_InvalidItem.set(63);
+        CashItemRes_VegaFail.set(64);
+        CashItemRes_LoadLocker_Done.set(50);
+        CashItemRes_LoadLocker_Failed.set(51);
+        CashItemRes_LoadGift_Done.set(52);
+        CashItemRes_LoadGift_Failed.set(53);
+        CashItemRes_LoadWish_Done.set(54);
+        CashItemRes_LoadWish_Failed.set(55);
+        CashItemRes_SetWish_Done.set(58);
+        CashItemRes_SetWish_Failed.set(59);
+        CashItemRes_Buy_Done.set(60);
+        CashItemRes_Buy_Failed.set(61);
+        CashItemRes_UseCoupon_Done.set(62);
+        CashItemRes_GiftCoupon_Done.set(64);
+        CashItemRes_UseCoupon_Failed.set(65);
+        CashItemRes_IncSlotCount_Done.set(69);
+        CashItemRes_IncSlotCount_Failed.set(70);
+        CashItemRes_IncTrunkCount_Done.set(71);
+        CashItemRes_IncTrunkCount_Failed.set(72);
+        CashItemRes_MoveLtoS_Done.set(79);
+        CashItemRes_MoveLtoS_Failed.set(80);
+        CashItemRes_MoveStoL_Done.set(81);
+        CashItemRes_MoveStoL_Failed.set(110);
+        CashItemRes_Destroy_Done.set(111);
+        CashItemRes_Destroy_Failed.set(112);
+        CashItemRes_Expire_Done.set(113);
+        CashItemRes_BuyNormal_Done.set(144);
+        CashItemRes_BuyNormal_Failed.set(145);
+        CashItemRes_FreeCashItem_Done.set(165);
+        CashItemRes_GashItemGachapon_Failed.set(234);
+        CashItemRes_CashItemGachapon_Done.set(235);
     }
 }

@@ -182,8 +182,9 @@ public class ResCCashShop {
                 }
                 sp.Encode2(chr.getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(client.getCharSlots()); // m_nCharacterSlotCount
-                sp.Encode2(0);// m_nBuyCharacterCount
-                sp.Encode2(client.getCharaterCount());// m_nCharacterCount
+                // JMS v147 does not have these.
+                sp.Encode2(0, !Config.LessOrEqual(Region.JMS, 147)); // m_nBuyCharacterCount
+                sp.Encode2(client.getCharaterCount(), !Config.LessOrEqual(Region.JMS, 147)); // m_nCharacterCount
                 break;
             }
             // showBoughtCSItem
