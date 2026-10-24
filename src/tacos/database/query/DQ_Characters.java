@@ -397,26 +397,28 @@ public class DQ_Characters {
                 }
             }
 
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM " + DB_TABLE_NAME + " WHERE id = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM monsterbook WHERE charid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_items WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM mountdata WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM dueypackages WHERE RecieverId = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM wishlist WHERE characterid = ?", character_id);
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+                ps.setInt(1, character_id);
+                ps.execute();
+            }
+            // the other tables of the character
+            DQ_Monsterbook.deleteByCharacterId(character_id);
+            DQ_Hiredmerch.deleteByCharacterId(character_id);
+            DQ_MtsCart.deleteByCharacterId(character_id);
+            DQ_MtsItems.deleteByCharacterId(character_id);
+            DQ_Mountdata.deleteByCharacterId(character_id);
+            DQ_Inventoryitems.deleteByCharacterId(character_id);
+            DQ_Famelog.deleteByCharacterId(character_id);
+            DQ_Dueypackages.deleteByCharacterId(character_id);
+            DQ_Wishlist.deleteByCharacterId(character_id);
             DQ_Buddies.removeByCharacterId(character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM mountdata WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM skillmacros WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM trocklocations WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM queststatus WHERE characterid = ?", character_id);
-            TacosCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", character_id);
+            DQ_KeyMap.deleteByCharacterId(character_id);
+            DQ_Savedlocations.deleteByCharacterId(character_id);
+            DQ_Skills.deleteByCharacterId(character_id);
+            DQ_Skillmacros.deleteByCharacterId(character_id);
+            DQ_Trocklocations.deleteByCharacterId(character_id);
+            DQ_Queststatus.deleteByCharacterId(character_id);
+            DQ_Inventoryslot.deleteByCharacterId(character_id);
             return true;
         } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");

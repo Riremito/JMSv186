@@ -83,4 +83,18 @@ public class DQ_Famelog {
         }
     }
 
+    public static boolean deleteByCharacterId(int character_id) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ? OR characterid_to = ?")) {
+                ps.setInt(1, character_id);
+                ps.setInt(2, character_id);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteByCharacterId");
+        }
+        return false;
+    }
 }

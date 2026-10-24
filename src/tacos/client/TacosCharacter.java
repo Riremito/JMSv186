@@ -123,7 +123,6 @@ import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.WzDataStorage;
 import odin.client.inventory.MapleRing;
-import java.sql.PreparedStatement;
 import java.util.Deque;
 import java.util.Collection;
 import java.util.Collections;
@@ -2305,17 +2304,6 @@ public class TacosCharacter extends TacosPlayer {
             savedLocations[i] = -1;
         }
         questinfo = new LinkedHashMap<>();
-    }
-
-    private void deleteWhereCharacterId(Connection con, String sql) throws SQLException {
-        deleteWhereCharacterId(con, sql, id);
-    }
-
-    public static void deleteWhereCharacterId(Connection con, String sql, int id) throws SQLException {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, id);
-        ps.executeUpdate();
-        ps.close();
     }
 
     public MapleQuestStatus getQuest(MapleQuest quest) {
