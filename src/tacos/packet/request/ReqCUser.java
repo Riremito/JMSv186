@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.client.TacosStoreBank;
 import java.awt.Rectangle;
 import tacos.server.TacosExpedition;
 import tacos.server.map.TacosPortal;
@@ -101,7 +102,6 @@ import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCRPSGameDlg;
-import tacos.packet.response.ResCStoreBankDlg;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
@@ -245,6 +245,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserStoreBankRequest: {
+                ReqCStoreBankDlg.OnPacket(chr, cp);
                 return true;
             }
             case CP_UserEffectLocal: {
@@ -1337,7 +1338,7 @@ public class ReqCUser {
             return true;
         }
         if (npc_info.getStorebank() != 0) {
-            chr.SendPacket(ResCStoreBankDlg.StoreBankResult(0x22));
+            chr.SendPacket(TacosStoreBank.open(chr, npc_script_id));
             chr.DebugMsg("OnUserSelectNpc (Storebank) : " + npc_script_id);
             return true;
         }
@@ -1472,6 +1473,15 @@ public class ReqCUser {
         // HiredMerchantHandler.UseHiredMerchant(c);
         if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
             return false;
+        }
+        if (TacosStoreBank.findMerchant(chr) != null) {
+            chr.SendPacket(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenImpossible_Using));
+            return true;
+        }
+        // the goods of the last hired merchant have to be taken from the store bank first.
+        if (!TacosStoreBank.isEmpty(chr)) {
+            chr.SendPacket(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenImpossible_Stored));
+            return true;
         }
 
         chr.SendPacket(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));

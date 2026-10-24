@@ -128,6 +128,41 @@ public class DQ_Inventoryitems {
         return false;
     }
 
+    // moves the items of one owner to another place, e.g. hired merchant goods to the store bank.
+    public static boolean changeType(InvTypeDB from, InvTypeDB to, int owner_id) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET type = ? WHERE type = ? AND characterid = ?")) {
+                ps.setByte(1, (byte) to.ordinal());
+                ps.setByte(2, (byte) from.ordinal());
+                ps.setInt(3, owner_id);
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "changeType");
+        }
+
+        return false;
+    }
+
+    // all owners.
+    public static boolean changeType(InvTypeDB from, InvTypeDB to) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET type = ? WHERE type = ?")) {
+                ps.setByte(1, (byte) to.ordinal());
+                ps.setByte(2, (byte) from.ordinal());
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "changeType");
+        }
+
+        return false;
+    }
+
     public static Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
         return load(itb, owner_id, false);
     }

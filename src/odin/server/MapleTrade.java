@@ -1,6 +1,7 @@
 package odin.server;
 
-import java.util.LinkedList;
+import tacos.client.TacosHoldInventory;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 import tacos.client.TacosCharacter;
@@ -16,9 +17,9 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 public class MapleTrade {
 
     private MapleTrade partner = null;
-    private final List<Item> items = new LinkedList<>();
+    // the items and meso put in this trade, they are out of the inventory until the trade ends.
+    private final TacosHoldInventory hold;
     private List<Item> exchangeItems;
-    private int meso = 0;
     private int exchangeMeso = 0;
     private boolean locked = false;
     private final boolean isPointTrade;
@@ -33,6 +34,7 @@ public class MapleTrade {
         this.tradingslot = tradingslot;
         this.chr = chr;
         this.isPointTrade = isPointTrade;
+        this.hold = chr.getMiniRoomInventory();
     }
 
     public boolean isPointTrade() {
@@ -57,6 +59,8 @@ public class MapleTrade {
             chr.gainMeso(exchangeMeso - GameConstants.getTaxAmount(exchangeMeso), false, true, false);
         }
         exchangeMeso = 0;
+        // own items and meso went to the partner.
+        hold.clear();
 
         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(tradingslot, OpsMRLeave.TRLeave_TradeDone));
     }
@@ -66,14 +70,8 @@ public class MapleTrade {
     }
 
     public void cancel(TacosCharacter chr, int unsuccessful) {
-        for (Item item : items) {
-            MapleInventoryManipulator.addFromDrop(chr, item, false);
-        }
-        items.clear();
-        if (meso > 0) {
-            chr.gainMeso(meso, false, true, false);
-        }
-        meso = 0;
+        // what does not fit stays in the hold and is saved with the character.
+        hold.returnTo(chr);
 
         // 0 = canceled, 1 = inventory full, 2 = only one item allowed
         OpsMRLeave reason = (unsuccessful == 0) ? OpsMRLeave.MRLeave_Closed : (unsuccessful == 1 ? OpsMRLeave.TRLeave_TradeFail : OpsMRLeave.TRLeave_TradeFail_OnlyItem);
@@ -85,14 +83,14 @@ public class MapleTrade {
     }
 
     public void setMeso(int meso) {
-        if (locked || partner == null || meso <= 0 || this.meso + meso <= 0) {
+        if (locked || partner == null || meso <= 0 || hold.getMeso() + meso <= 0) {
             return;
         }
         if (chr.getMeso() >= meso) {
             chr.gainMeso(-meso, false, true, false);
-            this.meso += meso;
-            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 0, this.meso));
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 1, this.meso));
+            hold.addMeso(meso);
+            chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 0, hold.getMeso()));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutMoney((byte) 1, hold.getMeso()));
         }
     }
 
@@ -100,7 +98,7 @@ public class MapleTrade {
         if (locked || partner == null) {
             return;
         }
-        items.add(item);
+        hold.addItem(item);
         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 0, item));
         partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_PutItem((byte) 1, item));
     }
@@ -128,11 +126,11 @@ public class MapleTrade {
     }
 
     public int getNextTargetSlot() {
-        if (items.size() >= 9) {
+        if (hold.getItems().size() >= 9) {
             return -1;
         }
         int ret = 1; //first slot
-        for (Item item : items) {
+        for (Item item : hold.getItems()) {
             if (item.getPosition() == ret) {
                 ret++;
             }
@@ -166,7 +164,7 @@ public class MapleTrade {
         if (targetSlot < 0) {
             targetSlot = (byte) target;
         } else {
-            for (Item itemz : items) {
+            for (Item itemz : hold.getItems()) {
                 if (itemz.getPosition() == targetSlot) {
                     targetSlot = (byte) target;
                     break;
@@ -210,8 +208,8 @@ public class MapleTrade {
         local.locked = true; // Locking the trade
         partner.getChr().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_TRP_Trade());
 
-        partner.exchangeItems = local.items; // Copy this to partner's trade since it's alreadt accepted
-        partner.exchangeMeso = local.meso; // Copy this to partner's trade since it's alreadt accepted
+        partner.exchangeItems = new ArrayList<>(local.hold.getItems()); // Copy this to partner's trade since it's alreadt accepted
+        partner.exchangeMeso = local.hold.getMeso(); // Copy this to partner's trade since it's alreadt accepted
 
         if (partner.isLocked()) { // Both locked
             int lz = local.check(), lz2 = partner.check();
@@ -242,6 +240,11 @@ public class MapleTrade {
     }
 
     public static void startTrade(TacosCharacter player, boolean isPointTrade) {
+        // items left from a trade or a personal shop that did not fit in the inventory.
+        if (!player.returnMiniRoomInventory()) {
+            player.Notice("Make room in your inventory first.");
+            return;
+        }
         if (player.getTrade() == null) {
             player.setTrade(new MapleTrade((byte) 0, player, isPointTrade));
             player.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_TradingRoom(player, player.getTrade(), (byte) 0, isPointTrade));
@@ -254,7 +257,7 @@ public class MapleTrade {
         if (player1 == null || player1.getTrade() == null) {
             return;
         }
-        if (player2 != null && player2.getTrade() == null) {
+        if (player2 != null && player2.getTrade() == null && player2.getMiniRoomInventory().isEmpty()) {
             player2.setTrade(new MapleTrade((byte) 1, player2));
             player2.getTrade().setPartner(player1.getTrade());
             player1.getTrade().setPartner(player2.getTrade());

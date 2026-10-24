@@ -19,6 +19,11 @@
 package tacos.server.map.object;
 
 import java.util.AbstractMap;
+import odin.server.shops.MaplePlayerShop;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.InvTypeDB;
+import tacos.client.TacosStoreBank;
+import tacos.client.TacosHoldInventory;
 import odin.server.shops.IPlayerShop;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
@@ -35,12 +40,8 @@ import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import odin.server.MapleInventoryManipulator;
 import tacos.server.TacosWorld;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.ItemLoader;
 import tacos.database.query.DQ_Hiredmerch;
-import java.sql.SQLException;
 
 /**
  *
@@ -234,7 +235,8 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     protected int itemId;
     protected int channel;
     protected int map;
-    protected AtomicInteger meso = new AtomicInteger(0);
+    // the items and meso of this shop, saved as InvTypeDB.Employee and the hiredmerch row of the owner.
+    private final TacosHoldInventory goods = new TacosHoldInventory();
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
     private int storeid;
@@ -262,35 +264,24 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     }
 
     public int getMeso() {
-        return meso.get();
+        return goods.getMeso();
     }
 
     public void setMeso(int meso) {
-        this.meso.set(meso);
+        goods.setMeso(meso);
+        save();
     }
 
-    public boolean saveItems() {
-        if (getShopType() != HIRED_MERCHANT) { //hired merch only
+    private boolean save() {
+        goods.setItems(MaplePlayerShop.getStocks(items));
+        return saveGoods();
+    }
+
+    private boolean saveGoods() {
+        if (!DQ_Inventoryitems.add(InvTypeDB.Employee, getOwnerId(), goods.getItems())) {
             return false;
         }
-        Integer packageid = DQ_Hiredmerch.add(getOwnerId(), owneraccount, meso.get());
-        if (packageid == null) {
-            return false;
-        }
-        List<SimpleImmutableEntry<Item, MapleInventoryType>> iters = new ArrayList<>();
-        Item item;
-        for (MaplePlayerShopItem pItems : items) {
-            if (pItems.item == null || pItems.bundles <= 0) {
-                continue;
-            }
-            if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
-                continue;
-            }
-            item = pItems.item.copy();
-            item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-            iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
-        }
-        return ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, getOwnerId());
+        return DQ_Hiredmerch.save(getOwnerId(), owneraccount, goods.getMeso(), start);
     }
 
     public String getOwnerName() {
@@ -314,6 +305,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
 
     public void addItem(MaplePlayerShopItem item) {
         items.add(item);
+        save();
     }
 
     public boolean removeItem(int item) {
@@ -322,6 +314,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
 
     public void removeFromSlot(int slot) {
         items.remove(slot);
+        save();
     }
 
     public int getItemId() {
@@ -439,24 +432,58 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
             pItem.bundles -= quantity; // Number remaining in the store
             bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
 
-            int gainmeso = getMeso() + (pItem.price * quantity);
-            setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
-            chr.gainMeso(-pItem.price * quantity, false);
-            saveItems();
+            int price = pItem.price * quantity;
+            chr.gainMeso(-price, false);
+            // the tax is taken from this sale only.
+            setMeso(getMeso() + price - GameConstants.EntrustedStoreTax(price));
         } else {
             chr.Alert("Your inventory is full.");
             chr.updateInv();
         }
     }
 
-    public void closeShop(boolean saveItems, boolean remove, int reason) {
-        if (saveItems) {
-            saveItems();
-        }
-        if (remove) {
+    // the goods stay in `goods`, saved as InvTypeDB.Employee.
+    private void remove(boolean remove_from_channel, int reason) {
+        save();
+        items.clear();
+        removeAllVisitors(reason, 0);
+        if (remove_from_channel) {
             TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
         }
         getMap().removeMerchant(this);
+    }
+
+    // what is left goes to the store bank.
+    private void storeGoods() {
+        if (goods.isEmpty()) {
+            DQ_Hiredmerch.deleteByCharacterId(getOwnerId());
+            return;
+        }
+        TacosStoreBank.putMerchantGoods(getOwnerId());
+        goods.clear();
+    }
+
+    // the owner is offline or disconnected while managing the shop, the goods go to the store bank.
+    public void closeShop(boolean saveItems, boolean remove, int reason) {
+        remove(remove, reason);
+        storeGoods();
+    }
+
+    // the goods go back to the owner if all of them fit, otherwise all of them go to the store bank.
+    public void closeByOwner(TacosCharacter owner) {
+        remove(true, OpsMRLeave.ESLeave_DestoryByAdmin.get());
+        if (goods.canReturnTo(owner)) {
+            goods.returnTo(owner);
+            saveGoods();
+            owner.saveToDB(false);
+        }
+        storeGoods();
+        owner.setPlayerShop(null);
+        owner.setRemoteStore(null);
+    }
+
+    public int getChannel() {
+        return channel;
     }
 
     public int getTimeLeft() {

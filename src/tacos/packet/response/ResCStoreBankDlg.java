@@ -18,12 +18,19 @@
  */
 package tacos.packet.response;
 
+import java.util.ArrayList;
+import java.util.List;
 import odin.client.inventory.Item;
+import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
+import tacos.client.TacosHoldInventory;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsDBCHAR;
+import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  *
@@ -32,72 +39,80 @@ import java.util.ArrayList;
 public class ResCStoreBankDlg {
 
     // CStoreBankDlg::OnPacket
-    public static ServerPacket StoreBankResult(int op) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
-
-        // [28 01] [22 01] - Invalid Asiasoft Passport
-        // [28 01] [22 00] - Open Asiasoft pin typing
-        sp.Encode1(op);
-        switch (op) {
-            case 36:
-                sp.Encode8(0);
-                break;
-            default:
-                sp.Encode1(0);
-                break;
-        }
-
-        return sp;
-    }
-
-    // LP_StoreBankGetAllResult
-    public static ServerPacket StoreBankGetAllResult(int type) {
+    public static ServerPacket StoreBankGetAllResult(OpsEntrustedShop ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
-        // 07 = send title box
-        // 09 = Please pick up your items from Fredrick and then try again.
-        // 0A = Your another character is using the item now. Please close the shop with that character or empty your store bank.
-        // 0B = You cannot open it now.
-        // 0F = Please retrieve your items from Fredrick.
-        sp.Encode1(type);
+        sp.Encode1(ops.get());
         return sp;
     }
 
     // CStoreBankDlg::OnPacket
-    public static ServerPacket StoreBankResult(MerchItemPackage pack) {
+    public static ServerPacket OpenStoreBankDlg(int npc_id, TacosHoldInventory goods) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
-        sp.Encode1(35);
-        sp.Encode4(9030000); // Fredrick
-        sp.Encode4(32272); // pack.getPackageid()
-        sp.EncodeZeroBytes(5);
-        sp.Encode4(pack.getMesos());
-        sp.Encode1(0);
-        sp.Encode1(pack.getItems().size());
-        for (Item item : pack.getItems()) {
-            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
-        }
-        sp.EncodeZeroBytes(3);
+        sp.Encode1(OpsEntrustedShop.StoreBankRes_OpenStoreBankDlg.get());
+        // CStoreBankDlg::SetStoreBankDlg
+        sp.Encode4(npc_id); // m_dwNpcTemplateID
+        sp.EncodeBuffer(SetItems(goods));
         return sp;
     }
 
-    public static class MerchItemPackage {
+    // CStoreBankDlg::OnPacket, the fee is asked before CStoreBankDlg::SendGetAllRequest.
+    public static ServerPacket StoreBankCalculateFee(int passing_day, int fee) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
-        private int mesos = 0;
-        private int packageid;
-        private List<Item> items = new ArrayList<>();
+        sp.Encode1(OpsEntrustedShop.StoreBankRes_StoreBankCalculateFee.get());
+        sp.Encode4(passing_day);
+        sp.Encode4(fee); // 0 = no fee message
+        return sp;
+    }
 
-        public void setItems(List<Item> items) {
-            this.items = items;
+    // CStoreBankDlg::OnPacket, the hired merchant is still open, or nothing is stored when field_id is 999999999.
+    public static ServerPacket StoreBankLoadFailed(int npc_id, int field_id, int channel) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
+
+        sp.Encode1(OpsEntrustedShop.StoreBankRes_StoreBankLoadFailed.get());
+        sp.Encode4(npc_id);
+        sp.Encode4(field_id); // free market room = field_id % 100
+        sp.Encode1(channel); // from 0
+        return sp;
+    }
+
+    // CStoreBankDlg::OnPacket, "This is currently unavailable."
+    public static ServerPacket StoreBankBlock() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
+
+        sp.Encode1(OpsEntrustedShop.StoreBankRes_StoreBankBlock.get());
+        return sp;
+    }
+
+    // CStoreBankDlg::SetItems
+    private static byte[] SetItems(TacosHoldInventory goods) {
+        ServerPacket data = new ServerPacket();
+        long dbcharFlag = OpsDBCHAR.DBCHAR_ALL.get();
+
+        data.Encode1(goods.getItems().size()); // m_nSlotCount, used for the scroll bar
+        if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
+            data.Encode2((short) dbcharFlag);
+        } else {
+            data.Encode8(dbcharFlag); // dbcharFlag
         }
-
-        public List<Item> getItems() {
-            return items;
+        // 0x02
+        data.Encode4(goods.getMeso()); // m_nMoney
+        // 0x04, 0x08, 0x10, 0x20, 0x40
+        MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.USE, MapleInventoryType.SETUP, MapleInventoryType.ETC, MapleInventoryType.CASH};
+        for (MapleInventoryType type : types) {
+            List<Item> items = new ArrayList<>();
+            for (Item item : goods.getItems()) {
+                if (GameConstants.getInventoryType(item.getItemId()) == type) {
+                    items.add(item);
+                }
+            }
+            data.Encode1(items.size()); // nCount
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
+            }
         }
-
-        public int getMesos() {
-            return mesos;
-        }
-
+        return data.getBytes();
     }
 }

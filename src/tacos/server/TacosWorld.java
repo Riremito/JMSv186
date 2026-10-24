@@ -19,6 +19,7 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import tacos.server.map.object.TacosMerchant;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -282,13 +283,14 @@ public class TacosWorld {
         return player;
     }
 
-    public boolean hasMerchant(int character_id) {
+    public TacosMerchant findMerchant(int character_id) {
         for (TacosChannel channel : this.channels) {
-            if (channel.containsMerchant(character_id)) {
-                return true;
+            TacosMerchant merchant = channel.findMerchant(character_id);
+            if (merchant != null) {
+                return merchant;
             }
         }
-        return false;
+        return null;
     }
 
     // messenger.

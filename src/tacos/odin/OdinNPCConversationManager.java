@@ -46,7 +46,6 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
 import odin.server.MapleItemInformationProvider;
-import tacos.database.query.DQ_Hiredmerchants;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
@@ -857,16 +856,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 break;
         }
         chr.equipChanged();
-    }
-
-    public void giveMerchantMesos() {
-        long mesos = DQ_Hiredmerchants.getMesos(getPlayer().getId());
-        DQ_Hiredmerchants.clearMesos(getPlayer().getId());
-        client.getPlayer().gainMeso((int) mesos, true);
-    }
-
-    public long getMerchantMesos() {
-        return DQ_Hiredmerchants.getMesos(getPlayer().getId());
     }
 
     public int getDojoPoints() {

@@ -30,5 +30,7 @@ public enum InvTypeDB {
     Parcel,
     CashShop,
     ITC,
+    // added, items in a trade or a personal shop
+    MiniRoom,
     UNKNOWN;
 }

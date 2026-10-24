@@ -118,8 +118,50 @@ public enum OpsEntrustedShop implements IPacketOps {
             EntrustedShopRes_ItemExistInStoreBank.set(15);
             EntrustedShopRes_GetPosResult.set(16);
             EntrustedShopRes_Enter.set(17);
+            setStoreBankJMS();
             return;
         }
+        if (Config.Between(Region.JMS, 164, 188)) {
+            clear();
+            EntrustedShopReq_CheckOpenPossible.set(0);
+            EntrustedShopReq_Create.set(1);
+            EntrustedShopReq_Save.set(2);
+            EntrustedShopReq_CloseProcess.set(3);
+            EntrustedShopReq_FindShopByEmployerName.set(4);
+            EntrustedShopReq_CheckIfClosed.set(5);
+            EntrustedShopReq_GetPos.set(6);
+            EntrustedShopRes_OpenPossible.set(7);
+            EntrustedShopRes_OpenImpossible_Using.set(8);
+            EntrustedShopRes_OpenImpossible_Stored.set(9);
+            EntrustedShopRes_OpenImpossible_AnotherCharacter.set(10);
+            EntrustedShopRes_OpenImpossible_Block.set(11);
+            EntrustedShopRes_Create_Failed.set(12);
+            EntrustedShopReq_SetMiniMapColor.set(13);
+            EntrustedShopReq_RenameResult.set(14);
+            EntrustedShopRes_ItemExistInStoreBank.set(15);
+            EntrustedShopRes_GetPosResult.set(16);
+            EntrustedShopRes_Enter.set(17);
+            EntrustedShopRes_ServerMsg.set(18);
+            setStoreBankJMS();
+            return;
+        }
+    }
+
+    // CStoreBankDlg, requests are checked on JMS164 - JMS188, results on JMS147, JMS164, JMS186 and JMS187.
+    // requests and LP_StoreBankGetAllResult are GMS95 - 1, LP_StoreBankResult is the same as GMS95.
+    private static void setStoreBankJMS() {
+        StoreBankReq_CalculateFee.set(25);
+        StoreBankReq_GetAll.set(26);
+        StoreBankReq_Exit.set(27);
+        StoreBankRes_GetAll_Done.set(29);
+        StoreBankRes_GetAll_OverPrice.set(30);
+        StoreBankRes_GetAll_OnlyItem.set(31);
+        StoreBankRes_GetAll_NoFee.set(32);
+        StoreBankRes_GetAll_NoSlot.set(33);
+        StoreBankRes_OpenStoreBankDlg.set(35);
+        StoreBankRes_StoreBankCalculateFee.set(36);
+        StoreBankRes_StoreBankLoadFailed.set(37);
+        StoreBankRes_StoreBankBlock.set(38);
     }
 
 }

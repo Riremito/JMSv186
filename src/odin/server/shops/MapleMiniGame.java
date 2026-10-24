@@ -38,13 +38,7 @@ import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import odin.constants.GameConstants;
-import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.ItemLoader;
-import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
-import java.sql.SQLException;
 
 public class MapleMiniGame implements IPlayerShop {
 
@@ -175,30 +169,6 @@ public class MapleMiniGame implements IPlayerShop {
 
     public boolean isOpen() {
         return open;
-    }
-
-    public boolean saveItems() {
-        if (getShopType() != HIRED_MERCHANT) { //hired merch only
-            return false;
-        }
-        Integer packageid = DQ_Hiredmerch.add(ownerId, owneraccount, meso.get());
-        if (packageid == null) {
-            return false;
-        }
-        List<SimpleImmutableEntry<Item, MapleInventoryType>> iters = new ArrayList<>();
-        Item item;
-        for (MaplePlayerShopItem pItems : items) {
-            if (pItems.item == null || pItems.bundles <= 0) {
-                continue;
-            }
-            if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
-                continue;
-            }
-            item = pItems.item.copy();
-            item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-            iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
-        }
-        return ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
     }
 
     public TacosCharacter getVisitor(int num) {

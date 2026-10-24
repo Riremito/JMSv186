@@ -202,16 +202,17 @@ public class TacosChannel extends TacosServer {
     }
 
     public void removeMerchant(TacosMerchant hMerchant) {
-        this.merchants.remove(hMerchant.getStoreId());
+        // a shop that was never opened has no store id of its own.
+        this.merchants.remove(hMerchant.getStoreId(), hMerchant);
     }
 
-    public boolean containsMerchant(int character_id) {
+    public TacosMerchant findMerchant(int character_id) {
         for (TacosMerchant hm : this.merchants.values()) {
-            if (hm.getOwnerAccId() == character_id) {
-                return true;
+            if (hm.getOwnerId() == character_id) {
+                return hm;
             }
         }
-        return false;
+        return null;
     }
 
     public List<TacosMerchant> searchMerchant(int item_id) {

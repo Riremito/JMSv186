@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
+import tacos.client.TacosStoreBank;
 import odin.server.shops.IPlayerShop;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
@@ -127,6 +128,11 @@ public class ReqCMiniRoomBaseDlg {
                             return true;
                         }
 
+                        // items left from a trade or a personal shop that did not fit in the inventory.
+                        if (!chr.returnMiniRoomInventory()) {
+                            return true;
+                        }
+
                         MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(mps);
                         map.addPlayerShop(mps);
@@ -141,6 +147,11 @@ public class ReqCMiniRoomBaseDlg {
                         Item shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
 
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
+                            return true;
+                        }
+
+                        // one shop per character, and the store bank has to be empty.
+                        if (TacosStoreBank.findMerchant(chr) != null || !TacosStoreBank.isEmpty(chr)) {
                             return true;
                         }
 
@@ -288,6 +299,16 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 IPlayerShop ips = chr.getPlayerShop();
                 if (ips == null) {
+                    return true;
+                }
+                // personal shop, the owner closes it and gets the items back.
+                if (ips instanceof MaplePlayerShop) {
+                    if (ips.isOwner(chr)) {
+                        ips.closeShop(false, true, OpsMRLeave.MRLeave_HostOut.get());
+                    } else {
+                        ips.removeVisitor(chr);
+                        chr.setPlayerShop(null);
+                    }
                     return true;
                 }
                 /*
@@ -529,21 +550,10 @@ public class ReqCMiniRoomBaseDlg {
                 // ダイアログを出さずに閉じる処理が必要となる
                 chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, OpsMRLeave.ESLeave_DestoryByAdmin));
 
-                IPlayerShop ips = chr.getPlayerShop();
-                if (!ips.isAvailable() || ips.isOwner(chr)) {
-
-                    // アイテム回収
-                    for (MaplePlayerShopItem items : ips.getItems()) {
-                        if (items.bundles > 0) {
-                            Item newItem = items.item.copy();
-                            newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
-                            if (MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
-                                items.bundles = 0;
-                            }
-                        }
-                    }
-
-                    ips.closeShop(false, true, OpsMRLeave.ESLeave_DestoryByAdmin.get());
+                TacosMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant != null) {
+                    // 全てインベントリに入らない場合は全てストアーバンクへ
+                    merchant.closeByOwner(chr);
                 }
 
                 chr.setPlayerShop(null);

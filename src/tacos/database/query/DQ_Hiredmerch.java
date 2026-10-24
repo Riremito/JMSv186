@@ -33,39 +33,72 @@ public class DQ_Hiredmerch {
 
     public static final String DB_TABLE_NAME = "hiredmerch";
 
-    /**
-     * Removes any previous hired-merchant row for this account/character and
-     * inserts a new one. Returns the generated package id, or null if the
-     * operation failed.
-     */
-    public static Integer add(int ownerId, int ownerAccount, int meso) {
+    // the meso of a hired merchant's goods, and when they were stored (time the merchant was opened or moved to the store bank).
+    public static final class HiredmerchRow {
+
+        public final int meso;
+        public final long time;
+
+        public HiredmerchRow(int meso, long time) {
+            this.meso = meso;
+            this.time = time;
+        }
+    }
+
+    public static HiredmerchRow load(int character_id) {
         try {
             Connection con = DatabaseConnection.getConnection();
-
-            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE accountid = ? OR characterid = ?")) {
-                ps.setInt(1, ownerAccount);
-                ps.setInt(2, ownerId);
-                ps.execute();
-            }
-
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, accountid, Mesos, time) VALUES (?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, ownerId);
-                ps.setInt(2, ownerAccount);
-                ps.setInt(3, meso);
-                ps.setLong(4, System.currentTimeMillis());
-                ps.executeUpdate();
-
-                try (ResultSet rs = ps.getGeneratedKeys()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT Mesos, time FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, character_id);
+                try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return rs.getInt(1);
+                        return new HiredmerchRow(rs.getInt("Mesos"), rs.getLong("time"));
                     }
                 }
             }
         } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "add");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "load");
         }
 
         return null;
+    }
+
+    // one row per character.
+    public static boolean save(int character_id, int account_id, int meso, long time) {
+        if (!deleteByCharacterId(character_id)) {
+            return false;
+        }
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, accountid, Mesos, time) VALUES (?, ?, ?, ?)")) {
+                ps.setInt(1, character_id);
+                ps.setInt(2, account_id);
+                ps.setInt(3, meso);
+                ps.setLong(4, time);
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "save");
+        }
+
+        return false;
+    }
+
+    public static boolean updateTime(int character_id, long time) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET time = ? WHERE characterid = ?")) {
+                ps.setLong(1, time);
+                ps.setInt(2, character_id);
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateTime");
+        }
+
+        return false;
     }
 
     public static boolean deleteByCharacterId(int character_id) {

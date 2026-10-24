@@ -1919,6 +1919,7 @@ public class TacosCharacter extends TacosPlayer {
             }
             getInventory(mit.getValue()).addFromDB(mit.getKey());
         }
+        loadMiniRoomItems();
         DQ_KeyMap.loadKeyMap(this);
         DQ_Monsterbook.load(this);
         if (this.buddylist == null) {
@@ -1928,6 +1929,25 @@ public class TacosCharacter extends TacosPlayer {
             this.buddylist.put(ble);
         }
         return true;
+    }
+
+    // items that were in a trade or a personal shop when the server stopped, their meso has been saved with the character's meso.
+    private void loadMiniRoomItems() {
+        List<Item> no_slot = new ArrayList<>();
+        for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.MiniRoom, this.id).values()) {
+            Item item = mit.getKey();
+            MapleInventory inv = getInventory(GameConstants.getInventoryType(item.getItemId()));
+            short slot = inv.getNextFreeSlot();
+            if (slot < 0) {
+                no_slot.add(item);
+                continue;
+            }
+            item.setPosition(slot);
+            inv.addFromDB(item);
+        }
+        if (!no_slot.isEmpty()) {
+            TacosStoreBank.putItems(this.id, no_slot);
+        }
     }
 
     public boolean saveCharacterData(boolean is_channel_server) {
@@ -1942,6 +1962,7 @@ public class TacosCharacter extends TacosPlayer {
         if (storage != null) {
             storage.update();
         }
+        DQ_Inventoryitems.add(InvTypeDB.MiniRoom, this.id, this.miniroom_inventory.getItems());
 
         DQ_KeyMap.saveKeys(this);
         DQ_Monsterbook.save(this);
@@ -2202,7 +2223,8 @@ public class TacosCharacter extends TacosPlayer {
                     stats.getStr(), stats.getDex(), stats.getLuk(), stats.getInt(), exp,
                     stats.getHp() < 1 ? 50 : stats.getHp(), stats.getMp(), stats.getMaxHp(), stats.getMaxMp(),
                     sp.substring(0, sp.length() - 1), remainingAp, (byte) gmLevel, (byte) skinColor, (byte) gender,
-                    job, hair, face, mapToSave, meso, hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
+                    // the meso in a trade goes back to the character if the server stops.
+                    job, hair, face, mapToSave, meso + miniroom_inventory.getMeso(), hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
                     (short) (byte) buddylist.getCapacity(), getMonsterBook().getCover(), dojo, dojoRecord,
                     petstring, subcategory, marriageId, currentrep, totalrep,
                     name, tama);
@@ -2277,6 +2299,8 @@ public class TacosCharacter extends TacosPlayer {
     private transient MapleShop shop;
     private transient MapleTrade trade;
     private transient IPlayerShop playerShop;
+    // items and meso put in a trade or a personal shop
+    private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
     private TacosMerchant remoteStore = null;
     private IDebugMan debugMan = null;
@@ -3213,6 +3237,16 @@ public class TacosCharacter extends TacosPlayer {
         regrocks[getRegRockSize()] = getMapId();
     }
 
+    public TacosHoldInventory getMiniRoomInventory() {
+        return this.miniroom_inventory;
+    }
+
+    // gives back what was left in the hold, false when something still does not fit.
+    public boolean returnMiniRoomInventory() {
+        this.miniroom_inventory.returnTo(this);
+        return this.miniroom_inventory.isEmpty();
+    }
+
     public IPlayerShop getPlayerShop() {
         return playerShop;
     }
@@ -3766,12 +3800,9 @@ public class TacosCharacter extends TacosPlayer {
             IPlayerShop shop = this.getPlayerShop();
             if (shop != null) {
                 shop.removeVisitor(this);
+                // a personal shop gives the items back, a hired merchant being managed goes to the store bank.
                 if (shop.isOwner(this)) {
-                    if (shop.getShopType() == 1 && shop.isAvailable()) {
-                        shop.setOpen(true);
-                    } else {
-                        shop.closeShop(true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
-                    }
+                    shop.closeShop(true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
                 }
             }
         } catch (Throwable e) {
