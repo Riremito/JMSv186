@@ -419,7 +419,7 @@ public class ReqCUser_Item {
                 int inv_type_use = cp.Decode4(); // unused
                 int scroll_slot = cp.Decode4();
 
-                if (ReqCUser.OnUserUpgradeItemUseRequest(chr, map, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
+                if (ReqCUser.useScroll(chr, map, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
                     item_use.run();
                     return true;
                 }

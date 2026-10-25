@@ -385,13 +385,16 @@ public class ReqCUser {
                 OnUserPortalScrollUseRequest(chr, item_slot, item_id);
                 return true;
             }
-            case CP_UserUpgradeItemUseRequest:
-            case CP_UserHyperUpgradeItemUseRequest:
+            case CP_UserUpgradeItemUseRequest: {
+                OnUserUpgradeItemUseRequest(chr, cp);
+                return true;
+            }
+            case CP_UserHyperUpgradeItemUseRequest: {
+                OnUserHyperUpgradeItemUseRequest(chr, cp);
+                return true;
+            }
             case CP_UserItemOptionUpgradeItemUseRequest: {
-                int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-                short item_slot = cp.Decode2();
-                short equip_slot = cp.Decode2();
-                OnUserUpgradeItemUseRequest(chr, map, item_slot, equip_slot, 0);
+                OnUserItemOptionUpgradeItemUseRequest(chr, cp);
                 return true;
             }
             case CP_UserItemReleaseRequest: {
@@ -1586,8 +1589,17 @@ public class ReqCUser {
         return true;
     }
 
-    // CWvsContext::SendUpgradeItemUseRequest, CWvsContext::SendHyperUpgradeItemUseRequest, CWvsContext::SendItemOptionUpgradeItemUseRequest
-    public static boolean OnUserUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot, int vegas) {
+    // CWvsContext::SendUpgradeItemUseRequest
+    public static boolean OnUserUpgradeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
+        int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        short scroll_slot = cp.Decode2();
+        short equip_slot = cp.Decode2();
+
+        useScroll(chr, chr.getMap(), scroll_slot, equip_slot, 0);
+        return true;
+    }
+
+    public static boolean useScroll(TacosCharacter chr, TacosMap map, short scroll_slot, short equip_slot, int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -1608,7 +1620,7 @@ public class ReqCUser {
         byte oldState = (byte) toScroll.getHidden();
         byte oldFlag = (byte) toScroll.getFlag();
         byte oldSlots = (byte) toScroll.getRUC();
-        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
         if (scroll == null) {
             chr.updateInv();
             return false;
@@ -1788,14 +1800,18 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendHyperUpgradeItemUseRequest
-    public static boolean OnUserHyperUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
-
+    public static boolean OnUserHyperUpgradeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
+        int timestamp = cp.Decode4();
+        short scroll_slot = cp.Decode2();
+        short equip_slot = cp.Decode2();
         return true;
     }
 
     // CWvsContext::SendItemOptionUpgradeItemUseRequest
-    public static boolean OnUserItemOptionUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
-
+    public static boolean OnUserItemOptionUpgradeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
+        int timestamp = cp.Decode4();
+        short scroll_slot = cp.Decode2();
+        short equip_slot = cp.Decode2();
         return true;
     }
 
@@ -2746,7 +2762,7 @@ public class ReqCUser {
             if (fatigue > 0) {
                 mount.increaseExp();
                 int level = mount.getLevel();
-                if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
+                if (mount.getExp() >= TacosSharedExpTable.getMountExpNeededForLevel(level + 1) && level < 31) {
                     mount.setLevel(level + 1);
                     levelup = true;
                 }

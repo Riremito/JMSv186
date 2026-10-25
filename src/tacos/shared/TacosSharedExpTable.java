@@ -66,4 +66,11 @@ public class TacosSharedExpTable {
         }
         return exp_table[level];
     }
+
+    // ライディング
+    private static final int[] exp_table_taming = {0, 6, 25, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247, 2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
+
+    public static int getMountExpNeededForLevel(int level) {
+        return exp_table_taming[level - 1];
+    }
 }

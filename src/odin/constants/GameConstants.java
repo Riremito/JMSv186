@@ -254,20 +254,6 @@ public class GameConstants {
         4031648, 1, // Salmon (288cm)
         4031629, 1 // Pot
     };
-    private static final int[] mountexp = {0, 6, 25, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
-        2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
-
-    public static int getMountExpNeededForLevel(int level) {
-        return mountexp[level - 1];
-    }
-
-    public static int getTimelessRequiredEXP(int level) {
-        return 70 + (level * 10);
-    }
-
-    public static int getReverseRequiredEXP(int level) {
-        return 60 + (level * 5);
-    }
 
     public static boolean isKOC(int job) {
         return job >= 1000 && job < 2000;
@@ -693,109 +679,6 @@ public class GameConstants {
         return 0;
     }
 
-    public static boolean isReverseItem(int itemId) {
-        switch (itemId) {
-            case 1002790:
-            case 1002791:
-            case 1002792:
-            case 1002793:
-            case 1002794:
-            case 1082239:
-            case 1082240:
-            case 1082241:
-            case 1082242:
-            case 1082243:
-            case 1052160:
-            case 1052161:
-            case 1052162:
-            case 1052163:
-            case 1052164:
-            case 1072361:
-            case 1072362:
-            case 1072363:
-            case 1072364:
-            case 1072365:
-
-            case 1302086:
-            case 1312038:
-            case 1322061:
-            case 1332075:
-            case 1332076:
-            case 1372045:
-            case 1382059:
-            case 1402047:
-            case 1412034:
-            case 1422038:
-            case 1432049:
-            case 1442067:
-            case 1452059:
-            case 1462051:
-            case 1472071:
-            case 1482024:
-            case 1492025:
-
-            case 1342012:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public static boolean isTimelessItem(int itemId) {
-        switch (itemId) {
-            case 1032031: //shield earring, but technically
-            case 1102172:
-            case 1002776:
-            case 1002777:
-            case 1002778:
-            case 1002779:
-            case 1002780:
-            case 1082234:
-            case 1082235:
-            case 1082236:
-            case 1082237:
-            case 1082238:
-            case 1052155:
-            case 1052156:
-            case 1052157:
-            case 1052158:
-            case 1052159:
-            case 1072355:
-            case 1072356:
-            case 1072357:
-            case 1072358:
-            case 1072359:
-            case 1092057:
-            case 1092058:
-            case 1092059:
-
-            case 1122011:
-            case 1122012:
-
-            case 1302081:
-            case 1312037:
-            case 1322060:
-            case 1332073:
-            case 1332074:
-            case 1372044:
-            case 1382057:
-            case 1402046:
-            case 1412033:
-            case 1422037:
-            case 1432047:
-            case 1442063:
-            case 1452057:
-            case 1462050:
-            case 1472068:
-            case 1482023:
-            case 1492023:
-            case 1342011:
-                return true;
-            default:
-                return false;
-        }
-    }
-
     //if only there was a way to find in wz files -.-
     public static boolean isEffectRing(int itemid) {
         return isFriendshipRing(itemid) || isCrushRing(itemid);
@@ -1132,5 +1015,4 @@ public class GameConstants {
                 return def;
         }
     }
-
 }

@@ -44,6 +44,13 @@ public class TacosEnhancement {
         this.equip = equip;
     }
 
+    private boolean isUpgradeable() {
+        if (equip.getRUC() == 0 && equip.getCUC() == 0) {
+            return false;
+        }
+        return true;
+    }
+
     private boolean checkPotentialSystem() {
         if (Config.PostBB()) {
             return true;
@@ -66,7 +73,7 @@ public class TacosEnhancement {
         if (!checkPotentialSystem()) {
             return false;
         }
-        if (equip.getHidden() != 0 || equip.getGrade() != 0 || (equip.getRUC() == 0 && equip.getCUC() == 0)) {
+        if (equip.getHidden() != 0 || equip.getGrade() != 0 || !isUpgradeable()) {
             return false;
         }
         int rand = Randomizer.nextInt(100);
