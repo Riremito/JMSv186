@@ -63,7 +63,7 @@ public class DQ_Inventoryequipment {
                 ps.setInt(17, equip.getIncSpeed());
                 ps.setInt(18, equip.getIncJump());
                 ps.setInt(19, equip.getIUC());
-                ps.setInt(20, equip.getItemEXP());
+                ps.setInt(20, equip.getLevelEXP());
                 ps.setInt(21, equip.getDurability());
                 ps.setInt(22, equip.getCHUC());
                 ps.setInt(23, equip.getGrade());
@@ -116,7 +116,7 @@ public class DQ_Inventoryequipment {
                     equip.setSpeed(rs.getInt("speed"));
                     equip.setJump(rs.getInt("jump"));
                     equip.setViciousHammer(rs.getInt("ViciousHammer"));
-                    equip.setItemEXP(rs.getInt("itemEXP"));
+                    equip.setLevelEXP(rs.getInt("itemEXP"));
                     equip.setDurability(rs.getInt("durability"));
                     equip.setEnhance(rs.getInt("enhance"));
                     equip.setRank(rs.getInt("rank"));

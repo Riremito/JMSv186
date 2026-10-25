@@ -109,7 +109,7 @@ public class DQ_MtsTransferItems {
                         equip.setSpeed(rs.getInt("speed"));
                         equip.setJump(rs.getInt("jump"));
                         equip.setViciousHammer(rs.getInt("ViciousHammer"));
-                        equip.setItemEXP(rs.getInt("itemEXP"));
+                        equip.setLevelEXP(rs.getInt("itemEXP"));
                         //equip.setGMLog(rs.getString("GM_Log"));
                         equip.setDurability(rs.getInt("durability"));
                         equip.setEnhance(rs.getInt("enhance"));
@@ -266,7 +266,7 @@ public class DQ_MtsTransferItems {
                     pse.setInt(17, equip.getIncSpeed());
                     pse.setInt(18, equip.getIncJump());
                     pse.setInt(19, equip.getIUC());
-                    pse.setInt(20, equip.getItemEXP());
+                    pse.setInt(20, equip.getLevelEXP());
                     pse.setInt(21, equip.getDurability());
                     pse.setInt(22, equip.getCHUC());
                     pse.setInt(23, equip.getGrade());

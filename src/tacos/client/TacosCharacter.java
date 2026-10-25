@@ -2910,7 +2910,9 @@ public class TacosCharacter extends TacosPlayer {
                         getMap().splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
                     }
                 }
-                equip.setItemLevel(nLevelUpType, nLevel, nEXP);
+                equip.setLevelUpType(nLevelUpType);
+                equip.setLevelLevel(nLevel);
+                equip.setLevelEXP(nEXP);
                 SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
             }
         }
@@ -4519,8 +4521,6 @@ public class TacosCharacter extends TacosPlayer {
         public int levelBonus;
         public boolean equippedWelcomeBackRing;
         public boolean hasPartyBonus;
-        private final List<Equip> durabilityHandling = new ArrayList<>();
-        private final List<Equip> equipLevelHandling = new ArrayList<>();
         private boolean isRecalc = false;
         private short localmaxhp;
         private short localmaxmp;
@@ -4679,8 +4679,6 @@ public class TacosCharacter extends TacosPlayer {
             dropMod = 1;
             expMod = 1;
             levelBonus = 0;
-            durabilityHandling.clear();
-            equipLevelHandling.clear();
 
             for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
                 Equip equip = (Equip) item;
@@ -4704,15 +4702,6 @@ public class TacosCharacter extends TacosPlayer {
                 }
                 percent_hp += equip.getHpR();
                 percent_mp += equip.getMpR();
-                if (equip.getHidden() > 1) {
-                    if (equip.getDurability() > 0) {
-                        durabilityHandling.add(equip);
-                    }
-                    int max_level = GameConstants.getMaxLevel(equip.getItemId());
-                    if (canEquipLevel && max_level > 0 && (GameConstants.getStatFromWeapon(equip.getItemId()) == null ? equip.getEquipLevel() <= max_level : equip.getEquipLevel() < max_level)) {
-                        equipLevelHandling.add(equip);
-                    }
-                }
             }
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             for (Item item : getInventory(MapleInventoryType.CASH)) {

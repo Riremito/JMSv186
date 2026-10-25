@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import tacos.config.Region;
-import odin.constants.GameConstants;
 import tacos.wz.ids.DWI_Random;
 import odin.server.Randomizer;
 import tacos.config.Config;
@@ -317,77 +316,20 @@ public class Equip extends Item {
         vicioushammer = ham;
     }
 
-    public int getItemEXP() {
-        return itemEXP;
-    }
-
-    public void setItemEXP(int itemEXP) {
-        this.itemEXP = Math.max(0, itemEXP);
-    }
-
-    public int getEquipExp() {
-        if (itemEXP <= 0) {
-            return 0;
-        }
-        //aproximate value
-        if (GameConstants.isWeapon(getItemId())) {
-            return itemEXP / Equip.WEAPON_RATIO;
-        }
-        return itemEXP / Equip.ARMOR_RATIO;
-    }
-
-    public int getEquipExpForLevel() {
-        if (getEquipExp() <= 0) {
-            return 0;
-        }
-        int expz = getEquipExp();
-        for (int i = getBaseLevel(); i <= GameConstants.getMaxLevel(getItemId()); i++) {
-            if (expz >= GameConstants.getExpForLevel(i, getItemId())) {
-                expz -= GameConstants.getExpForLevel(i, getItemId());
-            } else { //for 0, dont continue;
-                break;
-            }
-        }
-        return expz;
-    }
-
-    public int getExpPercentage() {
-        if (getEquipLevel() < getBaseLevel() || getEquipLevel() > GameConstants.getMaxLevel(getItemId()) || GameConstants.getExpForLevel(getEquipLevel(), getItemId()) <= 0) {
-            return 0;
-        }
-        return getEquipExpForLevel() * 100 / GameConstants.getExpForLevel(getEquipLevel(), getItemId());
-    }
-
-    public int getEquipLevel() {
-        if (GameConstants.getMaxLevel(getItemId()) <= 0) {
-            return 0;
-        } else if (getEquipExp() <= 0) {
-            return getBaseLevel();
-        }
-        int levelz = getBaseLevel();
-        int expz = getEquipExp();
-        for (int i = levelz; (GameConstants.getStatFromWeapon(getItemId()) == null ? (i <= GameConstants.getMaxLevel(getItemId())) : (i < GameConstants.getMaxLevel(getItemId()))); i++) {
-            if (expz >= GameConstants.getExpForLevel(i, getItemId())) {
-                levelz++;
-                expz -= GameConstants.getExpForLevel(i, getItemId());
-            } else { //for 0, dont continue;
-                break;
-            }
-        }
-        return levelz;
-    }
-
-    public int getBaseLevel() {
-        return (GameConstants.getStatFromWeapon(getItemId()) == null ? 1 : 0);
-    }
-
     private int nLevelUpType = 0; // nLevelUpType
     private int nLevel = 0; // nLevel
     private int nEXP = 0; // nEXP
 
-    public void setItemLevel(int nLevelUpType, int nLevel, int nEXP) {
+    public void setLevelUpType(int nLevelUpType) {
         this.nLevelUpType = nLevelUpType;
+    }
+
+    public void setLevelLevel(int nLevel) {
         this.nLevel = nLevel;
+
+    }
+
+    public void setLevelEXP(int nEXP) {
         this.nEXP = nEXP;
     }
 

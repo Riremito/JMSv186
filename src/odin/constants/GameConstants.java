@@ -692,6 +692,7 @@ public class GameConstants {
         }
         return 0;
     }
+
     public static boolean isReverseItem(int itemId) {
         switch (itemId) {
             case 1002790:
@@ -836,62 +837,6 @@ public class GameConstants {
         switch (itemid) {
             case 1122017:
                 return 10;
-        }
-        return 0;
-    }
-
-    public static int getExpForLevel(int i, int itemId) {
-        if (isReverseItem(itemId)) {
-            return getReverseRequiredEXP(i);
-        } else if (getMaxLevel(itemId) > 0) {
-            return getTimelessRequiredEXP(i);
-        }
-        return 0;
-    }
-
-    public static int getMaxLevel(int itemId) {
-        if (isTimelessItem(itemId)) {
-            return 5;
-        } else if (isReverseItem(itemId)) {
-            return 3;
-        } else {
-            switch (itemId) {
-                case 1302109:
-                case 1312041:
-                case 1322067:
-                case 1332083:
-                case 1372048:
-                case 1382064:
-                case 1402055:
-                case 1412037:
-                case 1422041:
-                case 1432052:
-                case 1442073:
-                case 1452064:
-                case 1462058:
-                case 1472079:
-                case 1482035:
-
-                case 1302108:
-                case 1312040:
-                case 1322066:
-                case 1332082:
-                case 1372047:
-                case 1382063:
-                case 1402054:
-                case 1412036:
-                case 1422040:
-                case 1432051:
-                case 1442072:
-                case 1452063:
-                case 1462057:
-                case 1472078:
-                case 1482036:
-                    return 1;
-
-                case 1072376:
-                    return 2;
-            }
         }
         return 0;
     }

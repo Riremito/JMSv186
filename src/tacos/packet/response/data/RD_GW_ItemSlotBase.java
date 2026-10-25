@@ -341,9 +341,9 @@ public class RD_GW_ItemSlotBase {
         data.Encode2(equip.getIncJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag());
-        data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
-        data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
-        data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+        data.Encode1(equip.getLevelUpType()); // item._ZtlSecureTear_nLevelUpType
+        data.Encode1(equip.getLevelLevel()); // item._ZtlSecureTear_nLevel
+        data.Encode4(equip.getLevelEXP()); // item._ZtlSecureTear_nEXP
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
         data.Encode1(equip.getCHUC()); // option._ZtlSecureTear_nCHUC
         data.Encode2(equip.getOption1()); // option._ZtlSecureTear_nOption1
@@ -381,9 +381,9 @@ public class RD_GW_ItemSlotBase {
         data.Encode2(equip.getIncJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
-        data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
-        data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
-        data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+        data.Encode1(equip.getLevelUpType()); // item._ZtlSecureTear_nLevelUpType
+        data.Encode1(equip.getLevelLevel()); // item._ZtlSecureTear_nLevel
+        data.Encode4(equip.getLevelEXP()); // item._ZtlSecureTear_nEXP
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
         data.Encode4(equip.getIUC()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
         data.Encode2(0);
@@ -476,13 +476,13 @@ public class RD_GW_ItemSlotBase {
                 data.Encode2(equip.getFlag()); // nAttribute
             }
             if ((flag1 & 0x40000) != 0) {
-                data.Encode1(0); // nLevelUpType
+                data.Encode1(equip.getLevelUpType()); // nLevelUpType
             }
             if ((flag1 & 0x80000) != 0) {
-                data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // nLevel
+                data.Encode1(equip.getLevelLevel()); // nLevel
             }
             if ((flag1 & 0x100000) != 0) {
-                data.Encode8(equip.getExpPercentage() * 4); // nEXP64
+                data.Encode8(equip.getLevelEXP()); // nEXP64
             }
             if ((flag1 & 0x200000) != 0) {
                 data.Encode4(equip.getDurability()); // nDurability

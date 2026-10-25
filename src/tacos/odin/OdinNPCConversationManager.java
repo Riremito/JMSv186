@@ -1051,7 +1051,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             } else if (type.equalsIgnoreCase("Jump")) {
                 eq.setJump((short) (eq.getIncJump() + offset));
             } else if (type.equalsIgnoreCase("ItemEXP")) {
-                eq.setItemEXP(eq.getItemEXP() + offset);
+                eq.setLevelEXP(eq.getLevelEXP() + offset);
             } else if (type.equalsIgnoreCase("Expiration")) {
                 eq.setExpiration((long) (eq.getExpiration() + offset));
             } else if (type.equalsIgnoreCase("Flag")) {
