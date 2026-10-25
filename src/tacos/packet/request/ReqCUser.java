@@ -1648,13 +1648,8 @@ public class ReqCUser {
             map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId())) {
+        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())) {
             if (equip.getRUC() < 1) {
-                chr.updateInv();
-                return false;
-            }
-        } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (equip.getRUC() >= 1 || equip.getCHUC() >= 100 || vegas > 0 || ii.isCash(equip.getItemId())) {
                 chr.updateInv();
                 return false;
             }
@@ -1719,7 +1714,7 @@ public class ReqCUser {
                     }
                     break;
             }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId())) {
+        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())) {
             if (!ii.canScroll(scroll.getItemId(), equip.getItemId())) {
                 return false;
             }
@@ -1799,6 +1794,7 @@ public class ReqCUser {
         int timestamp = cp.Decode4();
         short scroll_slot = cp.Decode2();
         short equip_slot = cp.Decode2();
+        boolean legendary_spirit = cp.Decode1() != 0;
 
         Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
         Equip equip = (Equip) chr.getInventory((equip_slot < 0) ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).getItem(equip_slot);
@@ -1807,8 +1803,24 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        int scroll_quantity = scroll.getQuantity();
-
+        TacosEnhancement enhancement = new TacosEnhancement(equip);
+        if (!enhancement.useEquipEnhancementScroll()) {
+            chr.updateInv();
+            return false;
+        }
+        boolean success = true;
+        short scroll_quantity = scroll.getQuantity();
+        chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
+        scroll_quantity--;
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (1 <= scroll_quantity) {
+            io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+        } else {
+            io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+        }
+        io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
+        chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+        chr.getMap().splitSendPacket(chr, ResCUser.UserItemHyperUpgradeEffect(chr, success, legendary_spirit));
         return true;
     }
 

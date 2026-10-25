@@ -137,29 +137,6 @@ public class MapleItemInformationProvider {
         return cached(itemMakeStatsCache, itemId, WzXML.ITEM::loadItemMakeStats);
     }
 
-    private int rand(int min, int max) {
-        return Math.abs(Randomizer.rand(min, max));
-    }
-
-    // "STRMin" and "STRMax" etc, "MaxHPMin" is MHP
-    public Equip levelUpEquip(Equip equip, Map<String, Integer> sta) {
-        Equip nEquip = (Equip) equip.copy();
-        for (Entry<String, Integer> stat : sta.entrySet()) {
-            String key = stat.getKey();
-            if (!key.endsWith("Min")) {
-                continue;
-            }
-            String base = key.substring(0, key.length() - 3);
-            Integer max = sta.get(base + "Max");
-            EquipStat es = EquipStat.find(base.equals("MaxHP") ? "MHP" : base.equals("MaxMP") ? "MMP" : base);
-            if (max == null || es == null || es == EquipStat.MHPR || es == EquipStat.MMPR || es == EquipStat.CRAFT) {
-                continue;
-            }
-            es.add(nEquip, rand(stat.getValue(), max));
-        }
-        return nEquip;
-    }
-
     public Map<Integer, Map<String, Integer>> getEquipIncrements(int itemId) {
         return cached(equipIncsCache, itemId, WzXML.ITEM::loadEquipIncrements);
     }
@@ -202,7 +179,7 @@ public class MapleItemInformationProvider {
         int scroll_id = scrollId.getItemId();
         Map<String, Integer> stats = getEquipStats(scroll_id);
         Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
-        boolean always_success = GameConstants.isEquipScroll(scroll_id);
+        boolean always_success = false;
         int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("success"));
         int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("cursed"));
         int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
@@ -264,8 +241,6 @@ public class MapleItemInformationProvider {
         }
         if (GameConstants.isChaosScroll(scroll_id)) {
             applyChaosScroll(nEquip, GameConstants.getChaosNumber(scroll_id));
-        } else if (GameConstants.isEquipScroll(scroll_id)) {
-            applyEnhanceScroll(nEquip);
         } else {
             applyStatScroll(nEquip, stats);
         }
@@ -284,40 +259,6 @@ public class MapleItemInformationProvider {
                 stat.add(nEquip, Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1));
             }
         }
-    }
-
-    // +random(5), and 1/chance to add the stat the equip does not have
-    private static void enhanceStat(Equip nEquip, EquipStat stat, int chance) {
-        if (stat.get(nEquip) > 0 || Randomizer.nextInt(chance) == 1) {
-            stat.add(nEquip, Randomizer.nextInt(5));
-        }
-    }
-
-    // attack +2% (at least 1) on weapons
-    private static void enhanceAttack(Equip nEquip, EquipStat stat) {
-        int value = stat.get(nEquip);
-        if (value > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-            stat.add(nEquip, Math.max(value / 50, 1));
-        }
-    }
-
-    // equip enhancement scroll (always success)
-    private void applyEnhanceScroll(Equip nEquip) {
-        enhanceStat(nEquip, EquipStat.STR, 50);
-        enhanceStat(nEquip, EquipStat.DEX, 50);
-        enhanceStat(nEquip, EquipStat.INT, 50);
-        enhanceStat(nEquip, EquipStat.LUK, 50);
-        enhanceAttack(nEquip, EquipStat.PAD);
-        enhanceStat(nEquip, EquipStat.PDD, 40);
-        enhanceAttack(nEquip, EquipStat.MAD);
-        enhanceStat(nEquip, EquipStat.MDD, 40);
-        enhanceStat(nEquip, EquipStat.ACC, 20);
-        enhanceStat(nEquip, EquipStat.EVA, 20);
-        enhanceStat(nEquip, EquipStat.SPEED, 10);
-        enhanceStat(nEquip, EquipStat.JUMP, 10);
-        enhanceStat(nEquip, EquipStat.MHP, 5);
-        enhanceStat(nEquip, EquipStat.MMP, 5);
-        nEquip.setEnhance((byte) (nEquip.getCHUC() + 1));
     }
 
     // normal scroll : add the stats of the scroll

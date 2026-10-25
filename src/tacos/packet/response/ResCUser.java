@@ -111,6 +111,17 @@ public class ResCUser {
     }
 
     // CUser::ShowItemHyperUpgradeEffect
+    public static ServerPacket UserItemHyperUpgradeEffect(TacosCharacter chr, boolean success, boolean legendary_spirit) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemHyperUpgradeEffect);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(success ? 1 : 0); // m_bSuccess
+        sp.Encode1(success ? 0 : 1); // m_bCursed
+        sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+        sp.Encode4(0); // m_nEnchantCategory
+        return sp;
+    }
+
     // CUser::ShowItemOptionUpgradeEffect
     public static ServerPacket UserItemOptionUpgradeEffect(TacosCharacter chr, boolean success, boolean legendary_spirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemOptionUpgradeEffect);

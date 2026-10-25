@@ -216,6 +216,11 @@ public class Equip extends Item {
         this.watk = Math.min(Short.MAX_VALUE, this.watk);
     }
 
+    public void incCHUC(int value) {
+        this.enhance += value;
+        this.enhance = Math.min(Byte.MAX_VALUE, this.enhance);
+    }
+
     // nSocket1.
     // nSocket2.
     @Override

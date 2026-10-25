@@ -19,6 +19,7 @@
 package tacos.server;
 
 import odin.client.inventory.Equip;
+import odin.constants.GameConstants;
 import odin.server.Randomizer;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -59,6 +60,35 @@ public class TacosEnhancement {
             return true;
         }
         return false;
+    }
+
+    public boolean useEquipEnhancementScroll() {
+        if (!checkPotentialSystem()) {
+            // TODO : fix, EE scroll came with potential system, so this is problem.
+            return false;
+        }
+        if (equip.getRUC() != 0 || !isUpgradeable()) {
+            return false;
+        }
+        boolean weapon = GameConstants.isWeapon(equip.getItemId());
+        equip.incCHUC(1);
+        if (weapon) {
+            if (equip.getIncPAD() != 0) {
+                equip.incPAD(equip.getIncPAD() / 50 + 1);
+            }
+            if (equip.getIncMAD() != 0) {
+                // TODO
+            }
+        }
+        // TODO, 追加ステータス付与確率と能力値の上昇の数値の仕様を要確認
+        if (equip.getIncDEX() != 0 || Randomizer.nextInt(100) < 10) {
+            equip.incDEX(Randomizer.nextInt(6));
+        }
+        if (equip.getIncLUK() != 0 || Randomizer.nextInt(100) < 10) {
+            equip.incLUK(Randomizer.nextInt(6));
+        }
+        // TODO, 他のステータス値の処理
+        return true;
     }
 
     public boolean useMagnify() {
