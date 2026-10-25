@@ -16,7 +16,7 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.server.TacosEnhancement;
+import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
 
 public class MapleItemInformationProvider {
@@ -202,7 +202,7 @@ public class MapleItemInformationProvider {
         int scroll_id = scrollId.getItemId();
         Map<String, Integer> stats = getEquipStats(scroll_id);
         Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
-        boolean always_success = GameConstants.isEquipScroll(scroll_id) || GameConstants.isPotentialScroll(scroll_id);
+        boolean always_success = GameConstants.isEquipScroll(scroll_id);
         int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("success"));
         int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("cursed"));
         int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
@@ -266,11 +266,6 @@ public class MapleItemInformationProvider {
             applyChaosScroll(nEquip, GameConstants.getChaosNumber(scroll_id));
         } else if (GameConstants.isEquipScroll(scroll_id)) {
             applyEnhanceScroll(nEquip);
-        } else if (GameConstants.isPotentialScroll(scroll_id)) {
-            if (nEquip.getHidden() == 0 && nEquip.getGrade() == 0) {
-                TacosEnhancement enhancement = new TacosEnhancement(nEquip);
-                enhancement.usePotentialScroll();
-            }
         } else {
             applyStatScroll(nEquip, stats);
         }
@@ -459,7 +454,7 @@ public class MapleItemInformationProvider {
     }
 
     public MapleStatEffect getItemEffect(int itemId) {
-        return cached(itemEffects, itemId, id -> !WzXML.ITEM.hasItemData(id) ? null : MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(id), id));
+        return cached(itemEffects, itemId, id -> !WzDataStorage.ITEM.check(id) ? null : MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(id), id));
     }
 
     public List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(int itemId) {
@@ -539,13 +534,6 @@ public class MapleItemInformationProvider {
 
     public SimpleImmutableEntry<Integer, List<Integer>> questItemInfo(int itemId) {
         return cached(questItems, itemId, WzXML.ITEM::loadQuestItemInfo);
-    }
-
-    public boolean itemExists(int itemId) {
-        if (GameConstants.getInventoryType(itemId) == MapleInventoryType.UNDEFINED) {
-            return false;
-        }
-        return WzXML.ITEM.hasItemData(itemId);
     }
 
     public boolean isCash(int itemId) {

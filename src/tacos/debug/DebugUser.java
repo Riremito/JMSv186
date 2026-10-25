@@ -43,11 +43,6 @@ public class DebugUser {
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        // 存在しないitemid
-        if (!ii.itemExists(itemid)) {
-            DebugLogger.ErrorLog("AddItem: " + itemid);
-            return false;
-        }
         switch (itemid / 1000000) {
             case 1: {
                 MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);

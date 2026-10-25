@@ -496,10 +496,6 @@ public class GameConstants {
         return scrollId / 100 == 20493;
     }
 
-    public static boolean isPotentialScroll(int scrollId) {
-        return scrollId / 100 == 20494;
-    }
-
     public static boolean isSpecialScroll(int scrollId) {
         switch (scrollId) {
             case 2040727: // Spikes on show

@@ -70,6 +70,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosNpcShop;
+import tacos.wz.WzDataStorage;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
@@ -466,7 +467,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public int gainGachaponItem(int id, int quantity, String msg) {
         try {
-            if (!MapleItemInformationProvider.getInstance().itemExists(id)) {
+            if (!WzDataStorage.ITEM.check(id)) {
                 return -1;
             }
             Item item = MapleInventoryManipulator.addbyId_Gachapon(client.getPlayer(), id, (short) quantity);

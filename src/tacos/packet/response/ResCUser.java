@@ -112,9 +112,21 @@ public class ResCUser {
 
     // CUser::ShowItemHyperUpgradeEffect
     // CUser::ShowItemOptionUpgradeEffect
+    public static ServerPacket UserItemOptionUpgradeEffect(TacosCharacter chr, boolean success, boolean legendary_spirit) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemOptionUpgradeEffect);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(success ? 1 : 0); // m_bSuccess
+        sp.Encode1(success ? 0 : 1); // m_bCursed
+        sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+        sp.Encode4(0); // m_nEnchantCategory
+        return sp;
+    }
+
     // CUser::ShowItemReleaseEffect
     public static ServerPacket UserItemReleaseEffect(TacosCharacter chr, short equip_item_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
+
         sp.Encode4(chr.getId());
         sp.Encode2(equip_item_slot);
         return sp;

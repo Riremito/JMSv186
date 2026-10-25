@@ -330,15 +330,10 @@ public class ItemWz extends WzXML {
         MapleData md_item_sub_type = getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
             for (MapleData md_item : md_item_sub_type.getChildren()) {
-                ids.add(Integer.parseInt(md_item.getName()));
+                ids.add(Integer.valueOf(md_item.getName()));
             }
         }
         return ids;
-    }
-
-    // the item exists in Character.wz or Item.wz
-    public boolean hasItemData(int id) {
-        return getResolvedItemData(id) != null;
     }
 
     private MapleData getResolvedItemData(int id) {

@@ -1604,22 +1604,22 @@ public class ReqCUser {
         boolean legendarySpirit = false; // legendary spirit skill
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-        Equip toScroll;
+        Equip equip;
         if (equip_slot < 0) {
-            toScroll = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot);
+            equip = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot);
         } else {
             // legendary spirit
             legendarySpirit = true;
-            toScroll = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
+            equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
         }
-        if (toScroll == null) {
+        if (equip == null) {
             return false;
         }
-        byte oldLevel = (byte) toScroll.getCUC();
-        byte oldEnhance = (byte) toScroll.getCHUC();
-        byte oldState = (byte) toScroll.getHidden();
-        byte oldFlag = (byte) toScroll.getFlag();
-        byte oldSlots = (byte) toScroll.getRUC();
+        byte oldLevel = (byte) equip.getCUC();
+        byte oldEnhance = (byte) equip.getCHUC();
+        byte oldState = (byte) equip.getHidden();
+        byte oldFlag = (byte) equip.getFlag();
+        byte oldSlots = (byte) equip.getRUC();
         Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
         if (scroll == null) {
             chr.updateInv();
@@ -1627,7 +1627,7 @@ public class ReqCUser {
         }
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
-            Equip toHammer = (Equip) toScroll;
+            Equip toHammer = (Equip) equip;
             if (toHammer.getIUC() >= 2 || toHammer.getRUC() > 120) {
                 chr.updateInv();
                 return false;
@@ -1648,42 +1648,37 @@ public class ReqCUser {
             map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getRUC() < 1) {
+        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId())) {
+            if (equip.getRUC() < 1) {
                 chr.updateInv();
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (toScroll.getRUC() >= 1 || toScroll.getCHUC() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                chr.updateInv();
-                return false;
-            }
-        } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getHidden() >= 1 || (toScroll.getCUC() == 0 && toScroll.getRUC() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if (equip.getRUC() >= 1 || equip.getCHUC() >= 100 || vegas > 0 || ii.isCash(equip.getItemId())) {
                 chr.updateInv();
                 return false;
             }
         }
-        if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
+        if (!GameConstants.canScroll(equip.getItemId()) && !GameConstants.isChaosScroll(equip.getItemId())) {
             chr.updateInv();
             return false;
         }
-        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
+        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(equip.getItemId()))) {
             chr.updateInv();
             return false;
         }
-        if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) {
+        if (GameConstants.isTablet(scroll.getItemId()) && equip.getDurability() < 0) {
             //not a durability item
             chr.updateInv();
             return false;
-        } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
+        } else if (!GameConstants.isTablet(scroll.getItemId()) && equip.getDurability() >= 0) {
             chr.updateInv();
             return false;
         }
         Item wscroll = null;
         // Anti cheat and validation
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
-        if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
+        if (scrollReqs.size() > 0 && !scrollReqs.contains(equip.getItemId())) {
             chr.updateInv();
             return false;
         }
@@ -1693,7 +1688,7 @@ public class ReqCUser {
                 whiteScroll = false;
             }
         }
-        if (scroll.getItemId() == 2049115 && toScroll.getItemId() != 1003068) {
+        if (scroll.getItemId() == 2049115 && equip.getItemId() != 1003068) {
             //ravana
             return false;
         }
@@ -1701,35 +1696,35 @@ public class ReqCUser {
             switch (scroll.getItemId() % 1000 / 100) {
                 case 0:
                     //1h
-                    if (GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
+                    if (GameConstants.isTwoHanded(equip.getItemId()) || !GameConstants.isWeapon(equip.getItemId())) {
                         return false;
                     }
                     break;
                 case 1:
                     //2h
-                    if (!GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
+                    if (!GameConstants.isTwoHanded(equip.getItemId()) || !GameConstants.isWeapon(equip.getItemId())) {
                         return false;
                     }
                     break;
                 case 2:
                     //armor
-                    if (GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
+                    if (GameConstants.isAccessory(equip.getItemId()) || GameConstants.isWeapon(equip.getItemId())) {
                         return false;
                     }
                     break;
                 case 3:
                     //accessory
-                    if (!GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
+                    if (!GameConstants.isAccessory(equip.getItemId()) || GameConstants.isWeapon(equip.getItemId())) {
                         return false;
                     }
                     break;
             }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
+        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId())) {
+            if (!ii.canScroll(scroll.getItemId(), equip.getItemId())) {
                 return false;
             }
         }
-        if (GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isAccessory(toScroll.getItemId())) {
+        if (GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isAccessory(equip.getItemId())) {
             return false;
         }
         if (scroll.getQuantity() <= 0) {
@@ -1741,7 +1736,7 @@ public class ReqCUser {
             }
         }
         // Scroll Success/ Failure/ Curse
-        Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
+        Equip scrolled = (Equip) ii.scrollEquipWithId(equip, scroll, whiteScroll, chr, vegas);
         Equip.ScrollResult scrollSuccess;
         if (scrolled == null) {
             scrollSuccess = Equip.ScrollResult.CURSE;
@@ -1765,13 +1760,13 @@ public class ReqCUser {
                 } else {
                     io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
                 }
-                io.remove(GameConstants.getInventoryType(toScroll.getItemId()), toScroll.getPosition());
+                io.remove(GameConstants.getInventoryType(equip.getItemId()), equip.getPosition());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
             if (equip_slot < 0) {
-                chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
+                chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(equip.getPosition());
             } else {
-                chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
+                chr.getInventory(MapleInventoryType.EQUIP).removeItem(equip.getPosition());
             }
         } else if (vegas == 0) {
             {
@@ -1792,7 +1787,7 @@ public class ReqCUser {
         }
         // ベガの呪文書
         if (vegas != 0) {
-            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, toScroll).build()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
             chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
             chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == Equip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }
@@ -1804,6 +1799,16 @@ public class ReqCUser {
         int timestamp = cp.Decode4();
         short scroll_slot = cp.Decode2();
         short equip_slot = cp.Decode2();
+
+        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
+        Equip equip = (Equip) chr.getInventory((equip_slot < 0) ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).getItem(equip_slot);
+        // 2049300
+        if (scroll == null || equip == null || scroll.getItemId() / 100 != 20493) {
+            chr.updateInv();
+            return false;
+        }
+        int scroll_quantity = scroll.getQuantity();
+
         return true;
     }
 
@@ -1812,6 +1817,33 @@ public class ReqCUser {
         int timestamp = cp.Decode4();
         short scroll_slot = cp.Decode2();
         short equip_slot = cp.Decode2();
+        boolean legendary_spirit = cp.Decode1() != 0;
+
+        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
+        Equip equip = (Equip) chr.getInventory((equip_slot < 0) ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).getItem(equip_slot);
+        // 2049400
+        if (scroll == null || equip == null || scroll.getItemId() / 100 != 20494) {
+            chr.updateInv();
+            return false;
+        }
+        TacosEnhancement enhancement = new TacosEnhancement(equip);
+        if (!enhancement.usePotentialScroll()) {
+            chr.updateInv();
+            return false;
+        }
+        boolean success = true;
+        short scroll_quantity = scroll.getQuantity();
+        chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
+        scroll_quantity--;
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (1 <= scroll_quantity) {
+            io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+        } else {
+            io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+        }
+        io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
+        chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+        chr.getMap().splitSendPacket(chr, ResCUser.UserItemOptionUpgradeEffect(chr, success, legendary_spirit));
         return true;
     }
 
