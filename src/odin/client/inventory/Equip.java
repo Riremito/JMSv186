@@ -20,10 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import tacos.config.Region;
-import tacos.wz.ids.DWI_Random;
-import odin.server.Randomizer;
-import tacos.config.Config;
+import tacos.packet.ops.OpsGrade;
 
 public class Equip extends Item {
 
@@ -31,8 +28,6 @@ public class Equip extends Item {
 
         SUCCESS, FAIL, CURSE
     }
-    public static final int ARMOR_RATIO = 350000;
-    public static final int WEAPON_RATIO = 700000;
 
     private int upgradeSlots = 0;
     private int level = 0;
@@ -165,6 +160,29 @@ public class Equip extends Item {
 
     public int getGrade() {
         return this.rank;
+    }
+
+    public OpsGrade getOpsGrade() {
+        if (this.hidden != 0) {
+            return OpsGrade.HIDDEN;
+        }
+        switch (this.rank) {
+            case 1 -> {
+                return OpsGrade.RARE;
+            }
+            case 2 -> {
+                return OpsGrade.EPIC;
+            }
+            case 3 -> {
+                return OpsGrade.UNIQUE;
+            }
+            case 4 -> {
+                return OpsGrade.LEGENDARY;
+            }
+            default -> {
+                return OpsGrade.NONE;
+            }
+        }
     }
 
     public int getCHUC() {
@@ -335,10 +353,7 @@ public class Equip extends Item {
 
     @Override
     public void setQuantity(short quantity) {
-        if (quantity < 0 || quantity > 1) {
-            throw new RuntimeException("Setting the quantity to " + quantity + " on an equip (itemid: " + getItemId() + ")");
-        }
-        super.setQuantity(quantity);
+        super.setQuantity((short) 1);
     }
 
     public void setDurability(int dur) {
@@ -349,20 +364,20 @@ public class Equip extends Item {
         this.enhance = en;
     }
 
-    public void setPotential1(int en) {
+    public void setGrade(int rank) {
+        this.rank = rank;
+    }
+
+    public void setOption1(int en) {
         this.potential1 = en;
     }
 
-    public void setPotential2(int en) {
+    public void setPOption2(int en) {
         this.potential2 = en;
     }
 
-    public void setPotential3(int en) {
+    public void setOption3(int en) {
         this.potential3 = en;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
     }
 
     public int getHidden() {
@@ -371,67 +386,6 @@ public class Equip extends Item {
 
     public void setHidden(int hidden) {
         this.hidden = hidden;
-    }
-
-    public int getNewLines() {
-        // 3行
-        if (getOption3() != 0) {
-            return 3;
-        }
-        // 初回抽選
-        if (getOption1() == 0) {
-            // 初回は50%で3行 (テスト)
-            if (50 <= Randomizer.nextInt(100)) {
-                return 3;
-            }
-        }
-        // 2行
-        return 2;
-    }
-
-    public int getNewRank(boolean master) {
-        // エピック抽選
-        if (2 <= getGrade() || 50 <= Randomizer.nextInt(100)) {
-            // ユニーク抽選
-            if (3 <= getGrade() || 50 <= Randomizer.nextInt(100)) {
-                // レジェンダリー抽選
-                if (master && (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) && (4 <= getGrade() || 50 <= Randomizer.nextInt(100))) {
-                    return 4;
-                }
-                return 3;
-            }
-            return 2;
-        }
-        return 1;
-    }
-
-    // the second and third lines are the same rank or one rank lower
-    private static int getSubRank(int rank) {
-        if (rank < 2) {
-            return 1;
-        }
-        return (50 <= Randomizer.nextInt(100)) ? rank : rank - 1;
-    }
-
-    public boolean resetPotential(boolean hyper, boolean master) {
-        if (getHidden() != 0) {
-            return false;
-        }
-        int lines = getNewLines();
-        int newrank = getNewRank(master);
-        setHidden(1); // 未確認状態
-        setRank(newrank); // 等級
-
-        if (hyper && 50 <= Randomizer.nextInt(100)) {
-            lines = 3;
-        }
-
-        setPotential1(DWI_Random.getRandomPotential(newrank));
-        setPotential2(DWI_Random.getRandomPotential(getSubRank(newrank)));
-        if (lines == 3) {
-            setPotential3(DWI_Random.getRandomPotential(getSubRank(newrank)));
-        }
-        return true;
     }
 
     public int getHpR() {

@@ -841,13 +841,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 sel.setEnhance((byte) amount);
                 break;
             case 19:
-                sel.setPotential1(amount);
+                sel.setOption1(amount);
                 break;
             case 20:
-                sel.setPotential2(amount);
+                sel.setPOption2(amount);
                 break;
             case 21:
-                sel.setPotential3(amount);
+                sel.setOption3(amount);
                 break;
             case 22:
                 sel.setOwner(getText());

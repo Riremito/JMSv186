@@ -106,6 +106,7 @@ import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
+import tacos.server.TacosEnhancement;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
@@ -1811,28 +1812,24 @@ public class ReqCUser {
         Equip eqq = (Equip) toReveal;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
-
-        //Debug.DebugLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
-        //Debug.DebugLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
-        if (eqq.getHidden() == 1
-                && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
-            eqq.setHidden(0); // 未確認状態へ変更
-            {
-                PB_InvOp.Builder io = PB_InvOp.builder();
-                if (0 < magnify.getQuantity()) {
-                    io.update(GameConstants.getInventoryType(magnify.getItemId()), magnify);
-                } else {
-                    io.remove(GameConstants.getInventoryType(magnify.getItemId()), magnify.getPosition());
-                }
-                io.add(GameConstants.getInventoryType(toReveal.getItemId()), toReveal);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+        if (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3)) {
+            TacosEnhancement enhancement = new TacosEnhancement(eqq);
+            if (!enhancement.useMagnify()) {
+                chr.updateInv();
+                return false;
             }
+            PB_InvOp.Builder io = PB_InvOp.builder();
+            if (0 < magnify.getQuantity()) {
+                io.update(GameConstants.getInventoryType(magnify.getItemId()), magnify);
+            } else {
+                io.remove(GameConstants.getInventoryType(magnify.getItemId()), magnify.getPosition());
+            }
+            io.add(GameConstants.getInventoryType(toReveal.getItemId()), toReveal);
+            chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
-            //Debug.DebugLog("potential updated");
         } else {
             chr.updateInv();
-            //Debug.ErrorLog("potential err 2");
             return false;
         }
 

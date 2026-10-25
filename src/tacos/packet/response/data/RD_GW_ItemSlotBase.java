@@ -83,25 +83,6 @@ public class RD_GW_ItemSlotBase {
         return data.getBytes();
     }
 
-    public static byte getPotentialRank(Equip equip) {
-        // 未確認アイテム
-        if (equip.getHidden() != 0) {
-            return 1;
-        }
-        int rank = equip.getGrade();
-        // JMSv 186 :  5,  6,  7
-        // JMS v302 : 17, 18, 19, 20
-
-        // 潜在能力なし
-        if (rank == 0) {
-            return 0;
-        }
-
-        // 等級
-        return (byte) ((Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) ? (rank + 16) : (rank + 4));
-
-    }
-
     // GW_ItemSlotBase::Decode
     // addItemInfo
     public static byte[] Encode(Item item) {
@@ -185,7 +166,7 @@ public class RD_GW_ItemSlotBase {
                 }
                 // 潜在能力, 装備強化 (星)
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                    data.Encode1(getPotentialRank(equip)); // nGrade
+                    data.Encode1(equip.getOpsGrade().get()); // nGrade
                     data.Encode1(equip.getCHUC()); // nCHUC
                     data.Encode2(equip.getOption1()); // nOption1
                     data.Encode2(equip.getOption2()); // nOption2
@@ -323,7 +304,7 @@ public class RD_GW_ItemSlotBase {
 
         data.Encode1(equip.getRUC());
         data.Encode1(equip.getCUC());
-        data.Encode1(getPotentialRank(equip));
+        data.Encode1(equip.getOpsGrade().get());
         data.Encode2(equip.getIncSTR());
         data.Encode2(equip.getIncDEX());
         data.Encode2(equip.getIncINT());
@@ -387,7 +368,7 @@ public class RD_GW_ItemSlotBase {
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
         data.Encode4(equip.getIUC()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
         data.Encode2(0);
-        data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
+        data.Encode1(equip.getOpsGrade().get()); // option._ZtlSecureTear_nGrade
         data.Encode1(equip.getCHUC()); // option._ZtlSecureTear_nCHUC
         data.Encode2(equip.getOption1()); // option._ZtlSecureTear_nOption1
         data.Encode2(equip.getOption2()); // option._ZtlSecureTear_nOption2
@@ -536,7 +517,7 @@ public class RD_GW_ItemSlotBase {
         }
 
         data.EncodeStr(equip.getOwner()); // title
-        data.Encode1(getPotentialRank(equip)); // nGrade
+        data.Encode1(equip.getOpsGrade().get()); // nGrade
         data.Encode1(equip.getCHUC()); // nCHUC
         data.Encode2(equip.getOption1()); // nOption1
         data.Encode2(equip.getOption2()); // nOption2

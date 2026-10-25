@@ -16,6 +16,7 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosEnhancement;
 import tacos.wz.WzXML;
 
 public class MapleItemInformationProvider {
@@ -267,7 +268,8 @@ public class MapleItemInformationProvider {
             applyEnhanceScroll(nEquip);
         } else if (GameConstants.isPotentialScroll(scroll_id)) {
             if (nEquip.getHidden() == 0 && nEquip.getGrade() == 0) {
-                nEquip.resetPotential(false, false);
+                TacosEnhancement enhancement = new TacosEnhancement(nEquip);
+                enhancement.usePotentialScroll();
             }
         } else {
             applyStatScroll(nEquip, stats);

@@ -56,6 +56,7 @@ import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
+import tacos.server.TacosEnhancement;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -490,23 +491,60 @@ public class ReqCUser_Item {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, item).build()));
                 return true;
             }
-            case 5062000:
-            case 5062001:
-            case 5062002:
-            case 5062003: // miracle cubes
-            {
+            case 5062000: {
                 int equip_slot = cp.Decode4();
-                Item item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
-                if (item == null) {
+                Equip equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (equip == null) {
                     return false;
                 }
-
-                Equip equip = (Equip) item;
-                equip.resetPotential(cash_item_id == 5062001 || cash_item_id == 5062003, cash_item_id == 5062002 || cash_item_id == 5062003);
+                TacosEnhancement enhancement = new TacosEnhancement(equip);
+                enhancement.useMiracleCube();
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
-                //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
+                MapleInventoryManipulator.addById(chr, 2430112, (short) 1);
+                return true;
+            }
+            case 5062001: {
+                int equip_slot = cp.Decode4();
+                Equip equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (equip == null) {
+                    return false;
+                }
+                TacosEnhancement enhancement = new TacosEnhancement(equip);
+                enhancement.useHyperMiracleCube();
+                chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
+                chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+                MapleInventoryManipulator.addById(chr, 2430112, (short) 1);
+                return true;
+            }
+            case 5062002: {
+                int equip_slot = cp.Decode4();
+                Equip equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (equip == null) {
+                    return false;
+                }
+                TacosEnhancement enhancement = new TacosEnhancement(equip);
+                enhancement.useMasterMiracleCube();
+                chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
+                chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+                MapleInventoryManipulator.addById(chr, 2430112, (short) 1);
+                return true;
+            }
+            case 5062003: {
+                int equip_slot = cp.Decode4();
+                Equip equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (equip == null) {
+                    return false;
+                }
+                TacosEnhancement enhancement = new TacosEnhancement(equip);
+                enhancement.useHyperMasterMiracleCube();
+                chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
+                chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+                MapleInventoryManipulator.addById(chr, 2430112, (short) 1);
                 return true;
             }
             default: {

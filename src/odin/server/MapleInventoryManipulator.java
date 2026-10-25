@@ -13,14 +13,13 @@ import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
 import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
-import tacos.config.Region;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.maps.AramiaFireWorks;
-import tacos.config.Config;
+import tacos.server.TacosEnhancement;
 import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
@@ -321,8 +320,10 @@ public class MapleInventoryManipulator {
             }
         } else {
             if (quantity == 1) {
+                // new equip.
                 if (enhance) {
-                    item = checkEnhanced(item, chr);
+                    TacosEnhancement enhancement = new TacosEnhancement((Equip) item);
+                    enhancement.usePotentialScroll();
                 }
                 short newSlot = chr.getInventory(type).addItem(item);
 
@@ -353,20 +354,6 @@ public class MapleInventoryManipulator {
             chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_ITEM).ItemID(item.getItemId()).Inc_ItemCount(item.getQuantity()).build()));
         }
         return true;
-    }
-
-    private static Item checkEnhanced(Item before, TacosCharacter chr) {
-        if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
-            return before;
-        }
-        if (before instanceof Equip) {
-            Equip eq = (Equip) before;
-            if (eq.getHidden() == 0 && (eq.getRUC() >= 1 || eq.getCUC() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
-                eq.resetPotential(false, false);
-                // 未確認アイテム獲得 (?)
-            }
-        }
-        return before;
     }
 
     public static boolean checkSpace(TacosCharacter chr, int itemid, int quantity, String owner) {

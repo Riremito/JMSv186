@@ -58,5 +58,6 @@ public class PacketOps {
         OpsAlliance.init();
         OpsParty.init();
         OpsChatGroup.init();
+        OpsGrade.init();
     }
 }

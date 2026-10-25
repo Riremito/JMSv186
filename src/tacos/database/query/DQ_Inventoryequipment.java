@@ -119,11 +119,11 @@ public class DQ_Inventoryequipment {
                     equip.setLevelEXP(rs.getInt("itemEXP"));
                     equip.setDurability(rs.getInt("durability"));
                     equip.setEnhance(rs.getInt("enhance"));
-                    equip.setRank(rs.getInt("rank"));
+                    equip.setGrade(rs.getInt("rank"));
                     equip.setHidden(rs.getInt("hidden"));
-                    equip.setPotential1(rs.getInt("potential1"));
-                    equip.setPotential2(rs.getInt("potential2"));
-                    equip.setPotential3(rs.getInt("potential3"));
+                    equip.setOption1(rs.getInt("potential1"));
+                    equip.setPOption2(rs.getInt("potential2"));
+                    equip.setOption3(rs.getInt("potential3"));
                     equip.setHpR(rs.getInt("hpR"));
                     equip.setMpR(rs.getInt("mpR"));
                     equip.setIncAttackSpeed(rs.getInt("incattackSpeed"));
