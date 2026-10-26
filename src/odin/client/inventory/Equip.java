@@ -293,6 +293,11 @@ public class Equip extends Item {
         this.enhance = checkByte(this.enhance + value);
     }
 
+    // 攻撃速度の書
+    public void incAttackSpeed(int value) {
+        this.incattackSpeed = checkByte(this.incattackSpeed + value);
+    }
+
     // nSocket1.
     // nSocket2.
     @Override

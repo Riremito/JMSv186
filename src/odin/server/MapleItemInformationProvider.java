@@ -212,21 +212,6 @@ public class MapleItemInformationProvider {
 
     private void applyScroll(Equip nEquip, int scroll_id, Map<String, Integer> stats, Map<String, Integer> eqstats) {
         switch (scroll_id) {
-            case 2049000:
-            case 2049001:
-            case 2049002:
-            case 2049003:
-            case 2049004:
-            case 2049005: {
-                addUpgradeSlots(nEquip, eqstats, 1);
-                return;
-            }
-            case 2049006:
-            case 2049007:
-            case 2049008: {
-                addUpgradeSlots(nEquip, eqstats, 2);
-                return;
-            }
             case 2040727: { // Spikes on shoe, prevents slip
                 nEquip.setFlag((byte) (nEquip.getFlag() | ItemFlag.SPIKES.getValue()));
                 return;
@@ -237,40 +222,6 @@ public class MapleItemInformationProvider {
             }
             default: {
                 break;
-            }
-        }
-        if (GameConstants.isChaosScroll(scroll_id)) {
-            applyChaosScroll(nEquip, GameConstants.getChaosNumber(scroll_id));
-        } else {
-            applyStatScroll(nEquip, stats);
-        }
-    }
-
-    private void addUpgradeSlots(Equip nEquip, Map<String, Integer> eqstats, int slots) {
-        if (nEquip.getCUC() + nEquip.getRUC() < eqstats.get("tuc")) {
-            nEquip.setRUC((byte) (nEquip.getRUC() + slots));
-        }
-    }
-
-    // stat +- random(z)
-    private void applyChaosScroll(Equip nEquip, int z) {
-        for (EquipStat stat : CHAOS_STATS) {
-            if (stat.get(nEquip) > 0) {
-                stat.add(nEquip, Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1));
-            }
-        }
-    }
-
-    // normal scroll : add the stats of the scroll
-    private void applyStatScroll(Equip nEquip, Map<String, Integer> stats) {
-        for (Entry<String, Integer> stat : stats.entrySet()) {
-            if (stat.getKey().equals("attackSpeed")) {
-                nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + stat.getValue()); // 攻撃速度の書
-                continue;
-            }
-            EquipStat es = EquipStat.find(stat.getKey());
-            if (es != null && es != EquipStat.CRAFT) {
-                es.add(nEquip, stat.getValue());
             }
         }
     }

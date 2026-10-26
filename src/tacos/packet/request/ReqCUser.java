@@ -107,6 +107,7 @@ import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosEnhancement;
+import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
@@ -1604,12 +1605,15 @@ public class ReqCUser {
             return false;
         }
         TacosEnhancement enhancement = new TacosEnhancement(equip);
-        if (!enhancement.useScroll(scroll.getItemId())) {
+        EnhancementResult er = enhancement.useScroll(scroll.getItemId());
+        if (er == EnhancementResult.UNKNOWN) {
             chr.updateInv();
             //useScroll(chr, chr.getMap(), scroll_slot, equip_slot, 0);
             return true;
         }
-        boolean success = true;
+        boolean success = er == EnhancementResult.SUCCESS;
+        boolean cursed = er == EnhancementResult.CURSED;
+
         short scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
@@ -1619,9 +1623,14 @@ public class ReqCUser {
         } else {
             io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
         }
-        io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
+        if (cursed) {
+            io.remove(GameConstants.getInventoryType(equip.getItemId()), equip.getPosition());
+            chr.getInventory((equip_slot < 0) ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).removeSlot(equip.getPosition());
+        } else {
+            io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
+        }
         chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
-        chr.getMap().splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr, success, false, legendary_spirit));
+        chr.getMap().splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr, success, cursed, legendary_spirit));
         return true;
     }
 

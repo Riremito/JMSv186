@@ -58,96 +58,44 @@ public class TacosEnhancement {
         return false;
     }
 
-    public boolean useScroll(int item_id) {
+    public static enum EnhancementResult {
+        SUCCESS,
+        FAILURE,
+        CURSED,
+        UNKNOWN;
+    }
+
+    public EnhancementResult useScroll(int item_id) {
         ScrollData sd = WzXML.ITEM.getScrollData(item_id);
         if (sd == null) {
-            return false;
+            return EnhancementResult.UNKNOWN;
         }
         EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
         if (ed == null) {
-            return false;
+            return EnhancementResult.UNKNOWN;
         }
         // 強化不可
         if (ed.getTuc() == 0) {
-            return false;
+            return EnhancementResult.UNKNOWN;
         }
         // TODO : ビシャスのハンマーでアップグレード回数増加時の判定
-        boolean is_recover_scroll = sd.getRecover() != 0;
         // 白の書
+        boolean is_recover_scroll = sd.getRecover() != 0;
         if (is_recover_scroll) {
-            boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= ed.getTuc();
-            if (!is_recovery_possible) {
-                return false;
-            }
-            if (Randomizer.nextInt(100) < sd.getSuccess()) {
-                equip.incRUC(sd.getRecover());
-            } else {
-                if (Randomizer.nextInt(100) < sd.getCursed()) {
-                    // TODO : 装備破壊
-                }
-            }
-            return true;
+            return useRecoverScroll(sd, ed);
+        }
+        // 混沌の書
+        boolean is_chaos = sd.getRandstat() != 0;
+        if (is_chaos) {
+            return useChaosScroll(sd);
         }
         boolean is_upgrade_possible = equip.getRUC() != 0;
         if (!is_upgrade_possible) {
-            return false;
+            return EnhancementResult.UNKNOWN;
         }
-        boolean is_chaos = sd.getRandstat() != 0; // 混沌の書
-        boolean is_chaos_no_negative = sd.getNoNegative() != 0; // 肯定の混沌の書
         equip.incRUC(-1);
         if (Randomizer.nextInt(100) < sd.getSuccess()) {
             equip.incCUC(1);
-            if (is_chaos) {
-                int rand_range = 5 + sd.getIncRandVol(); // 驚きの混沌の書, 5 -> 6
-                int rand_base = rand_range * 2 + 1;
-                if (is_chaos_no_negative) {
-                    rand_range = 0;
-                    rand_base /= 2;
-                }
-                if (1 <= equip.getIncSTR()) {
-                    equip.incSTR(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncDEX()) {
-                    equip.incDEX(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncINT()) {
-                    equip.incINT(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncLUK()) {
-                    equip.incLUK(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncMaxHP()) {
-                    equip.incMaxHP(Randomizer.nextInt(rand_base * 10) - rand_range * 10);
-                }
-                if (1 <= equip.getIncMaxMP()) {
-                    equip.incMaxMP(Randomizer.nextInt(rand_base * 10) - rand_range * 10);
-                }
-                if (1 <= equip.getIncPAD()) {
-                    equip.incPAD(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncMAD()) {
-                    equip.incMAD(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncPDD()) {
-                    equip.incPDD(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncMDD()) {
-                    equip.incMDD(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncEVA()) {
-                    equip.incEVA(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncCraft()) {
-                    equip.incCraft(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncSpeed()) {
-                    equip.incSpeed(Randomizer.nextInt(rand_base) - rand_range);
-                }
-                if (1 <= equip.getIncJump()) {
-                    equip.incJump(Randomizer.nextInt(rand_base) - rand_range);
-                }
-            }
-            // 通常
             equip.incSTR(sd.getIncSTR());
             equip.incDEX(sd.getIncDEX());
             equip.incINT(sd.getIncINT());
@@ -163,12 +111,100 @@ public class TacosEnhancement {
             equip.incCraft(sd.getIncCraft());
             equip.incSpeed(sd.getIncSpeed());
             equip.incJump(sd.getIncJump());
+            equip.incJump(sd.getIncJump());
+            equip.incAttackSpeed(sd.getIncattackSpeed());
+            return EnhancementResult.SUCCESS;
         } else {
             if (Randomizer.nextInt(100) < sd.getCursed()) {
-                // TODO : 装備破壊
+                return EnhancementResult.CURSED;
             }
         }
-        return true;
+        return EnhancementResult.FAILURE;
+    }
+
+    // 白の書
+    private EnhancementResult useRecoverScroll(ScrollData sd, EquipData ed) {
+        boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= ed.getTuc();
+        if (!is_recovery_possible) {
+            return EnhancementResult.UNKNOWN;
+        }
+        if (Randomizer.nextInt(100) < sd.getSuccess()) {
+            equip.incRUC(sd.getRecover());
+            return EnhancementResult.SUCCESS;
+        } else {
+            if (Randomizer.nextInt(100) < sd.getCursed()) {
+                return EnhancementResult.CURSED;
+            }
+        }
+        return EnhancementResult.FAILURE;
+    }
+
+    // 混沌の書
+    private EnhancementResult useChaosScroll(ScrollData sd) {
+        boolean is_upgrade_possible = equip.getRUC() != 0;
+        if (!is_upgrade_possible) {
+            return EnhancementResult.UNKNOWN;
+        }
+        boolean is_incredible = sd.getIncRandVol() != 0; // 驚きの混沌の書
+        boolean is_no_negative = sd.getNoNegative() != 0; // 肯定の混沌の書
+        int rand_range = is_incredible ? 6 : 5; // 驚きの混沌の書, 5 -> 6
+        int rand_base = rand_range * 2 + 1;
+        if (is_no_negative) {
+            rand_range = 0;
+            rand_base /= 2;
+        }
+        equip.incRUC(-1);
+        if (Randomizer.nextInt(100) < sd.getSuccess()) {
+            equip.incCUC(1);
+            if (1 <= equip.getIncSTR()) {
+                equip.incSTR(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncDEX()) {
+                equip.incDEX(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncINT()) {
+                equip.incINT(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncLUK()) {
+                equip.incLUK(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncMaxHP()) {
+                equip.incMaxHP((Randomizer.nextInt(rand_base) - rand_range) * 10);
+            }
+            if (1 <= equip.getIncMaxMP()) {
+                equip.incMaxMP((Randomizer.nextInt(rand_base) - rand_range) * 10);
+            }
+            if (1 <= equip.getIncPAD()) {
+                equip.incPAD(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncMAD()) {
+                equip.incMAD(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncPDD()) {
+                equip.incPDD(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncMDD()) {
+                equip.incMDD(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncEVA()) {
+                equip.incEVA(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncCraft()) {
+                equip.incCraft(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncSpeed()) {
+                equip.incSpeed(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            if (1 <= equip.getIncJump()) {
+                equip.incJump(Randomizer.nextInt(rand_base) - rand_range);
+            }
+            return EnhancementResult.SUCCESS;
+        } else {
+            if (Randomizer.nextInt(100) < sd.getCursed()) {
+                return EnhancementResult.CURSED;
+            }
+        }
+        return EnhancementResult.FAILURE;
     }
 
     public boolean useEquipEnhancementScroll() {
