@@ -31,13 +31,13 @@ import tacos.wz.ids.DWI_Random;
  */
 public class TacosEnhancement {
 
-    // currently rate is x20.
-    private static final int RANK_UP_RARE_TO_EPIC = 80;
-    private static final int RANK_UP_EPIC_TO_UNIQUE = 40;
-    private static final int RANK_UP_UNIQUE_TO_LEGENDARY = 20;
-    private static final int OPTION_3LINES = 50;
-    private static final int OPTION2_HIGH_RANK = 10;
-    private static final int OPTION3_HIGH_RANK = 10;
+    // currently rate is set for test.
+    private static final int RANK_UP_RARE_TO_EPIC = 80; // 多分4%
+    private static final int RANK_UP_EPIC_TO_UNIQUE = 40; // 多分2%
+    private static final int RANK_UP_UNIQUE_TO_LEGENDARY = 10; // 多分2% (初期のマスターミラクルキューブ), 通常ミラクルキューブで昇級するようになった後は1%くらいかも
+    private static final int OPTION_3LINES = 50; // 多分10%
+    private static final int OPTION2_HIGH_RANK = 10; // 10%
+    private static final int OPTION3_HIGH_RANK = 1; // 1%
 
     private final Equip equip;
 
@@ -64,7 +64,7 @@ public class TacosEnhancement {
 
     public boolean useEquipEnhancementScroll() {
         if (!checkPotentialSystem()) {
-            // TODO : fix, EE scroll came with potential system, so this is problem.
+            // TODO : 装備強化の書と潜在能力の実装時期に差がある場合は変更が必要
             return false;
         }
         if (equip.getRUC() != 0 || !isUpgradeable()) {
@@ -72,22 +72,24 @@ public class TacosEnhancement {
         }
         boolean weapon = GameConstants.isWeapon(equip.getItemId());
         equip.incCHUC(1);
+        // TODO : 武器以外にも手袋は攻撃力などが確定ではないが上昇したはずなので要確認
         if (weapon) {
             if (equip.getIncPAD() != 0) {
                 equip.incPAD(equip.getIncPAD() / 50 + 1);
             }
             if (equip.getIncMAD() != 0) {
-                // TODO
+                // TODO : 魔力の上昇設定
             }
         }
-        // TODO, 追加ステータス付与確率と能力値の上昇の数値の仕様を要確認
+        // TODO : バージョンによって新規ステータス付与の仕様が異なる可能性があり, 2013年以降は付与されない可能性がある
+        // TODO : 追加ステータス付与確率と能力値の上昇の数値の仕様を要確認
         if (equip.getIncDEX() != 0 || Randomizer.nextInt(100) < 10) {
             equip.incDEX(Randomizer.nextInt(6));
         }
         if (equip.getIncLUK() != 0 || Randomizer.nextInt(100) < 10) {
             equip.incLUK(Randomizer.nextInt(6));
         }
-        // TODO, 他のステータス値の処理
+        // TODO : 他のステータス値の処理
         return true;
     }
 
@@ -108,20 +110,18 @@ public class TacosEnhancement {
         }
         int rand = Randomizer.nextInt(100);
         int grade = 1; //rate
-        // epic, 4%
         if (rand < RANK_UP_RARE_TO_EPIC) {
             grade++; // epic
         }
-        // unique, 2%
         if (rand < RANK_UP_EPIC_TO_UNIQUE) {
             grade++; // unique
         }
+        // 初期レジェンダリーは出現したことがないのでユニークまでだと思われる
         equip.setGrade(grade);
         equip.setOption1(DWI_Random.getRandomPotential(grade));
-        equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < 10 ? grade : grade - 1, 1))); // 10%
-        // 3 options, 30%
+        equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK ? grade : grade - 1, 1)));
         if (Randomizer.nextInt(100) < OPTION_3LINES) {
-            equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < 10 ? grade : grade - 1, 1))); // 10%
+            equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? grade : grade - 1, 1)));
         }
         equip.setHidden(1);
         return true;
@@ -131,13 +131,11 @@ public class TacosEnhancement {
         int grade = equip.getGrade();
         switch (grade) {
             case 1 -> {
-                // rare to epic, 4%
                 if (Randomizer.nextInt(100) < RANK_UP_RARE_TO_EPIC) {
                     grade++;
                 }
             }
             case 2 -> {
-                // epic to unique, 2%
                 if (Randomizer.nextInt(100) < RANK_UP_EPIC_TO_UNIQUE) {
                     grade++;
                 }
@@ -172,20 +170,17 @@ public class TacosEnhancement {
         int grade = equip.getGrade();
         switch (grade) {
             case 1 -> {
-                // rare to epic, 8%
-                if (Randomizer.nextInt(100) < 80) {
+                if (Randomizer.nextInt(100) < RANK_UP_RARE_TO_EPIC * 2) {
                     grade++;
                 }
             }
             case 2 -> {
-                // epic to unique, 4%
-                if (Randomizer.nextInt(100) < 40) {
+                if (Randomizer.nextInt(100) < RANK_UP_EPIC_TO_UNIQUE * 2) {
                     grade++;
                 }
             }
             case 3 -> {
-                // unique to legendary, 2%
-                if (Randomizer.nextInt(100) < 20) {
+                if (Randomizer.nextInt(100) < RANK_UP_UNIQUE_TO_LEGENDARY * 2) {
                     grade++;
                 }
             }
@@ -198,9 +193,9 @@ public class TacosEnhancement {
         }
         equip.setGrade(grade);
         equip.setOption1(DWI_Random.getRandomPotential(grade));
-        equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK ? grade : grade - 1, 1)));
+        equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK * 2 ? grade : grade - 1, 1)));
         if (equip.getOption3() != 0) {
-            equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? grade : grade - 1, 1)));
+            equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK * 2 ? grade : grade - 1, 1)));
         }
         equip.setHidden(1);
         return true;
@@ -209,7 +204,7 @@ public class TacosEnhancement {
     public boolean useHyperMasterMiracleCube() {
         if (equip.getOption3() == 0) {
             if (Randomizer.nextInt(100) < OPTION_3LINES) {
-                equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? equip.getGrade() : equip.getGrade() - 1, 1)));
+                equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK * 2 ? equip.getGrade() : equip.getGrade() - 1, 1)));
             }
         }
         return useMasterMiracleCube();
