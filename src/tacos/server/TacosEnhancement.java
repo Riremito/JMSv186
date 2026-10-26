@@ -23,6 +23,9 @@ import odin.constants.GameConstants;
 import odin.server.Randomizer;
 import tacos.config.Config;
 import tacos.config.Region;
+import tacos.wz.CharacterWz.EquipData;
+import tacos.wz.ItemWz.ScrollData;
+import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Random;
 
 /**
@@ -45,13 +48,6 @@ public class TacosEnhancement {
         this.equip = equip;
     }
 
-    private boolean isUpgradeable() {
-        if (equip.getRUC() == 0 && equip.getCUC() == 0) {
-            return false;
-        }
-        return true;
-    }
-
     private boolean checkPotentialSystem() {
         if (Config.PostBB()) {
             return true;
@@ -62,12 +58,83 @@ public class TacosEnhancement {
         return false;
     }
 
+    public boolean useScroll(int item_id) {
+        ScrollData sd = WzXML.ITEM.getScrollData(item_id);
+        if (sd == null) {
+            return false;
+        }
+        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        if (ed == null) {
+            return false;
+        }
+        // 強化不可
+        if (ed.getTuc() == 0) {
+            return false;
+        }
+        // TODO : ビシャスのハンマーでアップグレード回数増加時の判定
+        boolean is_recover_scroll = sd.getRecover() != 0;
+        // 白の書
+        if (is_recover_scroll) {
+            boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= ed.getTuc();
+            if (!is_recovery_possible) {
+                return false;
+            }
+            if (Randomizer.nextInt(100) < sd.getSuccess()) {
+                equip.incRUC(sd.getRecover());
+            } else {
+                if (Randomizer.nextInt(100) < sd.getCursed()) {
+                    // TODO : 装備破壊
+                }
+            }
+            return true;
+        }
+        boolean is_upgrade_possible = equip.getRUC() != 0;
+        if (!is_upgrade_possible) {
+            return false;
+        }
+        equip.incRUC(-1);
+        if (Randomizer.nextInt(100) < sd.getSuccess()) {
+            equip.incCUC(1);
+            // 混沌の書
+            if (sd.getRandstat() != 0) {
+                int rand_range = 5 + sd.getIncRandVol(); // 驚きの混沌の書
+                int rand_base = rand_range * 2 + 1;
+                if (1 <= equip.getIncDEX()) {
+                    equip.incDEX(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncLUK()) {
+                    equip.incLUK(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncPAD()) {
+                    equip.incPAD(Randomizer.nextInt(rand_base) - rand_range);
+                }
+            }
+            equip.incDEX(sd.getIncDEX());
+            equip.incLUK(sd.getIncLUK());
+            equip.incPAD(sd.getIncPAD());
+        } else {
+            if (Randomizer.nextInt(100) < sd.getCursed()) {
+                // TODO : 装備破壊
+            }
+        }
+        return true;
+    }
+
     public boolean useEquipEnhancementScroll() {
         if (!checkPotentialSystem()) {
             // TODO : 装備強化の書と潜在能力の実装時期に差がある場合は変更が必要
             return false;
         }
-        if (equip.getRUC() != 0 || !isUpgradeable()) {
+        // アップグレード回数が残っているため強化不可
+        if (equip.getRUC() != 0) {
+            return false;
+        }
+        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        if (ed == null) {
+            return false;
+        }
+        // 強化不可
+        if (ed.getTuc() == 0) {
             return false;
         }
         boolean weapon = GameConstants.isWeapon(equip.getItemId());
@@ -105,7 +172,15 @@ public class TacosEnhancement {
         if (!checkPotentialSystem()) {
             return false;
         }
-        if (equip.getHidden() != 0 || equip.getGrade() != 0 || !isUpgradeable()) {
+        if (equip.getHidden() != 0 || equip.getGrade() != 0) {
+            return false;
+        }
+        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        if (ed == null) {
+            return false;
+        }
+        // 強化不可
+        if (ed.getTuc() == 0) {
             return false;
         }
         int rand = Randomizer.nextInt(100);

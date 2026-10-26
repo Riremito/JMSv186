@@ -406,7 +406,7 @@ public class ReqCUser_Item {
                 }
 
                 equip.setViciousHammer(equip.getIUC() + 1);
-                equip.setUpgradeSlots(equip.getRUC() + 1);
+                equip.setRUC(equip.getRUC() + 1);
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip));

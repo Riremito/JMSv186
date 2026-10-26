@@ -59,6 +59,30 @@ public class CharacterWz extends WzXML {
     }
 
     @Getter
+    public class EquipData {
+
+        private int tuc;
+    }
+
+    private final HashMap<Integer, EquipData> equip_infos = new HashMap<>();
+
+    public EquipData getEquipData(int item_id) {
+        EquipData ret = this.equip_infos.get(item_id);
+        if (ret == null) {
+            MapleData equip_img = getItemData(item_id);
+            if (equip_img != null) {
+                MapleData info = equip_img.getChildByPath("info");
+                if (info != null) {
+                    ret = new EquipData();
+                    ret.tuc = info.getInt("tuc");
+                }
+                this.equip_infos.put(item_id, ret);
+            }
+        }
+        return ret;
+    }
+
+    @Getter
     public class EquipInfoLevel {
 
         private int exp; // no idea.

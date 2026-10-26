@@ -90,8 +90,8 @@ public class DQ_MtsStorageItems {
                         equip.setQuantity((short) 1);
                         equip.setOwner(rs.getString("owner"));
                         equip.setExpiration(rs.getLong("expiredate"));
-                        equip.setUpgradeSlots(rs.getInt("upgradeslots"));
-                        equip.setLevel(rs.getByte("level"));
+                        equip.setRUC(rs.getInt("upgradeslots"));
+                        equip.setCUC(rs.getByte("level"));
                         // not coded, incattackSpeed
                         equip.setStr(rs.getInt("str"));
                         equip.setDex(rs.getInt("dex"));

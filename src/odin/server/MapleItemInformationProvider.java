@@ -194,15 +194,15 @@ public class MapleItemInformationProvider {
         if (always_success || Randomizer.nextInt(100) <= success) {
             applyScroll(nEquip, scroll_id, stats, eqstats);
             if (uses_slot) {
-                nEquip.setUpgradeSlots((byte) (nEquip.getRUC() - 1));
-                nEquip.setLevel((byte) (nEquip.getCUC() + 1));
+                nEquip.setRUC((byte) (nEquip.getRUC() - 1));
+                nEquip.setCUC((byte) (nEquip.getCUC() + 1));
             }
             return equip;
         }
 
         // failed
         if (!ws && uses_slot && !ContentState.CS_LOCK_LOSING_UPGRADE_SLOT.get()) {
-            nEquip.setUpgradeSlots((byte) (nEquip.getRUC() - 1));
+            nEquip.setRUC((byte) (nEquip.getRUC() - 1));
         }
         if (Randomizer.nextInt(99) < curse && !ContentState.CS_LOCK_BOOM.get()) {
             return null; // boom
@@ -248,7 +248,7 @@ public class MapleItemInformationProvider {
 
     private void addUpgradeSlots(Equip nEquip, Map<String, Integer> eqstats, int slots) {
         if (nEquip.getCUC() + nEquip.getRUC() < eqstats.get("tuc")) {
-            nEquip.setUpgradeSlots((byte) (nEquip.getRUC() + slots));
+            nEquip.setRUC((byte) (nEquip.getRUC() + slots));
         }
     }
 
@@ -290,7 +290,7 @@ public class MapleItemInformationProvider {
                 if (es != null) {
                     es.set(nEquip, stat.getValue());
                 } else if (key.equals("tuc")) {
-                    nEquip.setUpgradeSlots(stat.getValue().byteValue());
+                    nEquip.setRUC(stat.getValue().byteValue());
                 } else if (key.equals("durability")) {
                     nEquip.setDurability(stat.getValue());
                 }

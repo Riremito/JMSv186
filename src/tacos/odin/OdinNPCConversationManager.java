@@ -830,13 +830,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 sel.setJump(amount);
                 break;
             case 15:
-                sel.setUpgradeSlots((byte) amount);
+                sel.setRUC((byte) amount);
                 break;
             case 16:
                 sel.setViciousHammer((byte) amount);
                 break;
             case 17:
-                sel.setLevel((byte) amount);
+                sel.setCUC((byte) amount);
                 break;
             case 18:
                 sel.setEnhance((byte) amount);
@@ -1012,13 +1012,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 if (eq.getRUC() < 1) {
                     return false;
                 } else {
-                    eq.setUpgradeSlots((byte) (eq.getRUC() - 1));
+                    eq.setRUC((byte) (eq.getRUC() - 1));
                 }
             }
             if (type.equalsIgnoreCase("Slots")) {
-                eq.setUpgradeSlots((byte) (eq.getRUC() + offset));
+                eq.setRUC((byte) (eq.getRUC() + offset));
             } else if (type.equalsIgnoreCase("Level")) {
-                eq.setLevel((byte) (eq.getCUC() + offset));
+                eq.setCUC((byte) (eq.getCUC() + offset));
             } else if (type.equalsIgnoreCase("Hammer")) {
                 eq.setViciousHammer((byte) (eq.getIUC() + offset));
             } else if (type.equalsIgnoreCase("STR")) {

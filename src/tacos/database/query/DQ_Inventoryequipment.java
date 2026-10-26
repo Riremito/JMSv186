@@ -98,8 +98,8 @@ public class DQ_Inventoryequipment {
                         DebugLogger.DBErrorLog(DB_TABLE_NAME, "load, inventoryitemid is not found, id = " + inventory_item_uid);
                         return false;
                     }
-                    equip.setUpgradeSlots(rs.getInt("upgradeslots"));
-                    equip.setLevel(rs.getByte("level"));
+                    equip.setRUC(rs.getInt("upgradeslots"));
+                    equip.setCUC(rs.getByte("level"));
                     equip.setStr(rs.getInt("str"));
                     equip.setDex(rs.getInt("dex"));
                     equip.setInt(rs.getInt("int"));

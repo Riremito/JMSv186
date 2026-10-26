@@ -201,24 +201,48 @@ public class Equip extends Item {
         return this.potential3;
     }
 
+    private int checkByte(int value) {
+        if (Byte.MAX_VALUE < value) {
+            return Byte.MAX_VALUE;
+        }
+        if (value < 0) {
+            return 0;
+        }
+        return value;
+    }
+
+    private int checkShort(int value) {
+        if (Short.MAX_VALUE < value) {
+            return Short.MAX_VALUE;
+        }
+        if (value < 0) {
+            return 0;
+        }
+        return value;
+    }
+
+    public void incRUC(int value) {
+        this.upgradeSlots = checkByte(this.upgradeSlots + value);
+    }
+
+    public void incCUC(int value) {
+        this.level = checkByte(this.level + value);
+    }
+
     public void incDEX(int value) {
-        this.dex += value;
-        this.dex = Math.min(Short.MAX_VALUE, this.dex);
+        this.dex = checkShort(this.dex + value);
     }
 
     public void incLUK(int value) {
-        this.luk += value;
-        this.luk = Math.min(Short.MAX_VALUE, this.luk);
+        this.luk = checkShort(this.luk + value);
     }
 
     public void incPAD(int value) {
-        this.watk += value;
-        this.watk = Math.min(Short.MAX_VALUE, this.watk);
+        this.watk = checkShort(this.watk + value);
     }
 
     public void incCHUC(int value) {
-        this.enhance += value;
-        this.enhance = Math.min(Byte.MAX_VALUE, this.enhance);
+        this.enhance = checkByte(this.enhance + value);
     }
 
     // nSocket1.
@@ -327,11 +351,11 @@ public class Equip extends Item {
         this.jump = Math.max(0, jump);
     }
 
-    public void setUpgradeSlots(int upgradeSlots) {
+    public void setRUC(int upgradeSlots) {
         this.upgradeSlots = upgradeSlots;
     }
 
-    public void setLevel(int level) {
+    public void setCUC(int level) {
         this.level = level;
     }
 

@@ -28,6 +28,7 @@ import tacos.unofficial.PotentialOptimization;
 import tacos.unofficial.PotentialOptimization.PotentialOptionData;
 import java.util.LinkedHashMap;
 import java.util.List;
+import lombok.Getter;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 
@@ -606,6 +607,92 @@ public class ItemWz extends WzXML {
             ret.put("incRMAI", info.getInt("incRMAI", 100)); // Ice
         }
 
+        return ret;
+    }
+
+    @Getter
+    public class ScrollData {
+
+        private int success;
+        private int incSTR;
+        private int incDEX;
+        private int incINT;
+        private int incLUK;
+        private int incPAD;
+        private int incPDD;
+        private int incMAD;
+        private int incMDD;
+        private int incACC;
+        private int incEVA;
+        private int incSpeed;
+        private int incJump;
+        private int incMaxHP;
+        private int incMaxMP;
+        private int cursed;
+        private int recover;
+        private int randstat;
+        private int incRandVol;
+        private HashMap<Integer, Integer> successRates;
+        private HashMap<Integer, Integer> cursedRates;
+        private HashMap<Integer, Integer> req;
+        private int incattackSpeed;
+    }
+
+    private final HashMap<Integer, ScrollData> scroll_data_list = new HashMap<>();
+
+    public ScrollData getScrollData(int item_id) {
+        ScrollData ret = this.scroll_data_list.get(item_id);
+        if (ret == null) {
+            MapleData md = getItemData(item_id);
+            if (md != null) {
+                MapleData md_info = md.getChildByPath("info");
+                if (md_info != null) {
+                    ret = new ScrollData();
+                    ret.success = md_info.getInt("success");
+                    ret.incSTR = md_info.getInt("incSTR");
+                    ret.incDEX = md_info.getInt("incDEX");
+                    ret.incINT = md_info.getInt("incINT");
+                    ret.incLUK = md_info.getInt("incLUK");
+                    ret.incPAD = md_info.getInt("incPAD");
+                    ret.incPDD = md_info.getInt("incPDD");
+                    ret.incMAD = md_info.getInt("incMAD");
+                    ret.incMDD = md_info.getInt("incMDD");
+                    ret.incACC = md_info.getInt("incACC");
+                    ret.incEVA = md_info.getInt("incEVA");
+                    ret.incSpeed = md_info.getInt("incSpeed");
+                    ret.incJump = md_info.getInt("incJump");
+                    ret.incMaxHP = md_info.getInt("incMaxHP");
+                    ret.incMaxMP = md_info.getInt("incMaxMP");
+                    ret.cursed = md_info.getInt("cursed");
+                    ret.recover = md_info.getInt("recover"); // 2049000, 白の書
+                    ret.randstat = md_info.getInt("randstat"); // 2049100, 混沌の書
+                    ret.incRandVol = md_info.getInt("incRandVol"); // 2049116, 驚きの混沌の書
+                    ret.successRates = new HashMap<>();
+                    MapleData md_successRates = md_info.getChildByPath("successRates"); // 2047000
+                    if (md_successRates != null) {
+                        for (MapleData data : md_successRates.getChildren()) {
+                            ret.successRates.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.cursedRates = new HashMap<>();
+                    MapleData md_cursedRates = md_info.getChildByPath("cursedRates"); // 2047000
+                    if (md_cursedRates != null) {
+                        for (MapleData data : md_cursedRates.getChildren()) {
+                            ret.cursedRates.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.req = new HashMap<>();
+                    MapleData md_req = md_info.getChildByPath("req"); // 2044909
+                    if (md_req != null) {
+                        for (MapleData data : md_req.getChildren()) {
+                            ret.req.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.incattackSpeed = md_info.getInt("incattackSpeed");// 2044709, 攻撃速度の書
+                }
+            }
+        }
+        this.scroll_data_list.put(item_id, ret);
         return ret;
     }
 

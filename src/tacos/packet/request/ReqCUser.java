@@ -1591,11 +1591,37 @@ public class ReqCUser {
 
     // CWvsContext::SendUpgradeItemUseRequest
     public static boolean OnUserUpgradeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
-        int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-        short scroll_slot = cp.Decode2();
-        short equip_slot = cp.Decode2();
+        int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4(); // update_time
+        short scroll_slot = cp.Decode2(); // nUPOS
+        short equip_slot = cp.Decode2(); // nEPOS
+        boolean white_scroll = (Region.KMS.check() || Config.LessOrEqual(Region.JMS, 131)) ? false : cp.Decode2() != 0; // bWhiteScroll
+        boolean legendary_spirit = Config.LessOrEqual(Region.KMS, 31) ? false : cp.Decode1() != 0; // bEnchantSkill
 
-        useScroll(chr, chr.getMap(), scroll_slot, equip_slot, 0);
+        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(scroll_slot);
+        Equip equip = (Equip) chr.getInventory((equip_slot < 0) ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).getItem(equip_slot);
+        if (scroll == null || equip == null) {
+            chr.updateInv();
+            return false;
+        }
+        TacosEnhancement enhancement = new TacosEnhancement(equip);
+        if (!enhancement.useScroll(scroll.getItemId())) {
+            chr.updateInv();
+            //useScroll(chr, chr.getMap(), scroll_slot, equip_slot, 0);
+            return true;
+        }
+        boolean success = true;
+        short scroll_quantity = scroll.getQuantity();
+        chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
+        scroll_quantity--;
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (1 <= scroll_quantity) {
+            io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+        } else {
+            io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+        }
+        io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
+        chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+        chr.getMap().splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr, success, false, legendary_spirit));
         return true;
     }
 
@@ -1633,7 +1659,7 @@ public class ReqCUser {
                 return false;
             }
             toHammer.setViciousHammer((byte) (toHammer.getIUC() + 1));
-            toHammer.setUpgradeSlots((byte) (toHammer.getRUC() + 1));
+            toHammer.setRUC((byte) (toHammer.getRUC() + 1));
             {
                 PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {

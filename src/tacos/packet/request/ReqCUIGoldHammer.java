@@ -87,7 +87,7 @@ public class ReqCUIGoldHammer {
             return false;
         }
         equip.setViciousHammer(equip.getIUC() + 1);
-        equip.setUpgradeSlots(equip.getRUC() + 1);
+        equip.setRUC(equip.getRUC() + 1);
         item_use.run();
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success, equip));
