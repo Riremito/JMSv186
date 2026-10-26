@@ -629,6 +629,8 @@ public class ItemWz extends WzXML {
         private int incCraft;
         private int incSpeed;
         private int incJump;
+        private int preventslip;
+        private int warmsupport;
         private int cursed;
         private int recover;
         private int randstat;
@@ -669,6 +671,8 @@ public class ItemWz extends WzXML {
                     ret.incCraft = md_info.getInt("incCraft");
                     ret.incSpeed = md_info.getInt("incSpeed");
                     ret.incJump = md_info.getInt("incJump");
+                    ret.preventslip = md_info.getInt("preventslip"); // 2040727, スパイクの書
+                    ret.warmsupport = md_info.getInt("warmsupport"); // 2041058, 防寒の書
                     ret.cursed = md_info.getInt("cursed");
                     ret.recover = md_info.getInt("recover"); // 2049000, 白の書
                     ret.randstat = md_info.getInt("randstat"); // 2049100, 混沌の書

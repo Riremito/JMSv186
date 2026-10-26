@@ -19,6 +19,7 @@
 package tacos.server;
 
 import odin.client.inventory.Equip;
+import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import odin.server.Randomizer;
 import tacos.config.Config;
@@ -89,6 +90,16 @@ public class TacosEnhancement {
         if (is_chaos) {
             return useChaosScroll(sd);
         }
+        // スパイクの書
+        boolean is_prevent_slip = sd.getPreventslip() != 0;
+        if (is_prevent_slip) {
+            return usePreventSlipScroll(sd);
+        }
+        // 防寒の書
+        boolean is_warm_support = sd.getWarmsupport() != 0;
+        if (is_warm_support) {
+            return useWarmSupportScroll(sd);
+        }
         boolean is_upgrade_possible = equip.getRUC() != 0;
         if (!is_upgrade_possible) {
             return EnhancementResult.UNKNOWN;
@@ -118,6 +129,30 @@ public class TacosEnhancement {
             if (Randomizer.nextInt(100) < sd.getCursed()) {
                 return EnhancementResult.CURSED;
             }
+        }
+        return EnhancementResult.FAILURE;
+    }
+
+    // スパイクの書
+    private EnhancementResult usePreventSlipScroll(ScrollData sd) {
+        if ((equip.getFlag() & ItemFlag.SPIKES.getValue()) != 0) {
+            return EnhancementResult.UNKNOWN;
+        }
+        if (Randomizer.nextInt(100) < sd.getSuccess()) {
+            equip.setFlag((byte) (equip.getFlag() | ItemFlag.SPIKES.getValue()));
+            return EnhancementResult.SUCCESS;
+        }
+        return EnhancementResult.FAILURE;
+    }
+
+    // 防寒の書
+    private EnhancementResult useWarmSupportScroll(ScrollData sd) {
+        if ((equip.getFlag() & ItemFlag.COLD.getValue()) != 0) {
+            return EnhancementResult.UNKNOWN;
+        }
+        if (Randomizer.nextInt(100) < sd.getSuccess()) {
+            equip.setFlag((byte) (equip.getFlag() | ItemFlag.COLD.getValue()));
+            return EnhancementResult.SUCCESS;
         }
         return EnhancementResult.FAILURE;
     }

@@ -10,11 +10,9 @@ import java.util.function.ObjIntConsumer;
 import java.util.function.ToIntFunction;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
-import tacos.config.ContentState;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
@@ -178,52 +176,13 @@ public class MapleItemInformationProvider {
         Equip nEquip = (Equip) equip;
         int scroll_id = scrollId.getItemId();
         Map<String, Integer> stats = getEquipStats(scroll_id);
-        Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
         boolean always_success = false;
         int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("success"));
         int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getCUC()) : (always_success ? 0 : stats.get("cursed"));
         int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
 
-        if (scroll_id == 2049100) {
-            success = 100;
-        }
-
-        // slot consuming scroll (not clean slate, special, enhance or potential scroll)
-        boolean uses_slot = !GameConstants.isCleanSlate(scroll_id) && !GameConstants.isSpecialScroll(scroll_id) && !always_success;
-
-        if (always_success || Randomizer.nextInt(100) <= success) {
-            applyScroll(nEquip, scroll_id, stats, eqstats);
-            if (uses_slot) {
-                nEquip.setRUC((byte) (nEquip.getRUC() - 1));
-                nEquip.setCUC((byte) (nEquip.getCUC() + 1));
-            }
-            return equip;
-        }
-
-        // failed
-        if (!ws && uses_slot && !ContentState.CS_LOCK_LOSING_UPGRADE_SLOT.get()) {
-            nEquip.setRUC((byte) (nEquip.getRUC() - 1));
-        }
-        if (Randomizer.nextInt(99) < curse && !ContentState.CS_LOCK_BOOM.get()) {
-            return null; // boom
-        }
+        boolean uses_slot = !GameConstants.isCleanSlate(scroll_id) && !always_success;
         return equip;
-    }
-
-    private void applyScroll(Equip nEquip, int scroll_id, Map<String, Integer> stats, Map<String, Integer> eqstats) {
-        switch (scroll_id) {
-            case 2040727: { // Spikes on shoe, prevents slip
-                nEquip.setFlag((byte) (nEquip.getFlag() | ItemFlag.SPIKES.getValue()));
-                return;
-            }
-            case 2041058: { // Cape for Cold protection
-                nEquip.setFlag((byte) (nEquip.getFlag() | ItemFlag.COLD.getValue()));
-                return;
-            }
-            default: {
-                break;
-            }
-        }
     }
 
     public Item getEquipById(int equipId) {

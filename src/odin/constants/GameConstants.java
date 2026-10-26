@@ -488,19 +488,6 @@ public class GameConstants {
         return itemId / 100 == 20491;
     }
 
-    public static int getChaosNumber(int itemId) {
-        return itemId == 2049116 ? 10 : 5;
-    }
-
-    public static boolean isSpecialScroll(int scrollId) {
-        switch (scrollId) {
-            case 2040727: // Spikes on show
-            case 2041058: // Cape for Cold protection
-                return true;
-        }
-        return false;
-    }
-
     public static boolean isTwoHanded(int item_id) {
         int cat = (item_id / 10000) % 100;
 

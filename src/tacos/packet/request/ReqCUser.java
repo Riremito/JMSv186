@@ -1683,7 +1683,7 @@ public class ReqCUser {
             map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())) {
+        if (!GameConstants.isCleanSlate(scroll.getItemId())) {
             if (equip.getRUC() < 1) {
                 chr.updateInv();
                 return false;
