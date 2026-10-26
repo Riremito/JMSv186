@@ -618,20 +618,25 @@ public class ItemWz extends WzXML {
         private int incDEX;
         private int incINT;
         private int incLUK;
+        private int incMaxHP;
+        private int incMaxMP;
         private int incPAD;
-        private int incPDD;
         private int incMAD;
+        private int incPDD;
         private int incMDD;
         private int incACC;
         private int incEVA;
+        private int incCraft;
         private int incSpeed;
         private int incJump;
-        private int incMaxHP;
-        private int incMaxMP;
         private int cursed;
         private int recover;
         private int randstat;
         private int incRandVol;
+        private int noNegative;
+        private int forceUpgrade;
+        private int reset;
+        private int notExtend;
         private HashMap<Integer, Integer> successRates;
         private HashMap<Integer, Integer> cursedRates;
         private HashMap<Integer, Integer> req;
@@ -653,20 +658,25 @@ public class ItemWz extends WzXML {
                     ret.incDEX = md_info.getInt("incDEX");
                     ret.incINT = md_info.getInt("incINT");
                     ret.incLUK = md_info.getInt("incLUK");
+                    ret.incMaxHP = md_info.getInt("incMaxHP");
+                    ret.incMaxMP = md_info.getInt("incMaxMP");
                     ret.incPAD = md_info.getInt("incPAD");
-                    ret.incPDD = md_info.getInt("incPDD");
                     ret.incMAD = md_info.getInt("incMAD");
+                    ret.incPDD = md_info.getInt("incPDD");
                     ret.incMDD = md_info.getInt("incMDD");
                     ret.incACC = md_info.getInt("incACC");
                     ret.incEVA = md_info.getInt("incEVA");
+                    ret.incCraft = md_info.getInt("incCraft");
                     ret.incSpeed = md_info.getInt("incSpeed");
                     ret.incJump = md_info.getInt("incJump");
-                    ret.incMaxHP = md_info.getInt("incMaxHP");
-                    ret.incMaxMP = md_info.getInt("incMaxMP");
                     ret.cursed = md_info.getInt("cursed");
                     ret.recover = md_info.getInt("recover"); // 2049000, 白の書
                     ret.randstat = md_info.getInt("randstat"); // 2049100, 混沌の書
                     ret.incRandVol = md_info.getInt("incRandVol"); // 2049116, 驚きの混沌の書
+                    ret.noNegative = md_info.getInt("noNegative"); // 2049122, 肯定の混沌の書
+                    ret.forceUpgrade = md_info.getInt("forceUpgrade"); // 2049304, 3星装備強化の書
+                    ret.reset = md_info.getInt("reset"); // 2049600
+                    ret.notExtend = md_info.getInt("notExtend"); // 2049402
                     ret.successRates = new HashMap<>();
                     MapleData md_successRates = md_info.getChildByPath("successRates"); // 2047000
                     if (md_successRates != null) {

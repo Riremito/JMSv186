@@ -229,16 +229,64 @@ public class Equip extends Item {
         this.level = checkByte(this.level + value);
     }
 
+    public void incSTR(int value) {
+        this.str = checkShort(this.str + value);
+    }
+
     public void incDEX(int value) {
         this.dex = checkShort(this.dex + value);
+    }
+
+    public void incINT(int value) {
+        this._int = checkShort(this._int + value);
     }
 
     public void incLUK(int value) {
         this.luk = checkShort(this.luk + value);
     }
 
+    public void incMaxHP(int value) {
+        this.hp = checkShort(this.hp + value);
+    }
+
+    public void incMaxMP(int value) {
+        this.mp = checkShort(this.mp + value);
+    }
+
     public void incPAD(int value) {
         this.watk = checkShort(this.watk + value);
+    }
+
+    public void incMAD(int value) {
+        this.matk = checkShort(this.matk + value);
+    }
+
+    public void incPDD(int value) {
+        this.wdef = checkShort(this.wdef + value);
+    }
+
+    public void incMDD(int value) {
+        this.mdef = checkShort(this.mdef + value);
+    }
+
+    public void incACC(int value) {
+        this.acc = checkShort(this.acc + value);
+    }
+
+    public void incEVA(int value) {
+        this.avoid = checkShort(this.avoid + value);
+    }
+
+    public void incCraft(int value) {
+        this.hands = checkShort(this.hands + value);
+    }
+
+    public void incSpeed(int value) {
+        this.speed = checkShort(this.speed + value);
+    }
+
+    public void incJump(int value) {
+        this.jump = checkShort(this.jump + value);
     }
 
     public void incCHUC(int value) {

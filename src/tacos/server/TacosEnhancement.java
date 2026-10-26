@@ -92,26 +92,77 @@ public class TacosEnhancement {
         if (!is_upgrade_possible) {
             return false;
         }
+        boolean is_chaos = sd.getRandstat() != 0; // 混沌の書
+        boolean is_chaos_no_negative = sd.getNoNegative() != 0; // 肯定の混沌の書
         equip.incRUC(-1);
         if (Randomizer.nextInt(100) < sd.getSuccess()) {
             equip.incCUC(1);
-            // 混沌の書
-            if (sd.getRandstat() != 0) {
-                int rand_range = 5 + sd.getIncRandVol(); // 驚きの混沌の書
+            if (is_chaos) {
+                int rand_range = 5 + sd.getIncRandVol(); // 驚きの混沌の書, 5 -> 6
                 int rand_base = rand_range * 2 + 1;
+                if (is_chaos_no_negative) {
+                    rand_range = 0;
+                    rand_base /= 2;
+                }
+                if (1 <= equip.getIncSTR()) {
+                    equip.incSTR(Randomizer.nextInt(rand_base) - rand_range);
+                }
                 if (1 <= equip.getIncDEX()) {
                     equip.incDEX(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncINT()) {
+                    equip.incINT(Randomizer.nextInt(rand_base) - rand_range);
                 }
                 if (1 <= equip.getIncLUK()) {
                     equip.incLUK(Randomizer.nextInt(rand_base) - rand_range);
                 }
+                if (1 <= equip.getIncMaxHP()) {
+                    equip.incMaxHP(Randomizer.nextInt(rand_base * 10) - rand_range * 10);
+                }
+                if (1 <= equip.getIncMaxMP()) {
+                    equip.incMaxMP(Randomizer.nextInt(rand_base * 10) - rand_range * 10);
+                }
                 if (1 <= equip.getIncPAD()) {
                     equip.incPAD(Randomizer.nextInt(rand_base) - rand_range);
                 }
+                if (1 <= equip.getIncMAD()) {
+                    equip.incMAD(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncPDD()) {
+                    equip.incPDD(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncMDD()) {
+                    equip.incMDD(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncEVA()) {
+                    equip.incEVA(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncCraft()) {
+                    equip.incCraft(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncSpeed()) {
+                    equip.incSpeed(Randomizer.nextInt(rand_base) - rand_range);
+                }
+                if (1 <= equip.getIncJump()) {
+                    equip.incJump(Randomizer.nextInt(rand_base) - rand_range);
+                }
             }
+            // 通常
+            equip.incSTR(sd.getIncSTR());
             equip.incDEX(sd.getIncDEX());
+            equip.incINT(sd.getIncINT());
             equip.incLUK(sd.getIncLUK());
+            equip.incMaxHP(sd.getIncMaxHP());
+            equip.incMaxMP(sd.getIncMaxMP());
             equip.incPAD(sd.getIncPAD());
+            equip.incMAD(sd.getIncMAD());
+            equip.incPDD(sd.getIncPDD());
+            equip.incMDD(sd.getIncMDD());
+            equip.incACC(sd.getIncACC());
+            equip.incEVA(sd.getIncEVA());
+            equip.incCraft(sd.getIncCraft());
+            equip.incSpeed(sd.getIncSpeed());
+            equip.incJump(sd.getIncJump());
         } else {
             if (Randomizer.nextInt(100) < sd.getCursed()) {
                 // TODO : 装備破壊
@@ -145,18 +196,52 @@ public class TacosEnhancement {
                 equip.incPAD(equip.getIncPAD() / 50 + 1);
             }
             if (equip.getIncMAD() != 0) {
-                // TODO : 魔力の上昇設定
+                equip.incMAD(equip.getIncMAD() / 50 + 1);
             }
         }
         // TODO : バージョンによって新規ステータス付与の仕様が異なる可能性があり, 2013年以降は付与されない可能性がある
         // TODO : 追加ステータス付与確率と能力値の上昇の数値の仕様を要確認
-        if (equip.getIncDEX() != 0 || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getIncSTR() || Randomizer.nextInt(100) < 10) {
+            equip.incSTR(Randomizer.nextInt(6));
+        }
+        if (1 <= equip.getIncDEX() || Randomizer.nextInt(100) < 10) {
             equip.incDEX(Randomizer.nextInt(6));
         }
-        if (equip.getIncLUK() != 0 || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getIncINT() || Randomizer.nextInt(100) < 10) {
+            equip.incINT(Randomizer.nextInt(6));
+        }
+        if (1 <= equip.getIncLUK() || Randomizer.nextInt(100) < 10) {
             equip.incLUK(Randomizer.nextInt(6));
         }
-        // TODO : 他のステータス値の処理
+        if (!weapon) {
+            if (1 <= equip.getIncMaxHP() || Randomizer.nextInt(100) < 10) {
+                equip.incMaxHP(Randomizer.nextInt(51));
+            }
+            if (1 <= equip.getIncMaxMP() || Randomizer.nextInt(100) < 10) {
+                equip.incMaxMP(Randomizer.nextInt(51));
+            }
+            if (1 <= equip.getIncPDD() || Randomizer.nextInt(100) < 10) {
+                equip.incPDD(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncMDD() || Randomizer.nextInt(100) < 10) {
+                equip.incMDD(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncACC() || Randomizer.nextInt(100) < 10) {
+                equip.incACC(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncEVA() || Randomizer.nextInt(100) < 10) {
+                equip.incEVA(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncCraft() || Randomizer.nextInt(100) < 10) {
+                equip.incCraft(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncSpeed() || Randomizer.nextInt(100) < 10) {
+                equip.incSpeed(Randomizer.nextInt(6));
+            }
+            if (1 <= equip.getIncJump() || Randomizer.nextInt(100) < 10) {
+                equip.incJump(Randomizer.nextInt(6));
+            }
+        }
         return true;
     }
 
