@@ -273,42 +273,42 @@ public class ReqCUser_ItemMaker {
     }
 
     private static void addEnchantStats(Map<String, Byte> stats, Equip item) {
-        item.setWatk(addStat(item.getIncPAD(), stats, "incPAD"));
-        item.setMatk(addStat(item.getIncMAD(), stats, "incMAD"));
-        item.setAcc(addStat(item.getIncACC(), stats, "incACC"));
-        item.setAvoid(addStat(item.getIncEVA(), stats, "incEVA"));
-        item.setSpeed(addStat(item.getIncSpeed(), stats, "incSpeed"));
-        item.setJump(addStat(item.getIncJump(), stats, "incJump"));
-        item.setHp(addStat(item.getIncMaxHP(), stats, "incMaxHP"));
-        item.setMp(addStat(item.getIncMaxMP(), stats, "incMaxMP"));
-        item.setStr(addStat(item.getIncSTR(), stats, "incSTR"));
-        item.setDex(addStat(item.getIncDEX(), stats, "incDEX"));
-        item.setInt(addStat(item.getIncINT(), stats, "incINT"));
-        item.setLuk(addStat(item.getIncLUK(), stats, "incLUK"));
+        item.setPAD(addStat(item.getPAD(), stats, "incPAD"));
+        item.setMAD(addStat(item.getMAD(), stats, "incMAD"));
+        item.setACC(addStat(item.getACC(), stats, "incACC"));
+        item.setEVA(addStat(item.getEVA(), stats, "incEVA"));
+        item.setSpeed(addStat(item.getSpeed(), stats, "incSpeed"));
+        item.setJump(addStat(item.getJump(), stats, "incJump"));
+        item.setMaxHP(addStat(item.getMaxHP(), stats, "incMaxHP"));
+        item.setMaxMP(addStat(item.getMaxMP(), stats, "incMaxMP"));
+        item.setSTR(addStat(item.getSTR(), stats, "incSTR"));
+        item.setDEX(addStat(item.getDEX(), stats, "incDEX"));
+        item.setINT(addStat(item.getINT(), stats, "incINT"));
+        item.setLUK(addStat(item.getLUK(), stats, "incLUK"));
         Byte rand_option = stats.get("randOption");
         if (rand_option != null && rand_option > 0) {
             int delta = Randomizer.nextBoolean() ? rand_option : -rand_option;
-            if (item.getIncPAD() > 0) {
-                item.setWatk((short) (item.getIncPAD() + delta));
+            if (item.getPAD() > 0) {
+                item.setPAD((short) (item.getPAD() + delta));
             }
-            if (item.getIncMAD() > 0) {
-                item.setMatk((short) (item.getIncMAD() + delta));
+            if (item.getMAD() > 0) {
+                item.setMAD((short) (item.getMAD() + delta));
             }
         }
         Byte rand_stat = stats.get("randStat");
         if (rand_stat != null && rand_stat > 0) {
             int delta = Randomizer.nextBoolean() ? rand_stat : -rand_stat;
-            if (item.getIncSTR() > 0) {
-                item.setStr((short) (item.getIncSTR() + delta));
+            if (item.getSTR() > 0) {
+                item.setSTR((short) (item.getSTR() + delta));
             }
-            if (item.getIncDEX() > 0) {
-                item.setDex((short) (item.getIncDEX() + delta));
+            if (item.getDEX() > 0) {
+                item.setDEX((short) (item.getDEX() + delta));
             }
-            if (item.getIncINT() > 0) {
-                item.setInt((short) (item.getIncINT() + delta));
+            if (item.getINT() > 0) {
+                item.setINT((short) (item.getINT() + delta));
             }
-            if (item.getIncLUK() > 0) {
-                item.setLuk((short) (item.getIncLUK() + delta));
+            if (item.getLUK() > 0) {
+                item.setLUK((short) (item.getLUK() + delta));
             }
         }
     }

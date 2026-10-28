@@ -785,43 +785,43 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         Equip sel = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot);
         switch (type) {
             case 0:
-                sel.setStr(amount);
+                sel.setSTR(amount);
                 break;
             case 1:
-                sel.setDex(amount);
+                sel.setDEX(amount);
                 break;
             case 2:
-                sel.setInt(amount);
+                sel.setINT(amount);
                 break;
             case 3:
-                sel.setLuk(amount);
+                sel.setLUK(amount);
                 break;
             case 4:
-                sel.setHp(amount);
+                sel.setMaxHP(amount);
                 break;
             case 5:
-                sel.setMp(amount);
+                sel.setMaxMP(amount);
                 break;
             case 6:
-                sel.setWatk(amount);
+                sel.setPAD(amount);
                 break;
             case 7:
-                sel.setMatk(amount);
+                sel.setMAD(amount);
                 break;
             case 8:
-                sel.setWdef(amount);
+                sel.setPDD(amount);
                 break;
             case 9:
-                sel.setMdef(amount);
+                sel.setMDD(amount);
                 break;
             case 10:
-                sel.setAcc(amount);
+                sel.setACC(amount);
                 break;
             case 11:
-                sel.setAvoid(amount);
+                sel.setEVA(amount);
                 break;
             case 12:
-                sel.setHands(amount);
+                sel.setCraft(amount);
                 break;
             case 13:
                 sel.setSpeed(amount);
@@ -833,13 +833,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 sel.setRUC((byte) amount);
                 break;
             case 16:
-                sel.setViciousHammer((byte) amount);
+                sel.setIUC((byte) amount);
                 break;
             case 17:
                 sel.setCUC((byte) amount);
                 break;
             case 18:
-                sel.setEnhance((byte) amount);
+                sel.setCHUC((byte) amount);
                 break;
             case 19:
                 sel.setOption1(amount);
@@ -1020,37 +1020,37 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             } else if (type.equalsIgnoreCase("Level")) {
                 eq.setCUC((byte) (eq.getCUC() + offset));
             } else if (type.equalsIgnoreCase("Hammer")) {
-                eq.setViciousHammer((byte) (eq.getIUC() + offset));
+                eq.setIUC((byte) (eq.getIUC() + offset));
             } else if (type.equalsIgnoreCase("STR")) {
-                eq.setStr((short) (eq.getIncSTR() + offset));
+                eq.setSTR((short) (eq.getSTR() + offset));
             } else if (type.equalsIgnoreCase("DEX")) {
-                eq.setDex((short) (eq.getIncDEX() + offset));
+                eq.setDEX((short) (eq.getDEX() + offset));
             } else if (type.equalsIgnoreCase("INT")) {
-                eq.setInt((short) (eq.getIncINT() + offset));
+                eq.setINT((short) (eq.getINT() + offset));
             } else if (type.equalsIgnoreCase("LUK")) {
-                eq.setLuk((short) (eq.getIncLUK() + offset));
+                eq.setLUK((short) (eq.getLUK() + offset));
             } else if (type.equalsIgnoreCase("HP")) {
-                eq.setHp((short) (eq.getIncMaxHP() + offset));
+                eq.setMaxHP((short) (eq.getMaxHP() + offset));
             } else if (type.equalsIgnoreCase("MP")) {
-                eq.setMp((short) (eq.getIncMaxMP() + offset));
+                eq.setMaxMP((short) (eq.getMaxMP() + offset));
             } else if (type.equalsIgnoreCase("WATK")) {
-                eq.setWatk((short) (eq.getIncPAD() + offset));
+                eq.setPAD((short) (eq.getPAD() + offset));
             } else if (type.equalsIgnoreCase("MATK")) {
-                eq.setMatk((short) (eq.getIncMAD() + offset));
+                eq.setMAD((short) (eq.getMAD() + offset));
             } else if (type.equalsIgnoreCase("WDEF")) {
-                eq.setWdef((short) (eq.getIncPDD() + offset));
+                eq.setPDD((short) (eq.getPDD() + offset));
             } else if (type.equalsIgnoreCase("MDEF")) {
-                eq.setMdef((short) (eq.getIncMDD() + offset));
+                eq.setMDD((short) (eq.getMDD() + offset));
             } else if (type.equalsIgnoreCase("ACC")) {
-                eq.setAcc((short) (eq.getIncACC() + offset));
+                eq.setACC((short) (eq.getACC() + offset));
             } else if (type.equalsIgnoreCase("Avoid")) {
-                eq.setAvoid((short) (eq.getIncEVA() + offset));
+                eq.setEVA((short) (eq.getEVA() + offset));
             } else if (type.equalsIgnoreCase("Hands")) {
-                eq.setHands((short) (eq.getIncCraft() + offset));
+                eq.setCraft((short) (eq.getCraft() + offset));
             } else if (type.equalsIgnoreCase("Speed")) {
-                eq.setSpeed((short) (eq.getIncSpeed() + offset));
+                eq.setSpeed((short) (eq.getSpeed() + offset));
             } else if (type.equalsIgnoreCase("Jump")) {
-                eq.setJump((short) (eq.getIncJump() + offset));
+                eq.setJump((short) (eq.getJump() + offset));
             } else if (type.equalsIgnoreCase("ItemEXP")) {
                 eq.setLevelEXP(eq.getLevelEXP() + offset);
             } else if (type.equalsIgnoreCase("Expiration")) {

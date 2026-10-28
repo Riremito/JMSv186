@@ -86,92 +86,92 @@ public class TacosEnhancement {
     }
 
     public boolean randomize(int rand_min, int rand_max) {
-        if (1 <= equip.getIncSTR()) {
+        if (1 <= equip.getSTR()) {
             equip.incSTR(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncDEX()) {
+        if (1 <= equip.getDEX()) {
             equip.incDEX(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncINT()) {
+        if (1 <= equip.getINT()) {
             equip.incINT(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncLUK()) {
+        if (1 <= equip.getLUK()) {
             equip.incLUK(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncMaxHP()) {
+        if (1 <= equip.getMaxHP()) {
             equip.incMaxHP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
         }
-        if (1 <= equip.getIncMaxMP()) {
+        if (1 <= equip.getMaxMP()) {
             equip.incMaxMP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
         }
-        if (1 <= equip.getIncPAD()) {
+        if (1 <= equip.getPAD()) {
             equip.incPAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncMAD()) {
+        if (1 <= equip.getMAD()) {
             equip.incMAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncPDD()) {
+        if (1 <= equip.getPDD()) {
             equip.incPDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncMDD()) {
+        if (1 <= equip.getMDD()) {
             equip.incMDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncEVA()) {
+        if (1 <= equip.getEVA()) {
             equip.incEVA(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncCraft()) {
+        if (1 <= equip.getCraft()) {
             equip.incCraft(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncSpeed()) {
+        if (1 <= equip.getSpeed()) {
             equip.incSpeed(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (1 <= equip.getIncJump()) {
+        if (1 <= equip.getJump()) {
             equip.incJump(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
         return true;
     }
 
     public boolean randomizeTaco(int stat_min, int rand_min, int rand_max) {
-        if (stat_min <= equip.getIncSTR()) {
+        if (stat_min <= equip.getSTR()) {
             equip.incSTR(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncDEX()) {
+        if (stat_min <= equip.getDEX()) {
             equip.incDEX(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncINT()) {
+        if (stat_min <= equip.getINT()) {
             equip.incINT(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncLUK()) {
+        if (stat_min <= equip.getLUK()) {
             equip.incLUK(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncMaxHP()) {
+        if (stat_min <= equip.getMaxHP()) {
             equip.incMaxHP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
         }
-        if (stat_min <= equip.getIncMaxMP()) {
+        if (stat_min <= equip.getMaxMP()) {
             equip.incMaxMP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
         }
-        if (stat_min <= equip.getIncPAD()) {
+        if (stat_min <= equip.getPAD()) {
             equip.incPAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncMAD()) {
+        if (stat_min <= equip.getMAD()) {
             equip.incMAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncPDD()) {
+        if (stat_min <= equip.getPDD()) {
             equip.incPDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncMDD()) {
+        if (stat_min <= equip.getMDD()) {
             equip.incMDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncEVA()) {
+        if (stat_min <= equip.getEVA()) {
             equip.incEVA(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncCraft()) {
+        if (stat_min <= equip.getCraft()) {
             equip.incCraft(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncSpeed()) {
+        if (stat_min <= equip.getSpeed()) {
             equip.incSpeed(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
-        if (stat_min <= equip.getIncJump()) {
+        if (stat_min <= equip.getJump()) {
             equip.incJump(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
         }
         return true;
@@ -309,46 +309,46 @@ public class TacosEnhancement {
         equip.incRUC(-1);
         if (Randomizer.nextInt(100) < sd.getSuccess()) {
             equip.incCUC(1);
-            if (1 <= equip.getIncSTR()) {
+            if (1 <= equip.getSTR()) {
                 equip.incSTR(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncDEX()) {
+            if (1 <= equip.getDEX()) {
                 equip.incDEX(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncINT()) {
+            if (1 <= equip.getINT()) {
                 equip.incINT(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncLUK()) {
+            if (1 <= equip.getLUK()) {
                 equip.incLUK(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncMaxHP()) {
+            if (1 <= equip.getMaxHP()) {
                 equip.incMaxHP((Randomizer.nextInt(rand_base) - rand_range) * 10);
             }
-            if (1 <= equip.getIncMaxMP()) {
+            if (1 <= equip.getMaxMP()) {
                 equip.incMaxMP((Randomizer.nextInt(rand_base) - rand_range) * 10);
             }
-            if (1 <= equip.getIncPAD()) {
+            if (1 <= equip.getPAD()) {
                 equip.incPAD(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncMAD()) {
+            if (1 <= equip.getMAD()) {
                 equip.incMAD(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncPDD()) {
+            if (1 <= equip.getPDD()) {
                 equip.incPDD(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncMDD()) {
+            if (1 <= equip.getMDD()) {
                 equip.incMDD(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncEVA()) {
+            if (1 <= equip.getEVA()) {
                 equip.incEVA(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncCraft()) {
+            if (1 <= equip.getCraft()) {
                 equip.incCraft(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncSpeed()) {
+            if (1 <= equip.getSpeed()) {
                 equip.incSpeed(Randomizer.nextInt(rand_base) - rand_range);
             }
-            if (1 <= equip.getIncJump()) {
+            if (1 <= equip.getJump()) {
                 equip.incJump(Randomizer.nextInt(rand_base) - rand_range);
             }
             return EnhancementResult.SUCCESS;
@@ -381,53 +381,53 @@ public class TacosEnhancement {
         equip.incCHUC(1);
         // TODO : 武器以外にも手袋は攻撃力などが確定ではないが上昇したはずなので要確認
         if (weapon) {
-            if (equip.getIncPAD() != 0) {
-                equip.incPAD(equip.getIncPAD() / 50 + 1);
+            if (equip.getPAD() != 0) {
+                equip.incPAD(equip.getPAD() / 50 + 1);
             }
-            if (equip.getIncMAD() != 0) {
-                equip.incMAD(equip.getIncMAD() / 50 + 1);
+            if (equip.getMAD() != 0) {
+                equip.incMAD(equip.getMAD() / 50 + 1);
             }
         }
         // TODO : バージョンによって新規ステータス付与の仕様が異なる可能性があり, 2013年以降は付与されない可能性がある
         // TODO : 追加ステータス付与確率と能力値の上昇の数値の仕様を要確認
-        if (1 <= equip.getIncSTR() || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getSTR() || Randomizer.nextInt(100) < 10) {
             equip.incSTR(Randomizer.nextInt(6));
         }
-        if (1 <= equip.getIncDEX() || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getDEX() || Randomizer.nextInt(100) < 10) {
             equip.incDEX(Randomizer.nextInt(6));
         }
-        if (1 <= equip.getIncINT() || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getINT() || Randomizer.nextInt(100) < 10) {
             equip.incINT(Randomizer.nextInt(6));
         }
-        if (1 <= equip.getIncLUK() || Randomizer.nextInt(100) < 10) {
+        if (1 <= equip.getLUK() || Randomizer.nextInt(100) < 10) {
             equip.incLUK(Randomizer.nextInt(6));
         }
         if (!weapon) {
-            if (1 <= equip.getIncMaxHP() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getMaxHP() || Randomizer.nextInt(100) < 10) {
                 equip.incMaxHP(Randomizer.nextInt(51));
             }
-            if (1 <= equip.getIncMaxMP() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getMaxMP() || Randomizer.nextInt(100) < 10) {
                 equip.incMaxMP(Randomizer.nextInt(51));
             }
-            if (1 <= equip.getIncPDD() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getPDD() || Randomizer.nextInt(100) < 10) {
                 equip.incPDD(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncMDD() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getMDD() || Randomizer.nextInt(100) < 10) {
                 equip.incMDD(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncACC() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getACC() || Randomizer.nextInt(100) < 10) {
                 equip.incACC(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncEVA() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getEVA() || Randomizer.nextInt(100) < 10) {
                 equip.incEVA(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncCraft() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getCraft() || Randomizer.nextInt(100) < 10) {
                 equip.incCraft(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncSpeed() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getSpeed() || Randomizer.nextInt(100) < 10) {
                 equip.incSpeed(Randomizer.nextInt(6));
             }
-            if (1 <= equip.getIncJump() || Randomizer.nextInt(100) < 10) {
+            if (1 <= equip.getJump() || Randomizer.nextInt(100) < 10) {
                 equip.incJump(Randomizer.nextInt(6));
             }
         }

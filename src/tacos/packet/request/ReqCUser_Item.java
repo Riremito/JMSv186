@@ -405,7 +405,7 @@ public class ReqCUser_Item {
                     return false;
                 }
 
-                equip.setViciousHammer(equip.getIUC() + 1);
+                equip.setIUC(equip.getIUC() + 1);
                 equip.setRUC(equip.getRUC() + 1);
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));

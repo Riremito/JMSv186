@@ -4682,14 +4682,14 @@ public class TacosCharacter extends TacosPlayer {
 
             for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
                 Equip equip = (Equip) item;
-                localmaxhp_ += equip.getIncMaxHP();
-                localmaxmp_ += equip.getIncMaxMP();
-                localdex += equip.getIncDEX();
-                localint_ += equip.getIncINT();
-                localstr += equip.getIncSTR();
-                localluk += equip.getIncLUK();
-                magic += equip.getIncMAD() + equip.getIncINT();
-                watk += equip.getIncPAD();
+                localmaxhp_ += equip.getMaxHP();
+                localmaxmp_ += equip.getMaxMP();
+                localdex += equip.getDEX();
+                localint_ += equip.getINT();
+                localstr += equip.getSTR();
+                localluk += equip.getLUK();
+                magic += equip.getMAD() + equip.getINT();
+                watk += equip.getPAD();
                 if (equip.getItemId() == 1112127) {
                     equippedWelcomeBackRing = true;
                 } else {
@@ -4700,8 +4700,8 @@ public class TacosCharacter extends TacosPlayer {
                         }
                     }
                 }
-                percent_hp += equip.getHpR();
-                percent_mp += equip.getMpR();
+                percent_hp += equip.getMaxHPr();
+                percent_mp += equip.getMaxMPr();
             }
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             for (Item item : getInventory(MapleInventoryType.CASH)) {

@@ -79,6 +79,23 @@ public class CharacterWz extends WzXML {
         private int incSpeed;
         private int incJump;
         private int durability;
+        private int incMHPr;
+        private int incMMPr;
+        private int cash;
+        private int only;
+        private int tradeAvailable;
+        private int tradeBlock;
+        private int price;
+        private int reqJob;
+        private int reqLevel;
+        private int reqSTR;
+        private int reqDEX;
+        private int reqINT;
+        private int reqLUK;
+        private int reqPOP;
+        private int charmEXP;
+        // islot
+        // vslot
     }
 
     private final HashMap<Integer, EquipData> equip_infos = new HashMap<>();
@@ -108,6 +125,16 @@ public class CharacterWz extends WzXML {
                     ret.incSpeed = info.getInt("incSpeed");
                     ret.incJump = info.getInt("incJump");
                     ret.durability = info.getInt("durability", -1);
+                    ret.incMHPr = info.getInt("incMHPr");
+                    ret.incMMPr = info.getInt("incMMPr");
+                    ret.cash = info.getInt("cash");
+                    ret.reqJob = info.getInt("reqJob");
+                    ret.reqLevel = info.getInt("reqLevel");
+                    ret.reqSTR = info.getInt("reqSTR");
+                    ret.reqDEX = info.getInt("reqDEX");
+                    ret.reqINT = info.getInt("reqINT");
+                    ret.reqLUK = info.getInt("reqLUK");
+                    ret.reqPOP = info.getInt("reqPOP");
                 }
                 this.equip_infos.put(equip_id, ret);
             }
@@ -128,22 +155,24 @@ public class CharacterWz extends WzXML {
 
         ret.setRUC(ed.getTuc());
         ret.setCUC(0);
-        ret.incSTR(ed.incSTR);
-        ret.incDEX(ed.incDEX);
-        ret.incINT(ed.incINT);
-        ret.incLUK(ed.incLUK);
-        ret.incMaxHP(ed.incMHP);
-        ret.incMaxMP(ed.incMMP);
-        ret.incPAD(ed.incPAD);
-        ret.incMAD(ed.incMAD);
-        ret.incPDD(ed.incPDD);
-        ret.incMDD(ed.incMDD);
-        ret.incACC(ed.incACC);
-        ret.incEVA(ed.incEVA);
-        ret.incCraft(ed.incCraft);
-        ret.incSpeed(ed.incSpeed);
-        ret.incJump(ed.incJump);
+        ret.setSTR(ed.incSTR);
+        ret.setDEX(ed.incDEX);
+        ret.setINT(ed.incINT);
+        ret.setLUK(ed.incLUK);
+        ret.setMaxHP(ed.incMHP);
+        ret.setMaxMP(ed.incMMP);
+        ret.setPAD(ed.incPAD);
+        ret.setMAD(ed.incMAD);
+        ret.setPDD(ed.incPDD);
+        ret.setMDD(ed.incMDD);
+        ret.setACC(ed.incACC);
+        ret.setEVA(ed.incEVA);
+        ret.setCraft(ed.incCraft);
+        ret.setSpeed(ed.incSpeed);
+        ret.setJump(ed.incJump);
         ret.setDurability(ed.durability);
+        ret.setMaxHPr(ed.incMHPr);
+        ret.setMaxMPr(ed.incMMPr);
         return ret;
     }
 

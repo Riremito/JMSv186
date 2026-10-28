@@ -116,21 +116,21 @@ public class RD_GW_ItemSlotBase {
 
                 data.Encode1(equip.getRUC()); // nRUC
                 data.Encode1(equip.getCUC()); // nCUC
-                data.Encode2(equip.getIncSTR()); // niSTR
-                data.Encode2(equip.getIncDEX()); // niDEX
-                data.Encode2(equip.getIncINT()); // niINT
-                data.Encode2(equip.getIncLUK()); // niLUK
-                data.Encode2(equip.getIncMaxHP()); // niMaxHP
-                data.Encode2(equip.getIncMaxMP()); // niMaxMP
-                data.Encode2(equip.getIncPAD()); // niPAD
-                data.Encode2(equip.getIncMAD()); // niMAD
-                data.Encode2(equip.getIncPDD()); // niPDD
-                data.Encode2(equip.getIncMDD()); // niMDD
-                data.Encode2(equip.getIncACC()); // niACC
-                data.Encode2(equip.getIncEVA()); // niEVA
-                data.Encode2(equip.getIncCraft()); // niCraft
-                data.Encode2(equip.getIncSpeed()); // niSpeed
-                data.Encode2(equip.getIncJump()); // niJump
+                data.Encode2(equip.getSTR()); // niSTR
+                data.Encode2(equip.getDEX()); // niDEX
+                data.Encode2(equip.getINT()); // niINT
+                data.Encode2(equip.getLUK()); // niLUK
+                data.Encode2(equip.getMaxHP()); // niMaxHP
+                data.Encode2(equip.getMaxMP()); // niMaxMP
+                data.Encode2(equip.getPAD()); // niPAD
+                data.Encode2(equip.getMAD()); // niMAD
+                data.Encode2(equip.getPDD()); // niPDD
+                data.Encode2(equip.getMDD()); // niMDD
+                data.Encode2(equip.getACC()); // niACC
+                data.Encode2(equip.getEVA()); // niEVA
+                data.Encode2(equip.getCraft()); // niCraft
+                data.Encode2(equip.getSpeed()); // niSpeed
+                data.Encode2(equip.getJump()); // niJump
                 data.EncodeStr(equip.getOwner());
 
                 if (Config.LessOrEqual(Region.KMS, 3)) {
@@ -171,8 +171,8 @@ public class RD_GW_ItemSlotBase {
                     data.Encode2(equip.getOption1()); // nOption1
                     data.Encode2(equip.getOption2()); // nOption2
                     data.Encode2(equip.getOption3()); // nOption3
-                    data.Encode2(0); // nSocket1, v302 潜在能力4個目?
-                    data.Encode2(0); // nSocket2, v302 カナトコ?
+                    data.Encode2(equip.getSocket1()); // nSocket1, v302 潜在能力4個目?
+                    data.Encode2(equip.getSocket2()); // nSocket2, v302 カナトコ?
                 }
                 data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
                 data.Encode2(0, Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
@@ -305,21 +305,21 @@ public class RD_GW_ItemSlotBase {
         data.Encode1(equip.getRUC());
         data.Encode1(equip.getCUC());
         data.Encode1(equip.getOpsGrade().get());
-        data.Encode2(equip.getIncSTR());
-        data.Encode2(equip.getIncDEX());
-        data.Encode2(equip.getIncINT());
-        data.Encode2(equip.getIncLUK());
-        data.Encode2(equip.getIncMaxHP());
-        data.Encode2(equip.getIncMaxMP());
-        data.Encode2(equip.getIncPAD());
-        data.Encode2(equip.getIncMAD());
-        data.Encode2(equip.getIncPDD());
-        data.Encode2(equip.getIncMDD());
-        data.Encode2(equip.getIncACC());
-        data.Encode2(equip.getIncEVA());
-        data.Encode2(equip.getIncCraft());
-        data.Encode2(equip.getIncSpeed());
-        data.Encode2(equip.getIncJump());
+        data.Encode2(equip.getSTR());
+        data.Encode2(equip.getDEX());
+        data.Encode2(equip.getINT());
+        data.Encode2(equip.getLUK());
+        data.Encode2(equip.getMaxHP());
+        data.Encode2(equip.getMaxMP());
+        data.Encode2(equip.getPAD());
+        data.Encode2(equip.getMAD());
+        data.Encode2(equip.getPDD());
+        data.Encode2(equip.getMDD());
+        data.Encode2(equip.getACC());
+        data.Encode2(equip.getEVA());
+        data.Encode2(equip.getCraft());
+        data.Encode2(equip.getSpeed());
+        data.Encode2(equip.getJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag());
         data.Encode1(equip.getLevelUpType()); // item._ZtlSecureTear_nLevelUpType
@@ -345,21 +345,21 @@ public class RD_GW_ItemSlotBase {
 
         data.Encode1(equip.getRUC());
         data.Encode1(equip.getCUC());
-        data.Encode2(equip.getIncSTR());
-        data.Encode2(equip.getIncDEX());
-        data.Encode2(equip.getIncINT());
-        data.Encode2(equip.getIncLUK());
-        data.Encode2(equip.getIncMaxHP());
-        data.Encode2(equip.getIncMaxMP());
-        data.Encode2(equip.getIncPAD());
-        data.Encode2(equip.getIncMAD());
-        data.Encode2(equip.getIncPDD());
-        data.Encode2(equip.getIncMDD());
-        data.Encode2(equip.getIncACC());
-        data.Encode2(equip.getIncEVA());
-        data.Encode2(equip.getIncCraft());
-        data.Encode2(equip.getIncSpeed());
-        data.Encode2(equip.getIncJump());
+        data.Encode2(equip.getSTR());
+        data.Encode2(equip.getDEX());
+        data.Encode2(equip.getINT());
+        data.Encode2(equip.getLUK());
+        data.Encode2(equip.getMaxHP());
+        data.Encode2(equip.getMaxMP());
+        data.Encode2(equip.getPAD());
+        data.Encode2(equip.getMAD());
+        data.Encode2(equip.getPDD());
+        data.Encode2(equip.getMDD());
+        data.Encode2(equip.getACC());
+        data.Encode2(equip.getEVA());
+        data.Encode2(equip.getCraft());
+        data.Encode2(equip.getSpeed());
+        data.Encode2(equip.getJump());
         data.EncodeStr(equip.getOwner());
         data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
         data.Encode1(equip.getLevelUpType()); // item._ZtlSecureTear_nLevelUpType
@@ -409,49 +409,49 @@ public class RD_GW_ItemSlotBase {
             }
             // x16
             if ((flag1 & 0x04) != 0) {
-                data.Encode2(equip.getIncSTR());
+                data.Encode2(equip.getSTR());
             }
             if ((flag1 & 0x08) != 0) {
-                data.Encode2(equip.getIncDEX());
+                data.Encode2(equip.getDEX());
             }
             if ((flag1 & 0x10) != 0) {
-                data.Encode2(equip.getIncINT());
+                data.Encode2(equip.getINT());
             }
             if ((flag1 & 0x20) != 0) {
-                data.Encode2(equip.getIncLUK());
+                data.Encode2(equip.getLUK());
             }
             if ((flag1 & 0x40) != 0) {
-                data.Encode2(equip.getIncMaxHP());
+                data.Encode2(equip.getMaxHP());
             }
             if ((flag1 & 0x80) != 0) {
-                data.Encode2(equip.getIncMaxMP());
+                data.Encode2(equip.getMaxMP());
             }
             if ((flag1 & 0x100) != 0) {
-                data.Encode2(equip.getIncPAD());
+                data.Encode2(equip.getPAD());
             }
             if ((flag1 & 0x200) != 0) {
-                data.Encode2(equip.getIncMAD());
+                data.Encode2(equip.getMAD());
             }
             if ((flag1 & 0x400) != 0) {
-                data.Encode2(equip.getIncPDD());
+                data.Encode2(equip.getPDD());
             }
             if ((flag1 & 0x800) != 0) {
-                data.Encode2(equip.getIncMDD());
+                data.Encode2(equip.getMDD());
             }
             if ((flag1 & 0x1000) != 0) {
-                data.Encode2(equip.getIncACC());
+                data.Encode2(equip.getACC());
             }
             if ((flag1 & 0x2000) != 0) {
-                data.Encode2(equip.getIncEVA());
+                data.Encode2(equip.getEVA());
             }
             if ((flag1 & 0x4000) != 0) {
-                data.Encode2(equip.getIncCraft());
+                data.Encode2(equip.getCraft());
             }
             if ((flag1 & 0x8000) != 0) {
-                data.Encode2(equip.getIncSpeed());
+                data.Encode2(equip.getSpeed());
             }
             if ((flag1 & 0x10000) != 0) {
-                data.Encode2(equip.getIncJump()); // niJump
+                data.Encode2(equip.getJump()); // niJump
             }
             if ((flag1 & 0x20000) != 0) {
                 data.Encode2(equip.getFlag()); // nAttribute

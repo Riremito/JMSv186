@@ -86,7 +86,7 @@ public class ReqCUIGoldHammer {
             // max count in KMS is 1.
             return false;
         }
-        equip.setViciousHammer(equip.getIUC() + 1);
+        equip.setIUC(equip.getIUC() + 1);
         equip.setRUC(equip.getRUC() + 1);
         item_use.run();
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));

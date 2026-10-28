@@ -1667,7 +1667,7 @@ public class ReqCUser {
                 chr.updateInv();
                 return false;
             }
-            toHammer.setViciousHammer((byte) (toHammer.getIUC() + 1));
+            toHammer.setIUC((byte) (toHammer.getIUC() + 1));
             toHammer.setRUC((byte) (toHammer.getRUC() + 1));
             {
                 PB_InvOp.Builder io = PB_InvOp.builder();
