@@ -22,14 +22,14 @@ import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventoryType;
-import odin.constants.GameConstants;
-import odin.server.MapleItemInformationProvider;
+import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsGoldHammer;
 import tacos.packet.response.ResCUIGoldHammer;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
+import tacos.server.TacosEnhancement;
 
 /**
  *
@@ -67,8 +67,7 @@ public class ReqCUIGoldHammer {
         int m_nItemTI = cp.Decode4();
         int m_nSlotPosition = cp.Decode4();
 
-        // 2470000
-        if ((nItemID / 10000) != 247) {
+        if (!TacosConstants.is_gold_hammer(nItemID)) {
             return false;
         }
         Runnable item_use = chr.checkItemSlot((short) nPOS, nItemID);
@@ -79,18 +78,12 @@ public class ReqCUIGoldHammer {
         if (equip == null) {
             return false;
         }
-        if (!GameConstants.canHammer(equip.getItemId()) || MapleItemInformationProvider.getInstance().getSlots(equip.getItemId()) <= 0) {
-            return false;
-        }
-        if (2 <= equip.getIUC()) {
-            // max count in KMS is 1.
-            return false;
-        }
-        equip.setIUC(equip.getIUC() + 1);
-        equip.setRUC(equip.getRUC() + 1);
+
+        TacosEnhancement enhancement = new TacosEnhancement(equip);
+        boolean success = enhancement.useViciousHammer();
         item_use.run();
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
-        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success, equip));
+        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(success ? OpsGoldHammer.GoldHammerRes_Success : OpsGoldHammer.GoldHammerRes_Fail, equip));
         return true;
     }
 

@@ -39,6 +39,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.TacosEnhancement;
+import tacos.wz.CharacterWz.EquipData;
 import tacos.wz.WzXML;
 
 /**
@@ -153,7 +154,8 @@ public class ReqCUser_ItemMaker {
         if (ii.isDropRestricted(item_id) || ii.isAccountShared(item_id)) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
-        int crystal_id = getCrystal(ii.getReqLevel(item_id));
+        EquipData ed = WzXML.CHARACTER.getEquipData(item_id);
+        int crystal_id = getCrystal(ed.getReqLevel());
         if (crystal_id <= 0) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }

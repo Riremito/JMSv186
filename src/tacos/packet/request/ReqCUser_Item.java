@@ -389,27 +389,15 @@ public class ReqCUser_Item {
             {
                 int inv_type = cp.Decode4(); // unused
                 int item_slot = cp.Decode4();
-                Item item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) item_slot);
-
-                if (item == null) {
+                Equip equip = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) item_slot);
+                if (equip == null) {
                     return false;
                 }
-
-                Equip equip = (Equip) item;
-                if (!GameConstants.canHammer(equip.getItemId()) || MapleItemInformationProvider.getInstance().getSlots(equip.getItemId()) <= 0) {
-                    return false;
-                }
-                // TODO : supports 3+
-                if (2 <= equip.getIUC()) {
-                    chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeErr, null));
-                    return false;
-                }
-
-                equip.setIUC(equip.getIUC() + 1);
-                equip.setRUC(equip.getRUC() + 1);
+                TacosEnhancement enhancement = new TacosEnhancement(equip);
+                boolean success = enhancement.useViciousHammer();
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
-                chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip));
+                chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(success ? OpsCashItem.CashItemRes_ItemUpgradeSuccess : OpsCashItem.CashItemReq_ItemUpgradeFail, equip));
                 item_use.run();
                 return true;
             }

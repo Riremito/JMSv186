@@ -25,6 +25,8 @@ import odin.server.Randomizer;
 import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.config.Region;
+import tacos.constants.TacosConstants;
+import tacos.shared.TacosShared;
 import tacos.wz.CharacterWz.EquipData;
 import tacos.wz.ItemWz.ScrollData;
 import tacos.wz.WzXML;
@@ -218,6 +220,13 @@ public class TacosEnhancement {
         if (is_warm_support) {
             return useWarmSupportScroll(sd);
         }
+        // 黄金つち (直接使用)
+        if (TacosConstants.is_gold_hammer(item_id)) {
+            if (useViciousHammer()) {
+                return EnhancementResult.SUCCESS;
+            }
+            return EnhancementResult.UNKNOWN;
+        }
         boolean is_upgrade_possible = equip.getRUC() != 0;
         if (!is_upgrade_possible) {
             return EnhancementResult.UNKNOWN;
@@ -358,6 +367,28 @@ public class TacosEnhancement {
             }
         }
         return EnhancementResult.FAILURE;
+    }
+
+    public boolean useViciousHammer() {
+        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        if (ed == null || ed.getTuc() == 0) {
+            return false;
+        }
+        if (TacosShared.isHorntailNecklace(equip.getItemId())) {
+            return false;
+        }
+        if (Region.KMS.check() || Region.KMST.check()) {
+            if (1 <= equip.getIUC()) {
+                return false;
+            }
+        }
+        // TODO : 3回以上ビシャスのハンマー使用可能な場合の対応 (JMS)
+        if (2 <= equip.getIUC()) {
+            return false;
+        }
+        equip.setIUC(equip.getIUC() + 1);
+        equip.setRUC(equip.getRUC() + 1);
+        return true;
     }
 
     public boolean useEquipEnhancementScroll() {

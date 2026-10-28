@@ -97,16 +97,6 @@ public class MapleItemInformationProvider {
         return false;
     }
 
-    public int getReqLevel(int itemId) {
-        Map<String, Integer> stats = getEquipStats(itemId);
-        return (stats == null) ? 0 : stats.get("reqLevel");
-    }
-
-    public int getSlots(int itemId) {
-        Map<String, Integer> stats = getEquipStats(itemId);
-        return (stats == null) ? 0 : stats.get("tuc");
-    }
-
     public List<Integer> getScrollReqs(int itemId) {
         return cached(scrollReqCache, itemId, WzXML.ITEM::loadScrollReqs);
     }

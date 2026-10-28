@@ -55,6 +55,18 @@ public class TacosShared {
         return price;
     }
 
+    public static boolean isHorntailNecklace(int item_id) {
+        switch (item_id) {
+            case 1122000: {
+                return true;
+            }
+            case 1122076: {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean is_ignore_master_level_for_common(int skill_id) {
         // JMS v302
         switch (skill_id) {

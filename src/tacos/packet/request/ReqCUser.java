@@ -113,6 +113,7 @@ import tacos.server.map.TacosNpcShop;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
+import tacos.wz.CharacterWz.EquipData;
 import tacos.wz.MobWz.MobAttackInfo;
 import tacos.wz.NpcWz.NpcInfo;
 import tacos.wz.WzXML;
@@ -1660,40 +1661,17 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        // 黄金つち (ビシャスのハンマー)
-        if (scroll.getItemId() == 2470000) {
-            Equip toHammer = (Equip) equip;
-            if (toHammer.getIUC() >= 2 || toHammer.getRUC() > 120) {
-                chr.updateInv();
-                return false;
-            }
-            toHammer.setIUC((byte) (toHammer.getIUC() + 1));
-            toHammer.setRUC((byte) (toHammer.getRUC() + 1));
-            {
-                PB_InvOp.Builder io = PB_InvOp.builder();
-                if (0 < scroll.getQuantity()) {
-                    io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
-                } else {
-                    io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
-                }
-                io.add(GameConstants.getInventoryType(toHammer.getItemId()), toHammer);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
-            }
-            chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
-            return true;
-        }
         if (!GameConstants.isCleanSlate(scroll.getItemId())) {
             if (equip.getRUC() < 1) {
                 chr.updateInv();
                 return false;
             }
         }
-        if (!GameConstants.canScroll(equip.getItemId()) && !GameConstants.isChaosScroll(equip.getItemId())) {
+        if (!GameConstants.canScroll(equip.getItemId())) {
             chr.updateInv();
             return false;
         }
-        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(equip.getItemId()))) {
+        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId())) && (vegas > 0 || ii.isCash(equip.getItemId()))) {
             chr.updateInv();
             return false;
         }
@@ -1749,7 +1727,7 @@ public class ReqCUser {
                     }
                     break;
             }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())) {
+        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())) {
             if (!ii.canScroll(scroll.getItemId(), equip.getItemId())) {
                 return false;
             }
@@ -1897,18 +1875,17 @@ public class ReqCUser {
     // CWvsContext::SendItemReleaseRequest
     public static boolean OnUserItemReleaseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
         Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
-        Item toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
+        Equip equip = (equip_slot < 0) ? (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
-        if (magnify == null || toReveal == null) {
+        if (magnify == null || equip == null) {
             chr.updateInv();
             return false;
         }
 
-        Equip eqq = (Equip) toReveal;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
+        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        int reqLevel = ed.getReqLevel() / 10;
         if (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3)) {
-            TacosEnhancement enhancement = new TacosEnhancement(eqq);
+            TacosEnhancement enhancement = new TacosEnhancement(equip);
             if (!enhancement.useMagnify()) {
                 chr.updateInv();
                 return false;
@@ -1919,9 +1896,9 @@ public class ReqCUser {
             } else {
                 io.remove(GameConstants.getInventoryType(magnify.getItemId()), magnify.getPosition());
             }
-            io.add(GameConstants.getInventoryType(toReveal.getItemId()), toReveal);
+            io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
             chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
-            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
+            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip.getPosition()));
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
             chr.updateInv();

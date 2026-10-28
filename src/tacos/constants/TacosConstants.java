@@ -46,6 +46,15 @@ public class TacosConstants {
         return 2388000 <= item_id;
     }
 
+    public static boolean is_gold_hammer(int item_id) {
+        // 2470000
+        if (item_id / 10000 == 247) {
+            return true;
+        }
+        // TODO : 2470001, 2471000
+        return false;
+    }
+
     // def
     public static final int DEFAULT_CHARSLOT = 6;
     public static final int DEFAULT_FORCED_RETURN_MAP_ID = 999999999;

@@ -469,23 +469,12 @@ public class GameConstants {
         return MapleInventoryType.getByType(type);
     }
 
-    public static boolean isEquip(int itemId) {
-        return itemId / 1000000 == 1;
-    }
-
     public static boolean isCleanSlate(int itemId) {
         return itemId / 100 == 20490;
     }
 
     public static boolean isAccessoryScroll(int itemId) {
         return itemId / 100 == 20492;
-    }
-
-    public static boolean isChaosScroll(int itemId) {
-        if (itemId >= 2049105 && itemId <= 2049110) {
-            return false;
-        }
-        return itemId / 100 == 20491;
     }
 
     public static boolean isTwoHanded(int item_id) {
@@ -936,18 +925,6 @@ public class GameConstants {
 
     public static boolean canScroll(int itemId) {
         return itemId / 100000 != 19 && itemId / 100000 != 16; //no mech/taming/dragon
-    }
-
-    public static boolean canHammer(int itemId) {
-        switch (itemId) {
-            case 1122000:
-            case 1122076: //ht, chaos ht
-                return false;
-        }
-        if (!canScroll(itemId)) {
-            return false;
-        }
-        return true;
     }
 
     public static int getMasterySkill(int job) {

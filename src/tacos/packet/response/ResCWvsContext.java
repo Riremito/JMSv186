@@ -41,8 +41,6 @@ import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildAlliance;
 import odin.handling.world.guild.MapleGuildCharacter;
 import tacos.server.TacosWorld;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +65,6 @@ import tacos.packet.response.data.RD_CWvsContext;
 import tacos.packet.response.data.RD_CharacterStat;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import tacos.packet.response.builder.PB_InvOp;
-import odin.server.MapleItemInformationProvider;
 import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -82,6 +79,8 @@ import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CStage;
+import tacos.wz.CharacterWz.EquipData;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -797,7 +796,8 @@ public class ResCWvsContext {
         boolean TamingMobEnabled = false;
         MapleMount tm = player.getMount();
         if (tm != null && inv_mount != null) {
-            TamingMobEnabled = MapleItemInformationProvider.getInstance().getReqLevel(inv_mount.getItemId()) <= player.getLevel();
+            EquipData ed = WzXML.CHARACTER.getEquipData(inv_mount.getItemId());
+            TamingMobEnabled = ed.getReqLevel() <= player.getLevel();
         }
         sp.Encode1(TamingMobEnabled ? 1 : 0);
         if (tm != null && TamingMobEnabled) {
