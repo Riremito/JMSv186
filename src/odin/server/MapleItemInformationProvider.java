@@ -4,16 +4,13 @@ import tacos.client.TacosCharacter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.IntFunction;
-import java.util.function.ObjIntConsumer;
-import java.util.function.ToIntFunction;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
-import tacos.config.ContentCustom;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosEnhancement;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
 
@@ -44,61 +41,6 @@ public class MapleItemInformationProvider {
     private final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
     private final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
     private final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
-
-    // equip stats by their wz name
-    private enum EquipStat {
-        STR("STR", Equip::getIncSTR, Equip::setStr),
-        DEX("DEX", Equip::getIncDEX, Equip::setDex),
-        INT("INT", Equip::getIncINT, Equip::setInt),
-        LUK("LUK", Equip::getIncLUK, Equip::setLuk),
-        PAD("PAD", Equip::getIncPAD, Equip::setWatk),
-        PDD("PDD", Equip::getIncPDD, Equip::setWdef),
-        MAD("MAD", Equip::getIncMAD, Equip::setMatk),
-        MDD("MDD", Equip::getIncMDD, Equip::setMdef),
-        ACC("ACC", Equip::getIncACC, Equip::setAcc),
-        EVA("EVA", Equip::getIncEVA, Equip::setAvoid),
-        SPEED("Speed", Equip::getIncSpeed, Equip::setSpeed),
-        JUMP("Jump", Equip::getIncJump, Equip::setJump),
-        MHP("MHP", Equip::getIncMaxHP, Equip::setHp),
-        MMP("MMP", Equip::getIncMaxMP, Equip::setMp),
-        MHPR("MHPr", Equip::getHpR, Equip::setHpR),
-        MMPR("MMPr", Equip::getMpR, Equip::setMpR),
-        CRAFT("Craft", Equip::getIncCraft, Equip::setHands);
-
-        private final String name;
-        private final ToIntFunction<Equip> getter;
-        private final ObjIntConsumer<Equip> setter;
-
-        EquipStat(String name, ToIntFunction<Equip> getter, ObjIntConsumer<Equip> setter) {
-            this.name = name;
-            this.getter = getter;
-            this.setter = setter;
-        }
-
-        public int get(Equip equip) {
-            return getter.applyAsInt(equip);
-        }
-
-        public void set(Equip equip, int value) {
-            setter.accept(equip, value);
-        }
-
-        public void add(Equip equip, int value) {
-            set(equip, get(equip) + value);
-        }
-
-        public static EquipStat find(String name) {
-            for (EquipStat stat : values()) {
-                if (stat.name.equals(name)) {
-                    return stat;
-                }
-            }
-            return null;
-        }
-    }
-
-    // the stats a chaos scroll changes
-    private static final EquipStat[] CHAOS_STATS = {EquipStat.STR, EquipStat.DEX, EquipStat.INT, EquipStat.LUK, EquipStat.PAD, EquipStat.PDD, EquipStat.MAD, EquipStat.MDD, EquipStat.ACC, EquipStat.EVA, EquipStat.SPEED, EquipStat.JUMP, EquipStat.MHP, EquipStat.MMP};
 
     public static MapleItemInformationProvider getInstance() {
         return instance;
@@ -185,123 +127,16 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public Item getEquipById(int equipId) {
-        return getEquipById(equipId, -1);
+    public Equip getEquipById(int equip_id) {
+        Equip ret = getDefaultEquipById(equip_id);
+        TacosEnhancement ehancement = new TacosEnhancement(ret);
+        ehancement.randomize();
+        return ret;
     }
 
-    public Item getEquipById(int equipId, int ringId) {
-        Equip nEquip = new Equip(equipId, (byte) 0, ringId, (byte) 0);
-        nEquip.setQuantity((short) 1);
-        Map<String, Integer> stats = getEquipStats(equipId);
-        if (stats != null) {
-            for (Entry<String, Integer> stat : stats.entrySet()) {
-                String key = stat.getKey();
-                EquipStat es = EquipStat.find(key);
-                if (es != null) {
-                    es.set(nEquip, stat.getValue());
-                } else if (key.equals("tuc")) {
-                    nEquip.setRUC(stat.getValue().byteValue());
-                } else if (key.equals("durability")) {
-                    nEquip.setDurability(stat.getValue());
-                }
-            }
-        }
-        return nEquip.copy();
-    }
-
-    // vary no more than ceil of 10% of stat
-    private static int getRandStat(int defaultValue, int maxRange) {
-        if (defaultValue == 0) {
-            return 0;
-        }
-        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
-        return (int) ((defaultValue - lMaxRange) + Math.floor(Math.random() * (lMaxRange * 2 + 1)));
-    }
-
-    private static void randomizeStat(Equip equip, EquipStat stat, int maxRange) {
-        stat.set(equip, getRandStat(stat.get(equip), maxRange));
-    }
-
-    public Equip RireSabaStats(Equip equip) {
-        int r = (int) Math.floor(Math.random() * 5) + 1;
-        int min;
-        int range;
-        switch (r) {
-            case 4: { // GOD
-                min = 100;
-                range = 1000;
-                break;
-            }
-            case 3: { // Legend
-                min = 20;
-                range = 100;
-                break;
-            }
-            case 2: { // Super
-                min = 10;
-                range = 10;
-                break;
-            }
-            case 1: { // Rare
-                min = 0;
-                range = 10;
-                break;
-            }
-            default: { // Normal
-                return defaultRandomizeStats(equip);
-            }
-        }
-
-        // Legend以上なら存在しない能力値も付与
-        for (EquipStat stat : new EquipStat[]{EquipStat.STR, EquipStat.DEX, EquipStat.INT, EquipStat.LUK, EquipStat.PAD, EquipStat.MAD}) {
-            int def = stat.get(equip);
-            if (r >= 3 || def != 0) {
-                stat.set(equip, (int) (def + min + Math.floor(Math.random() * range)));
-            }
-        }
-        // 戦士優遇
-        EquipStat.ACC.set(equip, (int) (equip.getIncACC() + min + Math.floor(Math.random() * range)));
-        // 移動速度とジャンプ力は最大値に合わせる
-        if (r >= 3 || equip.getIncSpeed() != 0) {
-            EquipStat.SPEED.add(equip, 40);
-        }
-        if (r >= 3 || equip.getIncJump() != 0) {
-            EquipStat.JUMP.add(equip, 23);
-        }
-        // その他
-        randomizeStat(equip, EquipStat.EVA, 5);
-        randomizeStat(equip, EquipStat.CRAFT, 5);
-        randomizeStat(equip, EquipStat.PDD, 10);
-        randomizeStat(equip, EquipStat.MDD, 10);
-        randomizeStat(equip, EquipStat.MHP, 10);
-        randomizeStat(equip, EquipStat.MMP, 10);
-        return equip;
-    }
-
-    private Equip defaultRandomizeStats(Equip equip) {
-        randomizeStat(equip, EquipStat.STR, 5);
-        randomizeStat(equip, EquipStat.DEX, 5);
-        randomizeStat(equip, EquipStat.INT, 5);
-        randomizeStat(equip, EquipStat.LUK, 5);
-        randomizeStat(equip, EquipStat.MAD, 5);
-        randomizeStat(equip, EquipStat.PAD, 5);
-        randomizeStat(equip, EquipStat.ACC, 5);
-        randomizeStat(equip, EquipStat.EVA, 5);
-        randomizeStat(equip, EquipStat.JUMP, 5);
-        randomizeStat(equip, EquipStat.CRAFT, 5);
-        randomizeStat(equip, EquipStat.SPEED, 5);
-        randomizeStat(equip, EquipStat.PDD, 10);
-        randomizeStat(equip, EquipStat.MDD, 10);
-        randomizeStat(equip, EquipStat.MHP, 10);
-        randomizeStat(equip, EquipStat.MMP, 10);
-        return equip;
-    }
-
-    public Equip randomizeStats(Equip equip) {
-        if (ContentCustom.CC_EQUIP_STAT_RANDOMIZER.get()) {
-            return RireSabaStats(equip);
-        }
-        return defaultRandomizeStats(equip);
+    public Equip getDefaultEquipById(int equip_id) {
+        Equip ret = WzXML.CHARACTER.getEquipById(equip_id);
+        return ret;
     }
 
     public MapleStatEffect getItemEffect(int itemId) {

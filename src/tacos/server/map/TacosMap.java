@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -1353,7 +1352,7 @@ public class TacosMap extends TacosMapData {
         Item idrop = null;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
-            idrop = ii.randomizeStats((Equip) ii.getEquipById(itemid));
+            idrop = ii.getEquipById(itemid);
         } else {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }

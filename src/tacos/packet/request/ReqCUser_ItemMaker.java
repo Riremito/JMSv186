@@ -38,6 +38,7 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
+import tacos.server.TacosEnhancement;
 import tacos.wz.WzXML;
 
 /**
@@ -200,7 +201,7 @@ public class ReqCUser_ItemMaker {
         }
         chr.gainMeso(-gem.getCost(), false);
         if (GameConstants.getInventoryType(target_item_id) == MapleInventoryType.EQUIP) {
-            MapleInventoryManipulator.addbyItem(chr, MapleItemInformationProvider.getInstance().getEquipById(target_item_id));
+            MapleInventoryManipulator.addbyItem(chr, MapleItemInformationProvider.getInstance().getDefaultEquipById(target_item_id));
         } else {
             MapleInventoryManipulator.addById(chr, target_item_id, (short) Math.max(1, gem.getQuantity()));
         }
@@ -229,10 +230,11 @@ public class ReqCUser_ItemMaker {
         chr.gainMeso(-create.getCost(), false);
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Equip to_give = (Equip) ii.getEquipById(target_item_id);
+        Equip to_give = ii.getDefaultEquipById(target_item_id);
         // the stimulator is also used when enchanters are used.
         if ((catalyst || gems.length > 0) && chr.haveItem(create.getStimulator(), 1, false, true)) {
-            ii.randomizeStats(to_give);
+            TacosEnhancement enhancement = new TacosEnhancement(to_give);
+            enhancement.randomize();
             MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
         }
         for (int gem_id : gems) {

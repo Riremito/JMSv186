@@ -23,7 +23,6 @@ package odin.server;
 
 import odin.client.inventory.Equip;
 import tacos.server.map.object.TacosPet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.inventory.Item;
@@ -133,7 +132,7 @@ public class CashShop {
         }
         Item ret = null;
         if (GameConstants.getInventoryType(cItem.getId()) == MapleInventoryType.EQUIP) {
-            Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(cItem.getId());
+            Equip eq = MapleItemInformationProvider.getInstance().getDefaultEquipById(cItem.getId());
             eq.setUniqueId(uniqueid);
             eq.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
             eq.setGiftFrom(gift);

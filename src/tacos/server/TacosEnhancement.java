@@ -23,6 +23,7 @@ import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import odin.server.Randomizer;
 import tacos.config.Config;
+import tacos.config.ContentCustom;
 import tacos.config.Region;
 import tacos.wz.CharacterWz.EquipData;
 import tacos.wz.ItemWz.ScrollData;
@@ -57,6 +58,123 @@ public class TacosEnhancement {
             return true;
         }
         return false;
+    }
+
+    // 装備アイテムのステータスの範囲, 2012年以降は範囲が変動している可能性あり
+    public boolean randomize() {
+        if (ContentCustom.CC_EQUIP_STAT_RANDOMIZER.get()) {
+            int rand = Randomizer.nextInt(5);
+            switch (rand) {
+                case 0 -> {
+                    return randomizeTaco(0, 100, 1000);
+                }
+                case 1 -> {
+                    return randomizeTaco(0, 20, 100);
+                }
+                case 2 -> {
+                    return randomizeTaco(1, 10, 20);
+                }
+                case 3 -> {
+                    return randomizeTaco(1, 0, 10);
+                }
+                default -> {
+                    return randomize(-5, 5);
+                }
+            }
+        }
+        return randomize(-5, 5);
+    }
+
+    public boolean randomize(int rand_min, int rand_max) {
+        if (1 <= equip.getIncSTR()) {
+            equip.incSTR(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncDEX()) {
+            equip.incDEX(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncINT()) {
+            equip.incINT(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncLUK()) {
+            equip.incLUK(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncMaxHP()) {
+            equip.incMaxHP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
+        }
+        if (1 <= equip.getIncMaxMP()) {
+            equip.incMaxMP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
+        }
+        if (1 <= equip.getIncPAD()) {
+            equip.incPAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncMAD()) {
+            equip.incMAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncPDD()) {
+            equip.incPDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncMDD()) {
+            equip.incMDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncEVA()) {
+            equip.incEVA(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncCraft()) {
+            equip.incCraft(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncSpeed()) {
+            equip.incSpeed(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (1 <= equip.getIncJump()) {
+            equip.incJump(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        return true;
+    }
+
+    public boolean randomizeTaco(int stat_min, int rand_min, int rand_max) {
+        if (stat_min <= equip.getIncSTR()) {
+            equip.incSTR(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncDEX()) {
+            equip.incDEX(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncINT()) {
+            equip.incINT(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncLUK()) {
+            equip.incLUK(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncMaxHP()) {
+            equip.incMaxHP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
+        }
+        if (stat_min <= equip.getIncMaxMP()) {
+            equip.incMaxMP(Randomizer.nextInt(rand_max * 2 - rand_min * 2 + 1) + rand_min * 2);
+        }
+        if (stat_min <= equip.getIncPAD()) {
+            equip.incPAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncMAD()) {
+            equip.incMAD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncPDD()) {
+            equip.incPDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncMDD()) {
+            equip.incMDD(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncEVA()) {
+            equip.incEVA(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncCraft()) {
+            equip.incCraft(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncSpeed()) {
+            equip.incSpeed(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        if (stat_min <= equip.getIncJump()) {
+            equip.incJump(Randomizer.nextInt(rand_max - rand_min + 1) + rand_min);
+        }
+        return true;
     }
 
     public static enum EnhancementResult {

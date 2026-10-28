@@ -21,7 +21,6 @@ package tacos.server.map.object;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import odin.client.inventory.Equip;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -166,7 +165,6 @@ public class TacosMonster extends TacosMapObject {
     public void setLastHitSkillId(int last_hit_skill_id) {
         this.last_hit_skill_id = last_hit_skill_id;
     }
-
 
     private int stance;
 
@@ -1195,8 +1193,7 @@ public class TacosMonster extends TacosMapObject {
             for (MonsterDropEntry d : dropEntry) {
                 if (d.itemId > 0 && d.questid == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
                     if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {
-                        Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
-                        idrop = MapleItemInformationProvider.getInstance().randomizeStats(eq);
+                        idrop = MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
                     } else {
                         idrop = new Item(d.itemId, (byte) 0, (short) (d.Maximum != 1 ? Randomizer.nextInt(d.Maximum - d.Minimum) + d.Minimum : 1), (byte) 0);
                     }

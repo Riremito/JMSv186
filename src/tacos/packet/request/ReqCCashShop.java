@@ -266,7 +266,7 @@ public class ReqCCashShop {
         MapleInventoryType type = GameConstants.getInventoryType(cashitem.getId());
         Item item;
         if (type == MapleInventoryType.EQUIP) {
-            item = MapleItemInformationProvider.getInstance().getEquipById(cashitem.getId());
+            item = MapleItemInformationProvider.getInstance().getDefaultEquipById(cashitem.getId());
         } else {
             item = new Item(cashitem.getId(), (byte) 0, (short) cashitem.getCount());
         }

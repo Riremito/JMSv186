@@ -25,7 +25,6 @@ import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import tacos.client.TacosClient;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
@@ -299,10 +298,6 @@ public class TacosCommandAdmin {
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 Item item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
-                if (is_equip) {
-                    item = ii.randomizeStats((Equip) item);
-                }
-
                 map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
                 chr.DebugMsg("drop : " + item_id);
                 return true;

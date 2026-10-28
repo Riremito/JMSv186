@@ -90,7 +90,7 @@ public class MapleInventoryManipulator {
             if (quantity != 1) {
                 return -1;
             }
-            Item nEquip = ii.getEquipById(itemId);
+            Item nEquip = ii.getDefaultEquipById(itemId);
             if (owner != null) {
                 nEquip.setOwner(owner);
             }
@@ -206,7 +206,7 @@ public class MapleInventoryManipulator {
             if (quantity != 1) {
                 return null;
             }
-            Item item = ii.randomizeStats((Equip) ii.getEquipById(itemId));
+            Item item = ii.getEquipById(itemId);
             if (chr.getInventory(type).addItem(item) == -1) {
                 return null;
             }

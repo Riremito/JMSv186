@@ -25,7 +25,6 @@ import tacos.server.map.object.TacosReactor;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import tacos.client.TacosClient;
@@ -100,7 +99,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
                 if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(d.itemId, (byte) 0, (short) 1, (byte) 0);
                 } else {
-                    drop = ii.randomizeStats((Equip) ii.getEquipById(d.itemId));
+                    drop = ii.getEquipById(d.itemId);
                 }
                 reactor.getMap().spawnItemDropByReactor(reactor, getPlayer(), drop, dropPos, false, false);
             }

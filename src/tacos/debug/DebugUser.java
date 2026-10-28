@@ -47,7 +47,7 @@ public class DebugUser {
             case 1: {
                 MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
                 // 耐久装備テスト
-                Equip item = (Equip) ii.getEquipById(itemid);
+                Equip item = ii.getDefaultEquipById(itemid);
                 int dur = item.getDurability();
                 if (0 < dur) {
                     dur /= 2;

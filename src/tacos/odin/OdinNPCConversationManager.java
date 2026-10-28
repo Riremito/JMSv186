@@ -962,7 +962,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public Equip getEquip(int itemid) {
-        return (Equip) MapleItemInformationProvider.getInstance().getEquipById(itemid);
+        return MapleItemInformationProvider.getInstance().getDefaultEquipById(itemid);
     }
 
     public void setExpiration(Object statsSel, long expire) {

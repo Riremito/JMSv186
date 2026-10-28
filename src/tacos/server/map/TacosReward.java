@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -66,7 +65,7 @@ public class TacosReward {
                         // 装備
 
                         if (GameConstants.getInventoryType(reward.getItem()) == MapleInventoryType.EQUIP) {
-                            idrop = miip.randomizeStats((Equip) miip.getEquipById(reward.getItem()));
+                            idrop = miip.getEquipById(reward.getItem());
                         } else {
                             // 通常アイテム
                             int range = reward.getMax() - reward.getMin();
@@ -152,7 +151,7 @@ public class TacosReward {
                     // 装備
 
                     if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                        idrop = ii.getEquipById(de.itemId);
                     } else {
                         // 通常アイテム
                         int range = Math.abs(de.Maximum - de.Minimum);

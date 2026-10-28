@@ -21,6 +21,7 @@ package tacos.wz;
 import java.util.ArrayList;
 import java.util.HashMap;
 import lombok.Getter;
+import odin.client.inventory.Equip;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 
@@ -62,23 +63,87 @@ public class CharacterWz extends WzXML {
     public class EquipData {
 
         private int tuc;
+        private int incSTR;
+        private int incDEX;
+        private int incINT;
+        private int incLUK;
+        private int incMHP;
+        private int incMMP;
+        private int incPAD;
+        private int incMAD;
+        private int incPDD;
+        private int incMDD;
+        private int incACC;
+        private int incEVA;
+        private int incCraft;
+        private int incSpeed;
+        private int incJump;
+        private int durability;
     }
 
     private final HashMap<Integer, EquipData> equip_infos = new HashMap<>();
 
-    public EquipData getEquipData(int item_id) {
-        EquipData ret = this.equip_infos.get(item_id);
+    public EquipData getEquipData(int equip_id) {
+        EquipData ret = this.equip_infos.get(equip_id);
         if (ret == null) {
-            MapleData equip_img = getItemData(item_id);
+            MapleData equip_img = getItemData(equip_id);
             if (equip_img != null) {
                 MapleData info = equip_img.getChildByPath("info");
                 if (info != null) {
                     ret = new EquipData();
                     ret.tuc = info.getInt("tuc");
+                    ret.incSTR = info.getInt("incSTR");
+                    ret.incDEX = info.getInt("incDEX");
+                    ret.incINT = info.getInt("incINT");
+                    ret.incLUK = info.getInt("incLUK");
+                    ret.incMHP = info.getInt("incMHP");
+                    ret.incMMP = info.getInt("incMMP");
+                    ret.incPAD = info.getInt("incPAD");
+                    ret.incMAD = info.getInt("incMAD");
+                    ret.incPDD = info.getInt("incPDD");
+                    ret.incMDD = info.getInt("incMDD");
+                    ret.incACC = info.getInt("incACC");
+                    ret.incEVA = info.getInt("incEVA");
+                    ret.incCraft = info.getInt("incCraft");
+                    ret.incSpeed = info.getInt("incSpeed");
+                    ret.incJump = info.getInt("incJump");
+                    ret.durability = info.getInt("durability", -1);
                 }
-                this.equip_infos.put(item_id, ret);
+                this.equip_infos.put(equip_id, ret);
             }
         }
+        return ret;
+    }
+
+    public Equip getEquipById(int equip_id) {
+        EquipData ed = getEquipData(equip_id);
+        Equip ret = new Equip(equip_id, (byte) 0, -1, (byte) 0);
+
+        ret.setQuantity((short) 1);
+
+        if (ed == null) {
+            DebugLogger.ErrorLog("getEquipById : EquipData is null.");
+            return ret;
+        }
+
+        ret.setRUC(ed.getTuc());
+        ret.setCUC(0);
+        ret.incSTR(ed.incSTR);
+        ret.incDEX(ed.incDEX);
+        ret.incINT(ed.incINT);
+        ret.incLUK(ed.incLUK);
+        ret.incMaxHP(ed.incMHP);
+        ret.incMaxMP(ed.incMMP);
+        ret.incPAD(ed.incPAD);
+        ret.incMAD(ed.incMAD);
+        ret.incPDD(ed.incPDD);
+        ret.incMDD(ed.incMDD);
+        ret.incACC(ed.incACC);
+        ret.incEVA(ed.incEVA);
+        ret.incCraft(ed.incCraft);
+        ret.incSpeed(ed.incSpeed);
+        ret.incJump(ed.incJump);
+        ret.setDurability(ed.durability);
         return ret;
     }
 

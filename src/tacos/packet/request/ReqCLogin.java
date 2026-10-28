@@ -420,7 +420,7 @@ public class ReqCLogin {
 
         MapleInventory mv_equipped = newchar.getInventory(MapleInventoryType.EQUIPPED);
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        Item item = miip.getEquipById(item_id);
+        Item item = miip.getDefaultEquipById(item_id);
         OpsBodyPart bodypart = OpsBodyPart.get_bodypart_from_item(item_id);
         DebugLogger.DebugLog("SetDefaultEquip, item_id = " + item_id + ", slot = " + -bodypart.get());
         item.setPosition((short) -bodypart.get());
