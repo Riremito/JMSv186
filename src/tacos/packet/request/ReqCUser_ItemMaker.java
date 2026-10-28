@@ -38,7 +38,6 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.server.TacosEnhancement;
 import tacos.wz.CharacterWz.EquipData;
 import tacos.wz.WzXML;
 
@@ -235,8 +234,7 @@ public class ReqCUser_ItemMaker {
         Equip to_give = ii.getDefaultEquipById(target_item_id);
         // the stimulator is also used when enchanters are used.
         if ((catalyst || gems.length > 0) && chr.haveItem(create.getStimulator(), 1, false, true)) {
-            TacosEnhancement enhancement = new TacosEnhancement(to_give);
-            enhancement.randomize();
+            to_give.getEnhancement().randomize();
             MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
         }
         for (int gem_id : gems) {

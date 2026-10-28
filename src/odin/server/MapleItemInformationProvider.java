@@ -10,7 +10,6 @@ import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.server.TacosEnhancement;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
 
@@ -119,8 +118,7 @@ public class MapleItemInformationProvider {
 
     public Equip getEquipById(int equip_id) {
         Equip ret = getDefaultEquipById(equip_id);
-        TacosEnhancement ehancement = new TacosEnhancement(ret);
-        ehancement.randomize();
+        ret.getEnhancement().randomize();
         return ret;
     }
 

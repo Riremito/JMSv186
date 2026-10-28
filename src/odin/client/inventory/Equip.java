@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import tacos.packet.ops.OpsGrade;
+import tacos.server.TacosEnhancement;
 
 public class Equip extends Item {
 
@@ -66,6 +67,10 @@ public class Equip extends Item {
 
     public Equip(int id, short position, int uniqueid, byte flag) {
         super(id, position, (short) 1, flag, uniqueid);
+    }
+
+    public TacosEnhancement getEnhancement() {
+        return new TacosEnhancement(this);
     }
 
     // get.

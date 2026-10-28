@@ -106,7 +106,6 @@ import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
-import tacos.server.TacosEnhancement;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
@@ -1605,8 +1604,7 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        TacosEnhancement enhancement = new TacosEnhancement(equip);
-        EnhancementResult er = enhancement.useScroll(scroll.getItemId());
+        EnhancementResult er = equip.getEnhancement().useScroll(scroll.getItemId());
         if (er == EnhancementResult.UNKNOWN) {
             chr.updateInv();
             //useScroll(chr, chr.getMap(), scroll_slot, equip_slot, 0);
@@ -1816,8 +1814,7 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        TacosEnhancement enhancement = new TacosEnhancement(equip);
-        if (!enhancement.useEquipEnhancementScroll()) {
+        if (!equip.getEnhancement().useEquipEnhancementScroll()) {
             chr.updateInv();
             return false;
         }
@@ -1851,8 +1848,7 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        TacosEnhancement enhancement = new TacosEnhancement(equip);
-        if (!enhancement.usePotentialScroll()) {
+        if (!equip.getEnhancement().usePotentialScroll()) {
             chr.updateInv();
             return false;
         }
@@ -1885,8 +1881,7 @@ public class ReqCUser {
         EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
         int reqLevel = ed.getReqLevel() / 10;
         if (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3)) {
-            TacosEnhancement enhancement = new TacosEnhancement(equip);
-            if (!enhancement.useMagnify()) {
+            if (!equip.getEnhancement().useMagnify()) {
                 chr.updateInv();
                 return false;
             }

@@ -56,7 +56,6 @@ import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
-import tacos.server.TacosEnhancement;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -393,8 +392,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                TacosEnhancement enhancement = new TacosEnhancement(equip);
-                boolean success = enhancement.useViciousHammer();
+                boolean success = equip.getEnhancement().useViciousHammer();
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(success ? OpsCashItem.CashItemRes_ItemUpgradeSuccess : OpsCashItem.CashItemReq_ItemUpgradeFail, equip));
@@ -485,8 +483,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                TacosEnhancement enhancement = new TacosEnhancement(equip);
-                enhancement.useMiracleCube();
+                equip.getEnhancement().useMiracleCube();
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
@@ -499,8 +496,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                TacosEnhancement enhancement = new TacosEnhancement(equip);
-                enhancement.useHyperMiracleCube();
+                equip.getEnhancement().useHyperMiracleCube();
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
@@ -513,8 +509,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                TacosEnhancement enhancement = new TacosEnhancement(equip);
-                enhancement.useMasterMiracleCube();
+                equip.getEnhancement().useMasterMiracleCube();
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
@@ -527,8 +522,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                TacosEnhancement enhancement = new TacosEnhancement(equip);
-                enhancement.useHyperMasterMiracleCube();
+                equip.getEnhancement().useHyperMasterMiracleCube();
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));

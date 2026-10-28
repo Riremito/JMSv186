@@ -19,7 +19,6 @@ import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.maps.AramiaFireWorks;
-import tacos.server.TacosEnhancement;
 import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
@@ -322,8 +321,8 @@ public class MapleInventoryManipulator {
             if (quantity == 1) {
                 // new equip.
                 if (enhance) {
-                    TacosEnhancement enhancement = new TacosEnhancement((Equip) item);
-                    enhancement.usePotentialScroll();
+                    Equip equip = (Equip) item;
+                    equip.getEnhancement().usePotentialScroll();
                 }
                 short newSlot = chr.getInventory(type).addItem(item);
 
@@ -495,12 +494,6 @@ public class MapleInventoryManipulator {
             chr.updateInv();
             return;
         }
-        /*
-        if (GameConstants.isWeapon(source.getItemId()) && dst != -10 && dst != -11) {
-            //AutobanManager.getInstance().autoban(c, "Equipment hack, itemid " + source.getItemId() + " to slot " + dst);
-            return;
-        }
-         */
         if (!ii.isCash(source.getItemId()) && !GameConstants.isMountItemAvailable(source.getItemId(), chr.getJob())) {
             chr.updateInv();
             return;
