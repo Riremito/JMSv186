@@ -166,7 +166,7 @@ public class ReqCUser_Pet {
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, pet, nType, nAction, pet_message), chr.getId());
         return true;
     }
 
@@ -204,7 +204,7 @@ public class ReqCUser_Pet {
             }
         }
 
-        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, pet, command, success, false), chr.getId());
     }
 
     // CPet::SendDropPickUpRequest

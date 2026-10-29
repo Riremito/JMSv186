@@ -721,7 +721,7 @@ public class ReqCUser_Item {
                 // new name
                 pet.setName(pet_name);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
-                chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), chr.getId());
+                chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetNameChanged(chr, pet), chr.getId());
                 return true;
             }
             default: {

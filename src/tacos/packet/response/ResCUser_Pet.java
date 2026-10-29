@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -68,123 +69,171 @@ public class ResCUser_Pet {
         }
     }
 
+    private enum MultiPetSupport {
+        Idx4, // JMS186
+        Idx1, // JMS147 or before
+        NONE, // JMS131
+    }
+
+    private static byte[] getPetIdxBuffer(int nIdx) {
+        ServerPacket data = new ServerPacket();
+        MultiPetSupport mps;
+
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.THMS, 96) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)) {
+            mps = MultiPetSupport.Idx4; // KMS114, KMST330, JMS186, JMST110, CMS88, TWMS148, THMS96, EMS70, IMS
+        } else if (Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 77) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.MSEA, 100)) {
+            mps = MultiPetSupport.Idx1; // JMS147-180, CMS73, TWMS77-125, THMS87, GMS95-111, MSEA100-102
+        } else {
+            mps = MultiPetSupport.NONE; // KMS95, JMS131, BMS, VMS
+        }
+
+        switch (mps) {
+            case Idx1 -> {
+                data.Encode1(nIdx);
+            }
+            case Idx4 -> {
+                data.Encode4(nIdx);
+            }
+            default -> {
+                // no multi pet.
+            }
+        }
+
+        return data.getBytes();
+    }
+
     // CUserLocal::OnPetActivated, CUserRemote::OnPetActivated
-    public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
-        ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
+    public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActivated);
 
-        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.Encode1(spawn ? 1 : 0);
 
-        if (Config.GreaterOrEqual(Region.JMS, 147)) {
-            if (Config.GreaterOrEqual(Region.JMS, 186)) {
-                sp.Encode4(chr.getPetIndex(pet)); // KMS114, KMST330, JMS186, JMST110, CMS88, TWMS148, THMS96, EMS70, IMS1
-            } else {
-                sp.Encode1(chr.getPetIndex(pet)); // JMS180, CMS73, TWMS77-125, THMS87, GMS95-111, MSEA100-102
-            }
-            if (!transfer_field) {
-                sp.Encode1(spawn ? 1 : 0);
-            }
-            if (!spawn) {
-                sp.Encode1(msg.get());
-                return sp;
-            }
-            sp.Encode1(0);
-            sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
-            if (transfer_field) {
-                sp.Encode2(0);
-            }
+        if (!spawn) {
+            sp.Encode1(msg.get());
             return sp;
         }
 
         if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
-            // no data
-            // KMS95, BMS24, VMS35
+            // none.
         } else {
-            sp.Encode4(chr.getPetIndex(pet));
-        }
-        sp.Encode1(spawn ? 1 : 0);
-
-        if (spawn) {
-            if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
-                // no data
-            } else {
-                sp.Encode1(0);
-            }
-            sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
-        } else {
-            sp.Encode1(msg.get());
+            sp.Encode1(0);
         }
 
+        sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
         return sp;
     }
 
     public static ServerPacket Activated(TacosCharacter chr, TacosPet pet) {
-        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG);
     }
 
     public static ServerPacket Deactivated(TacosCharacter chr, TacosPet pet, DeActivatedMsg msg) {
-        return PetActivated(chr, pet, false, msg, false);
+        return PetActivated(chr, pet, false, msg);
     }
 
     public static ServerPacket TransferField(TacosCharacter chr, TacosPet pet) {
-        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
+        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+            return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG);
+        }
+        return PetTransferField(chr, pet);
+    }
+
+    // CUserLocal::OnPetEvol, CUserRemote::OnPetEvol
+    public static ServerPacket PetEvol(TacosCharacter chr, TacosPet pet) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetEvol);
+
+        sp.Encode4(chr.getId()); // dwCharacterID
+        // CUser::OnPetEvol
+        sp.Encode1(1); // spawn or not.
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
+        return sp;
+    }
+
+    // not coded yet.
+    public static ServerPacket PetTransferField(TacosCharacter chr, TacosPet pet) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetTransferField);
+
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.Encode1(1); // spawn or not.
+        sp.Encode1(0);
+        sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
+        return sp;
     }
 
     // CPet::OnMove
     public static ServerPacket PetMove(TacosCharacter chr, TacosPet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
-        sp.Encode4(chr.getId());
-
-        if (Config.LessOrEqual(Region.JMS, 147)) {
-            sp.Encode1(0);
-        } else {
-            sp.Encode4(chr.getPetIndex(pet));
-        }
-
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
         sp.EncodeBuffer(data.get());
         return sp;
     }
 
     // CPet::OnAction
-    public static ServerPacket PetAction(TacosCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+    public static ServerPacket PetAction(TacosCharacter chr, TacosPet pet, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
 
-        sp.Encode4(chr.getId());
-        sp.Encode4(pet_index);
-        sp.Encode1(nType);
-        sp.Encode1(nAction);
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.Encode1(nType); // nType
+        sp.Encode1(nAction); // nAction
         sp.EncodeStr(pet_message);
-        // post BB may have extra 1 bytes
+        sp.Encode1(1); // bChatBalloon, GMS95, not in KMST330.
         return sp;
     }
 
     // CPet::OnNameChanged
-    public static ServerPacket PetNameChanged(TacosCharacter chr, TacosPet pet, String pet_name) {
+    public static ServerPacket PetNameChanged(TacosCharacter chr, TacosPet pet) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
-        sp.Encode4(chr.getId());
-        if (Config.LessOrEqual(Region.JMS, 147)) {
-            sp.Encode1(0); // 0 = success
-        } else {
-            sp.Encode4(chr.getPetIndex(pet));
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.EncodeStr(pet.getName());
+        sp.Encode1(1); // new name or name removal, GMS95, not in KMST330.
+        return sp;
+    }
+
+    // CPet::OnLoadExceptionList
+    public static ServerPacket PetLoadExceptionList(TacosCharacter chr, TacosPet pet, ArrayList<Integer> item_ids) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetLoadExceptionList);
+
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.Encode8(pet.getUniqueId()); // liPetSN
+        sp.Encode1(item_ids.size()); // count
+        for (int item_id : item_ids) {
+            sp.Encode4(item_id);
         }
 
-        sp.EncodeStr(pet_name);
         return sp;
     }
 
     // CPet::OnActionCommand
-    public static ServerPacket PetActionCommand(TacosCharacter chr, byte command, int slot, boolean success, boolean food) {
+    public static ServerPacket PetActionCommand(TacosCharacter chr, TacosPet pet, byte command, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
-        sp.Encode4(chr.getId());
-        sp.Encode4(slot);
-        sp.Encode1(command == 1 ? 1 : 0);
-        sp.Encode1(command);
-        if (command == 1) {
-            sp.Encode1(0);
-        } else {
-            sp.Encode2(success ? 1 : 0);
+        sp.Encode4(chr.getId()); // dwCharacterID
+        sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
+        sp.Encode1(command); // nType
+
+        switch (command) {
+            case 0 -> {
+                sp.Encode1(0); // m_aInteraction[0]
+                sp.Encode1(success ? 1 : 0);
+                sp.Encode1(1);// bChatBalloon
+            }
+            case 1 -> {
+                sp.Encode1(success ? 1 : 0);
+            }
+            default -> {
+                sp.Encode1(success ? 1 : 0);
+                sp.Encode1(1);// bChatBalloon
+            }
         }
 
         return sp;
