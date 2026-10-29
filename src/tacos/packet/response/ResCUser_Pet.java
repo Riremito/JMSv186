@@ -68,14 +68,18 @@ public class ResCUser_Pet {
         }
     }
 
-    // showPet
+    // CUserLocal::OnPetActivated, CUserRemote::OnPetActivated
     public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
 
         sp.Encode4(chr.getId());
 
         if (Config.GreaterOrEqual(Region.JMS, 147)) {
-            sp.Encode1(chr.getPetIndex(pet));
+            if (Config.GreaterOrEqual(Region.JMS, 186)) {
+                sp.Encode4(chr.getPetIndex(pet)); // KMS114, KMST330, JMS186, JMST110, CMS88, TWMS148, THMS96, EMS70, IMS1
+            } else {
+                sp.Encode1(chr.getPetIndex(pet)); // JMS180, CMS73, TWMS77-125, THMS87, GMS95-111, MSEA100-102
+            }
             if (!transfer_field) {
                 sp.Encode1(spawn ? 1 : 0);
             }
@@ -93,6 +97,7 @@ public class ResCUser_Pet {
 
         if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
             // no data
+            // KMS95, BMS24, VMS35
         } else {
             sp.Encode4(chr.getPetIndex(pet));
         }

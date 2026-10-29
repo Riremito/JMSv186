@@ -51,6 +51,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosFoothold;
+import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
 
@@ -298,6 +299,11 @@ public class TacosCommandAdmin {
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 Item item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
+                if (is_pet) {
+                    int new_unique = TacosWorld.getNextItemUniqueId();
+                    item.setUniqueId(new_unique);
+                    item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
+                }
                 map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
                 chr.DebugMsg("drop : " + item_id);
                 return true;

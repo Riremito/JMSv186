@@ -42,6 +42,7 @@ import odin.server.Randomizer;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.QuestWz;
+import tacos.wz.WzNameStorage;
 
 public class MapleQuestAction {
 
@@ -132,22 +133,22 @@ public class MapleQuestAction {
 
     private void giveItems(TacosCharacter chr, Integer extSelection) {
         for (QuestWz.QuestActionItemInfo item : selectItems(chr, extSelection)) {
-            int id = item.getId();
+            int item_id = item.getId();
             short count = (short) item.getCount();
             if (count < 0) { // remove items
-                MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, (count * -1), true, false);
+                MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, (count * -1), true, false);
             } else { // add items
                 int period = item.getPeriod() / 1440; //im guessing.
-                String name = MapleItemInformationProvider.getInstance().getName(id);
-                if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
+                String name = WzNameStorage.ITEM.get(item_id).getName();
+                if (item_id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
                     chr.Notice(msg);
                 }
-                MapleInventoryManipulator.addById(chr, id, count, "", null, period);
+                MapleInventoryManipulator.addById(chr, item_id, count, "", null, period);
             }
             PB_UserEffect pb = PB_UserEffect.builder()
-                    .item_id(id)
+                    .item_id(item_id)
                     .item_quantity(count)
                     .build();
             chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
@@ -160,21 +161,21 @@ public class MapleQuestAction {
     private boolean checkItems(TacosCharacter chr, Integer extSelection) {
         Map<MapleInventoryType, Integer> needed = new HashMap<>();
         for (QuestWz.QuestActionItemInfo item : selectItems(chr, extSelection)) {
-            int id = item.getId();
+            int item_id = item.getId();
             short count = (short) item.getCount();
             if (count < 0) { // remove items
-                if (!chr.haveItem(id, count, false, true)) {
+                if (!chr.haveItem(item_id, count, false, true)) {
                     chr.Alert("You are short of some item to complete quest.");
                     return false;
                 }
                 continue;
             }
             // add items
-            if (MapleItemInformationProvider.getInstance().isPickupRestricted(id) && chr.haveItem(id, 1, true, false)) {
-                chr.Alert("You have this item already: " + MapleItemInformationProvider.getInstance().getName(id));
+            if (MapleItemInformationProvider.getInstance().isPickupRestricted(item_id) && chr.haveItem(item_id, 1, true, false)) {
+                chr.Alert("You have this item already: " + WzNameStorage.ITEM.get(item_id).getName());
                 return false;
             }
-            needed.merge(GameConstants.getInventoryType(id), 1, Integer::sum);
+            needed.merge(GameConstants.getInventoryType(item_id), 1, Integer::sum);
         }
         for (int i = 0; i < REWARD_INVENTORY_TYPES.length; i++) {
             MapleInventoryType type = REWARD_INVENTORY_TYPES[i];

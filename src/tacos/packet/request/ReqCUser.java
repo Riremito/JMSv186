@@ -2871,7 +2871,7 @@ public class ReqCUser {
                     }
                     map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                     map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
-                    MapleInventoryManipulator.addById(chr, 1902000, (short) 1, null);
+                    MapleInventoryManipulator.addById(chr, 1902000, (short) 1);
                     MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     break;
                 }

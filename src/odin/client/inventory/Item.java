@@ -22,6 +22,7 @@ package odin.client.inventory;
 
 import odin.constants.GameConstants;
 import tacos.server.map.object.TacosPet;
+import tacos.wz.WzNameStorage;
 
 public class Item {
 
@@ -56,6 +57,10 @@ public class Item {
         this.id = id;
         this.position = position;
         this.quantity = quantity;
+    }
+
+    public String getName() {
+        return WzNameStorage.ITEM.get(this.id).getName();
     }
 
     public Item copy() {

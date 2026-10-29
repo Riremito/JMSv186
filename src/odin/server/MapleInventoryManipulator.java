@@ -61,18 +61,6 @@ public class MapleInventoryManipulator {
         return addById(chr, itemId, quantity, null, null, 0);
     }
 
-    public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner) {
-        return addById(chr, itemId, quantity, owner, null, 0);
-    }
-
-    public static byte addId(TacosCharacter chr, int itemId, short quantity, String owner) {
-        return addId(chr, itemId, quantity, owner, null, 0);
-    }
-
-    public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner, TacosPet pet) {
-        return addById(chr, itemId, quantity, owner, pet, 0);
-    }
-
     public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner, TacosPet pet, long period) {
         return addId(chr, itemId, quantity, owner, pet, period) >= 0;
     }

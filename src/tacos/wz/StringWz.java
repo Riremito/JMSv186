@@ -117,14 +117,6 @@ public class StringWz extends WzXML {
         }
     }
 
-    public String loadItemName(int itemId) {
-        MapleData strings = getItemStringData(itemId);
-        if (strings == null) {
-            return null;
-        }
-        return strings.getString("name", null);
-    }
-
     public String loadItemMsg(int itemId) {
         MapleData strings = getItemStringData(itemId);
         if (strings == null) {

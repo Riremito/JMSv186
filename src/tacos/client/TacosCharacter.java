@@ -1715,11 +1715,7 @@ public class TacosCharacter extends TacosPlayer {
         if (equipped_medal == null) {
             return getName();
         }
-        String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
-
-        if (medal_name == null) {
-            return getName();
-        }
+        String medal_name = equipped_medal.getName();
         int padding = medal_name.indexOf("の勲章");
         if (padding > 0) {
             medal_name = medal_name.substring(0, padding);

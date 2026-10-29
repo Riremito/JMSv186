@@ -25,7 +25,6 @@ public class MapleItemInformationProvider {
     private final Map<Integer, Double> priceCache = new HashMap<>();
     private final Map<Integer, Integer> wholePriceCache = new HashMap<>();
     private final Map<Integer, Integer> monsterBookID = new HashMap<>();
-    private final Map<Integer, String> nameCache = new HashMap<>();
     private final Map<Integer, String> msgCache = new HashMap<>();
     private final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<>();
     private final Map<Integer, Byte> consumeOnPickupCache = new HashMap<>();
@@ -37,8 +36,6 @@ public class MapleItemInformationProvider {
     private final Map<Integer, Boolean> notSaleCache = new HashMap<>();
     private final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
     private final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<>();
-    private final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
-    private final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
     private final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
 
     public static MapleItemInformationProvider getInstance() {
@@ -57,9 +54,6 @@ public class MapleItemInformationProvider {
         return value;
     }
 
-    /**
-     * returns the maximum of items in one slot
-     */
     public short getSlotMax(int itemId) {
         return cached(slotMaxCache, itemId, WzXML.ITEM::loadSlotMax);
     }
@@ -74,14 +68,6 @@ public class MapleItemInformationProvider {
 
     public Map<String, Byte> getItemMakeStats(int itemId) {
         return cached(itemMakeStatsCache, itemId, WzXML.ITEM::loadItemMakeStats);
-    }
-
-    public Map<Integer, Map<String, Integer>> getEquipIncrements(int itemId) {
-        return cached(equipIncsCache, itemId, WzXML.ITEM::loadEquipIncrements);
-    }
-
-    public Map<Integer, List<Integer>> getEquipSkills(int itemId) {
-        return cached(equipSkillsCache, itemId, WzXML.ITEM::loadEquipSkills);
     }
 
     public Map<String, Integer> getEquipStats(int itemId) {
@@ -149,10 +135,6 @@ public class MapleItemInformationProvider {
 
     public boolean canScroll(int scrollid, int itemid) {
         return (scrollid / 100) % 100 == (itemid / 10000) % 100;
-    }
-
-    public String getName(int itemId) {
-        return cached(nameCache, itemId, WzXML.STRING::loadItemName);
     }
 
     public String getMsg(int itemId) {

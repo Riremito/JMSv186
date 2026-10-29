@@ -62,6 +62,7 @@ import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
 import tacos.server.TacosWorld;
+import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
 
 public abstract class OdinAbstractPlayerInteraction {
@@ -386,56 +387,56 @@ public abstract class OdinAbstractPlayerInteraction {
         client.getPlayer().modifyCSPoints(1, amount, true);
     }
 
-    public void gainItemPeriod(int id, short quantity, int period) { //period is in days
-        gainItem(id, quantity, false, period, -1, "");
+    public void gainItemPeriod(int item_id, short quantity, int period) { //period is in days
+        gainItem(item_id, quantity, false, period, -1, "");
     }
 
-    public void gainItemPeriod(int id, short quantity, long period, String owner) { //period is in days
-        gainItem(id, quantity, false, period, -1, owner);
+    public void gainItemPeriod(int item_id, short quantity, long period, String owner) { //period is in days
+        gainItem(item_id, quantity, false, period, -1, owner);
     }
 
-    public void gainItem(int id, short quantity) {
-        gainItem(id, quantity, false, 0, -1, "");
+    public void gainItem(int item_id, short quantity) {
+        gainItem(item_id, quantity, false, 0, -1, "");
     }
 
-    public void gainItem(int id, short quantity, boolean randomStats) {
-        gainItem(id, quantity, randomStats, 0, -1, "");
+    public void gainItem(int item_id, short quantity, boolean randomStats) {
+        gainItem(item_id, quantity, randomStats, 0, -1, "");
     }
 
-    public void Gashapon(int id, short quantity) {
-        Item item_info = gainItem(id, quantity, true, 0, -1, "");
+    public void Gashapon(int item_id, short quantity) {
+        Item item_info = gainItem(item_id, quantity, true, 0, -1, "");
         if (item_info != null) {
             this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item_info).build()));
         }
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, int slots) {
-        return gainItem(id, quantity, randomStats, 0, slots, "");
+    public Item gainItem(int item_id, short quantity, boolean randomStats, int slots) {
+        return gainItem(item_id, quantity, randomStats, 0, slots, "");
     }
 
-    public Item gainItem(int id, short quantity, long period) {
-        return gainItem(id, quantity, false, period, -1, "");
+    public Item gainItem(int item_id, short quantity, long period) {
+        return gainItem(item_id, quantity, false, period, -1, "");
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots) {
-        return gainItem(id, quantity, randomStats, period, slots, "");
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots) {
+        return gainItem(item_id, quantity, randomStats, period, slots, "");
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner) {
-        return gainItem(id, quantity, randomStats, period, slots, owner, getPlayer());
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots, String owner) {
+        return gainItem(item_id, quantity, randomStats, period, slots, owner, getPlayer());
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner, TacosCharacter chr) {
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots, String owner, TacosCharacter chr) {
         Item item_info = null;
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            MapleInventoryType type = GameConstants.getInventoryType(id);
+            MapleInventoryType type = GameConstants.getInventoryType(item_id);
 
-            if (!MapleInventoryManipulator.checkSpace(chr, id, quantity, "")) {
+            if (!MapleInventoryManipulator.checkSpace(chr, item_id, quantity, "")) {
                 return null;
             }
-            if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
-                Equip item = randomStats ? ii.getEquipById(id) : ii.getDefaultEquipById(id);
+            if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(item_id) && !GameConstants.isBullet(item_id)) {
+                Equip item = randomStats ? ii.getEquipById(item_id) : ii.getDefaultEquipById(item_id);
                 if (period > 0) {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
@@ -445,8 +446,8 @@ public abstract class OdinAbstractPlayerInteraction {
                 if (owner != null) {
                     item.setOwner(owner);
                 }
-                String name = ii.getName(id);
-                if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
+                String name = item.getName();
+                if (item_id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
                     chr.Notice(msg);
@@ -454,14 +455,14 @@ public abstract class OdinAbstractPlayerInteraction {
                 MapleInventoryManipulator.addbyItem(chr, item.copy());
                 item_info = item;
             } else {
-                MapleInventoryManipulator.addById(chr, id, quantity, owner == null ? "" : owner, null, period);
+                MapleInventoryManipulator.addById(chr, item_id, quantity, owner == null ? "" : owner, null, period);
             }
         } else {
-            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, -quantity, true, false);
         }
 
         PB_UserEffect pb = PB_UserEffect.builder()
-                .item_id(id)
+                .item_id(item_id)
                 .item_quantity(quantity)
                 .build();
         chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
@@ -936,8 +937,8 @@ public abstract class OdinAbstractPlayerInteraction {
         return MapleInventoryType.getByType((byte) i);
     }
 
-    public String getItemName(int id) {
-        return MapleItemInformationProvider.getInstance().getName(id);
+    public String getItemName(int item_id) {
+        return WzNameStorage.ITEM.get(item_id).getName();
     }
 
     public void gainPet(int id, String name, int level, int closeness, int fullness, long period) {

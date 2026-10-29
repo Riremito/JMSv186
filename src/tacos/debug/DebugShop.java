@@ -33,6 +33,8 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.config.Config;
+import tacos.server.TacosWorld;
+import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
 
@@ -259,9 +261,11 @@ public class DebugShop {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
-
-        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        MapleInventoryManipulator.addById(chr, item_id, (short) quantity); // bool...?
+        if (GameConstants.isPet(item_id)) {
+            MapleInventoryManipulator.addById(chr, item_id, (short) quantity, "", TacosPet.createPet(item_id, TacosWorld.getNextItemUniqueId()), -1);
+        } else {
+            MapleInventoryManipulator.addById(chr, item_id, (short) quantity); // bool...?
+        }
         chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         chr.DebugMsg("DebugShop : buy " + item_id);

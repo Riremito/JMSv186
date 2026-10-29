@@ -282,12 +282,7 @@ public class TacosCommandDebug {
                 int itemid = WzDataStorage.ITEM.getRandom();
                 Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.getEquipById(itemid) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
-                String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
-
-                if (item_name == null) {
-                    item_name = "<null>";
-                }
-
+                String item_name = toDrop.getName();
                 chr.DebugMsgItem("randomdrop : " + toDrop.getItemId() + " - " + item_name, toDrop.getItemId());
                 DebugLogger.InfoLog("randomdrop : " + toDrop.getItemId() + " - " + item_name);
                 return true;
