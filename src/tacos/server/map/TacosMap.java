@@ -94,6 +94,8 @@ import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.builder.PB_UserEffect;
 
@@ -382,11 +384,15 @@ public class TacosMap extends TacosMapData {
         }
         sendExpedition(chr, null);
 
-        splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId());
+        splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId()); // including pet for remote user. (JMS186)
         // pet.
         chr.updatePets();
         for (TacosPet pet : chr.getPets()) {
-            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
+            if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                splitSendPacket(chr, ResCUser_Pet.PetActivated(chr, pet)); // pet for local and remote. (JMS131)
+            } else {
+                chr.SendPacket(ResCUser_Pet.PetTransferField(chr, pet)); // pet for local user. (JMS186)
+            }
         }
         // summon.
         chr.updateSummons();
@@ -418,7 +424,9 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 // pet.
                 for (TacosPet pet : player.getPets()) {
-                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                        chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
+                    }
                 }
                 // summon.
                 for (TacosSummon summon : player.getSummons()) {
@@ -564,14 +572,18 @@ public class TacosMap extends TacosMapData {
             if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 for (TacosPet pet : chr.getPets()) {
-                    player.SendPacket(ResCUser_Pet.TransferField(chr, pet));
+                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                        player.SendPacket(ResCUser_Pet.PetActivated(chr, pet));
+                    }
                 }
                 for (TacosSummon summon : chr.getSummons()) {
                     player.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 for (TacosPet pet : player.getPets()) {
-                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                        chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
+                    }
                 }
                 for (TacosSummon summon : player.getSummons()) {
                     chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));

@@ -102,6 +102,14 @@ public class ResCUser_Pet {
         return data.getBytes();
     }
 
+    public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet) {
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG);
+    }
+
+    public static ServerPacket PetDeactivated(TacosCharacter chr, TacosPet pet, DeActivatedMsg msg) {
+        return PetActivated(chr, pet, false, msg);
+    }
+
     // CUserLocal::OnPetActivated, CUserRemote::OnPetActivated
     public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActivated);
@@ -118,26 +126,11 @@ public class ResCUser_Pet {
         if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
             // none.
         } else {
-            sp.Encode1(0);
+            sp.Encode1(1); // JMS302 has to be 1. (diasble NPC dialog)
         }
 
         sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
         return sp;
-    }
-
-    public static ServerPacket Activated(TacosCharacter chr, TacosPet pet) {
-        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG);
-    }
-
-    public static ServerPacket Deactivated(TacosCharacter chr, TacosPet pet, DeActivatedMsg msg) {
-        return PetActivated(chr, pet, false, msg);
-    }
-
-    public static ServerPacket TransferField(TacosCharacter chr, TacosPet pet) {
-        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
-            return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG);
-        }
-        return PetTransferField(chr, pet);
     }
 
     // CUserLocal::OnPetEvol, CUserRemote::OnPetEvol
@@ -152,15 +145,17 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    // not coded yet.
     public static ServerPacket PetTransferField(TacosCharacter chr, TacosPet pet) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetTransferField);
 
         sp.Encode4(chr.getId()); // dwCharacterID
         sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
-        sp.Encode1(1); // spawn or not.
-        sp.Encode1(0);
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            sp.Encode1(1); // spawn or not. (JMS186)
+        }
+        sp.Encode1(0); // remove or not. (JMS147), msg (JMS186)
         sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
+        sp.Encode2(0);
         return sp;
     }
 

@@ -190,7 +190,6 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
         log(session, "messageSent.");
-        //log(session, (new ClientPacket(((MaplePacket) message).getBytes())).get()); // server packet
         super.messageSent(session, message);
     }
 }

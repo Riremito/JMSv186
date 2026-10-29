@@ -1262,7 +1262,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void removePet(TacosPet pet) {
         this.map.removePet(pet);
-        this.map.broadcastPacket(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
+        this.map.broadcastPacket(ResCUser_Pet.PetDeactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
         int index = getPetIndex(pet);
         if (index != -1) {
             this.pets.remove(index);
@@ -1280,7 +1280,7 @@ public class TacosCharacter extends TacosPlayer {
         this.pets.add(pet);
         pet.reset(this);
         this.map.addPet(pet);
-        this.map.broadcastPacket(ResCUser_Pet.Activated(this, pet));
+        this.map.broadcastPacket(ResCUser_Pet.PetActivated(this, pet));
     }
 
     public void updatePets() {

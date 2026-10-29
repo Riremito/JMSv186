@@ -119,12 +119,13 @@ public class RD_CUser {
         data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
 
         // pet.
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             TacosPet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
             }
+            data.Encode4(chr.getPetIndex(pet), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186));
             data.EncodeBuffer(RD_CUser.CPet_Init(pet));
         }
         // riding.
@@ -243,13 +244,13 @@ public class RD_CUser {
         data.Encode1(chr.getMoveAction()); // m_nMoveAction
         data.Encode2(chr.getFootholdId());
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             TacosPet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
             }
-            data.Encode4(0);
+            data.Encode4(chr.getPetIndex(pet));
             data.EncodeBuffer(RD_CUser.CPet_Init(pet));
         }
 
