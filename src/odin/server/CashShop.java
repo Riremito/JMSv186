@@ -142,7 +142,7 @@ public class CashShop {
                     eq.setRing(ring);
                 }
             }
-            ret = eq.copy();
+            ret = eq;
         } else {
             Item item = new Item(cItem.getId(), (byte) 0, (short) cItem.getCount(), (byte) 0, uniqueid);
             item.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
@@ -153,7 +153,7 @@ public class CashShop {
                     item.setPet(pet);
                 }
             }
-            ret = item.copy();
+            ret = item;
         }
         return ret;
     }

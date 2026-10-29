@@ -190,8 +190,7 @@ public class ReqCITC {
                     return true;
                 }
 
-                Item item_ = item.copy();
-                short pos = MapleInventoryManipulator.addbyItem(chr, item_, true);
+                short pos = MapleInventoryManipulator.addbyItem(chr, item, true);
                 if (pos < 0) {
                     PB_ITC pb = PB_ITC.builder()
                             .fail_reason(OpsITC.ITCFailReason_NoEmptyPos)
@@ -199,14 +198,14 @@ public class ReqCITC {
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Failed, pb));
                     return true;
                 }
-                if (item_.getPet() != null) {
-                    item_.getPet().setInventoryPosition(pos);
+                if (item.getPet() != null) {
+                    item.getPet().setInventoryPosition(pos);
                 }
                 cart.removeFromInventory(item);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.getByType(item_.getType()), item_).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.getByType(item.getType()), item).build()));
 
                 PB_ITC pb = PB_ITC.builder()
-                        .item(item_)
+                        .item(item)
                         .build();
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Done, pb));
                 sendMTSPackets(client.getPlayer(), cart, true);

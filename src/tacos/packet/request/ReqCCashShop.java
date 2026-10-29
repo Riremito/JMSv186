@@ -353,40 +353,36 @@ public class ReqCCashShop {
     // ポイントショップからアイテム欄へ移動
     // CCashShop::OnCashItemResMoveLtoSDone, the client puts the item at nPOS and disconnects if it can not.
     private static boolean MoveLtoS(TacosCharacter chr, long cash_item_SN, byte inv_type, short inv_slot) {
-        Item item_src = chr.getCashInventory().findByCashId(cash_item_SN);
-        if (item_src == null || item_src.getQuantity() < 1) {
+        Item item = chr.getCashInventory().findByCashId(cash_item_SN);
+        if (item == null || item.getQuantity() < 1) {
             chr.SendPacket(ResCCashShop.CashItemResultFailed(OpsCashItem.CashItemRes_MoveLtoS_Failed, OpsCashItemFailReason.CashItemFailReason_UnknownError));
             return true;
         }
-        Item item_dst = item_src.copy();
-        item_dst.setUniqueId(item_src.getUniqueId());
         // アイテム欄へ移動
-        if (MapleInventoryManipulator.addbyItem(chr, item_dst, true) < 0) {
+        if (MapleInventoryManipulator.addbyItem(chr, item, true) < 0) {
             chr.SendPacket(ResCCashShop.CashItemResultFailed(OpsCashItem.CashItemRes_MoveLtoS_Failed, OpsCashItemFailReason.CashItemFailReason_NoEmptyPos));
             return true;
         }
         // ポイントショップ上から削除
-        chr.getCashInventory().removeFromInventory(item_src);
-        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item_dst)));
+        chr.getCashInventory().removeFromInventory(item);
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
         return true;
     }
 
     // アイテム欄からポイントショップへ移動
     private static boolean MoveStoL(TacosCharacter chr, long inv_item_SN, byte inv_type) {
         MapleInventoryType inv_item_type = MapleInventoryType.getByType(inv_type);
-        Item item_src = inv_item_type == null ? null : chr.getInventory(inv_item_type).findByUniqueId(inv_item_SN);
+        Item item = inv_item_type == null ? null : chr.getInventory(inv_item_type).findByUniqueId(inv_item_SN);
 
-        if (item_src == null || item_src.getQuantity() < 1) {
+        if (item == null || item.getQuantity() < 1) {
             chr.SendPacket(ResCCashShop.CashItemResultFailed(OpsCashItem.CashItemRes_MoveStoL_Failed, OpsCashItemFailReason.CashItemFailReason_UnknownError));
             return true;
         }
-        Item item_dst = item_src.copy();
-        item_dst.setUniqueId(item_src.getUniqueId());
         // ポイントショップへ移動
-        chr.getCashInventory().addToInventory(item_dst);
+        chr.getCashInventory().addToInventory(item);
         // アイテム欄から削除
-        chr.getInventory(inv_item_type).removeSlot(item_src.getPosition());
-        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item_dst)));
+        chr.getInventory(inv_item_type).removeSlot(item.getPosition());
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
         return true;
     }
 

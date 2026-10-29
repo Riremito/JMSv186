@@ -452,7 +452,7 @@ public abstract class OdinAbstractPlayerInteraction {
                     chr.dropMessage(-1, msg);
                     chr.Notice(msg);
                 }
-                MapleInventoryManipulator.addbyItem(chr, item.copy());
+                MapleInventoryManipulator.addbyItem(chr, item);
                 item_info = item;
             } else {
                 MapleInventoryManipulator.addById(chr, item_id, quantity, owner == null ? "" : owner, null, period);

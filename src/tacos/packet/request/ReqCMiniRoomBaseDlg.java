@@ -419,15 +419,15 @@ public class ReqCMiniRoomBaseDlg {
 
                 if (item != null) {
                     if (item.bundles > 0) {
-                        Item item_get = item.item.copy();
                         long check = item.bundles * item.item.getQuantity();
                         if (check <= 0 || check > 32767) {
                             chr.updateStat();
                             return true;
                         }
-                        item_get.setQuantity((short) check);
-                        if (MapleInventoryManipulator.checkSpace(chr, item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
-                            MapleInventoryManipulator.addFromDrop(chr, item_get, false);
+                        if (MapleInventoryManipulator.checkSpace(chr, item.item.getItemId(), (short) check, item.item.getOwner())) {
+                            // the shop slot is removed below, so the stock itself goes back to the inventory.
+                            item.item.setQuantity((short) check);
+                            MapleInventoryManipulator.addFromDrop(chr, item.item, false);
                             item.bundles = 0;
                             shop.removeFromSlot(slot);
                         }

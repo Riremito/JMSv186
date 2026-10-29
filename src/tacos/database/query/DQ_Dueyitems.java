@@ -131,7 +131,7 @@ public class DQ_Dueyitems {
                             }
                         }
                     }
-                    items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(equip.copy(), mit));
+                    items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(equip, mit));
                 } else {
                     Item item = new Item(rs.getInt("itemid"), rs.getShort("position"), rs.getShort("quantity"), rs.getByte("flag"));
                     item.setUniqueId(rs.getInt("uniqueid"));
@@ -152,7 +152,7 @@ public class DQ_Dueyitems {
                             item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                         }
                     }
-                    items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(item.copy(), mit));
+                    items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(item, mit));
                 }
             }
 

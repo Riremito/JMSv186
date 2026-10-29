@@ -206,7 +206,7 @@ public class DQ_Inventoryitems {
                                 }
                             }
                         }
-                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(equip.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(equip, mit));
                     } else {
                         Item item = new Item(item_id, (short) item_slot, (short) item_quantity, (byte) item_flag);
                         item.setUniqueId(item_uid);
@@ -226,7 +226,7 @@ public class DQ_Inventoryitems {
                                 item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                             }
                         }
-                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(item.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(item, mit));
                     }
                 }
                 return items;
