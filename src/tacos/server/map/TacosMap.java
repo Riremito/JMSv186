@@ -388,7 +388,7 @@ public class TacosMap extends TacosMapData {
         // pet.
         chr.updatePets();
         for (TacosPet pet : chr.getPets()) {
-            if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+            if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
                 splitSendPacket(chr, ResCUser_Pet.PetActivated(chr, pet)); // pet for local and remote. (JMS131)
             } else {
                 chr.SendPacket(ResCUser_Pet.PetTransferField(chr, pet)); // pet for local user. (JMS186)
@@ -424,7 +424,7 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 // pet.
                 for (TacosPet pet : player.getPets()) {
-                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
                         chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
                     }
                 }
@@ -572,7 +572,7 @@ public class TacosMap extends TacosMapData {
             if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 for (TacosPet pet : chr.getPets()) {
-                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
                         player.SendPacket(ResCUser_Pet.PetActivated(chr, pet));
                     }
                 }
@@ -581,7 +581,7 @@ public class TacosMap extends TacosMapData {
                 }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 for (TacosPet pet : player.getPets()) {
-                    if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
                         chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
                     }
                 }

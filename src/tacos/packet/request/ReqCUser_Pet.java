@@ -55,28 +55,25 @@ public class ReqCUser_Pet {
 
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
-    // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
-
         TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
-
         TacosPet pet = null;
-        // outside CUser
-        if (Config.LessOrEqual(Region.JMS, 147)) {
-            long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
+        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+            pet = chr.getPetByIndex(0); // JMS131
+        } else if (Config.Between(Region.JMS, 147, 180) || Config.Equal(Region.GMS, 95)) {
+            long pet_uid = cp.Decode8(); // JMS147-180
             pet = chr.getPetByUniqueId(pet_uid);
-        } else {
-            int pet_index = cp.Decode4();
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
+            int pet_index = cp.Decode4(); // JMS186
             pet = chr.getPetByIndex(pet_index);
         }
-
         if (pet == null) {
             DebugLogger.ErrorLog("OnPetPacket : no pet.");
             return true;

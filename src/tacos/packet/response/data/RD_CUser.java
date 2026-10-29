@@ -62,7 +62,7 @@ public class RD_CUser {
         data.Encode1(pet.getMoveAction());
         data.Encode2(pet.getFootholdId());
 
-        if (Config.GreaterOrEqual(Region.THMS, 96)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.THMS, 96)) {
             data.Encode1(0);
             data.Encode1(0);
         }

@@ -150,7 +150,7 @@ public class ResCUser_Pet {
 
         sp.Encode4(chr.getId()); // dwCharacterID
         sp.EncodeBuffer(getPetIdxBuffer(chr.getPetIndex(pet))); // nIdx
-        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
             sp.Encode1(1); // spawn or not. (JMS186)
         }
         sp.Encode1(0); // remove or not. (JMS147), msg (JMS186)
