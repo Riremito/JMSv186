@@ -22,7 +22,6 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.inventory.Equip;
-import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.ItemMakerFactory;
@@ -38,7 +37,7 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.wz.CharacterWz.EquipData;
+import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.WzXML;
 
 /**
@@ -144,7 +143,7 @@ public class ReqCUser_ItemMaker {
     }
 
     private static OpsItemMakerResult disassembleEquip(TacosCharacter chr, int item_id, int slot) {
-        Item to_use = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
+        Equip to_use = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
         if (to_use == null || to_use.getItemId() != item_id || to_use.getQuantity() < 1) {
             DebugLogger.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
@@ -153,7 +152,7 @@ public class ReqCUser_ItemMaker {
         if (ii.isDropRestricted(item_id) || ii.isAccountShared(item_id)) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
-        EquipData ed = WzXML.CHARACTER.getEquipData(item_id);
+        EquipInfo ed = to_use.getInfo();
         int crystal_id = getCrystal(ed.getReqLevel());
         if (crystal_id <= 0) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;

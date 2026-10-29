@@ -27,7 +27,7 @@ import tacos.config.ContentCustom;
 import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.shared.TacosShared;
-import tacos.wz.CharacterWz.EquipData;
+import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.ItemWz.ScrollData;
 import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Random;
@@ -191,7 +191,7 @@ public class TacosEnhancement {
         if (sd == null) {
             return EnhancementResult.UNKNOWN;
         }
-        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        EquipInfo ed = equip.getInfo();
         if (ed == null) {
             return EnhancementResult.UNKNOWN;
         }
@@ -285,7 +285,7 @@ public class TacosEnhancement {
     }
 
     // 白の書
-    private EnhancementResult useRecoverScroll(ScrollData sd, EquipData ed) {
+    private EnhancementResult useRecoverScroll(ScrollData sd, EquipInfo ed) {
         boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= ed.getTuc();
         if (!is_recovery_possible) {
             return EnhancementResult.UNKNOWN;
@@ -370,7 +370,7 @@ public class TacosEnhancement {
     }
 
     public boolean useViciousHammer() {
-        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        EquipInfo ed = equip.getInfo();
         if (ed == null || ed.getTuc() == 0) {
             return false;
         }
@@ -400,7 +400,7 @@ public class TacosEnhancement {
         if (equip.getRUC() != 0) {
             return false;
         }
-        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        EquipInfo ed = equip.getInfo();
         if (ed == null) {
             return false;
         }
@@ -480,7 +480,7 @@ public class TacosEnhancement {
         if (equip.getHidden() != 0 || equip.getGrade() != 0) {
             return false;
         }
-        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        EquipInfo ed = equip.getInfo();
         if (ed == null) {
             return false;
         }

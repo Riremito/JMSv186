@@ -112,7 +112,7 @@ import tacos.server.map.TacosNpcShop;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
-import tacos.wz.CharacterWz.EquipData;
+import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.MobWz.MobAttackInfo;
 import tacos.wz.NpcWz.NpcInfo;
 import tacos.wz.WzXML;
@@ -1878,7 +1878,7 @@ public class ReqCUser {
             return false;
         }
 
-        EquipData ed = WzXML.CHARACTER.getEquipData(equip.getItemId());
+        EquipInfo ed = equip.getInfo();
         int reqLevel = ed.getReqLevel() / 10;
         if (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3)) {
             if (!equip.getEnhancement().useMagnify()) {

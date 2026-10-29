@@ -60,7 +60,7 @@ public class CharacterWz extends WzXML {
     }
 
     @Getter
-    public class EquipData {
+    public class EquipInfo {
 
         private int tuc;
         private int incSTR;
@@ -98,16 +98,16 @@ public class CharacterWz extends WzXML {
         // vslot
     }
 
-    private final HashMap<Integer, EquipData> equip_infos = new HashMap<>();
+    private final HashMap<Integer, EquipInfo> equip_infos = new HashMap<>();
 
-    public EquipData getEquipData(int equip_id) {
-        EquipData ret = this.equip_infos.get(equip_id);
+    public EquipInfo getEquipInfo(int equip_id) {
+        EquipInfo ret = this.equip_infos.get(equip_id);
         if (ret == null) {
             MapleData equip_img = getItemData(equip_id);
             if (equip_img != null) {
                 MapleData info = equip_img.getChildByPath("info");
                 if (info != null) {
-                    ret = new EquipData();
+                    ret = new EquipInfo();
                     ret.tuc = info.getInt("tuc");
                     ret.incSTR = info.getInt("incSTR");
                     ret.incDEX = info.getInt("incDEX");
@@ -143,7 +143,7 @@ public class CharacterWz extends WzXML {
     }
 
     public Equip getEquipById(int equip_id) {
-        EquipData ed = getEquipData(equip_id);
+        EquipInfo ed = getEquipInfo(equip_id);
         Equip ret = new Equip(equip_id, (byte) 0, -1, (byte) 0);
 
         ret.setQuantity((short) 1);

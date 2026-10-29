@@ -22,6 +22,8 @@ package odin.client.inventory;
 
 import tacos.packet.ops.OpsGrade;
 import tacos.server.TacosEnhancement;
+import tacos.wz.CharacterWz.EquipInfo;
+import tacos.wz.WzXML;
 
 public class Equip extends Item {
 
@@ -71,6 +73,10 @@ public class Equip extends Item {
 
     public TacosEnhancement getEnhancement() {
         return new TacosEnhancement(this);
+    }
+
+    public EquipInfo getInfo() {
+        return WzXML.CHARACTER.getEquipInfo(getItemId());
     }
 
     // get.

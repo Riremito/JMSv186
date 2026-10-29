@@ -68,6 +68,7 @@ import tacos.packet.response.builder.PB_InvOp;
 import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.client.inventory.Equip;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.client.TacosMonsterBook;
@@ -79,8 +80,7 @@ import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CStage;
-import tacos.wz.CharacterWz.EquipData;
-import tacos.wz.WzXML;
+import tacos.wz.CharacterWz.EquipInfo;
 
 /**
  *
@@ -792,11 +792,11 @@ public class ResCWvsContext {
         }
 
         // CUIUserInfo::SetTamingMobInfo
-        Item inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
+        Equip inv_mount = (Equip) player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;
         MapleMount tm = player.getMount();
         if (tm != null && inv_mount != null) {
-            EquipData ed = WzXML.CHARACTER.getEquipData(inv_mount.getItemId());
+            EquipInfo ed = inv_mount.getInfo();
             TamingMobEnabled = ed.getReqLevel() <= player.getLevel();
         }
         sp.Encode1(TamingMobEnabled ? 1 : 0);
