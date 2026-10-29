@@ -5,7 +5,7 @@ import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosPet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import tacos.wz.CharacterWz.EquipInfo;
 import java.util.function.Predicate;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
@@ -470,11 +470,11 @@ public class MapleInventoryManipulator {
             return;
         }
 
-        Map<String, Integer> stats = ii.getEquipStats(source.getItemId());
+        EquipInfo stats = source.getInfo();
         if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId()) && dst != -1400) {
             chr.updateInv();
             return;
-        } else if (dst >= -999 && dst < -99 && stats.get("cash") == 0) {
+        } else if (dst >= -999 && dst < -99 && stats.getCash() == 0) {
             chr.updateInv();
             return;
         }
@@ -559,7 +559,7 @@ public class MapleInventoryManipulator {
             chr.updateInv();
             return;
         }
-        if (stats.get("equipTradeBlock") == 1) { // Block trade when equipped.
+        if (stats.getEquipTradeBlock() == 1) { // Block trade when equipped.
             byte flag = source.getFlag();
             if (!ItemFlag.UNTRADEABLE.check(flag)) {
                 flag |= ItemFlag.UNTRADEABLE.getValue();

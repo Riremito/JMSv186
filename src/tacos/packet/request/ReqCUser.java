@@ -113,6 +113,7 @@ import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
 import tacos.wz.CharacterWz.EquipInfo;
+import tacos.wz.ItemWz.ItemInfo;
 import tacos.wz.MobWz.MobAttackInfo;
 import tacos.wz.NpcWz.NpcInfo;
 import tacos.wz.WzXML;
@@ -1683,7 +1684,7 @@ public class ReqCUser {
         }
         Item wscroll = null;
         // Anti cheat and validation
-        List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
+        List<Integer> scrollReqs = WzXML.ITEM.getItemInfo(scroll.getItemId()).getReq();
         if (scrollReqs.size() > 0 && !scrollReqs.contains(equip.getItemId())) {
             chr.updateInv();
             return false;
@@ -2781,11 +2782,11 @@ public class ReqCUser {
         // used
         MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, item_slot, (short) 1, false);
         // spawn mobs
-        List<SimpleImmutableEntry<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
-        if (summon_info == null) {
+        ItemInfo summon_info = WzXML.ITEM.getItemInfo(item_id);
+        if (summon_info == null || !GameConstants.isSummonSack(item_id)) {
             return true;
         }
-        for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info) {
+        for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info.getSummonMob()) {
             if (Randomizer.nextInt(100) < summon_data.getValue()) {
                 TacosMonster monster = WzXML.MOB.createMob(summon_data.getKey());
                 if (monster != null) {
@@ -2910,24 +2911,19 @@ public class ReqCUser {
             return false;
         }
 
-        Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(item_used.getItemId());
-        if (skilldata == null) {
+        // skill book and mastery book
+        int item_sub_type = item_used.getItemId() / 10000;
+        ItemInfo skilldata = WzXML.ITEM.getItemInfo(item_used.getItemId());
+        if (skilldata == null || !(item_sub_type == 228 || item_sub_type == 229 || item_sub_type == 562)) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;
         }
 
-        int SuccessRate = skilldata.get("success");
-        int ReqSkillLevel = skilldata.get("reqSkillLevel");
-        int MasterLevel = skilldata.get("masterLevel");
-        byte i = 0;
-        Integer CurrentLoopedSkillId;
+        int SuccessRate = skilldata.getSuccess();
+        int ReqSkillLevel = skilldata.getReqSkillLevel();
+        int MasterLevel = skilldata.getMasterLevel();
 
-        while (true) {
-            CurrentLoopedSkillId = skilldata.get("skillid" + i);
-            i++;
-            if (CurrentLoopedSkillId == null) {
-                break; // End of data
-            }
+        for (int CurrentLoopedSkillId : skilldata.getSkill()) {
             Skill CurrSkillData = WzXML.SKILL.getSkill().get(CurrentLoopedSkillId);
             if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 bUsed = true;

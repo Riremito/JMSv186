@@ -20,7 +20,6 @@ package tacos.packet.request;
 
 import java.util.AbstractMap;
 import java.util.List;
-import java.util.Map;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -38,6 +37,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.CharacterWz.EquipInfo;
+import tacos.wz.ItemWz.ItemInfo;
 import tacos.wz.WzXML;
 
 /**
@@ -129,7 +129,7 @@ public class ReqCUser_ItemMaker {
             DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL : item");
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
-        int crystal_id = getCrystal(MapleItemInformationProvider.getInstance().getItemMakeLevel(etc_item_id));
+        int crystal_id = getCrystal(getMonsterCrystalLevel(etc_item_id));
         if (crystal_id <= 0) {
             DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL : level");
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
@@ -240,8 +240,8 @@ public class ReqCUser_ItemMaker {
             if (!chr.haveItem(gem_id, 1, false, true)) {
                 continue;
             }
-            Map<String, Byte> stats = ii.getItemMakeStats(gem_id);
-            if (stats == null) {
+            ItemInfo stats = WzXML.ITEM.getItemInfo(gem_id);
+            if (stats == null || gem_id / 10000 != 425) {
                 continue;
             }
             addEnchantStats(stats, to_give);
@@ -249,6 +249,15 @@ public class ReqCUser_ItemMaker {
         }
         MapleInventoryManipulator.addbyItem(chr, to_give);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+    }
+
+    // level of the monster drop item (400xxxx), 0 = not a monster drop item.
+    private static int getMonsterCrystalLevel(int etc_item_id) {
+        if (etc_item_id / 10000 != 400) {
+            return 0;
+        }
+        ItemInfo info = WzXML.ITEM.getItemInfo(etc_item_id);
+        return (info == null) ? 0 : info.getLv();
     }
 
     // monster crystal by the level, -1 = invalid level.
@@ -266,26 +275,21 @@ public class ReqCUser_ItemMaker {
         return 4260001 + (level - 51) / 10;
     }
 
-    private static short addStat(int base, Map<String, Byte> stats, String key) {
-        Byte value = stats.get(key);
-        return (short) ((value == null) ? base : base + value);
-    }
-
-    private static void addEnchantStats(Map<String, Byte> stats, Equip item) {
-        item.setPAD(addStat(item.getPAD(), stats, "incPAD"));
-        item.setMAD(addStat(item.getMAD(), stats, "incMAD"));
-        item.setACC(addStat(item.getACC(), stats, "incACC"));
-        item.setEVA(addStat(item.getEVA(), stats, "incEVA"));
-        item.setSpeed(addStat(item.getSpeed(), stats, "incSpeed"));
-        item.setJump(addStat(item.getJump(), stats, "incJump"));
-        item.setMaxHP(addStat(item.getMaxHP(), stats, "incMaxHP"));
-        item.setMaxMP(addStat(item.getMaxMP(), stats, "incMaxMP"));
-        item.setSTR(addStat(item.getSTR(), stats, "incSTR"));
-        item.setDEX(addStat(item.getDEX(), stats, "incDEX"));
-        item.setINT(addStat(item.getINT(), stats, "incINT"));
-        item.setLUK(addStat(item.getLUK(), stats, "incLUK"));
-        Byte rand_option = stats.get("randOption");
-        if (rand_option != null && rand_option > 0) {
+    private static void addEnchantStats(ItemInfo stats, Equip item) {
+        item.setPAD((short) (item.getPAD() + stats.getIncPAD()));
+        item.setMAD((short) (item.getMAD() + stats.getIncMAD()));
+        item.setACC((short) (item.getACC() + stats.getIncACC()));
+        item.setEVA((short) (item.getEVA() + stats.getIncEVA()));
+        item.setSpeed((short) (item.getSpeed() + stats.getIncSpeed()));
+        item.setJump((short) (item.getJump() + stats.getIncJump()));
+        item.setMaxHP((short) (item.getMaxHP() + stats.getIncMaxHP()));
+        item.setMaxMP((short) (item.getMaxMP() + stats.getIncMaxMP()));
+        item.setSTR((short) (item.getSTR() + stats.getIncSTR()));
+        item.setDEX((short) (item.getDEX() + stats.getIncDEX()));
+        item.setINT((short) (item.getINT() + stats.getIncINT()));
+        item.setLUK((short) (item.getLUK() + stats.getIncLUK()));
+        int rand_option = stats.getRandOption();
+        if (rand_option > 0) {
             int delta = Randomizer.nextBoolean() ? rand_option : -rand_option;
             if (item.getPAD() > 0) {
                 item.setPAD((short) (item.getPAD() + delta));
@@ -294,8 +298,8 @@ public class ReqCUser_ItemMaker {
                 item.setMAD((short) (item.getMAD() + delta));
             }
         }
-        Byte rand_stat = stats.get("randStat");
-        if (rand_stat != null && rand_stat > 0) {
+        int rand_stat = stats.getRandStat();
+        if (rand_stat > 0) {
             int delta = Randomizer.nextBoolean() ? rand_stat : -rand_stat;
             if (item.getSTR() > 0) {
                 item.setSTR((short) (item.getSTR() + delta));

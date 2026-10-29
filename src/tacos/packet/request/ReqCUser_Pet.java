@@ -128,7 +128,7 @@ public class ReqCUser_Pet {
             return false;
         }
 
-        int inc_fullness = MapleItemInformationProvider.getInstance().getInt(item_id, "spec/inc");
+        int inc_fullness = WzXML.ITEM.getItemInfo(item_id).getInc();
         int pet_previous_level = pet.getLevel();
         pet.feed(inc_fullness, (item_type == MapleInventoryType.CASH) ? 100 : 10);
         MapleInventoryManipulator.removeById(chr, item_type, item_id, 1, true, false);

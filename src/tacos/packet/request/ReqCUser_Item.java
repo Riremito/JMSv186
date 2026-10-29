@@ -322,10 +322,10 @@ public class ReqCUser_Item {
             case 512: {
                 String message = cp.DecodeStr();
                 MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-                String msg = miip.getMsg(cash_item_id).replaceFirst("%s", chr.getName()).replaceFirst("%s", message);
+                String msg = WzXML.STRING.loadItemMsg(cash_item_id).replaceFirst("%s", chr.getName()).replaceFirst("%s", message);
                 map.startMapEffect(msg, cash_item_id);
 
-                int buff = miip.getStateChangeItem(cash_item_id);
+                int buff = WzXML.ITEM.getItemInfo(cash_item_id).getStateChangeItem();
                 if (buff != 0) {
                     for (TacosCharacter mChar : map.getAllPlayers()) {
                         miip.getItemEffect(buff).applyTo(mChar);
@@ -737,7 +737,7 @@ public class ReqCUser_Item {
             case 5200001:
             case 5200002: // メル袋
             {
-                int meso = MapleItemInformationProvider.getInstance().getMeso(cash_item_id);
+                int meso = WzXML.ITEM.getItemInfo(cash_item_id).getMeso();
 
                 if (!chr.gainMeso(meso, false)) {
                     chr.SendPacket(ResCUserLocal.MesoGive_Failed());
@@ -751,7 +751,7 @@ public class ReqCUser_Item {
             case 5201001:
             case 5201002: // パチンコ玉
             {
-                int tama = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/dama");
+                int tama = WzXML.ITEM.getItemInfo(cash_item_id).getDama();
                 if (!chr.gainTama(tama, true)) {
                     chr.SendPacket(ResCUserLocal.PachinkoBoxFailure());
                     return false;
@@ -763,10 +763,10 @@ public class ReqCUser_Item {
             case 5202000: // ランダムメル袋 (未実装アイテム)
             {
                 int randommeso = 0;
-                int meso = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/meso");
-                int mesomax = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesomax");
-                int mesomin = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesomin");
-                int mesostdev = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesostdev");
+                int meso = WzXML.ITEM.getItemInfo(cash_item_id).getMeso();
+                int mesomax = WzXML.ITEM.getItemInfo(cash_item_id).getMesomax();
+                int mesomin = WzXML.ITEM.getItemInfo(cash_item_id).getMesomin();
+                int mesostdev = WzXML.ITEM.getItemInfo(cash_item_id).getMesostdev();
 
                 Random random = new Random();
                 int r = random.nextInt(4);

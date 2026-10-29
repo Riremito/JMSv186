@@ -18,7 +18,6 @@
  */
 package tacos.shared;
 
-import java.util.Map;
 import odin.client.inventory.Equip;
 import odin.server.MapleItemInformationProvider;
 import tacos.config.Config;
@@ -31,9 +30,7 @@ import tacos.config.Region;
 public class TacosShared {
 
     public static int getDurabilityMax(Equip equip) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Map<String, Integer> eqStats = ii.getEquipStats(equip.getItemId());
-        int durability_max = eqStats.get("durability");
+        int durability_max = equip.getInfo().getDurability();
 
         return durability_max;
     }

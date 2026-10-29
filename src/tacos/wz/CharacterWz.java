@@ -94,6 +94,19 @@ public class CharacterWz extends WzXML {
         private int reqLUK;
         private int reqPOP;
         private int charmEXP;
+        private int slotMax;
+        private int quest;
+        private int accountSharable;
+        private int pickUpBlock;
+        private int notSale;
+        private int equipTradeBlock;
+        private int setItemID;
+        private boolean canLevel;
+        private int elemDefault;
+        private int incRMAS;
+        private int incRMAF;
+        private int incRMAL;
+        private int incRMAI;
         // islot
         // vslot
     }
@@ -135,6 +148,23 @@ public class CharacterWz extends WzXML {
                     ret.reqINT = info.getInt("reqINT");
                     ret.reqLUK = info.getInt("reqLUK");
                     ret.reqPOP = info.getInt("reqPOP");
+                    ret.slotMax = info.getInt("slotMax", 1);
+                    ret.price = info.getInt("price", -1);
+                    ret.only = info.getInt("only");
+                    ret.quest = info.getInt("quest");
+                    ret.tradeBlock = info.getInt("tradeBlock");
+                    ret.accountSharable = info.getInt("accountSharable");
+                    ret.pickUpBlock = info.getInt("pickUpBlock");
+                    ret.notSale = info.getInt("notSale");
+                    ret.equipTradeBlock = info.getInt("equipTradeBlock");
+                    ret.setItemID = info.getInt("setItemID");
+                    ret.canLevel = info.getChildByPath("level") != null;
+                    // magic weapon
+                    ret.elemDefault = info.getInt("elemDefault", 100);
+                    ret.incRMAS = info.getInt("incRMAS", 100); // Poison
+                    ret.incRMAF = info.getInt("incRMAF", 100); // Fire
+                    ret.incRMAL = info.getInt("incRMAL", 100); // Lightning
+                    ret.incRMAI = info.getInt("incRMAI", 100); // Ice
                 }
                 this.equip_infos.put(equip_id, ret);
             }

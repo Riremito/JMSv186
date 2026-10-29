@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import java.util.List;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
@@ -26,10 +25,10 @@ import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
-import odin.server.MapleItemInformationProvider;
+import tacos.wz.ItemWz.ItemInfo;
+import tacos.wz.WzXML;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.response.ResCWvsContext;
@@ -150,19 +149,18 @@ public class ReqCUIRaise {
 
         chr.DebugMsg("OnRaiseIncExp : nItemID = " + nItemID + ", nQuestID = " + nQuestID + ", exp = " + exp);
 
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         for (Item item : chr.getInventory(MapleInventoryType.ETC)) {
             if (item.getItemId() / 10000 != 422) {
                 continue;
             }
-            SimpleImmutableEntry<Integer, List<Integer>> questItemInfo = ii.questItemInfo(item.getItemId());
+            ItemInfo questItemInfo = WzXML.ITEM.getItemInfo(item.getItemId());
             if (questItemInfo == null) {
                 continue;
             }
-            if (questItemInfo.getKey() != nQuestID) {
+            if (questItemInfo.getQuestId() != nQuestID) {
                 continue;
             }
-            if (!questItemInfo.getValue().contains(nItemID)) {
+            if (!questItemInfo.getConsumeItem().contains(nItemID)) {
                 continue;
             }
             // found.
