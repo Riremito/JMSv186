@@ -720,9 +720,7 @@ public class TacosCharacter extends TacosPlayer {
     private boolean useItemDone(MapleInventoryType type, Item item_used, short item_quantity) {
         boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
 
-        getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
-
-        if (item_used.getQuantity() == 0 && !isRecharge) {
+        if (getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge)) {
             SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
         } else {
             SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));

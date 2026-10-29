@@ -148,22 +148,24 @@ public class MapleInventory implements Iterable<Item> {
         inventory.put(target.getPosition(), target);
     }
 
-    public void removeItem(short slot) {
-        removeItem(slot, (short) 1, false);
+    public boolean removeItem(short slot) {
+        return removeItem(slot, (short) 1, false);
     }
 
-    public void removeItem(short slot, short quantity, boolean allowZero) {
+    // returns true if the slot was removed.
+    public boolean removeItem(short slot, short quantity, boolean allowZero) {
         Item item = inventory.get(slot);
         if (item == null) { // TODO is it ok not to throw an exception here?
-            return;
+            return false;
         }
-        item.setQuantity((short) (item.getQuantity() - quantity));
-        if (item.getQuantity() < 0) {
-            item.setQuantity((short) 0);
-        }
-        if (item.getQuantity() == 0 && !allowZero) {
+        // Equip keeps its quantity at 1, so decide by the remaining quantity instead of item.getQuantity().
+        short remaining = (short) Math.max(item.getQuantity() - quantity, 0);
+        item.setQuantity(remaining);
+        if (remaining == 0 && !allowZero) {
             removeSlot(slot);
+            return true;
         }
+        return false;
     }
 
     public void removeSlot(short slot) {

@@ -397,9 +397,7 @@ public class MapleInventoryManipulator {
         Item item = chr.getInventory(type).getItem(slot);
         if (item != null) {
             boolean allowZero = consume && GameConstants.isRechargable(item.getItemId());
-            chr.getInventory(type).removeItem(slot, quantity, allowZero);
-
-            if (item.getQuantity() == 0 && !allowZero) {
+            if (chr.getInventory(type).removeItem(slot, quantity, allowZero)) {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().remove(type, item.getPosition()).build()));
             } else {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, item).build()));
