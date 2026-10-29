@@ -526,6 +526,13 @@ public class TacosCharacter extends TacosPlayer {
         SendPacket(ResCWvsContext.InventoryOperation(true, null));
     }
 
+    // sends the operations in one packet, nothing is sent when there is no operation
+    public void sendInventoryOperation(boolean unlock, PB_InvOp.Builder io) {
+        if (!io.isEmpty()) {
+            SendPacket(ResCWvsContext.InventoryOperation(unlock, io.build()));
+        }
+    }
+
     // unlock 2
     public void updateStat() {
         SendPacket(ResCWvsContext.StatChanged(null, true, 0));

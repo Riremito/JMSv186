@@ -1756,19 +1756,20 @@ public class ReqCUser {
         }
         // Update
         chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
+        // the white scroll goes in the same packet as the scroll
+        PB_InvOp.Builder io = PB_InvOp.builder();
         if (whiteScroll) {
-            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, io);
         }
         if (scrollSuccess == Equip.ScrollResult.CURSE) {
             {
-                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
                     io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
                 } else {
                     io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
                 }
                 io.remove(GameConstants.getInventoryType(equip.getItemId()), equip.getPosition());
-                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+                chr.sendInventoryOperation(true, io);
             }
             if (equip_slot < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(equip.getPosition());
@@ -1777,15 +1778,16 @@ public class ReqCUser {
             }
         } else if (vegas == 0) {
             {
-                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
                     io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
                 } else {
                     io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
                 }
                 io.add(GameConstants.getInventoryType(scrolled.getItemId()), scrolled);
-                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+                chr.sendInventoryOperation(true, io);
             }
+        } else {
+            chr.sendInventoryOperation(false, io);
         }
         map.splitSendPacket(chr, ResCUser.UserItemUpgradeEffect(chr.getId(), scrollSuccess, legendarySpirit));
         // equipped item was scrolled and changed
@@ -1887,15 +1889,10 @@ public class ReqCUser {
                 return false;
             }
             PB_InvOp.Builder io = PB_InvOp.builder();
-            if (0 < magnify.getQuantity()) {
-                io.update(GameConstants.getInventoryType(magnify.getItemId()), magnify);
-            } else {
-                io.remove(GameConstants.getInventoryType(magnify.getItemId()), magnify.getPosition());
-            }
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false, io);
             io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
-            chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+            chr.sendInventoryOperation(true, io);
             map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip.getPosition()));
-            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
             chr.updateInv();
             return false;

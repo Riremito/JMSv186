@@ -190,20 +190,22 @@ public class ReqCUser_Item {
 
     private static void useBlankCompass(TacosCharacter chr, byte slot) {
         MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
-        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false);
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false, io);
 
         if (inventory.countById(3994102) >= 20 // Compass Letter "North"
                 && inventory.countById(3994103) >= 20 // Compass Letter "South"
                 && inventory.countById(3994104) >= 20 // Compass Letter "East"
                 && inventory.countById(3994105) >= 20) { // Compass Letter "West"
-            MapleInventoryManipulator.addById(chr, 2430008, (short) 1); // Gold Compass
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994102, 20, false, false);
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994103, 20, false, false);
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994104, 20, false, false);
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994105, 20, false, false);
+            MapleInventoryManipulator.addById(chr, 2430008, (short) 1, null, null, 0, io); // Gold Compass
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994102, 20, false, io);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994103, 20, false, io);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994104, 20, false, io);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994105, 20, false, io);
         } else {
-            MapleInventoryManipulator.addById(chr, 2430007, (short) 1); // Blank Compass
+            MapleInventoryManipulator.addById(chr, 2430007, (short) 1, null, null, 0, io); // Blank Compass
         }
+        chr.sendInventoryOperation(false, io);
         TacosScriptNPC.getInstance().start(chr.getClient(), 2084001);
     }
 
@@ -850,8 +852,10 @@ public class ReqCUser_Item {
             return 0;
         }
 
-        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
-        MapleInventoryManipulator.removeById(chr, MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.ETC, (byte) slot, (short) 1, false, io);
+        MapleInventoryManipulator.removeById(chr, MapleInventoryType.CASH, keyIDforRemoval, 1, false, io);
+        chr.sendInventoryOperation(true, io);
 
         return reward;
     }

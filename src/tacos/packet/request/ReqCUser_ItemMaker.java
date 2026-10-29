@@ -35,6 +35,7 @@ import tacos.packet.ops.OpsRecipeClass;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.ItemWz.ItemInfo;
@@ -137,8 +138,10 @@ public class ReqCUser_ItemMaker {
         if (isInventoryFull(chr, crystal_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(crystal_id));
         }
-        MapleInventoryManipulator.addById(chr, crystal_id, (short) 1);
-        MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, etc_item_id, MONSTER_CRYSTAL_COST, false, false);
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        MapleInventoryManipulator.addById(chr, crystal_id, (short) 1, null, null, 0, io);
+        MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, etc_item_id, MONSTER_CRYSTAL_COST, false, io);
+        chr.sendInventoryOperation(false, io);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
     }
 
@@ -161,8 +164,10 @@ public class ReqCUser_ItemMaker {
             return getEmptySlotError(GameConstants.getInventoryType(crystal_id));
         }
         int count = (GameConstants.isWeapon(item_id) || GameConstants.isOverall(item_id)) ? Randomizer.rand(5, 11) : Randomizer.rand(3, 7);
-        MapleInventoryManipulator.addById(chr, crystal_id, (short) count);
-        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.EQUIP, (short) slot, (short) 1, false);
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        MapleInventoryManipulator.addById(chr, crystal_id, (short) count, null, null, 0, io);
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.EQUIP, (short) slot, (short) 1, false, io);
+        chr.sendInventoryOperation(false, io);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
     }
 
@@ -179,11 +184,13 @@ public class ReqCUser_ItemMaker {
         if (isInventoryFull(chr, reward.itemId)) {
             return getEmptySlotError(GameConstants.getInventoryType(reward.itemId));
         }
-        if (!checkRequiredNRemove(chr, gem.getReqRecipes())) {
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (!checkRequiredNRemove(chr, gem.getReqRecipes(), io)) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-gem.getCost(), false);
-        MapleInventoryManipulator.addById(chr, reward.itemId, (short) reward.count);
+        MapleInventoryManipulator.addById(chr, reward.itemId, (short) reward.count, null, null, 0, io);
+        chr.sendInventoryOperation(false, io);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
     }
 
@@ -196,15 +203,17 @@ public class ReqCUser_ItemMaker {
         if (isInventoryFull(chr, target_item_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(target_item_id));
         }
-        if (!checkRequiredNRemove(chr, gem.getReqRecipes())) {
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (!checkRequiredNRemove(chr, gem.getReqRecipes(), io)) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-gem.getCost(), false);
         if (GameConstants.getInventoryType(target_item_id) == MapleInventoryType.EQUIP) {
-            MapleInventoryManipulator.addbyItem(chr, MapleItemInformationProvider.getInstance().getDefaultEquipById(target_item_id));
+            MapleInventoryManipulator.addbyItem(chr, MapleItemInformationProvider.getInstance().getDefaultEquipById(target_item_id), io);
         } else {
-            MapleInventoryManipulator.addById(chr, target_item_id, (short) Math.max(1, gem.getQuantity()));
+            MapleInventoryManipulator.addById(chr, target_item_id, (short) Math.max(1, gem.getQuantity()), null, null, 0, io);
         }
+        chr.sendInventoryOperation(false, io);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
     }
 
@@ -224,7 +233,8 @@ public class ReqCUser_ItemMaker {
         if (isInventoryFull(chr, target_item_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(target_item_id));
         }
-        if (!checkRequiredNRemove(chr, create.getReqItems())) {
+        PB_InvOp.Builder io = PB_InvOp.builder();
+        if (!checkRequiredNRemove(chr, create.getReqItems(), io)) {
             return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-create.getCost(), false);
@@ -234,7 +244,7 @@ public class ReqCUser_ItemMaker {
         // the stimulator is also used when enchanters are used.
         if ((catalyst || gems.length > 0) && chr.haveItem(create.getStimulator(), 1, false, true)) {
             to_give.getEnhancement().randomize();
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, create.getStimulator(), 1, false, io);
         }
         for (int gem_id : gems) {
             if (!chr.haveItem(gem_id, 1, false, true)) {
@@ -245,9 +255,10 @@ public class ReqCUser_ItemMaker {
                 continue;
             }
             addEnchantStats(stats, to_give);
-            MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, gem_id, 1, false, false);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, gem_id, 1, false, io);
         }
-        MapleInventoryManipulator.addbyItem(chr, to_give);
+        MapleInventoryManipulator.addbyItem(chr, to_give, io);
+        chr.sendInventoryOperation(false, io);
         return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
     }
 
@@ -334,7 +345,7 @@ public class ReqCUser_ItemMaker {
         return null;
     }
 
-    private static boolean checkRequiredNRemove(TacosCharacter chr, List<AbstractMap.SimpleImmutableEntry<Integer, Integer>> recipe) {
+    private static boolean checkRequiredNRemove(TacosCharacter chr, List<AbstractMap.SimpleImmutableEntry<Integer, Integer>> recipe, PB_InvOp.Builder io) {
         for (AbstractMap.SimpleImmutableEntry<Integer, Integer> p : recipe) {
             if (!chr.haveItem(p.getKey(), p.getValue(), false, true)) {
                 return false;
@@ -342,7 +353,7 @@ public class ReqCUser_ItemMaker {
         }
         for (AbstractMap.SimpleImmutableEntry<Integer, Integer> p : recipe) {
             int item_id = p.getKey();
-            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, p.getValue(), false, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, p.getValue(), false, io);
         }
         return true;
     }
