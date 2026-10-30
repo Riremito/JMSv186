@@ -347,25 +347,6 @@ CREATE TABLE IF NOT EXISTS `csitems` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `drop_data`
---
-
-DROP TABLE IF EXISTS `drop_data`;
-CREATE TABLE IF NOT EXISTS `drop_data` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `dropperid` int NOT NULL,
-  `itemid` int NOT NULL DEFAULT '0',
-  `minimum_quantity` int NOT NULL DEFAULT '1',
-  `maximum_quantity` int NOT NULL DEFAULT '1',
-  `questid` int NOT NULL DEFAULT '0',
-  `chance` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `mobid` (`dropperid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `dueyequipment`
 --
 
@@ -1023,23 +1004,6 @@ CREATE TABLE IF NOT EXISTS `queststatusmobs` (
   PRIMARY KEY (`queststatusmobid`),
   KEY `queststatusid` (`queststatusid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `reactordrops`
---
-
-DROP TABLE IF EXISTS `reactordrops`;
-CREATE TABLE IF NOT EXISTS `reactordrops` (
-  `reactordropid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `reactorid` int NOT NULL,
-  `itemid` int NOT NULL,
-  `chance` int NOT NULL,
-  `questid` int NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`reactordropid`),
-  KEY `reactorid` (`reactorid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 PACK_KEYS=1;
 
 -- --------------------------------------------------------
 

@@ -222,7 +222,7 @@ public class ReqCUser_Pet {
         }
 
         TacosDrop mapitem = chr.getMap().getDropByOid(drop_id);
-        if (mapitem == null) {
+        if (mapitem == null || !mapitem.isVisible(chr)) {
             return false;
         }
 

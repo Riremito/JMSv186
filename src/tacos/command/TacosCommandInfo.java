@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
-import tacos.server.map.TacosReward.MonsterDropEntry;
 import tacos.debug.DebugLogger;
-import tacos.server.map.TacosReward;
 import tacos.server.map.TacosSpawnPoint;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
@@ -87,7 +85,7 @@ public class TacosCommandInfo {
                                 reward_prob = 100.0;
                             }
                             if (reward.getItem() != 0) {
-                                chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward_prob) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
+                                chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward_prob) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName() + ((reward.getQuestId() != 0) ? " (quest " + reward.getQuestId() + ")" : ""), reward.getItem());
                             } else {
                                 chr.DebugMsg("meso : " + String.format("%05.2f%%", reward_prob) + " - " + reward.getMoney());
                             }
@@ -130,9 +128,6 @@ public class TacosCommandInfo {
                 continue;
             }
             chr.DebugMsg("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-            for (MonsterDropEntry mde : TacosReward.getMonsterDrops(mob_id)) {
-                chr.DebugMsg(mde.itemId + " : " + mde.chance);
-            }
         }
 
         return true;

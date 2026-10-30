@@ -114,16 +114,4 @@ public class MapleReactorStats {
             return timeOut;
         }
     }
-
-    public static class ReactorDropEntry {
-
-        public ReactorDropEntry(int itemId, int chance, int questid) {
-            this.itemId = itemId;
-            this.chance = chance;
-            this.questid = questid;
-        }
-        public int itemId;
-        public int chance;
-        public int questid;
-    }
 }

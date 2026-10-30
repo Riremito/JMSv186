@@ -478,11 +478,8 @@ public class TacosMap extends TacosMapData {
         // drop
         for (TacosDrop drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuestId();
-            if (0 < quest_id) {
-                if (chr.getQuestStatus(quest_id) != 1) {
-                    continue;
-                }
+            if (!drop.isVisible(chr)) {
+                continue;
             }
             int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
@@ -644,11 +641,8 @@ public class TacosMap extends TacosMapData {
         // drop
         for (TacosDrop drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuestId();
-            if (0 < quest_id) {
-                if (chr.getQuestStatus(quest_id) != 1) {
-                    continue;
-                }
+            if (!drop.isVisible(chr)) {
+                continue;
             }
             int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
@@ -713,6 +707,15 @@ public class TacosMap extends TacosMapData {
     public void broadcastPacket(ServerPacket packet) {
         for (TacosCharacter player : getAllPlayers()) {
             player.SendPacket(packet);
+        }
+    }
+
+    // to the players who can see the drop.
+    public void broadcastDropPacket(TacosDrop drop, ServerPacket packet) {
+        for (TacosCharacter player : getAllPlayers()) {
+            if (drop.isVisible(player)) {
+                player.SendPacket(packet);
+            }
         }
     }
 
@@ -1352,11 +1355,11 @@ public class TacosMap extends TacosMapData {
         mdrop.setDelay(0);
     }
 
-    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, TacosCharacter chr, byte droptype, short quest_id, int delay) {
+    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, TacosCharacter chr, byte droptype, int quest_id, int delay) {
         TacosDrop mdrop = new TacosDrop(idrop, 0, quest_id, dropPos, chr.getId(), droptype, false);
         addDrop(mdrop);
         mdrop.setDelay(delay);
-        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
+        broadcastDropPacket(mdrop, ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         mdrop.setDelay(0);
     }
 
@@ -2186,12 +2189,12 @@ public class TacosMap extends TacosMapData {
         activateItemReactors(drop, owner.getClient());
     }
 
-    public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, int quest_id, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
-        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
+        TacosDrop drop = new TacosDrop(item, 0, quest_id, droppos, owner.getId(), (byte) 2, playerDrop);
         addDrop(drop);
-        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
-        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
+        broadcastDropPacket(drop, ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
+        broadcastDropPacket(drop, ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
     }
 
     public static class MapleMapEffect {

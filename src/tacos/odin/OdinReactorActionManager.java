@@ -23,17 +23,8 @@ package tacos.odin;
 import java.awt.Point;
 import tacos.server.map.TacosReward;
 import tacos.server.map.object.TacosReactor;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import odin.client.inventory.Item;
-import odin.constants.GameConstants;
 import tacos.client.TacosClient;
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.maps.MapleReactorStats.ReactorDropEntry;
-import tacos.script.TacosScriptReactor;
 
 public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
@@ -58,56 +49,23 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
-        // Reward.img has its own meso and item drops, the arguments are used only for the drops of the database.
+        // Reward.img has its own meso and item drops, the arguments are used only when the reactor does not have the data.
         if (0 <= TacosReward.getReactorReward(getPlayer(), reactor)) {
             return;
         }
-        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getId());
-        List<ReactorDropEntry> items = new LinkedList<>();
-
-        if (meso) {
-            if (Math.random() < (1 / (double) mesoChance)) {
-                items.add(new ReactorDropEntry(0, mesoChance, -1));
-            }
+        int meso_count = 0;
+        if (meso && Math.random() < (1 / (double) mesoChance)) {
+            meso_count = 1;
         }
-
-        int numItems = 0;
-        // narrow list down by chances
-        Iterator<ReactorDropEntry> iter = chances.iterator();
-        // for (DropEntry d : chances){
-        while (iter.hasNext()) {
-            ReactorDropEntry d = (ReactorDropEntry) iter.next();
-            if (Math.random() < (1 / (double) d.chance) && (d.questid <= 0 || getPlayer().getQuestStatus(d.questid) == 1)) {
-                numItems++;
-                items.add(d);
-            }
-        }
-
         // if a minimum number of drops is required, add meso
-        while (items.size() < minItems) {
-            items.add(new ReactorDropEntry(0, mesoChance, -1));
-            numItems++;
-        }
+        meso_count = Math.max(meso_count, minItems);
+
         Point dropPos = reactor.getPosition();
-
-        dropPos.x -= (12 * numItems);
-
-        int range, mesoDrop;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        for (ReactorDropEntry d : items) {
-            if (d.itemId == 0) {
-                range = maxMeso - minMeso;
-                mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
-                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor.getPosition(), getPlayer(), false, (byte) 0);
-            } else {
-                Item drop;
-                if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
-                    drop = new Item(d.itemId, (byte) 0, (short) 1, (byte) 0);
-                } else {
-                    drop = ii.getEquipById(d.itemId);
-                }
-                reactor.getMap().spawnItemDropByReactor(reactor, getPlayer(), drop, dropPos, false, false);
-            }
+        dropPos.x -= (12 * meso_count);
+        for (int i = 0; i < meso_count; i++) {
+            int range = maxMeso - minMeso;
+            int mesoDrop = ((0 < range) ? Randomizer.nextInt(range) : 0) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
+            reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor.getPosition(), getPlayer(), false, (byte) 0);
             dropPos.x += 25;
         }
     }

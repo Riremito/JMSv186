@@ -53,11 +53,11 @@ import odin.server.maps.MapScriptMethods;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
 import odin.server.life.MapleMonsterStats.Element;
 import odin.server.life.MapleMonsterStats;
-import tacos.server.map.TacosReward.MonsterDropEntry;
+import tacos.wz.ServerImg;
+import tacos.wz.ServerImg.RewardData;
 
 /**
  *
@@ -1187,17 +1187,19 @@ public class TacosMonster extends TacosMapObject {
         Skill steal = WzXML.SKILL.getSkill().get(4201004);
         int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
-            ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(TacosReward.getMonsterDrops(getId()));
+            ArrayList<RewardData> list_reward = ServerImg.getAutoRewardData(getId());
+            ArrayList<RewardData> dropEntry = (list_reward != null) ? new ArrayList<>(list_reward) : new ArrayList<>();
             Collections.shuffle(dropEntry);
             Item idrop;
-            for (MonsterDropEntry d : dropEntry) {
-                if (d.itemId > 0 && d.questid == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
-                    if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
+            for (RewardData d : dropEntry) {
+                if (d.getItem() > 0 && d.getQuestId() == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
+                    if (GameConstants.getInventoryType(d.getItem()) == MapleInventoryType.EQUIP) {
+                        idrop = MapleItemInformationProvider.getInstance().getEquipById(d.getItem());
                     } else {
-                        idrop = new Item(d.itemId, (byte) 0, (short) (d.Maximum != 1 ? Randomizer.nextInt(d.Maximum - d.Minimum) + d.Minimum : 1), (byte) 0);
+                        int range = d.getMax() - d.getMin();
+                        idrop = new Item(d.getItem(), (byte) 0, (short) (d.getMin() + ((0 < range) ? Randomizer.nextInt(range) : 0)), (byte) 0);
                     }
-                    stolen = d.itemId;
+                    stolen = d.getItem();
                     map.spawnMobDrop(idrop, map.calcDropPos(new Point(getPosition()), getPosition()), this, chr, (byte) 0, (short) 0, 0);
                     break;
                 }

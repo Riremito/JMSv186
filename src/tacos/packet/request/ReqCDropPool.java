@@ -92,6 +92,10 @@ public class ReqCDropPool {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
+        if (!mapitem.isVisible(chr)) {
+            DebugLogger.ErrorLog("PickUp : quest item");
+            return false;
+        }
         if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;

@@ -221,6 +221,32 @@ public class QuestWz extends WzXML {
         return ret;
     }
 
+    private HashMap<Integer, ArrayList<Integer>> item_quest_list = null;
+
+    // quest ids which require the item to complete the quest.
+    public ArrayList<Integer> getQuestIdsByItem(int item_id) {
+        if (this.item_quest_list == null) {
+            this.item_quest_list = new HashMap<>();
+            MapleData md_check_img = getCheckImg();
+            if (md_check_img != null) {
+                for (MapleData md_check : md_check_img) {
+                    MapleData md_items = md_check.getChildByPath("1/item");
+                    if (md_items == null) {
+                        continue;
+                    }
+                    int quest_id = Integer.parseInt(md_check.getName());
+                    for (MapleData md_item : md_items) {
+                        if (md_item.getInt("count") <= 0) {
+                            continue;
+                        }
+                        this.item_quest_list.computeIfAbsent(md_item.getInt("id"), k -> new ArrayList<>()).add(quest_id);
+                    }
+                }
+            }
+        }
+        return this.item_quest_list.get(item_id);
+    }
+
     private void parseRelevantMobs(MapleData md_req, Map<Integer, Integer> relevantMobs) {
         for (MapleData md_mob : md_req) {
             relevantMobs.put(md_mob.getInt("id"), md_mob.getInt("count"));

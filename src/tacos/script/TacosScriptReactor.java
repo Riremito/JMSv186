@@ -18,16 +18,11 @@
  */
 package tacos.script;
 
-import java.util.HashMap;
 import tacos.server.map.object.TacosReactor;
-import java.util.List;
-import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import tacos.client.TacosClient;
 import tacos.odin.OdinReactorActionManager;
-import odin.server.maps.MapleReactorStats.ReactorDropEntry;
-import tacos.database.query.DQ_ReactorDrops;
 
 /**
  *
@@ -44,8 +39,6 @@ public class TacosScriptReactor extends TacosScript {
 
         return instance;
     }
-
-    private Map<Integer, List<ReactorDropEntry>> drops = new HashMap<>();
 
     public TacosScriptReactor() {
 
@@ -66,21 +59,9 @@ public class TacosScriptReactor extends TacosScript {
 
         OdinReactorActionManager rm = new OdinReactorActionManager(client, reactor);
         engine.put("rm", rm);
-        return script.act();
-    }
-
-    public List<ReactorDropEntry> getDrops(int reactor_id) {
-        if (this.drops.containsKey(reactor_id)) {
-            return this.drops.get(reactor_id);
-        }
-
-        List<ReactorDropEntry> ret = DQ_ReactorDrops.getDrops(reactor_id);
-        this.drops.put(reactor_id, ret);
-        return ret;
-    }
-
-    public void clearDrops() {
-        this.drops.clear();
+        // most of the scripts return nothing.
+        script.act();
+        return true;
     }
 
 }

@@ -166,6 +166,7 @@ public class ServerImg {
         private int prob;
         private int min;
         private int max;
+        private int questId;
     }
 
     // unofficial prob.
@@ -201,6 +202,23 @@ public class ServerImg {
             }
         }
         return true;
+    }
+
+    // quest item drops only for the players who are doing the quest.
+    private static int getQuestId(int item_id) {
+        if (item_id == 0) {
+            return 0;
+        }
+        ItemWz.ItemInfo item_info = WzXML.ITEM.getItemInfo(item_id);
+        if (item_info == null || item_info.getQuest() != 1) {
+            return 0;
+        }
+        ArrayList<Integer> quest_ids = WzXML.QUEST.getQuestIdsByItem(item_id);
+        // unknown or multiple quests.
+        if (quest_ids == null || quest_ids.size() != 1) {
+            return 0;
+        }
+        return quest_ids.get(0);
     }
 
     private final TreeMap<Integer, ArrayList<RewardData>> rewards = new TreeMap<>();
@@ -251,6 +269,7 @@ public class ServerImg {
                 if (reward.prob == 0) {
                     setProb(reward);
                 }
+                reward.questId = getQuestId(reward.item);
 
                 list_reward.add(reward);
             }
