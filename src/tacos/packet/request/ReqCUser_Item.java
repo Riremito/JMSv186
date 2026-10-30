@@ -56,6 +56,7 @@ import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
+import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -394,7 +395,7 @@ public class ReqCUser_Item {
                 if (equip == null) {
                     return false;
                 }
-                boolean success = equip.getEnhancement().useViciousHammer();
+                boolean success = equip.getEnhancement().useViciousHammer(100) == EnhancementResult.SUCCESS;
 
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(success ? OpsCashItem.CashItemRes_ItemUpgradeSuccess : OpsCashItem.CashItemReq_ItemUpgradeFail, equip));

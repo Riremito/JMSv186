@@ -23,7 +23,9 @@ import java.util.HashMap;
 import lombok.Getter;
 import odin.client.inventory.Equip;
 import tacos.config.Content;
+import tacos.config.Region;
 import tacos.debug.DebugLogger;
+import tacos.shared.TacosShared;
 
 /**
  *
@@ -183,7 +185,12 @@ public class CharacterWz extends WzXML {
             return ret;
         }
 
+        ret.setTUC(ed.getTuc());
         ret.setRUC(ed.getTuc());
+        // ビシャスのハンマー使用可能回数, ホーンテイルのネックレスは使用不可
+        if (ed.getTuc() != 0 && !TacosShared.isHorntailNecklace(equip_id)) {
+            ret.setMaxIUC((Region.KMS.check() || Region.KMST.check()) ? 1 : 2);
+        }
         ret.setCUC(0);
         ret.setSTR(ed.incSTR);
         ret.setDEX(ed.incDEX);

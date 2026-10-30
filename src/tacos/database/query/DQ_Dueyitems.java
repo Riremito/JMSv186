@@ -108,7 +108,7 @@ public class DQ_Dueyitems {
                         equip.setCraft(rs.getInt("hands"));
                         equip.setSpeed(rs.getInt("speed"));
                         equip.setJump(rs.getInt("jump"));
-                        equip.setIUC(rs.getInt("ViciousHammer"));
+                        equip.setCIUC(rs.getInt("ViciousHammer"));
                         equip.setLevelUpType(rs.getInt("growthLevelUpType"));
                         equip.setLevelLevel(rs.getInt("growthLevel"));
                         equip.setLevelEXP(rs.getInt("growthEXP"));
@@ -125,6 +125,9 @@ public class DQ_Dueyitems {
                         equip.setMaxHPr(rs.getInt("hpR"));
                         equip.setMaxMPr(rs.getInt("mpR"));
                         equip.setAttackSpeed(rs.getInt("incattackSpeed"));
+                        equip.setTUC(rs.getInt("tuc"));
+                        equip.setMaxIUC(rs.getInt("ViciousHammerMax"));
+                        equip.setOptionCount(rs.getInt("potentialCount"));
                         equip.setGiftFrom(rs.getString("sender"));
                         if (equip.getUniqueId() > -1) {
                             if (GameConstants.isEffectRing(rs.getInt("itemid"))) {
@@ -217,7 +220,7 @@ public class DQ_Dueyitems {
             }
             query_2.append(")");
             ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
-            PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
             SimpleImmutableEntry<Item, MapleInventoryType> pair;
             while (iter.hasNext()) {
@@ -269,7 +272,7 @@ public class DQ_Dueyitems {
                     pse.setInt(16, equip.getCraft());
                     pse.setInt(17, equip.getSpeed());
                     pse.setInt(18, equip.getJump());
-                    pse.setInt(19, equip.getIUC());
+                    pse.setInt(19, equip.getCIUC());
                     pse.setInt(20, equip.getLevelUpType());
                     pse.setInt(21, equip.getLevelLevel());
                     pse.setInt(22, equip.getLevelEXP());
@@ -285,6 +288,9 @@ public class DQ_Dueyitems {
                     pse.setInt(32, equip.getMaxHPr());
                     pse.setInt(33, equip.getMaxMPr());
                     pse.setInt(34, equip.getAttackSpeed());
+                    pse.setInt(35, equip.getTUC());
+                    pse.setInt(36, equip.getMaxIUC());
+                    pse.setInt(37, equip.getOptionCount());
                     pse.executeUpdate();
                 }
             }

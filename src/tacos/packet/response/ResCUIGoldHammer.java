@@ -39,7 +39,7 @@ public class ResCUIGoldHammer {
             case GoldHammerRes_Success:
             case GoldHammerRes_Fail: {
                 sp.Encode4(0);
-                sp.Encode4(equip.getIUC(), Region.JMS.check()); // m_nIUC
+                sp.Encode4(equip.getCIUC(), Region.JMS.check()); // m_nIUC
                 break;
             }
             case GoldHammerRes_Done: {

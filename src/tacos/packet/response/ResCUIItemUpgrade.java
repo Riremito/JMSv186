@@ -37,7 +37,7 @@ public class ResCUIItemUpgrade {
         switch (m_nRet1) {
             case CashItemRes_ItemUpgradeSuccess: {
                 sp.Encode4(0); // m_nResult
-                sp.Encode4(equip.getIUC()); // m_nIUC
+                sp.Encode4(equip.getCIUC()); // m_nIUC
                 break;
             }
             case CashItemRes_ItemUpgradeDone: {

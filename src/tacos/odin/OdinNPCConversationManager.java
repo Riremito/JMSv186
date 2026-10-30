@@ -833,7 +833,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 sel.setRUC((byte) amount);
                 break;
             case 16:
-                sel.setIUC((byte) amount);
+                sel.setCIUC((byte) amount);
                 break;
             case 17:
                 sel.setCUC((byte) amount);
@@ -1020,7 +1020,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             } else if (type.equalsIgnoreCase("Level")) {
                 eq.setCUC((byte) (eq.getCUC() + offset));
             } else if (type.equalsIgnoreCase("Hammer")) {
-                eq.setIUC((byte) (eq.getIUC() + offset));
+                eq.setCIUC((byte) (eq.getCIUC() + offset));
             } else if (type.equalsIgnoreCase("STR")) {
                 eq.setSTR((short) (eq.getSTR() + offset));
             } else if (type.equalsIgnoreCase("DEX")) {

@@ -43,7 +43,7 @@ public class DQ_Inventoryequipment {
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
                 ps.setInt(1, unique_id);
                 ps.setInt(2, equip.getRUC());
                 ps.setInt(3, equip.getCUC());
@@ -62,7 +62,7 @@ public class DQ_Inventoryequipment {
                 ps.setInt(16, equip.getCraft());
                 ps.setInt(17, equip.getSpeed());
                 ps.setInt(18, equip.getJump());
-                ps.setInt(19, equip.getIUC());
+                ps.setInt(19, equip.getCIUC());
                 ps.setInt(20, equip.getLevelUpType());
                 ps.setInt(21, equip.getLevelLevel());
                 ps.setInt(22, equip.getLevelEXP());
@@ -78,6 +78,9 @@ public class DQ_Inventoryequipment {
                 ps.setInt(32, equip.getMaxHPr());
                 ps.setInt(33, equip.getMaxMPr());
                 ps.setInt(34, equip.getAttackSpeed());
+                ps.setInt(35, equip.getTUC());
+                ps.setInt(36, equip.getMaxIUC());
+                ps.setInt(37, equip.getOptionCount());
                 ps.executeUpdate();
                 return true;
             }
@@ -119,7 +122,7 @@ public class DQ_Inventoryequipment {
                     equip.setCraft(rs.getInt("hands"));
                     equip.setSpeed(rs.getInt("speed"));
                     equip.setJump(rs.getInt("jump"));
-                    equip.setIUC(rs.getInt("ViciousHammer"));
+                    equip.setCIUC(rs.getInt("ViciousHammer"));
                     equip.setLevelUpType(rs.getInt("growthLevelUpType"));
                     equip.setLevelLevel(rs.getInt("growthLevel"));
                     equip.setLevelEXP(rs.getInt("growthEXP"));
@@ -135,6 +138,9 @@ public class DQ_Inventoryequipment {
                     equip.setMaxHPr(rs.getInt("hpR"));
                     equip.setMaxMPr(rs.getInt("mpR"));
                     equip.setAttackSpeed(rs.getInt("incattackSpeed"));
+                    equip.setTUC(rs.getInt("tuc"));
+                    equip.setMaxIUC(rs.getInt("ViciousHammerMax"));
+                    equip.setOptionCount(rs.getInt("potentialCount"));
                     if (rs.next()) {
                         DebugLogger.DBErrorLog(DB_TABLE_NAME, "load, inventoryitemid is duplicated , id = " + inventory_item_uid);
                         return false;

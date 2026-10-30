@@ -29,6 +29,7 @@ import tacos.packet.ops.OpsGoldHammer;
 import tacos.packet.response.ResCUIGoldHammer;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
+import tacos.server.TacosEnhancement.EnhancementResult;
 
 /**
  *
@@ -77,7 +78,7 @@ public class ReqCUIGoldHammer {
         if (equip == null) {
             return false;
         }
-        boolean success = equip.getEnhancement().useViciousHammer();
+        boolean success = equip.getEnhancement().useGoldHammer(nItemID) == EnhancementResult.SUCCESS;
         item_use.run();
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(success ? OpsGoldHammer.GoldHammerRes_Success : OpsGoldHammer.GoldHammerRes_Fail, equip));

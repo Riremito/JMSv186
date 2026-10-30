@@ -51,7 +51,8 @@ public class Equip extends Item {
     private int nLevel = 0; // 成長装備
     private int nEXP = 0; // 成長装備
     private int nDurability = -1; // 耐久装備
-    private int nIUC = 0; // ビシャスのハンマー
+    private int nIUC = 0; // ビシャスのハンマー使用可能回数
+    private int nCIUC = 0; // ビシャスのハンマー使用回数
     private int nGrade = 0; // 潜在
     private int hidden = 0; // 潜在
     private int nCHUC = 0; // 装備強化
@@ -60,7 +61,9 @@ public class Equip extends Item {
     private int nOption3 = 0; // 潜在能力3
     private int nSocket1 = 0; // 潜在能力4
     private int nSocket2 = 0; // 潜在能力5 or カナトコ (共用)
+    private int nOptionCount = 0; // 潜在能力の数 (2LINE or 3LINE)
     // 固定能力値
+    private int nTUC = 0; // アップグレード可能回数 (WZ)
     private int nMaxHPr = 0;
     private int nMaxMPr = 0;
     private int nAttackSpeed = 0; // 攻撃速度
@@ -165,8 +168,17 @@ public class Equip extends Item {
         return this.nDurability;
     }
 
+    // packet用, ビシャスのハンマー使用回数
     public int getIUC() {
+        return this.nCIUC;
+    }
+
+    public int getMaxIUC() {
         return this.nIUC;
+    }
+
+    public int getCIUC() {
+        return this.nCIUC;
     }
 
     public int getGrade() {
@@ -219,6 +231,10 @@ public class Equip extends Item {
 
     public int getSocket2() {
         return this.nSocket2;
+    }
+
+    public int getOptionCount() {
+        return this.nOptionCount;
     }
 
     // set.
@@ -303,8 +319,12 @@ public class Equip extends Item {
         this.nEXP = nEXP;
     }
 
-    public void setIUC(int nIUC) {
+    public void setMaxIUC(int nIUC) {
         this.nIUC = nIUC;
+    }
+
+    public void setCIUC(int nCIUC) {
+        this.nCIUC = nCIUC;
     }
 
     public void setDurability(int nDurability) {
@@ -337,6 +357,10 @@ public class Equip extends Item {
 
     public void setSocket2(int nSocket2) {
         this.nSocket2 = nSocket2;
+    }
+
+    public void setOptionCount(int nOptionCount) {
+        this.nOptionCount = nOptionCount;
     }
 
     // inc.
@@ -464,6 +488,7 @@ public class Equip extends Item {
         ret.nEXP = nEXP;
         ret.nDurability = nDurability;
         ret.nIUC = nIUC;
+        ret.nCIUC = nCIUC;
         ret.nGrade = nGrade;
         ret.hidden = hidden;
         ret.nOption1 = nOption1;
@@ -471,8 +496,10 @@ public class Equip extends Item {
         ret.nOption3 = nOption3;
         ret.nSocket1 = nSocket1;
         ret.nSocket2 = nSocket2;
+        ret.nOptionCount = nOptionCount;
         ret.nMaxHPr = nMaxHPr;
         ret.nMaxMPr = nMaxMPr;
+        ret.nTUC = nTUC;
         ret.nAttackSpeed = nAttackSpeed;
         ret.setGiftFrom(getGiftFrom());
         ret.setOwner(getOwner());
@@ -513,6 +540,14 @@ public class Equip extends Item {
 
     public void setMaxMPr(int nMaxMPr) {
         this.nMaxMPr = nMaxMPr;
+    }
+
+    public int getTUC() {
+        return this.nTUC;
+    }
+
+    public void setTUC(int nTUC) {
+        this.nTUC = nTUC;
     }
 
     public int getAttackSpeed() {

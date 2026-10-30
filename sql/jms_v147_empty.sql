@@ -424,6 +424,9 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -563,6 +566,9 @@ CREATE TABLE IF NOT EXISTS `dueyequipment` (
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -794,6 +800,9 @@ CREATE TABLE IF NOT EXISTS `hiredmerchequipment` (
   `socket2` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -889,6 +898,9 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
   `hpR` int NOT NULL DEFAULT '0',
   `mpR` int NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -1104,6 +1116,9 @@ CREATE TABLE IF NOT EXISTS `mtsequipment` (
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -1215,6 +1230,9 @@ CREATE TABLE IF NOT EXISTS `mtstransferequipment` (
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;

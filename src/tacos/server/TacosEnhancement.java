@@ -26,8 +26,6 @@ import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.config.Region;
 import tacos.constants.TacosConstants;
-import tacos.shared.TacosShared;
-import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.ItemWz.ScrollData;
 import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Random;
@@ -191,19 +189,14 @@ public class TacosEnhancement {
         if (sd == null) {
             return EnhancementResult.UNKNOWN;
         }
-        EquipInfo ed = equip.getInfo();
-        if (ed == null) {
-            return EnhancementResult.UNKNOWN;
-        }
         // 強化不可
-        if (ed.getTuc() == 0) {
+        if (equip.getTUC() == 0) {
             return EnhancementResult.UNKNOWN;
         }
-        // TODO : ビシャスのハンマーでアップグレード回数増加時の判定
         // 白の書
         boolean is_recover_scroll = sd.getRecover() != 0;
         if (is_recover_scroll) {
-            return useRecoverScroll(sd, ed);
+            return useRecoverScroll(sd);
         }
         // 混沌の書
         boolean is_chaos = sd.getRandstat() != 0;
@@ -222,10 +215,7 @@ public class TacosEnhancement {
         }
         // 黄金つち (直接使用)
         if (TacosConstants.is_gold_hammer(item_id)) {
-            if (useViciousHammer()) {
-                return EnhancementResult.SUCCESS;
-            }
-            return EnhancementResult.UNKNOWN;
+            return useViciousHammer(getGoldHammerSuccess(sd));
         }
         boolean is_upgrade_possible = equip.getRUC() != 0;
         if (!is_upgrade_possible) {
@@ -285,8 +275,9 @@ public class TacosEnhancement {
     }
 
     // 白の書
-    private EnhancementResult useRecoverScroll(ScrollData sd, EquipInfo ed) {
-        boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= ed.getTuc();
+    private EnhancementResult useRecoverScroll(ScrollData sd) {
+        // ビシャスのハンマーの使用回数分だけアップグレード回数の上限が増える
+        boolean is_recovery_possible = equip.getRUC() + equip.getCUC() + sd.getRecover() <= equip.getTUC() + equip.getCIUC();
         if (!is_recovery_possible) {
             return EnhancementResult.UNKNOWN;
         }
@@ -369,26 +360,40 @@ public class TacosEnhancement {
         return EnhancementResult.FAILURE;
     }
 
-    public boolean useViciousHammer() {
-        EquipInfo ed = equip.getInfo();
-        if (ed == null || ed.getTuc() == 0) {
-            return false;
+    // 黄金つち
+    public EnhancementResult useGoldHammer(int item_id) {
+        ScrollData sd = WzXML.ITEM.getScrollData(item_id);
+        if (sd == null) {
+            return EnhancementResult.UNKNOWN;
         }
-        if (TacosShared.isHorntailNecklace(equip.getItemId())) {
-            return false;
+        return useViciousHammer(getGoldHammerSuccess(sd));
+    }
+
+    // successが設定されていない場合は100%
+    private static int getGoldHammerSuccess(ScrollData sd) {
+        if (sd.getSuccess() == 0) {
+            return 100;
         }
-        if (Region.KMS.check() || Region.KMST.check()) {
-            if (1 <= equip.getIUC()) {
-                return false;
-            }
+        return sd.getSuccess();
+    }
+
+    // ビシャスのハンマー
+    public EnhancementResult useViciousHammer(int success) {
+        // 強化不可
+        if (equip.getTUC() == 0) {
+            return EnhancementResult.UNKNOWN;
         }
-        // TODO : 3回以上ビシャスのハンマー使用可能な場合の対応 (JMS)
-        if (2 <= equip.getIUC()) {
-            return false;
+        // 使用回数の上限
+        if (equip.getMaxIUC() <= equip.getCIUC()) {
+            return EnhancementResult.UNKNOWN;
         }
-        equip.setIUC(equip.getIUC() + 1);
-        equip.setRUC(equip.getRUC() + 1);
-        return true;
+        // 失敗した場合も使用回数は増える
+        equip.setCIUC(equip.getCIUC() + 1);
+        if (Randomizer.nextInt(100) < success) {
+            equip.incRUC(1);
+            return EnhancementResult.SUCCESS;
+        }
+        return EnhancementResult.FAILURE;
     }
 
     public boolean useEquipEnhancementScroll() {
@@ -400,12 +405,8 @@ public class TacosEnhancement {
         if (equip.getRUC() != 0) {
             return false;
         }
-        EquipInfo ed = equip.getInfo();
-        if (ed == null) {
-            return false;
-        }
         // 強化不可
-        if (ed.getTuc() == 0) {
+        if (equip.getTUC() == 0) {
             return false;
         }
         boolean weapon = GameConstants.isWeapon(equip.getItemId());
@@ -480,12 +481,8 @@ public class TacosEnhancement {
         if (equip.getHidden() != 0 || equip.getGrade() != 0) {
             return false;
         }
-        EquipInfo ed = equip.getInfo();
-        if (ed == null) {
-            return false;
-        }
         // 強化不可
-        if (ed.getTuc() == 0) {
+        if (equip.getTUC() == 0) {
             return false;
         }
         int rand = Randomizer.nextInt(100);
@@ -500,7 +497,9 @@ public class TacosEnhancement {
         equip.setGrade(grade);
         equip.setOption1(DWI_Random.getRandomPotential(grade));
         equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK ? grade : grade - 1, 1)));
+        equip.setOptionCount(2);
         if (Randomizer.nextInt(100) < OPTION_3LINES) {
+            equip.setOptionCount(3);
             equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? grade : grade - 1, 1)));
         }
         equip.setHidden(1);
@@ -530,7 +529,7 @@ public class TacosEnhancement {
         equip.setGrade(grade);
         equip.setOption1(DWI_Random.getRandomPotential(grade));
         equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK ? grade : grade - 1, 1)));
-        if (equip.getOption3() != 0) {
+        if (equip.getOptionCount() == 3) {
             equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? grade : grade - 1, 1)));
         }
         equip.setHidden(1);
@@ -538,8 +537,9 @@ public class TacosEnhancement {
     }
 
     public boolean useHyperMiracleCube() {
-        if (equip.getOption3() == 0) {
+        if (equip.getOptionCount() == 2) {
             if (Randomizer.nextInt(100) < OPTION_3LINES) {
+                equip.setOptionCount(3);
                 equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK ? equip.getGrade() : equip.getGrade() - 1, 1)));
             }
         }
@@ -574,7 +574,7 @@ public class TacosEnhancement {
         equip.setGrade(grade);
         equip.setOption1(DWI_Random.getRandomPotential(grade));
         equip.setPOption2(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION2_HIGH_RANK * 2 ? grade : grade - 1, 1)));
-        if (equip.getOption3() != 0) {
+        if (equip.getOptionCount() == 3) {
             equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK * 2 ? grade : grade - 1, 1)));
         }
         equip.setHidden(1);
@@ -582,8 +582,9 @@ public class TacosEnhancement {
     }
 
     public boolean useHyperMasterMiracleCube() {
-        if (equip.getOption3() == 0) {
+        if (equip.getOptionCount() == 2) {
             if (Randomizer.nextInt(100) < OPTION_3LINES) {
+                equip.setOptionCount(3);
                 equip.setOption3(DWI_Random.getRandomPotential(Math.max((Randomizer.nextInt(100)) < OPTION3_HIGH_RANK * 2 ? equip.getGrade() : equip.getGrade() - 1, 1)));
             }
         }
