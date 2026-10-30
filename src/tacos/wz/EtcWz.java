@@ -94,6 +94,7 @@ public class EtcWz extends WzXML {
         private int reqLevel; // character level.
         private int reqSkillLevel; // maker skill level.
         private int reqItem; // quest item.
+        private int reqEquip;
         private int meso;
         private ArrayList<MakerRecipe> recipe;
         private int tuc; // number of upgrade items you can add.
@@ -136,6 +137,7 @@ public class EtcWz extends WzXML {
         ret.reqLevel = md_item.getInt("reqLevel");
         ret.reqSkillLevel = md_item.getInt("reqSkillLevel");
         ret.reqItem = md_item.getInt("reqItem");
+        ret.reqEquip = md_item.getInt("reqEquip");
         ret.meso = md_item.getInt("meso");
         ret.recipe = new ArrayList<>();
         MapleData md_recipe = md_item.getChildByPath("recipe");

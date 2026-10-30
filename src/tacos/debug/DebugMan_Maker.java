@@ -115,12 +115,23 @@ public class DebugMan_Maker extends DebugMan implements IDebugMan {
                     return false;
                 }
                 chr.DebugMsgItem("Maker : target = " + maker_item_id, maker_item_id);
-                if (!chr.haveItem(mii.getReqItem())) {
+                if (chr.getMeso() < mii.getMeso()) {
+                    chr.addMeso(mii.getMeso());
+                }
+                if (mii.getReqItem() != 0 && !chr.haveItem(mii.getReqItem())) {
                     if (WzDataStorage.ITEM.check(mii.getReqItem())) {
                         MapleInventoryManipulator.addById(chr, mii.getReqItem(), (short) 1);
                         chr.DebugMsgItem("Maker : reqItem = " + mii.getReqItem(), mii.getReqItem());
                     } else {
                         chr.DebugMsg("Maker : invalid reqItem.");
+                    }
+                }
+                if (mii.getReqEquip() != 0 && !chr.haveItem(mii.getReqEquip())) {
+                    if (WzDataStorage.ITEM.check(mii.getReqEquip())) {
+                        MapleInventoryManipulator.addById(chr, mii.getReqEquip(), (short) 1);
+                        chr.DebugMsgItem("Maker : reqEquip = " + mii.getReqEquip(), mii.getReqEquip());
+                    } else {
+                        chr.DebugMsg("Maker : invalid reqEquip.");
                     }
                 }
                 for (MakerRecipe recipe : mii.getRecipe()) {
@@ -133,6 +144,15 @@ public class DebugMan_Maker extends DebugMan implements IDebugMan {
                         }
                     }
                 }
+                if (mii.getCatalyst() != 0 && !chr.haveItem(mii.getCatalyst())) {
+                    if (WzDataStorage.ITEM.check(mii.getCatalyst())) {
+                        MapleInventoryManipulator.addById(chr, mii.getCatalyst(), (short) 1);
+                        chr.DebugMsgItem("Maker : catalyst = " + mii.getCatalyst(), mii.getCatalyst());
+                    } else {
+                        chr.DebugMsg("Maker : invalid catalyst.");
+                    }
+                }
+                chr.sendStatChanged();
                 return false;
             }
             default -> {
