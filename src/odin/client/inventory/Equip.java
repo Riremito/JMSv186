@@ -63,8 +63,6 @@ public class Equip extends Item {
     // 固定能力値
     private int nMaxHPr = 0;
     private int nMaxMPr = 0;
-    // test.
-    private int itemEXP = 0;
     private int nAttackSpeed = 0; // 攻撃速度
 
     public Equip(int id, short position, int uniqueid, byte flag) {
@@ -333,6 +331,14 @@ public class Equip extends Item {
         this.nOption3 = nOption3;
     }
 
+    public void setSocket1(int nSocket1) {
+        this.nSocket1 = nSocket1;
+    }
+
+    public void setSocket2(int nSocket2) {
+        this.nSocket2 = nSocket2;
+    }
+
     // inc.
     private int checkByte(int value) {
         if (Byte.MAX_VALUE < value) {
@@ -453,7 +459,9 @@ public class Equip extends Item {
         ret.nCHUC = nCHUC;
         ret.nRUC = nRUC;
         ret.nCUC = nCUC;
-        ret.itemEXP = itemEXP;
+        ret.nLevelUpType = nLevelUpType;
+        ret.nLevel = nLevel;
+        ret.nEXP = nEXP;
         ret.nDurability = nDurability;
         ret.nIUC = nIUC;
         ret.nGrade = nGrade;
@@ -461,6 +469,8 @@ public class Equip extends Item {
         ret.nOption1 = nOption1;
         ret.nOption2 = nOption2;
         ret.nOption3 = nOption3;
+        ret.nSocket1 = nSocket1;
+        ret.nSocket2 = nSocket2;
         ret.nMaxHPr = nMaxHPr;
         ret.nMaxMPr = nMaxMPr;
         ret.nAttackSpeed = nAttackSpeed;

@@ -109,7 +109,9 @@ public class DQ_MtsTransferItems {
                         equip.setSpeed(rs.getInt("speed"));
                         equip.setJump(rs.getInt("jump"));
                         equip.setIUC(rs.getInt("ViciousHammer"));
-                        equip.setLevelEXP(rs.getInt("itemEXP"));
+                        equip.setLevelUpType(rs.getInt("growthLevelUpType"));
+                        equip.setLevelLevel(rs.getInt("growthLevel"));
+                        equip.setLevelEXP(rs.getInt("growthEXP"));
                         //equip.setGMLog(rs.getString("GM_Log"));
                         equip.setDurability(rs.getInt("durability"));
                         equip.setCHUC(rs.getInt("enhance"));
@@ -118,6 +120,8 @@ public class DQ_MtsTransferItems {
                         equip.setOption1(rs.getInt("potential1"));
                         equip.setPOption2(rs.getInt("potential2"));
                         equip.setOption3(rs.getInt("potential3"));
+                        equip.setSocket1(rs.getInt("socket1"));
+                        equip.setSocket2(rs.getInt("socket2"));
                         equip.setMaxHPr(rs.getInt("hpR"));
                         equip.setMaxMPr(rs.getInt("mpR"));
                         equip.setAttackSpeed(rs.getInt("incattackSpeed"));
@@ -213,7 +217,7 @@ public class DQ_MtsTransferItems {
             }
             query_2.append(")");
             ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
-            PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
             SimpleImmutableEntry<Item, MapleInventoryType> pair;
             while (iter.hasNext()) {
@@ -266,17 +270,21 @@ public class DQ_MtsTransferItems {
                     pse.setInt(17, equip.getSpeed());
                     pse.setInt(18, equip.getJump());
                     pse.setInt(19, equip.getIUC());
-                    pse.setInt(20, equip.getLevelEXP());
-                    pse.setInt(21, equip.getDurability());
-                    pse.setInt(22, equip.getCHUC());
-                    pse.setInt(23, equip.getGrade());
-                    pse.setInt(24, equip.getHidden());
-                    pse.setInt(25, equip.getOption1());
-                    pse.setInt(26, equip.getOption2());
-                    pse.setInt(27, equip.getOption3());
-                    pse.setInt(28, equip.getMaxHPr());
-                    pse.setInt(29, equip.getMaxMPr());
-                    pse.setInt(30, equip.getAttackSpeed());
+                    pse.setInt(20, equip.getLevelUpType());
+                    pse.setInt(21, equip.getLevelLevel());
+                    pse.setInt(22, equip.getLevelEXP());
+                    pse.setInt(23, equip.getDurability());
+                    pse.setInt(24, equip.getCHUC());
+                    pse.setInt(25, equip.getGrade());
+                    pse.setInt(26, equip.getHidden());
+                    pse.setInt(27, equip.getOption1());
+                    pse.setInt(28, equip.getOption2());
+                    pse.setInt(29, equip.getOption3());
+                    pse.setInt(30, equip.getSocket1());
+                    pse.setInt(31, equip.getSocket2());
+                    pse.setInt(32, equip.getMaxHPr());
+                    pse.setInt(33, equip.getMaxMPr());
+                    pse.setInt(34, equip.getAttackSpeed());
                     pse.executeUpdate();
                 }
             }

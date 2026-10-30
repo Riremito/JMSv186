@@ -203,6 +203,10 @@ public class CharacterWz extends WzXML {
         ret.setDurability(ed.durability);
         ret.setMaxHPr(ed.incMHPr);
         ret.setMaxMPr(ed.incMMPr);
+        if (ed.canLevel) {
+            // 成長装備はLv1から
+            ret.setLevelLevel(1);
+        }
         return ret;
     }
 
@@ -210,12 +214,34 @@ public class CharacterWz extends WzXML {
     public class EquipInfoLevel {
 
         private int exp; // no idea.
+        private int incSTRMax;
+        private int incSTRMin;
         private int incDEXMax;
         private int incDEXMin;
+        private int incINTMax;
+        private int incINTMin;
         private int incLUKMax;
         private int incLUKMin;
+        private int incMHPMax;
+        private int incMHPMin;
+        private int incMMPMax;
+        private int incMMPMin;
         private int incPADMax;
         private int incPADMin;
+        private int incMADMax;
+        private int incMADMin;
+        private int incPDDMax;
+        private int incPDDMin;
+        private int incMDDMax;
+        private int incMDDMin;
+        private int incACCMax;
+        private int incACCMin;
+        private int incEVAMax;
+        private int incEVAMin;
+        private int incSpeedMax;
+        private int incSpeedMin;
+        private int incJumpMax;
+        private int incJumpMin;
     }
 
     private final HashMap<Integer, ArrayList<EquipInfoLevel>> equip_info_levels = new HashMap<>();
@@ -233,12 +259,34 @@ public class CharacterWz extends WzXML {
                 for (MapleData level_node : info_level.getChildren()) {
                     EquipInfoLevel eil = new EquipInfoLevel();
                     eil.exp = level_node.getInt("exp");
+                    eil.incSTRMax = level_node.getInt("incSTRMax");
+                    eil.incSTRMin = level_node.getInt("incSTRMin");
                     eil.incDEXMax = level_node.getInt("incDEXMax");
                     eil.incDEXMin = level_node.getInt("incDEXMin");
+                    eil.incINTMax = level_node.getInt("incINTMax");
+                    eil.incINTMin = level_node.getInt("incINTMin");
                     eil.incLUKMax = level_node.getInt("incLUKMax");
                     eil.incLUKMin = level_node.getInt("incLUKMin");
+                    eil.incMHPMax = level_node.getInt("incMHPMax");
+                    eil.incMHPMin = level_node.getInt("incMHPMin");
+                    eil.incMMPMax = level_node.getInt("incMMPMax");
+                    eil.incMMPMin = level_node.getInt("incMMPMin");
                     eil.incPADMax = level_node.getInt("incPADMax");
                     eil.incPADMin = level_node.getInt("incPADMin");
+                    eil.incMADMax = level_node.getInt("incMADMax");
+                    eil.incMADMin = level_node.getInt("incMADMin");
+                    eil.incPDDMax = level_node.getInt("incPDDMax");
+                    eil.incPDDMin = level_node.getInt("incPDDMin");
+                    eil.incMDDMax = level_node.getInt("incMDDMax");
+                    eil.incMDDMin = level_node.getInt("incMDDMin");
+                    eil.incACCMax = level_node.getInt("incACCMax");
+                    eil.incACCMin = level_node.getInt("incACCMin");
+                    eil.incEVAMax = level_node.getInt("incEVAMax");
+                    eil.incEVAMin = level_node.getInt("incEVAMin");
+                    eil.incSpeedMax = level_node.getInt("incSpeedMax");
+                    eil.incSpeedMin = level_node.getInt("incSpeedMin");
+                    eil.incJumpMax = level_node.getInt("incJumpMax");
+                    eil.incJumpMin = level_node.getInt("incJumpMin");
                     growth.add(eil);
                 }
             }

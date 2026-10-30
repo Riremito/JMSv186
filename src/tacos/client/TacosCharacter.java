@@ -2900,9 +2900,20 @@ public class TacosCharacter extends TacosPlayer {
                     nEXP = 0;
                     if (nLevel < eils.size()) {
                         EquipInfoLevel eil = eils.get(nLevel - 1);
+                        equip.incSTR(eil.getIncSTRMax());
                         equip.incDEX(eil.getIncDEXMax());
+                        equip.incINT(eil.getIncINTMax());
                         equip.incLUK(eil.getIncLUKMax());
+                        equip.incMaxHP(eil.getIncMHPMax());
+                        equip.incMaxMP(eil.getIncMMPMax());
                         equip.incPAD(eil.getIncPADMax());
+                        equip.incMAD(eil.getIncMADMax());
+                        equip.incPDD(eil.getIncPDDMax());
+                        equip.incMDD(eil.getIncMDDMax());
+                        equip.incACC(eil.getIncACCMax());
+                        equip.incEVA(eil.getIncEVAMax());
+                        equip.incSpeed(eil.getIncSpeedMax());
+                        equip.incJump(eil.getIncJumpMax());
                         nLevel++;
                         PB_UserEffect pb = PB_UserEffect.builder()
                                 .player(this)

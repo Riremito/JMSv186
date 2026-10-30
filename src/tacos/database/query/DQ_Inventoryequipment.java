@@ -43,7 +43,7 @@ public class DQ_Inventoryequipment {
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
                 ps.setInt(1, unique_id);
                 ps.setInt(2, equip.getRUC());
                 ps.setInt(3, equip.getCUC());
@@ -63,17 +63,21 @@ public class DQ_Inventoryequipment {
                 ps.setInt(17, equip.getSpeed());
                 ps.setInt(18, equip.getJump());
                 ps.setInt(19, equip.getIUC());
-                ps.setInt(20, equip.getLevelEXP());
-                ps.setInt(21, equip.getDurability());
-                ps.setInt(22, equip.getCHUC());
-                ps.setInt(23, equip.getGrade());
-                ps.setInt(24, equip.getHidden());
-                ps.setInt(25, equip.getOption1());
-                ps.setInt(26, equip.getOption2());
-                ps.setInt(27, equip.getOption3());
-                ps.setInt(28, equip.getMaxHPr());
-                ps.setInt(29, equip.getMaxMPr());
-                ps.setInt(30, equip.getAttackSpeed());
+                ps.setInt(20, equip.getLevelUpType());
+                ps.setInt(21, equip.getLevelLevel());
+                ps.setInt(22, equip.getLevelEXP());
+                ps.setInt(23, equip.getDurability());
+                ps.setInt(24, equip.getCHUC());
+                ps.setInt(25, equip.getGrade());
+                ps.setInt(26, equip.getHidden());
+                ps.setInt(27, equip.getOption1());
+                ps.setInt(28, equip.getOption2());
+                ps.setInt(29, equip.getOption3());
+                ps.setInt(30, equip.getSocket1());
+                ps.setInt(31, equip.getSocket2());
+                ps.setInt(32, equip.getMaxHPr());
+                ps.setInt(33, equip.getMaxMPr());
+                ps.setInt(34, equip.getAttackSpeed());
                 ps.executeUpdate();
                 return true;
             }
@@ -116,7 +120,9 @@ public class DQ_Inventoryequipment {
                     equip.setSpeed(rs.getInt("speed"));
                     equip.setJump(rs.getInt("jump"));
                     equip.setIUC(rs.getInt("ViciousHammer"));
-                    equip.setLevelEXP(rs.getInt("itemEXP"));
+                    equip.setLevelUpType(rs.getInt("growthLevelUpType"));
+                    equip.setLevelLevel(rs.getInt("growthLevel"));
+                    equip.setLevelEXP(rs.getInt("growthEXP"));
                     equip.setDurability(rs.getInt("durability"));
                     equip.setCHUC(rs.getInt("enhance"));
                     equip.setGrade(rs.getInt("rank"));
@@ -124,6 +130,8 @@ public class DQ_Inventoryequipment {
                     equip.setOption1(rs.getInt("potential1"));
                     equip.setPOption2(rs.getInt("potential2"));
                     equip.setOption3(rs.getInt("potential3"));
+                    equip.setSocket1(rs.getInt("socket1"));
+                    equip.setSocket2(rs.getInt("socket2"));
                     equip.setMaxHPr(rs.getInt("hpR"));
                     equip.setMaxMPr(rs.getInt("mpR"));
                     equip.setAttackSpeed(rs.getInt("incattackSpeed"));
