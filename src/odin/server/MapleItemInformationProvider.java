@@ -8,6 +8,8 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.wz.CharacterWz.EquipInfo;
 import tacos.wz.ItemWz.ItemInfo;
 import tacos.wz.ItemWz.ScrollData;
@@ -72,6 +74,17 @@ public class MapleItemInformationProvider {
     public Equip getEquipById(int equip_id) {
         Equip ret = getDefaultEquipById(equip_id);
         ret.getEnhancement().randomize();
+        return ret;
+    }
+
+    public Equip getGachaponEquipById(int equip_id) {
+        Equip ret = getDefaultEquipById(equip_id);
+        ret.getEnhancement().randomize();
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            if (ret.getMaxIUC() != 0) {
+                ret.setMaxIUC(2 + Randomizer.nextInt(14));
+            }
+        }
         return ret;
     }
 

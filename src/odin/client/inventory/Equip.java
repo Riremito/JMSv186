@@ -170,7 +170,7 @@ public class Equip extends Item {
 
     // packet用, ビシャスのハンマー使用回数
     public int getIUC() {
-        return this.nCIUC;
+        return (this.nIUC - 2) << 4 | this.nCIUC;
     }
 
     public int getMaxIUC() {
