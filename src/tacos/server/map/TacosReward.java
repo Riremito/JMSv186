@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
@@ -90,6 +91,40 @@ public class TacosReward {
         }
 
         return false;
+    }
+
+    // Reward.img (r + reactor id), returns the number of drops or -1 if the reactor does not have the data.
+    public static int getReactorReward(TacosCharacter chr, TacosReactor reactor) {
+        ArrayList<RewardData> list_reward = ServerImg.getAutoReactorRewardData(reactor.getId());
+        if (list_reward == null || list_reward.isEmpty()) {
+            return -1;
+        }
+
+        TacosMap map = reactor.getMap();
+        int server_drop_rate = chr.getChannelServer().getDropRate();
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int drop_count = 0;
+        for (RewardData reward : list_reward) {
+            if ((reward.getProb() * server_drop_rate) < Randomizer.nextInt(ServerImg.PROB_MAX)) {
+                continue;
+            }
+            Point drop_pos = getDropPosition(reactor.getPosition(), drop_count);
+            if (reward.getMoney() != 0) {
+                map.spawnMesoDrop(reward.getMoney(), drop_pos, reactor.getPosition(), chr, false, (byte) 0);
+            } else {
+                Item idrop;
+                if (GameConstants.getInventoryType(reward.getItem()) == MapleInventoryType.EQUIP) {
+                    idrop = miip.getEquipById(reward.getItem());
+                } else {
+                    int range = reward.getMax() - reward.getMin();
+                    int quantity = reward.getMin() + ((0 < range) ? Randomizer.nextInt(range) : 0);
+                    idrop = new Item(reward.getItem(), (byte) 0, (short) quantity, (byte) 0);
+                }
+                map.spawnItemDropByReactor(reactor, chr, idrop, drop_pos, false, false);
+            }
+            drop_count++;
+        }
+        return drop_count;
     }
 
     // odin style.
@@ -165,6 +200,12 @@ public class TacosReward {
         }
 
         return dropped_count;
+    }
+
+    private static Point getDropPosition(Point base_pos, int dropped_count) {
+        Point drop_pos = new Point(base_pos);
+        drop_pos.x += (dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2));
+        return drop_pos;
     }
 
     public static Point getDropPosition(TacosMonster monster, int drop_type, int dropped_count) {

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.TacosReward;
 import tacos.server.map.object.TacosReactor;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -57,6 +58,10 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
+        // Reward.img has its own meso and item drops, the arguments are used only for the drops of the database.
+        if (0 <= TacosReward.getReactorReward(getPlayer(), reactor)) {
+            return;
+        }
         List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getId());
         List<ReactorDropEntry> items = new LinkedList<>();
 

@@ -62,6 +62,18 @@ public class ServerImg {
         return ret;
     }
 
+    // only BMS v8 has the reactor drops, other regions use it when they do not have the data.
+    public static ArrayList<RewardData> getAutoReactorRewardData(int reactor_id) {
+        ArrayList<RewardData> ret = null;
+        if (Region.JMS.check()) {
+            ret = Config.GreaterOrEqual(Region.JMS, 186) ? JMS186.getReactorRewardData(reactor_id) : JMS147.getReactorRewardData(reactor_id);
+        }
+        if (ret == null || ret.isEmpty()) {
+            ret = BMS8.getReactorRewardData(reactor_id);
+        }
+        return ret;
+    }
+
     private ServerImg(String path) {
         setWzRoot(path);
     }
@@ -192,35 +204,46 @@ public class ServerImg {
     }
 
     private final TreeMap<Integer, ArrayList<RewardData>> rewards = new TreeMap<>();
+    private final TreeMap<Integer, ArrayList<RewardData>> reactor_rewards = new TreeMap<>();
     public static final int PROB_MAX = 1000000;
 
+    // m + mob id
     public ArrayList<RewardData> getRewardData(int mob_id) {
+        return getRewardData(this.rewards, "m", mob_id);
+    }
+
+    // r + reactor id
+    public ArrayList<RewardData> getReactorRewardData(int reactor_id) {
+        return getRewardData(this.reactor_rewards, "r", reactor_id);
+    }
+
+    private ArrayList<RewardData> getRewardData(TreeMap<Integer, ArrayList<RewardData>> cache, String prefix, int id) {
         MapleData md_reward_img = getReward();
         if (md_reward_img == null) {
             return null;
         }
 
-        if (this.rewards.containsKey(mob_id)) {
-            return this.rewards.get(mob_id);
+        if (cache.containsKey(id)) {
+            return cache.get(id);
         }
 
         ArrayList<RewardData> list_reward = null;
-        MapleData mob_drop_table = md_reward_img.getChildByPath(String.format("m%07d", mob_id));
+        MapleData drop_table = md_reward_img.getChildByPath(String.format("%s%07d", prefix, id));
         // found.
-        if (mob_drop_table != null) {
+        if (drop_table != null) {
             list_reward = new ArrayList<>();
-            for (MapleData mob_drop : mob_drop_table.getChildren()) {
+            for (MapleData drop : drop_table.getChildren()) {
                 RewardData reward = new RewardData();
-                reward.money = mob_drop.getInt("money");
-                reward.item = mob_drop.getInt("item");
-                String prob_str = mob_drop.getString("prob", "[R8]0.0").replace("[R8]", "");
+                reward.money = drop.getInt("money");
+                reward.item = drop.getInt("item");
+                String prob_str = drop.getString("prob", "[R8]0.0").replace("[R8]", "");
                 reward.prob = (int) (Double.parseDouble(prob_str) * PROB_MAX);
-                reward.min = mob_drop.getInt("min", 1);
-                reward.max = mob_drop.getInt("max", 1);
+                reward.min = drop.getInt("min", 1);
+                reward.max = drop.getInt("max", 1);
 
                 if (reward.item != 0) {
                     if (!WzDataStorage.ITEM.check(reward.item)) {
-                        DebugLogger.ErrorLog("getRewardData : " + mob_id + ", invalid item = " + reward.item);
+                        DebugLogger.ErrorLog("getRewardData : " + prefix + id + ", invalid item = " + reward.item);
                         continue;
                     }
                 }
@@ -231,10 +254,10 @@ public class ServerImg {
 
                 list_reward.add(reward);
             }
-            DebugLogger.XmlLog("getRewardData : " + mob_id + ", count = " + list_reward.size());
+            DebugLogger.XmlLog("getRewardData : " + prefix + id + ", count = " + list_reward.size());
         }
 
-        this.rewards.put(mob_id, list_reward);
+        cache.put(id, list_reward);
         return list_reward;
     }
 

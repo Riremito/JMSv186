@@ -19,6 +19,7 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
+import tacos.server.map.TacosReward;
 import tacos.server.map.TacosMap;
 import java.awt.Rectangle;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -114,7 +115,10 @@ public class TacosReactor extends TacosMapObject {
                     } else { //item-triggered on final step
                         map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
-                    TacosScriptReactor.getInstance().act(client, this);
+                    // a reactor without a script drops the items of Reward.img.
+                    if (!TacosScriptReactor.getInstance().act(client, this) && client.getPlayer() != null) {
+                        TacosReward.getReactorReward(client.getPlayer(), this);
+                    }
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
