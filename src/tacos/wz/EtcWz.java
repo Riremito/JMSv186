@@ -20,6 +20,7 @@ package tacos.wz;
 
 import tacos.config.Content;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import tacos.config.ContentCustom;
 import tacos.debug.DebugLogger;
@@ -28,6 +29,7 @@ import odin.server.CashItemInfo;
 import odin.server.ItemMakerFactory.GemCreateEntry;
 import odin.server.ItemMakerFactory.ItemMakerCreateEntry;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  *
@@ -68,6 +70,102 @@ public class EtcWz extends WzXML {
         return getData("ItemMake.img");
     }
 
+    public ArrayList<Integer> getMakerItems(int maker_type) {
+        ArrayList<Integer> ret = new ArrayList<>();
+        // ItemMake.img
+        MapleData item_make_img = getItemMake();
+        if (item_make_img == null) {
+            return ret;
+        }
+        // ItemMake.img/0 1, 2, 4, 8, 16
+        MapleData md_maker_job = item_make_img.getChildByPath(String.valueOf(maker_type));
+        if (md_maker_job == null) {
+            return ret;
+        }
+        for (MapleData data : md_maker_job.getChildren()) {
+            ret.add(Integer.valueOf(data.getName()));
+        }
+        return ret;
+    }
+
+    @Getter
+    public class MakerItemInfo {
+
+        private int reqLevel; // character level.
+        private int reqSkillLevel; // maker skill level.
+        private int reqItem; // quest item.
+        private int meso;
+        private ArrayList<MakerRecipe> recipe;
+        private int tuc; // number of upgrade items you can add.
+        private int catalyst;
+        private int itemNum;
+        private ArrayList<MakerRandomReward> randomReward;
+    }
+
+    @Getter
+    public class MakerRecipe {
+
+        private int count;
+        private int item; // item id.
+    }
+
+    @Getter
+    public class MakerRandomReward {
+
+        private int item;
+        private int itemNum;
+        private int prob;
+    }
+
+    private final HashMap<Integer, MakerItemInfo> maker_item_info_list = new HashMap<>();
+
+    public MakerItemInfo getMakerItem(int maker_type, int item_id) {
+        MakerItemInfo ret = this.maker_item_info_list.get(item_id);
+        if (ret != null) {
+            return ret;
+        }
+        MapleData item_make_img = getItemMake();
+        if (item_make_img == null) {
+            return ret;
+        }
+        MapleData md_item = item_make_img.getChildByPath(String.format("%d/%08d", maker_type, item_id));
+        if (md_item == null) {
+            return ret;
+        }
+        ret = new MakerItemInfo();
+        ret.reqLevel = md_item.getInt("reqLevel");
+        ret.reqSkillLevel = md_item.getInt("reqSkillLevel");
+        ret.reqItem = md_item.getInt("reqItem");
+        ret.meso = md_item.getInt("meso");
+        ret.recipe = new ArrayList<>();
+        MapleData md_recipe = md_item.getChildByPath("recipe");
+        if (md_recipe != null) {
+            for (MapleData data : md_recipe.getChildren()) {
+                MakerRecipe mr = new MakerRecipe();
+                mr.count = data.getInt("count");
+                mr.item = data.getInt("item");
+                ret.recipe.add(mr);
+            }
+        }
+        ret.tuc = md_item.getInt("tuc");
+        ret.catalyst = md_item.getInt("catalyst");
+        ret.itemNum = md_item.getInt("itemNum");
+        ret.randomReward = new ArrayList<>();
+        MapleData md_randomReward = md_item.getChildByPath("randomReward");
+        if (md_randomReward != null) {
+            for (MapleData data : md_randomReward.getChildren()) {
+                MakerRandomReward mrr = new MakerRandomReward();
+                mrr.item = data.getInt("item");
+                mrr.itemNum = data.getInt("itemNum");
+                mrr.prob = data.getInt("prob");
+                ret.randomReward.add(mrr);
+            }
+        }
+
+        this.maker_item_info_list.put(item_id, ret);
+        return ret;
+    }
+
     public void loadItemMake(Map<Integer, GemCreateEntry> gemCache, Map<Integer, ItemMakerCreateEntry> createCache) {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
@@ -103,7 +201,7 @@ public class EtcWz extends WzXML {
                                 }
                             }
                         }
-                        gemCache.put(Integer.parseInt(itemFolder.getName()), ret);
+                        gemCache.put(Integer.valueOf(itemFolder.getName()), ret);
                     }
                     break;
                 }
@@ -129,7 +227,7 @@ public class EtcWz extends WzXML {
                                 }
                             }
                         }
-                        createCache.put(Integer.parseInt(itemFolder.getName()), imt);
+                        createCache.put(Integer.valueOf(itemFolder.getName()), imt);
                     }
                     break;
                 }

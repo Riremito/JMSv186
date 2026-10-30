@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import odin.client.Skill;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -36,6 +37,7 @@ import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugManTest;
 import tacos.debug.DebugMan_CC;
+import tacos.debug.DebugMan_Maker;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
@@ -177,6 +179,15 @@ public class TacosCommandDebug {
 
                 chr.DebugMsg("search results = " + shop_item_count);
                 ds.start(chr);
+                return true;
+            }
+            case "/maker" -> {
+                Skill skill = WzXML.SKILL.getSkill().get(1007);
+                if (chr.getSkillLevel(skill) == 0) {
+                    chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
+                }
+                DebugMan_Maker dm = new DebugMan_Maker();
+                dm.start(chr);
                 return true;
             }
             case "/npclocation" -> {
