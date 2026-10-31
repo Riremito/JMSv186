@@ -55,7 +55,10 @@ public class TacosSpawnPoint {
         this.fh = life.getFh();
         this.hide = life.getHide();
         this.id = life.getId();
-        this.mobTime = life.getMobTime() * 1000;
+        this.mobTime = life.getMobTime(); // -1 requires map reset.
+        if (0 < this.mobTime) {
+            this.mobTime *= 1000;
+        }
         this.rx0 = life.getRx0();
         this.rx1 = life.getRx1();
         //this.type = life.getType();

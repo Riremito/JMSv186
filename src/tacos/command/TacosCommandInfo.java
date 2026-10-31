@@ -21,14 +21,11 @@ package tacos.command;
 import java.util.ArrayList;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import java.util.List;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosSpawnPoint;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
-import tacos.wz.WzDataStorage;
 import tacos.wz.WzNameStorage;
-import tacos.wz.WzXML;
 
 /**
  *
@@ -58,10 +55,13 @@ public class TacosCommandInfo {
                 return true;
             }
             // map.
-            case "/mobtime" -> {
+            case "/mapinfo" -> {
                 for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
-                    if (sp.getMobTime() != 0) {
-                        chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
+                    if (sp.getMobTime() <= -1) {
+                        chr.DebugMsg(String.format("%d (%s) : map reset is required.", sp.getId(), WzNameStorage.MOB.get(sp.getId()).getName()));
+                    } else {
+                        double interval = (double) sp.getMobTime() / 1000 / 3600;
+                        chr.DebugMsg(String.format("%d (%s) : %.1f hours.", sp.getId(), WzNameStorage.MOB.get(sp.getId()).getName(), interval));
                     }
                 }
                 return true;
@@ -94,42 +94,10 @@ public class TacosCommandInfo {
                 }
                 return true;
             }
-            case "/mapinfo" -> {
-                checkMapData(chr);
-                return true;
-            }
             default -> {
             }
         }
 
         return false;
-    }
-
-    private static boolean checkMapData(TacosCharacter chr) {
-        List<Integer> mob_ids = new ArrayList<>();
-        List<Integer> mob_counts = new ArrayList<>();
-        for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-            int id = sp.getId();
-            int index = mob_ids.indexOf(id);
-            if (index != -1) {
-                mob_counts.set(index, mob_counts.get(index) + 1);
-                continue;
-            }
-            mob_ids.add(id);
-            mob_counts.add(1);
-        }
-
-        for (int i = 0; i < mob_ids.size(); i++) {
-            int mob_id = mob_ids.get(i);
-            int mob_count = mob_counts.get(i);
-            String mob_name = WzXML.STRING.getMobName(mob_id, "NO_NAME");
-            if (!WzDataStorage.MOB.check(mob_id)) {
-                chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-                continue;
-            }
-            chr.DebugMsg("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-        }
-
-        return true;
     }
 }

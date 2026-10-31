@@ -1715,7 +1715,7 @@ public class TacosMap extends TacosMapData {
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
-                if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
+                if (sp.getMobTime() != -1 && sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
                     TacosMonster monster = sp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
