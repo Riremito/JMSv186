@@ -392,7 +392,15 @@ public class TacosCommandDebug {
             }
             case "/bossmap" -> {
                 DebugMan_WarpBoss dm = new DebugMan_WarpBoss();
-                dm.setMasterMonsters();
+                if (dcmd.check(1)) {
+                    if (dcmd.get(1).toLowerCase().equals("q")) {
+                        dm.setQuestBossMonsters(); // Quest Boss
+                    } else {
+                        dm.setBossMonsters(); // Area Boss
+                    }
+                } else {
+                    dm.setMasterMonsters(); // Master Monster
+                }
                 dm.start(chr);
                 return true;
             }

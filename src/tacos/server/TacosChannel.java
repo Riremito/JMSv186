@@ -42,7 +42,6 @@ import tacos.property.Property_Dummy_World;
 import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.server.map.TacosReactorSpawnPoint;
 import tacos.server.map.TacosSpawnPoint;
-import tacos.unofficial.CustomMap;
 
 /**
  *
@@ -145,8 +144,6 @@ public class TacosChannel extends TacosServer {
         }
         // master monster.
         map.addMasterMonster();
-        // custom npc.
-        CustomMap.addNPCtoMap(map);
         this.maps.put(map_id, map);
         return map;
     }
