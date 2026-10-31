@@ -482,7 +482,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserItemMakeRequest: {
-                ReqCUser_ItemMaker.OnUserItemMakeRequest(cp, chr);
+                ReqCUser_ItemMaker.OnUserItemMakeRequest(chr, cp);
                 return true;
             }
             case CP_UserUseGachaponBoxRequest: {

@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Bubbling
  */
 public enum OpsUserEffect {
-    // GMS v95
     UserEffect_LevelUp(0),
     UserEffect_SkillUse(1),
     UserEffect_SkillAffected(2),
@@ -49,7 +48,7 @@ public enum OpsUserEffect {
     UserEffect_ExpItemConsumed(19),
     UserEffect_ReservedEffect(20),
     UserEffect_Buff(21),
-    UserEffect_ConsumeEffect(22),
+    UserEffect_ConsumeEffect(22), // Item/Cash/0528.img/%08d/effect
     UserEffect_UpgradeTombItemUse(23),
     UserEffect_BattlefieldItemUse(24),
     UserEffect_AvatarOriented(25),
@@ -72,29 +71,20 @@ public enum OpsUserEffect {
 
     private int value;
 
-    OpsUserEffect(int flag) {
-        value = flag;
+    private OpsUserEffect(int value) {
+        this.value = value;
     }
 
-    OpsUserEffect() {
-        value = -1;
+    private OpsUserEffect() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int val) {
-        value = val;
-    }
-
-    public static OpsUserEffect find(int val) {
-        for (OpsUserEffect o : OpsUserEffect.values()) {
-            if (o.get() == val) {
-                return o;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {
@@ -104,24 +94,6 @@ public enum OpsUserEffect {
     }
 
     public static void init() {
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 147)) {
-            clear();
-            UserEffect_LevelUp.set(0);
-            UserEffect_SkillUse.set(1);
-            UserEffect_SkillAffected.set(2);
-            UserEffect_Quest.set(3);
-            UserEffect_Pet.set(4);
-            UserEffect_SkillSpecial.set(5);
-            UserEffect_ProtectOnDieItemUse.set(6);
-            UserEffect_PlayPortalSE.set(7);
-            UserEffect_JobChanged.set(8);
-            UserEffect_QuestComplete.set(9);
-            UserEffect_IncDecHPEffect.set(10);
-            UserEffect_BuffItemEffect.set(11);
-            UserEffect_SquibEffect.set(12);
-            UserEffect_MonsterBookCardGet.set(13);
-            return;
-        }
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             clear();
             UserEffect_LevelUp.set(0);
@@ -175,7 +147,6 @@ public enum OpsUserEffect {
             // 50 : 紫の謎エフェクト
             return;
         }
-
         if (Config.GreaterOrEqual(Region.JMS, 187)) {
             clear();
             UserEffect_LevelUp.set(0);
@@ -186,11 +157,21 @@ public enum OpsUserEffect {
             UserEffect_Quest.set(5);
             UserEffect_Pet.set(6);
             UserEffect_SkillSpecial.set(7);
-            UserEffect_ProtectOnDieItemUse.set(8); // 翡翠のお守り
+            UserEffect_ProtectOnDieItemUse.set(8);
             // 9 : 経験値お守り
             UserEffect_PlayPortalSE.set(10);
             UserEffect_JobChanged.set(11);
             UserEffect_QuestComplete.set(12);
+            UserEffect_IncDecHPEffect.set(13);
+            UserEffect_BuffItemEffect.set(14);
+            UserEffect_SquibEffect.set(15);
+            UserEffect_MonsterBookCardGet.set(16);
+            UserEffect_LotteryUse.set(17);
+            UserEffect_ItemLevelUp.set(18);
+            UserEffect_ItemMaker.set(19);
+            UserEffect_ExpItemConsumed.set(20);
+            UserEffect_ReservedEffect.set(21);
+            UserEffect_UpgradeTombItemUse.set(22);
             return;
         }
         if (Config.GreaterOrEqual(Region.JMS, 186)) {
@@ -224,6 +205,32 @@ public enum OpsUserEffect {
             UserEffect_PlaySoundWithMuteBGM.set(26);
             UserEffect_SoulStoneUse.set(27); // 霊魂石
             UserEffect_IncDecHPEffect_EX.set(28);
+            return;
+        }
+        // KMS1-65, JMS131-164
+        if (Region.KMS.check() || Region.JMS.check()) {
+            clear();
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_Quest.set(3);
+            UserEffect_Pet.set(4);
+            UserEffect_SkillSpecial.set(5);
+            UserEffect_ProtectOnDieItemUse.set(6);
+            UserEffect_PlayPortalSE.set(7);
+            UserEffect_JobChanged.set(8);
+            UserEffect_QuestComplete.set(9);
+            UserEffect_IncDecHPEffect.set(10);
+            UserEffect_BuffItemEffect.set(11);
+            UserEffect_SquibEffect.set(12);
+            UserEffect_MonsterBookCardGet.set(13);
+            UserEffect_LotteryUse.set(14);
+            // JMS164
+            UserEffect_ItemLevelUp.set(15);
+            UserEffect_ItemMaker.set(16);
+            UserEffect_ExpItemConsumed.set(17);
+            UserEffect_ReservedEffect.set(18);
+            UserEffect_ConsumeEffect.set(19);
             return;
         }
         if (Config.Equal(Region.THMS, 87)) {

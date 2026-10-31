@@ -16,48 +16,35 @@
  *
  *
  */
-package tacos.packet.ops;
+package tacos.packet.ops.fixed;
 
 /**
  *
  * @author Riremito
  */
-public enum OpsRecipeClass implements IPacketOps {
-    // GMS v95
-    RECIPE_CLASS_START(0),
-    RECIPE_CLASS_NORMAL(1),
-    RECIPE_CLASS_HIDDEN(2),
-    RECIPE_CLASS_MONSTER_CRYSTAL(3),
-    RECIPE_CLASS_EQUIP_DISASSEMBLE(4),
-    RECIPE_CLASS_END(5),
+public enum OpsItemMaker implements IOpsFixed {
+    ITEM_MAKER_RESULT_SUCCESS(0),
+    ITEM_MAKER_RESULT_DESTROYED(1),
+    ITEM_MAKER_ERR_UNKNOWN(2),
+    ITEM_MAKER_ERR_EMPTYSLOT(3),
+    ITEM_MAKER_ERR_EMPTYSLOT_EQUIP(4),
+    ITEM_MAKER_ERR_EMPTYSLOT_COMSUME(5),
+    ITEM_MAKER_ERR_EMPTYSLOT_INSTALL(6),
+    ITEM_MAKER_ERR_EMPTYSLOT_ETC(7),
     UNKNOWN;
 
-    private int value;
+    private final int value;
 
-    OpsRecipeClass(int val) {
-        this.value = val;
+    private OpsItemMaker(int value) {
+        this.value = value;
     }
 
-    OpsRecipeClass() {
+    private OpsItemMaker() {
         this.value = -1;
     }
 
     @Override
     public int get() {
         return this.value;
-    }
-
-    @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsRecipeClass find(int val) {
-        for (OpsRecipeClass ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
     }
 }

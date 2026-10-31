@@ -30,8 +30,8 @@ import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsItemMakerResult;
-import tacos.packet.ops.OpsRecipeClass;
+import tacos.packet.ops.fixed.OpsItemMaker;
+import tacos.packet.ops.fixed.OpsRecipe;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -50,10 +50,10 @@ public class ReqCUser_ItemMaker {
     private static final int MONSTER_CRYSTAL_COST = 100; // monster etc items for a crystal
 
     // CUIItemMaker::RequestItemMake
-    public static boolean OnUserItemMakeRequest(ClientPacket cp, TacosCharacter chr) {
+    public static boolean OnUserItemMakeRequest(TacosCharacter chr, ClientPacket cp) {
         int recipe_class = cp.Decode4();
-        OpsItemMakerResult result;
-        switch (OpsRecipeClass.find(recipe_class)) {
+        OpsItemMaker result;
+        switch (OpsRecipe.find(recipe_class)) {
             case RECIPE_CLASS_NORMAL:
             case RECIPE_CLASS_HIDDEN: {
                 int target_item_id = cp.Decode4(); // m_nTargetItem
@@ -80,43 +80,43 @@ public class ReqCUser_ItemMaker {
             }
             default: {
                 DebugLogger.ErrorLog("OnItemMakeRequest : not coded " + recipe_class);
-                result = OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+                result = OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
                 break;
             }
         }
         sendMakeResult(chr, result);
-        return result == OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return result == OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
     // CUIItemMaker::OnItemMakeResult
-    private static void sendMakeResult(TacosCharacter chr, OpsItemMakerResult result) {
+    private static void sendMakeResult(TacosCharacter chr, OpsItemMaker result) {
         PB_UserEffect pb = PB_UserEffect.builder()
                 .player(chr)
                 .maker(result)
                 .build();
         chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-        if (result == OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS || result == OpsItemMakerResult.ITEM_MAKER_RESULT_DESTROYED) {
+        if (result == OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS || result == OpsItemMaker.ITEM_MAKER_RESULT_DESTROYED) {
             chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemMaker, pb), chr.getId());
         }
     }
 
     // the result for a full inventory.
-    private static OpsItemMakerResult getEmptySlotError(MapleInventoryType type) {
+    private static OpsItemMaker getEmptySlotError(MapleInventoryType type) {
         switch (type) {
             case EQUIP: {
-                return OpsItemMakerResult.ITEM_MAKER_ERR_EMPTYSLOT_EQUIP;
+                return OpsItemMaker.ITEM_MAKER_ERR_EMPTYSLOT_EQUIP;
             }
             case USE: {
-                return OpsItemMakerResult.ITEM_MAKER_ERR_EMPTYSLOT_COMSUME;
+                return OpsItemMaker.ITEM_MAKER_ERR_EMPTYSLOT_COMSUME;
             }
             case SETUP: {
-                return OpsItemMakerResult.ITEM_MAKER_ERR_EMPTYSLOT_INSTALL;
+                return OpsItemMaker.ITEM_MAKER_ERR_EMPTYSLOT_INSTALL;
             }
             case ETC: {
-                return OpsItemMakerResult.ITEM_MAKER_ERR_EMPTYSLOT_ETC;
+                return OpsItemMaker.ITEM_MAKER_ERR_EMPTYSLOT_ETC;
             }
             default: {
-                return OpsItemMakerResult.ITEM_MAKER_ERR_EMPTYSLOT;
+                return OpsItemMaker.ITEM_MAKER_ERR_EMPTYSLOT;
             }
         }
     }
@@ -125,15 +125,15 @@ public class ReqCUser_ItemMaker {
         return chr.getInventory(GameConstants.getInventoryType(item_id)).isFull();
     }
 
-    private static OpsItemMakerResult makeMonsterCrystal(TacosCharacter chr, int etc_item_id) {
+    private static OpsItemMaker makeMonsterCrystal(TacosCharacter chr, int etc_item_id) {
         if (!chr.haveItem(etc_item_id, MONSTER_CRYSTAL_COST, false, true)) {
             DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL : item");
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         int crystal_id = getCrystal(getMonsterCrystalLevel(etc_item_id));
         if (crystal_id <= 0) {
             DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL : level");
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         if (isInventoryFull(chr, crystal_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(crystal_id));
@@ -142,23 +142,23 @@ public class ReqCUser_ItemMaker {
         MapleInventoryManipulator.addById(chr, crystal_id, (short) 1, null, null, 0, io);
         MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, etc_item_id, MONSTER_CRYSTAL_COST, false, io);
         chr.sendInventoryOperation(false, io);
-        return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
-    private static OpsItemMakerResult disassembleEquip(TacosCharacter chr, int item_id, int slot) {
+    private static OpsItemMaker disassembleEquip(TacosCharacter chr, int item_id, int slot) {
         Equip to_use = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
         if (to_use == null || to_use.getItemId() != item_id || to_use.getQuantity() < 1) {
             DebugLogger.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isDropRestricted(item_id) || ii.isAccountShared(item_id)) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         EquipInfo ed = to_use.getInfo();
         int crystal_id = getCrystal(ed.getReqLevel());
         if (crystal_id <= 0) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         if (isInventoryFull(chr, crystal_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(crystal_id));
@@ -168,44 +168,44 @@ public class ReqCUser_ItemMaker {
         MapleInventoryManipulator.addById(chr, crystal_id, (short) count, null, null, 0, io);
         MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.EQUIP, (short) slot, (short) 1, false, io);
         chr.sendInventoryOperation(false, io);
-        return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
-    private static OpsItemMakerResult makeGem(TacosCharacter chr, int target_item_id) {
+    private static OpsItemMaker makeGem(TacosCharacter chr, int target_item_id) {
         ItemMakerFactory.GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
         if (gem == null || !hasSkill(chr, gem.getReqSkillLevel()) || chr.getMeso() < gem.getCost()) {
             DebugLogger.ErrorLog("makeGem : " + target_item_id);
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         ItemMakerFactory.RandomReward reward = getRandomReward(gem.getRandomReward());
         if (reward == null) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         if (isInventoryFull(chr, reward.itemId)) {
             return getEmptySlotError(GameConstants.getInventoryType(reward.itemId));
         }
         PB_InvOp.Builder io = PB_InvOp.builder();
         if (!checkRequiredNRemove(chr, gem.getReqRecipes(), io)) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-gem.getCost(), false);
         MapleInventoryManipulator.addById(chr, reward.itemId, (short) reward.count, null, null, 0, io);
         chr.sendInventoryOperation(false, io);
-        return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
-    private static OpsItemMakerResult makeOtherGem(TacosCharacter chr, int target_item_id) {
+    private static OpsItemMaker makeOtherGem(TacosCharacter chr, int target_item_id) {
         ItemMakerFactory.GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(target_item_id);
         if (gem == null || !hasSkill(chr, gem.getReqSkillLevel()) || chr.getMeso() < gem.getCost()) {
             DebugLogger.ErrorLog("makeOtherGem : " + target_item_id);
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         if (isInventoryFull(chr, target_item_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(target_item_id));
         }
         PB_InvOp.Builder io = PB_InvOp.builder();
         if (!checkRequiredNRemove(chr, gem.getReqRecipes(), io)) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-gem.getCost(), false);
         if (GameConstants.getInventoryType(target_item_id) == MapleInventoryType.EQUIP) {
@@ -214,10 +214,10 @@ public class ReqCUser_ItemMaker {
             MapleInventoryManipulator.addById(chr, target_item_id, (short) Math.max(1, gem.getQuantity()), null, null, 0, io);
         }
         chr.sendInventoryOperation(false, io);
-        return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
-    private static OpsItemMakerResult makeEquip(ClientPacket cp, TacosCharacter chr, int target_item_id) {
+    private static OpsItemMaker makeEquip(ClientPacket cp, TacosCharacter chr, int target_item_id) {
         boolean catalyst = cp.Decode1() != 0; // m_CatalystSlot.bMounted
         int num_gem = cp.Decode4(); // m_nNumGem_Mounted
         int[] gems = new int[Math.max(0, num_gem)];
@@ -228,14 +228,14 @@ public class ReqCUser_ItemMaker {
         ItemMakerFactory.ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(target_item_id);
         if (create == null || num_gem > create.getTUC() || !hasSkill(chr, create.getReqSkillLevel()) || chr.getMeso() < create.getCost()) {
             DebugLogger.ErrorLog("makeEquip : " + target_item_id);
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         if (isInventoryFull(chr, target_item_id)) {
             return getEmptySlotError(GameConstants.getInventoryType(target_item_id));
         }
         PB_InvOp.Builder io = PB_InvOp.builder();
         if (!checkRequiredNRemove(chr, create.getReqItems(), io)) {
-            return OpsItemMakerResult.ITEM_MAKER_ERR_UNKNOWN;
+            return OpsItemMaker.ITEM_MAKER_ERR_UNKNOWN;
         }
         chr.gainMeso(-create.getCost(), false);
 
@@ -259,7 +259,7 @@ public class ReqCUser_ItemMaker {
         }
         MapleInventoryManipulator.addbyItem(chr, to_give, io);
         chr.sendInventoryOperation(false, io);
-        return OpsItemMakerResult.ITEM_MAKER_RESULT_SUCCESS;
+        return OpsItemMaker.ITEM_MAKER_RESULT_SUCCESS;
     }
 
     // level of the monster drop item (400xxxx), 0 = not a monster drop item.

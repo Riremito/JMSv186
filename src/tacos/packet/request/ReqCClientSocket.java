@@ -424,7 +424,7 @@ public class ReqCClientSocket {
         }
 
         // invalid name.
-        if (name.getBytes().length < 2 || (Content.CharacterNameLength.getInt() - 1) < name.getBytes().length | WzXML.ETC.isForbiddenName(name)) {
+        if (name.getBytes().length < 2 || Content.CharacterNameLength.getInt() - 1 < name.getBytes().length || WzXML.ETC.isForbiddenName(name)) {
             client.SendPacket(ResCUserLocal.KOC_UI_Response(3));
             return true;
         }

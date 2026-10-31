@@ -16,31 +16,28 @@
  *
  *
  */
-package tacos.packet.ops;
+package tacos.packet.ops.fixed;
 
 /**
  *
  * @author Riremito
  */
-public enum OpsItemMakerResult implements IPacketOps {
-    // GMS v95
-    ITEM_MAKER_RESULT_SUCCESS(0),
-    ITEM_MAKER_RESULT_DESTROYED(1),
-    ITEM_MAKER_ERR_UNKNOWN(2),
-    ITEM_MAKER_ERR_EMPTYSLOT(3),
-    ITEM_MAKER_ERR_EMPTYSLOT_EQUIP(4),
-    ITEM_MAKER_ERR_EMPTYSLOT_COMSUME(5),
-    ITEM_MAKER_ERR_EMPTYSLOT_INSTALL(6),
-    ITEM_MAKER_ERR_EMPTYSLOT_ETC(7),
+public enum OpsRecipe implements IOpsFixed {
+    RECIPE_CLASS_START(0),
+    RECIPE_CLASS_NORMAL(1),
+    RECIPE_CLASS_HIDDEN(2),
+    RECIPE_CLASS_MONSTER_CRYSTAL(3),
+    RECIPE_CLASS_EQUIP_DISASSEMBLE(4),
+    RECIPE_CLASS_END(5),
     UNKNOWN;
 
-    private int value;
+    private final int value;
 
-    OpsItemMakerResult(int val) {
-        this.value = val;
+    private OpsRecipe(int value) {
+        this.value = value;
     }
 
-    OpsItemMakerResult() {
+    private OpsRecipe() {
         this.value = -1;
     }
 
@@ -49,14 +46,9 @@ public enum OpsItemMakerResult implements IPacketOps {
         return this.value;
     }
 
-    @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsItemMakerResult find(int val) {
-        for (OpsItemMakerResult ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
+    public static OpsRecipe find(int value) {
+        for (OpsRecipe ops : values()) {
+            if (ops.get() == value) {
                 return ops;
             }
         }
