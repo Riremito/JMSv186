@@ -456,24 +456,6 @@ public class ResCCashShop {
         return sp;
     }
 
-    // CUICharacterSaleDlg::OnCheckDuplicatedIDResult, not tested.
-    public static ServerPacket CheckDuplicatedIDResultInCS(String name, int result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckDuplicatedIDResultInCS);
-
-        sp.EncodeStr(name); // sId
-        sp.Encode1(result);
-        return sp;
-    }
-
-    // CUICharacterSaleDlg::OnCreateNewCharacterResult, not tested.
-    public static ServerPacket CreateNewCharacterResultInCS(int result, int value) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResultInCS);
-
-        sp.Encode1(result);
-        sp.Encode4(value);
-        return sp;
-    }
-
     // CCashShop::OnCashItemResult
     public static ServerPacket CashItemResult_Expire_Done(long sn) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);

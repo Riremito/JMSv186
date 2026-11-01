@@ -212,22 +212,4 @@ public class ResCShopDlg {
         }
         return sp;
     }
-
-    // CAdminShopDlg::OnPacket, not tested.
-    public static ServerPacket AdminShopResult(int result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminShopResult);
-
-        sp.Encode1(4);
-        sp.Encode1(result);
-        return sp;
-    }
-
-    // CAdminShopDlg::OnPacket, not tested.
-    public static ServerPacket AdminShopCommodity(int npc_id) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminShopCommodity);
-
-        sp.Encode4(npc_id);
-        sp.Encode2(0); // count
-        return sp;
-    }
 }

@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import tacos.config.Config;
 import tacos.config.Region;
-import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.server.map.object.TacosMysticDoor;
@@ -48,29 +47,6 @@ public class ResCTownPortalPool {
 
         sp.Encode1(1);
         sp.Encode4(door.getOwnerId()); // dwCharacterID
-        return sp;
-    }
-
-    // COpenGatePool::OnOpenGateCreated, not tested.
-    public static ServerPacket OpenGateCreated(int nState, TacosCharacter chr, int x, int y, boolean bFirst, int nPartyID) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenGateCreated);
-
-        sp.Encode1(nState); // nState
-        sp.Encode4(chr.getId());
-        sp.Encode2(x);
-        sp.Encode2(y);
-        sp.Encode1(bFirst ? 1 : 0); // bFirst
-        sp.Encode4(nPartyID); // nPartyID
-        return sp;
-    }
-
-    // COpenGatePool::OnOpenGateRemoved, not tested.
-    public static ServerPacket OpenGateRemoved(int nLeaveType, TacosCharacter chr, boolean bFirst) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenGateRemoved);
-
-        sp.Encode1(nLeaveType);
-        sp.Encode4(chr.getId());
-        sp.Encode1(bFirst ? 1 : 0);
         return sp;
     }
 

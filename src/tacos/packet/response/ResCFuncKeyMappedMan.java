@@ -50,15 +50,6 @@ public class ResCFuncKeyMappedMan {
         return sp;
     }
 
-    // CQuickslotKeyMappedMan::OnInit, not tested.
-    public static ServerPacket QuickslotMappedInit(byte[] m_aQuickslotKeyMapped) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuickslotMappedInit);
-
-        sp.Encode1(1);
-        sp.EncodeBuffer(m_aQuickslotKeyMapped, 0x20); // m_aQuickslotKeyMapped
-        return sp;
-    }
-
     // CFuncKeyMappedMan::OnInit
     public static ServerPacket FuncKeyMappedInit(TacosCharacter chr, boolean keymap_reset) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FuncKeyMappedInit);
