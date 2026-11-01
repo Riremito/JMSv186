@@ -20,7 +20,8 @@ package tacos.client;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.server.MapleItemInformationProvider;
+import tacos.wz.ItemWz.ItemInfo;
+import tacos.wz.WzXML;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 
@@ -70,7 +71,8 @@ public class TacosMonsterBook {
 
     public boolean setCover(int nMonsterBookCoverID) {
         if (nMonsterBookCoverID != 0) {
-            int mob_id = MapleItemInformationProvider.getInstance().getCardMobId(nMonsterBookCoverID);
+            ItemInfo card_info = WzXML.ITEM.getItemInfo(nMonsterBookCoverID);
+            int mob_id = (card_info == null) ? 0 : card_info.getMob();
             if (mob_id == 0) {
                 DebugLogger.ErrorLog("setCover : invalid nMonsterBookCoverID.");
                 return false;

@@ -19,22 +19,16 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MonsterDropEntry;
 import tacos.client.TacosSkill;
-import tacos.constants.TacosConstants;
-import tacos.database.query.DQ_DropData;
 import tacos.unofficial.CustomMonsterBookDrop;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
@@ -59,6 +53,9 @@ public class TacosReward {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             int drop_count = 0;
             for (RewardData reward : list_reward) {
+                if (reward.getItem() != 0 && reward.getItem() == monster.getStolen()) {
+                    continue;
+                }
                 if (Randomizer.nextInt(ServerImg.PROB_MAX) <= (reward.getProb() * server_drop_rate)) {
                     if (reward.getMoney() != 0) {
                         map.spawnMobMesoDrop(reward.getMoney(), map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, false, (byte) 0, hitAfter);
@@ -67,14 +64,14 @@ public class TacosReward {
                         // 装備
 
                         if (GameConstants.getInventoryType(reward.getItem()) == MapleInventoryType.EQUIP) {
-                            idrop = miip.randomizeStats((Equip) miip.getEquipById(reward.getItem()));
+                            idrop = miip.getEquipById(reward.getItem());
                         } else {
                             // 通常アイテム
                             int range = reward.getMax() - reward.getMin();
                             int quantity = reward.getMin() + ((0 < range) ? Randomizer.nextInt(range) : 0);
                             idrop = new Item(reward.getItem(), (byte) 0, (short) quantity, (byte) 0);
                         }
-                        map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, (byte) 0, (short) 0, hitAfter);
+                        map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, (byte) 0, reward.getQuestId(), hitAfter);
                     }
                     drop_count++;
                 }
@@ -82,10 +79,6 @@ public class TacosReward {
             return true;
         }
 
-        // drop database
-        if (0 < dropFromDatabase(chr, monster)) {
-            return true;
-        }
         // drop monster book
         if (0 < CustomMonsterBookDrop.dropFromMonsterBook(chr, monster)) {
             return true;
@@ -94,79 +87,44 @@ public class TacosReward {
         return false;
     }
 
-    // odin style.
-    private static final LinkedHashMap<Integer, ArrayList<MonsterDropEntry>> drop_table = new LinkedHashMap<>();
-
-    public static ArrayList<MonsterDropEntry> getMonsterDrops(int mob_id) {
-        if (drop_table.containsKey(mob_id)) {
-            return drop_table.get(mob_id);
+    // Reward.img (r + reactor id), returns the number of drops or -1 if the reactor does not have the data.
+    public static int getReactorReward(TacosCharacter chr, TacosReactor reactor) {
+        ArrayList<RewardData> list_reward = ServerImg.getAutoReactorRewardData(reactor.getId());
+        if (list_reward == null || list_reward.isEmpty()) {
+            return -1;
         }
 
-        ArrayList<MonsterDropEntry> ret = DQ_DropData.getDropByMobId(mob_id);
-        drop_table.put(mob_id, ret);
-        return ret;
-    }
-
-    public static int dropFromDatabase(TacosCharacter chr, TacosMonster monster) {
-        TacosMap map = monster.getMap();
-
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        byte drop_type = (byte) (monster.getStats().isExplosiveReward() ? 3 : monster.getStats().isFfaLoot() ? 2 : chr.getParty() != null ? 1 : 0);
-        int cmServerrate = chr.getChannelServer().getMesoRate();
-        int chServerrate = chr.getChannelServer().getDropRate();
-
-        List<MonsterDropEntry> dropEntry = getMonsterDrops(monster.getId());
-        Collections.shuffle(dropEntry);
-
-        boolean forced_drop = monster.getStats().isBoss();
-
-        int dropped_count = 0;
-
-        // この辺でドロップ確定させるMobのIDのチェック処理を入れる
-        for (MonsterDropEntry de : dropEntry) {
-            if (de.itemId == monster.getStolen()) {
+        TacosMap map = reactor.getMap();
+        int server_drop_rate = chr.getChannelServer().getDropRate();
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int drop_count = 0;
+        for (RewardData reward : list_reward) {
+            if ((reward.getProb() * server_drop_rate) < Randomizer.nextInt(ServerImg.PROB_MAX)) {
                 continue;
             }
-
-            // モンスターカード
-            if (TacosConstants.is_monster_card(de.itemId)) {
-                if (5 <= chr.getMonsterBook().getCardCount(de.itemId)) {
-                    continue;
-                }
-            }
-
-            // ボスは無条件でドロップ確定, 通常Mobはx/1000の確率でDBの値を参照してドロップする
-            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0)))) {
-                // メル
-                if (de.itemId == 0) {
-                    int mesos = de.Minimum;
-                    if (de.Maximum > de.Minimum) {
-                        mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
-                    }
-
-                    if (mesos > 0) {
-                        map.spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, false, drop_type, 0);
-                        dropped_count++;
-                    }
+            Point drop_pos = getDropPosition(reactor.getPosition(), drop_count);
+            if (reward.getMoney() != 0) {
+                map.spawnMesoDrop(reward.getMoney(), drop_pos, reactor.getPosition(), chr, false, (byte) 0);
+            } else {
+                Item idrop;
+                if (GameConstants.getInventoryType(reward.getItem()) == MapleInventoryType.EQUIP) {
+                    idrop = miip.getEquipById(reward.getItem());
                 } else {
-                    Item idrop = null;
-                    // 装備
-
-                    if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
-                    } else {
-                        // 通常アイテム
-                        int range = Math.abs(de.Maximum - de.Minimum);
-                        idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);
-                    }
-
-                    map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, drop_type, de.questid, 0);
-                    dropped_count++;
+                    int range = reward.getMax() - reward.getMin();
+                    int quantity = reward.getMin() + ((0 < range) ? Randomizer.nextInt(range) : 0);
+                    idrop = new Item(reward.getItem(), (byte) 0, (short) quantity, (byte) 0);
                 }
+                map.spawnItemDropByReactor(reactor, chr, idrop, drop_pos, reward.getQuestId(), false);
             }
+            drop_count++;
         }
+        return drop_count;
+    }
 
-        return dropped_count;
+    private static Point getDropPosition(Point base_pos, int dropped_count) {
+        Point drop_pos = new Point(base_pos);
+        drop_pos.x += (dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2));
+        return drop_pos;
     }
 
     public static Point getDropPosition(TacosMonster monster, int drop_type, int dropped_count) {

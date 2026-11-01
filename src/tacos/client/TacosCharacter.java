@@ -18,7 +18,13 @@
  */
 package tacos.client;
 
+import tacos.packet.ops.OpsMRLeave;
+import odin.server.shops.MaplePlayerShop;
+import odin.handling.channel.handler.PachinkoHandler;
+import odin.server.shops.IPlayerShop;
 import tacos.server.map.object.TacosDragon;
+import tacos.wz.WzXML;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.server.map.object.TacosSkillPet;
 import java.awt.Point;
@@ -27,16 +33,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.BuddyList;
-import odin.client.BuddylistEntry;
+import tacos.client.TacosCharacter.BuddyList.BuddylistEntry;
 import odin.client.Skill;
-import odin.client.PlayerStats;
-import odin.client.SkillEntry;
-import odin.client.SkillFactory;
+import odin.client.Skill.SkillEntry;
 import odin.client.inventory.Item;
+import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MapleMount;
 import odin.constants.GameConstants;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
@@ -82,7 +85,7 @@ import tacos.database.query.DQ_Wishlist;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -91,6 +94,7 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.data.RD_CUser;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -120,13 +124,12 @@ import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.WzDataStorage;
 import odin.client.inventory.MapleRing;
-import java.sql.PreparedStatement;
 import java.util.Deque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.PartyOperation;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
+import odin.handling.world.MapleParty.PartyOperation;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -145,9 +148,7 @@ import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.MapleCarnivalParty;
 import odin.server.maps.SavedLocationType;
-import odin.server.shops.ShopDispatch;
 import odin.server.MapleCarnivalChallenge;
-import odin.server.shops.HiredMerchant;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugShop;
@@ -157,6 +158,8 @@ import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.shared.TacosSharedDate;
+import tacos.wz.CharacterWz;
+import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -213,7 +216,9 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public TacosWorld getWorld() {
-        return this.client.getWorld();
+        // the client has no world on the login server (character list).
+        TacosWorld world = (this.client != null) ? this.client.getWorld() : null;
+        return (world != null) ? world : TacosWorld.find(this.world_id);
     }
 
     public TacosServerType getServerType() {
@@ -397,7 +402,7 @@ public class TacosCharacter extends TacosPlayer {
                 return false;
             }
             DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
-            if (!portal.enterPortal(client)) {
+            if (!portal.enterPortal(this)) {
                 return false;
             }
             return true;
@@ -466,6 +471,29 @@ public class TacosCharacter extends TacosPlayer {
         changeMapPortal(map_to, map_to.getPortal(portal));
     }
 
+    // mystic door : nPortal = 0x80 | party slot places the user on the door (CUserLocal::Init, town portal of PARTYDATA or LP_TownPortal).
+    public boolean changeMapDoor(TacosMap map_to, Point pos, int slot) {
+        if (map_to == null) {
+            return false;
+        }
+        TacosPortal spawn = map_to.findClosestSpawnpoint(pos);
+        if (spawn == null) {
+            spawn = map_to.getPortal(0);
+        }
+        this.map.userLeaveField((TacosCharacter) this);
+        updateMap(map_to, spawn);
+        setPosition(pos);
+        setPortal(0x80 | slot);
+        sendSetField(false);
+        setPortal(spawn.getId());
+        map_to.userEnterField((TacosCharacter) this);
+        if (getPyramidSubway() != null) {
+            getPyramidSubway().onChangeMap((TacosCharacter) this, map_to.getId());
+        }
+        saveToDB(false);
+        return true;
+    }
+
     public boolean changeMapPortal(TacosMap map_to, TacosPortal portal_to) {
         if (map_to == null) {
             return false;
@@ -480,7 +508,6 @@ public class TacosCharacter extends TacosPlayer {
             updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortal(0)); // for dynamic portal
             sendSetField(false);
             map_to.userEnterField((TacosCharacter) this);
-            stats.relocHeal();
         }
 
         if (getPyramidSubway() != null) {
@@ -497,6 +524,13 @@ public class TacosCharacter extends TacosPlayer {
     // unlock 1
     public void updateInv() {
         SendPacket(ResCWvsContext.InventoryOperation(true, null));
+    }
+
+    // sends the operations in one packet, nothing is sent when there is no operation
+    public void sendInventoryOperation(boolean unlock, PB_InvOp.Builder io) {
+        if (!io.isEmpty()) {
+            SendPacket(ResCWvsContext.InventoryOperation(unlock, io.build()));
+        }
     }
 
     // unlock 2
@@ -693,9 +727,7 @@ public class TacosCharacter extends TacosPlayer {
     private boolean useItemDone(MapleInventoryType type, Item item_used, short item_quantity) {
         boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
 
-        getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
-
-        if (item_used.getQuantity() == 0 && !isRecharge) {
+        if (getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge)) {
             SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
         } else {
             SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));
@@ -792,25 +824,89 @@ public class TacosCharacter extends TacosPlayer {
 
     protected Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
 
-    public int getSkillLevel(OpsSkill ops) {
-        Skill skill = SkillFactory.getSkill(ops.get());
+    public int getSkillLevel(OpsSkill_BB ops) {
+        Skill skill = WzXML.SKILL.getSkill().get(ops.get());
         if (skill == null) {
             return 0;
         }
         SkillEntry ret = this.skills.get(skill);
 
-        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel);
         return skill_level;
     }
 
-    public OpsSkill getFakeSkill() {
-        if (0 < getSkillLevel(OpsSkill.NIGHTLORD_FAKE)) {
-            return OpsSkill.NIGHTLORD_FAKE;
+    public OpsSkill_BB getFakeSkill() {
+        if (0 < getSkillLevel(OpsSkill_BB.NIGHTLORD_FAKE)) {
+            return OpsSkill_BB.NIGHTLORD_FAKE;
         }
-        if (0 < getSkillLevel(OpsSkill.SHADOWER_FAKE)) {
-            return OpsSkill.SHADOWER_FAKE;
+        if (0 < getSkillLevel(OpsSkill_BB.SHADOWER_FAKE)) {
+            return OpsSkill_BB.SHADOWER_FAKE;
         }
-        return OpsSkill.UNKNOWN;
+        return OpsSkill_BB.UNKNOWN;
+    }
+
+    // taming mob (monster riding).
+    public static class MapleMount {
+
+        private int itemid;
+        private int exp;
+        private int fatigue;
+        private int level;
+        private boolean changed = false;
+
+        public MapleMount(int itemid, int fatigue, int level, int exp) {
+            this.itemid = itemid;
+            this.fatigue = fatigue;
+            this.level = level;
+            this.exp = exp;
+        }
+
+        public void saveMount(int charid) {
+            if (changed) {
+                DQ_Mountdata.update(this, charid);
+            }
+        }
+
+        public int getItemId() {
+            return itemid;
+        }
+
+        public int getFatigue() {
+            return fatigue;
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void addFatigue(int amount) {
+            changed = true;
+            fatigue = Math.max(0, fatigue + amount);
+        }
+
+        public void setLevel(int level) {
+            changed = true;
+            this.level = level;
+        }
+
+        public void increaseExp() {
+            int gain;
+            if (1 <= level && level <= 7) {
+                gain = Randomizer.nextInt(10) + 15;
+            } else if (8 <= level && level <= 15) {
+                gain = Randomizer.nextInt(13) + 7;
+            } else if (16 <= level && level <= 24) {
+                gain = Randomizer.nextInt(23) + 9;
+            } else {
+                gain = Randomizer.nextInt(28) + 12;
+            }
+            changed = true;
+            exp += gain;
+        }
     }
 
     protected MapleMount mount = null;
@@ -820,35 +916,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean setMount() {
-        int mount_id = 1004;
-        switch (this.job / 1000) {
-            case 0: {
-                mount_id = 1004;
-                break;
-            }
-            case 1: {
-                mount_id = 10001004;
-                break;
-            }
-            case 2: {
-                if (GameConstants.isAran(this.job)) {
-                    mount_id = 20001004;
-                }
-                if (GameConstants.isEvan(this.job)) {
-                    mount_id = 20011004;
-                }
-                break;
-            }
-            case 3: {
-                mount_id = 30001004;
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        this.mount = new MapleMount(this, 0, mount_id, 0, 1, 0);
+        this.mount = new MapleMount(0, 0, 1, 0);
         return true;
     }
 
@@ -951,7 +1019,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // ピンク
     public void DebugMsg2(String text) {
-        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+        Notice(text);
     }
 
     // 黄色
@@ -961,6 +1029,11 @@ public class TacosCharacter extends TacosPlayer {
 
     public void Notice(String text) {
         SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    // alert dialog
+    public void Alert(String text) {
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ALERT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public FreeMarketPortal getFreeMarketPortal() {
@@ -975,6 +1048,133 @@ public class TacosCharacter extends TacosPlayer {
         return this.lazy_data_list;
     }
 
+    // friend list.
+    public static class BuddyList {
+
+        private final Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
+        private int capacity;
+
+        public BuddyList(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public boolean containsVisible(int characterId) {
+            BuddylistEntry ble = buddies.get(characterId);
+            return ble != null && ble.isVisible();
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public BuddylistEntry get(int characterId) {
+            return buddies.get(characterId);
+        }
+
+        public BuddylistEntry get(String characterName) {
+            for (BuddylistEntry ble : buddies.values()) {
+                if (ble.getName().equalsIgnoreCase(characterName)) {
+                    return ble;
+                }
+            }
+            return null;
+        }
+
+        public void put(BuddylistEntry entry) {
+            buddies.put(entry.getCharacterId(), entry);
+        }
+
+        public void remove(int characterId) {
+            buddies.remove(characterId);
+        }
+
+        public Collection<BuddylistEntry> getBuddies() {
+            return buddies.values();
+        }
+
+        public boolean isFull() {
+            return buddies.size() >= capacity;
+        }
+
+        public int[] getBuddyIds() {
+            return buddies.keySet().stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        public static class BuddylistEntry {
+
+            private final String name;
+            private final int cid;
+            private final int level;
+            private final int job;
+            private String group;
+            private int channel;
+            private boolean visible;
+            private boolean hidden = false;
+
+            public BuddylistEntry(String name, int characterId, String group, int channel, boolean visible, int level, int job) {
+                this.name = name;
+                this.cid = characterId;
+                this.group = group;
+                this.channel = channel;
+                this.visible = visible;
+                this.level = level;
+                this.job = job;
+            }
+
+            public boolean getHidden() {
+                return hidden;
+            }
+
+            public void setHidden(boolean hidden) {
+                this.hidden = hidden;
+            }
+
+            public int getChannel() {
+                return channel;
+            }
+
+            public void setChannel(int channel) {
+                this.channel = channel;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public int getCharacterId() {
+                return cid;
+            }
+
+            public void setVisible(boolean visible) {
+                this.visible = visible;
+            }
+
+            public boolean isVisible() {
+                return visible;
+            }
+
+            public String getGroup() {
+                return group;
+            }
+
+            public void setGroup(String group) {
+                this.group = group;
+            }
+
+            public int getLevel() {
+                return level;
+            }
+
+            public int getJob() {
+                return job;
+            }
+        }
+    }
+
     // friend
     protected BuddyList buddylist = null;
 
@@ -983,7 +1183,12 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public void setBuddylist(int capacity) {
-        this.buddylist = new BuddyList(capacity);
+        // buddies are loaded before the capacity (loadCharacterData runs before loadStat).
+        if (this.buddylist == null) {
+            this.buddylist = new BuddyList(capacity);
+            return;
+        }
+        this.buddylist.setCapacity(capacity);
     }
 
     public int getBuddyCapacity() {
@@ -1007,7 +1212,6 @@ public class TacosCharacter extends TacosPlayer {
         }
         // フレンドのチャンネル情報を更新
         ble.setChannel(isOnline ? friend.getChannelId() : -1);
-        this.buddylist.put(ble);
         SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_Notify, PB_Friend.builder().friend_id(ble.getCharacterId()).friend_channel(isOnline ? (ble.getChannel() - 1) : -1).build())); // from 0.
         return true;
     }
@@ -1035,7 +1239,6 @@ public class TacosCharacter extends TacosPlayer {
             // オンラインのフレンドのチャンネル情報を更新
             BuddylistEntry ble = this.buddylist.get(friend.getId());
             ble.setChannel(friend.getChannelId());
-            this.buddylist.put(ble);
         }
     }
 
@@ -1064,7 +1267,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void removePet(TacosPet pet) {
         this.map.removePet(pet);
-        this.map.broadcastPacket(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
+        this.map.broadcastPacket(ResCUser_Pet.PetDeactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
         int index = getPetIndex(pet);
         if (index != -1) {
             this.pets.remove(index);
@@ -1082,7 +1285,7 @@ public class TacosCharacter extends TacosPlayer {
         this.pets.add(pet);
         pet.reset(this);
         this.map.addPet(pet);
-        this.map.broadcastPacket(ResCUser_Pet.Activated(this, pet));
+        this.map.broadcastPacket(ResCUser_Pet.PetActivated(this, pet));
     }
 
     public void updatePets() {
@@ -1190,9 +1393,7 @@ public class TacosCharacter extends TacosPlayer {
             DebugLogger.ErrorLog("addDoor : map_town is null.");
             return false;
         }
-        door_field_.setTownPortal(this.map.getPortal(0));
-
-        TacosPortal portal_town = door_field_.getFreePortal(map_town);
+        TacosPortal portal_town = TacosMysticDoor.getTownPortal(map_town, getDoorSlot());
         if (portal_town == null) {
             SendPacket(ResCTownPortalPool.TownPortal(null));
             DebugLogger.ErrorLog("addDoor : portal_town is null.");
@@ -1213,7 +1414,17 @@ public class TacosCharacter extends TacosPlayer {
         setDoorTown(door_town_);
         map_town.addDoor(door_town_);
         door_town_.setState(1);
+        // party members get the door from PARTYDATA::aTownPortal.
+        silentPartyUpdate();
         return true;
+    }
+
+    // index of the town door portal, the party slot or 0 when solo.
+    public int getDoorSlot() {
+        if (this.party == null) {
+            return 0;
+        }
+        return Math.max(0, this.party.getMemberIndex(getId()));
     }
 
     public void removeDoor() {
@@ -1307,12 +1518,12 @@ public class TacosCharacter extends TacosPlayer {
         // 高級餌を消費
         if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300001, 1, false, true)) {
             bait_level = 2;
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300001, 1, false, false);
+            MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300001, 1, false, false);
         }
         // 餌を消費
         if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300000, 1, false, true)) {
             bait_level = 1;
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300000, 1, false, false);
+            MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300000, 1, false, false);
         }
         // 釣り終了
         if (bait_level <= 0) {
@@ -1325,7 +1536,7 @@ public class TacosCharacter extends TacosPlayer {
             {
                 int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
                 ((TacosCharacter) this).gainMeso(caught_meso, true);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 1, caught_meso));
             }
             case 1 -> // EXP
             {
@@ -1335,19 +1546,19 @@ public class TacosCharacter extends TacosPlayer {
                     caught_exp += 1;
                 }
                 ((TacosCharacter) this).gainExp(caught_exp, true, false, true);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 2, caught_exp));
             }
             default -> {
                 if (!WzDataStorage.ITEM.check(randval)) {
                     DebugMsg("Fishing : invalid reward, " + randval);
                     return false;
                 }
-                MapleInventoryManipulator.addById(client, randval, (short) 1);
-                SendPacket(ResCWvsContext.fishingUpdate((byte) 0, randval));
+                MapleInventoryManipulator.addById(client.getPlayer(), randval, (short) 1);
+                SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 0, randval));
             }
         }
 
-        this.map.splitSendPacket(this, ResCUser.UserFishingSuccess(this));
+        this.map.splitSendPacket(this, ResCUser.Fishing_Caught(this));
         return true;
     }
 
@@ -1390,7 +1601,7 @@ public class TacosCharacter extends TacosPlayer {
 
         int combo_level = this.m_nCombo / 10;
         if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
-            if (combo_level <= ((TacosCharacter) this).getSkillLevel(OpsSkill.ARAN_COMBO_ABILITY.get())) {
+            if (combo_level <= ((TacosCharacter) this).getSkillLevel(OpsSkill_BB.ARAN_COMBO_ABILITY.get())) {
                 // buff.
             }
         }
@@ -1509,11 +1720,7 @@ public class TacosCharacter extends TacosPlayer {
         if (equipped_medal == null) {
             return getName();
         }
-        String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
-
-        if (medal_name == null) {
-            return getName();
-        }
+        String medal_name = equipped_medal.getName();
         int padding = medal_name.indexOf("の勲章");
         if (padding > 0) {
             medal_name = medal_name.substring(0, padding);
@@ -1601,6 +1808,7 @@ public class TacosCharacter extends TacosPlayer {
         if (getDoorField() != null) {
             if (getDoorField().getTimeCreated() + getDoorField().getTime() <= time_current) {
                 removeDoor();
+                silentPartyUpdate();
             }
         }
         // fishing.
@@ -1610,9 +1818,32 @@ public class TacosCharacter extends TacosPlayer {
         return true;
     }
 
+    // show buffs to other users.
+    public void sendRemoteTemporaryStatSet(int buff_id) {
+        // SecondaryStat::DecodeForRemote is not coded.
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            return;
+        }
+        if (RD_CUser.getRemoteBuffs(getBuff().getCTS(buff_id)).isEmpty()) {
+            return;
+        }
+        getMap().splitSendPacket(this, ResCUserRemote.UserTemporaryStatSet(this, buff_id), getId());
+    }
+
+    public void sendRemoteTemporaryStatReset(int buff_id) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            return;
+        }
+        if (RD_CUser.getRemoteBuffs(getBuff().getCTS(buff_id)).isEmpty()) {
+            return;
+        }
+        getMap().splitSendPacket(this, ResCUserRemote.UserTemporaryStatReset(this, buff_id), getId());
+    }
+
     public void updateBuffs(long time_current) {
         for (TacosBuff.Buff buff : getBuff().getCTSTimeout(time_current)) {
             SendPacket(ResCWvsContext.TemporaryStatReset(this, buff.buff_id));
+            sendRemoteTemporaryStatReset(buff.buff_id);
         }
         getBuff().removeTimeout(time_current);
     }
@@ -1690,12 +1921,35 @@ public class TacosCharacter extends TacosPlayer {
             }
             getInventory(mit.getValue()).addFromDB(mit.getKey());
         }
+        loadMiniRoomItems();
         DQ_KeyMap.loadKeyMap(this);
         DQ_Monsterbook.load(this);
+        if (this.buddylist == null) {
+            this.buddylist = new BuddyList(20);
+        }
         for (BuddylistEntry ble : DQ_Buddies.load(this)) {
             this.buddylist.put(ble);
         }
         return true;
+    }
+
+    // items that were in a trade or a personal shop when the server stopped, their meso has been saved with the character's meso.
+    private void loadMiniRoomItems() {
+        List<Item> no_slot = new ArrayList<>();
+        for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.MiniRoom, this.id).values()) {
+            Item item = mit.getKey();
+            MapleInventory inv = getInventory(GameConstants.getInventoryType(item.getItemId()));
+            short slot = inv.getNextFreeSlot();
+            if (slot < 0) {
+                no_slot.add(item);
+                continue;
+            }
+            item.setPosition(slot);
+            inv.addFromDB(item);
+        }
+        if (!no_slot.isEmpty()) {
+            TacosStoreBank.putItems(this.id, no_slot);
+        }
     }
 
     public boolean saveCharacterData(boolean is_channel_server) {
@@ -1710,6 +1964,7 @@ public class TacosCharacter extends TacosPlayer {
         if (storage != null) {
             storage.update();
         }
+        DQ_Inventoryitems.add(InvTypeDB.MiniRoom, this.id, this.miniroom_inventory.getItems());
 
         DQ_KeyMap.saveKeys(this);
         DQ_Monsterbook.save(this);
@@ -1760,154 +2015,161 @@ public class TacosCharacter extends TacosPlayer {
         ret.id = character_id;
         ret.loadCharacterData(channelserver);
 
-        try {
-            DQ_Characters.loadStat(ret);
-            DQ_Characters.ExtrasRow extras = DQ_Characters.loadExtras(character_id);
+        DQ_Characters.loadStat(ret);
+        DQ_Characters.ExtrasRow extras = DQ_Characters.loadExtras(character_id);
+        if (extras == null) {
+            DebugLogger.ErrorLog("loadCharFromDB : extras " + character_id);
+            return ret;
+        }
 
-            if (channelserver) {
-                ret.updateMapById(ret.dwPosMap, ret.nPortal);
+        if (channelserver) {
+            ret.updateMapById(ret.dwPosMap, ret.nPortal);
 
-                int partyid = extras.party;
-                if (partyid >= 0) {
-                    MapleParty party = client.getWorld().getParty().getParty(partyid);
-                    if (party != null && party.getMemberById(ret.id) != null) {
-                        ret.party = party;
-                    }
-                }
-
-                int cover = extras.monsterbookcover;
-                ret.getMonsterBook().setCover(cover);
-
-                ret.dojo = extras.dojo;
-                ret.dojoRecord = extras.dojoRecord;
-                String[] pets = extras.pets.split(",");
-                for (int i = 0; i < ret.petStore.length; i++) {
-                    ret.petStore[i] = Byte.parseByte(pets[i]);
+            int partyid = extras.party;
+            if (partyid >= 0) {
+                MapleParty party = client.getWorld().getParty().getParty(partyid);
+                if (party != null && party.getMemberById(ret.id) != null) {
+                    ret.party = party;
                 }
             }
 
-            boolean compensate_previousEvans = false;
-            ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
-            for (MapleQuestStatus loadedStatus : ret.quests.values()) {
-                if (loadedStatus.getQuest().getId() == 170000) {
-                    compensate_previousEvans = true;
-                    break;
+            int cover = extras.monsterbookcover;
+            ret.getMonsterBook().setCover(cover);
+
+            ret.dojo = extras.dojo;
+            ret.dojoRecord = extras.dojoRecord;
+            String[] pets = extras.pets.split(",");
+            for (int i = 0; i < ret.petStore.length; i++) {
+                ret.petStore[i] = Byte.parseByte(pets[i]);
+            }
+        }
+
+        boolean compensate_previousEvans = false;
+        ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
+        for (MapleQuestStatus loadedStatus : ret.quests.values()) {
+            if (loadedStatus.getQuest().getId() == 170000) {
+                compensate_previousEvans = true;
+                break;
+            }
+        }
+
+        if (channelserver) {
+            DQ_Accounts.AccountLoginRow acc = DQ_Accounts.loadForCharacterLogin(ret.accountid);
+            if (acc != null) {
+                ret.getClient().setMapleId(acc.name);
+                ret.nexonPoint = acc.acash;
+                ret.maplePoint = acc.mpoints;
+                ret.points = acc.points;
+                ret.vpoints = acc.vpoints;
+
+                if (acc.lastlogon != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(acc.lastlogon.getTime());
+                    if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+                        ret.nexonPoint += 500;
+                    }
+                }
+
+                DQ_Accounts.updateLastLogon(ret.accountid);
+            }
+
+            ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
+
+            Skill skil;
+            for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
+                skil = WzXML.SKILL.getSkill().get(row.skillId);
+                if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
+                    ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
+                } else if (skil == null) { //doesnt. exist. e.g. bb
+                    ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
                 }
             }
 
-            if (channelserver) {
-                DQ_Accounts.AccountLoginRow acc = DQ_Accounts.loadForCharacterLogin(ret.accountid);
-                if (acc != null) {
-                    ret.getClient().setMapleId(acc.name);
-                    ret.nexonPoint = acc.acash;
-                    ret.maplePoint = acc.mpoints;
-                    ret.points = acc.points;
-                    ret.vpoints = acc.vpoints;
+            // Bless of Fairy handling
+            byte maxlevel_ = 0;
+            for (DQ_Characters.BlessOfFairyRow row : DQ_Characters.loadOtherCharactersForBlessOfFairy(ret.accountid)) {
+                if (row.id != character_id) { // Not this character
+                    byte maxlevel = (byte) (row.level / 10);
 
-                    if (acc.lastlogon != null) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(acc.lastlogon.getTime());
-                        if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.nexonPoint += 500;
-                        }
+                    if (maxlevel > 20) {
+                        maxlevel = 20;
+                    }
+                    if (maxlevel > maxlevel_) {
+                        maxlevel_ = maxlevel;
+                        ret.BlessOfFairy_Origin = row.name;
                     }
 
-                    DQ_Accounts.updateLastLogon(ret.accountid);
-                }
-
-                ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
-
-                Skill skil;
-                for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
-                    skil = SkillFactory.getSkill(row.skillId);
-                    if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
-                        ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
-                    } else if (skil == null) { //doesnt. exist. e.g. bb
-                        ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
+                } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
+                    for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
+                        ret.remainingSp[i] += 2; //2 that they missed. gg
                     }
+                    ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
                 }
+            }
 
-                // Bless of Fairy handling
-                byte maxlevel_ = 0;
-                for (DQ_Characters.BlessOfFairyRow row : DQ_Characters.loadOtherCharactersForBlessOfFairy(ret.accountid)) {
-                    if (row.id != character_id) { // Not this character
-                        byte maxlevel = (byte) (row.level / 10);
+            // 精霊の祝福
+            Skill bofskill = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(ret.job));
 
-                        if (maxlevel > 20) {
-                            maxlevel = 20;
-                        }
-                        if (maxlevel > maxlevel_) {
-                            maxlevel_ = maxlevel;
-                            ret.BlessOfFairy_Origin = row.name;
-                        }
+            if (bofskill != null) {
+                ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
+            }
+            // END
 
-                    } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
-                        for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
-                            ret.remainingSp[i] += 2; //2 that they missed. gg
-                        }
-                        ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
-                    }
-                }
+            DQ_Skillmacros.loadAll(ret);
 
-                // 精霊の祝福
-                Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+            for (Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
+                ret.savedLocations[e.getKey()] = e.getValue();
+            }
 
-                if (bofskill != null) {
-                    ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
-                }
-                // END
-
-                DQ_Skillmacros.loadAll(ret);
-
-                for (Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
-                    ret.savedLocations[e.getKey()] = e.getValue();
-                }
-
-                DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+            DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+            if (recentFame != null) {
                 ret.lastfametime = recentFame.lastFameTime;
                 ret.lastmonthfameids = recentFame.lastMonthFameIds;
-
-                ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
-
-                int i = 0;
-                for (int sn : DQ_Wishlist.loadAll(character_id)) {
-                    ret.wishlist[i] = sn;
-                    i++;
-                }
-                while (i < 10) {
-                    ret.wishlist[i] = 0;
-                    i++;
-                }
-
-                int r = 0;
-                for (int mapid : DQ_Trocklocations.loadAll(character_id)) {
-                    ret.rocks[r] = mapid;
-                    r++;
-                }
-                while (r < 10) {
-                    ret.rocks[r] = 999999999;
-                    r++;
-                }
-
-                r = 0;
-                for (int mapid : DQ_Regrocklocations.loadAll(character_id)) {
-                    ret.regrocks[r] = mapid;
-                    r++;
-                }
-                while (r < 5) {
-                    ret.regrocks[r] = 999999999;
-                    r++;
-                }
-
-                DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
-                Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
-                ret.mount = new MapleMount(ret, mount != null ? mount.getItemId() : 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || ret.job >= 2200 ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), mountRow.fatigue, mountRow.level, mountRow.exp);
-
-                ret.stats.recalcLocalStats(true);
+            } else {
+                ret.lastmonthfameids = new ArrayList<>();
             }
-        } catch (SQLException ess) {
-            ess.printStackTrace();
-            System.out.println("Failed to load character..");
+
+            ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
+
+            int i = 0;
+            for (int sn : DQ_Wishlist.loadAll(character_id)) {
+                ret.wishlist[i] = sn;
+                i++;
+            }
+            while (i < 10) {
+                ret.wishlist[i] = 0;
+                i++;
+            }
+
+            int r = 0;
+            for (int mapid : DQ_Trocklocations.loadAll(character_id)) {
+                ret.rocks[r] = mapid;
+                r++;
+            }
+            while (r < 10) {
+                ret.rocks[r] = 999999999;
+                r++;
+            }
+
+            r = 0;
+            for (int mapid : DQ_Regrocklocations.loadAll(character_id)) {
+                ret.regrocks[r] = mapid;
+                r++;
+            }
+            while (r < 5) {
+                ret.regrocks[r] = 999999999;
+                r++;
+            }
+
+            DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
+            Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+            if (mountRow != null) {
+                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, mountRow.fatigue, mountRow.level, mountRow.exp);
+            } else {
+                ret.mount = new MapleMount(mount != null ? mount.getItemId() : 0, 0, 1, 0);
+            }
+
+            ret.stats.recalcLocalStats(true);
         }
         return ret;
     }
@@ -1963,7 +2225,8 @@ public class TacosCharacter extends TacosPlayer {
                     stats.getStr(), stats.getDex(), stats.getLuk(), stats.getInt(), exp,
                     stats.getHp() < 1 ? 50 : stats.getHp(), stats.getMp(), stats.getMaxHp(), stats.getMaxMp(),
                     sp.substring(0, sp.length() - 1), remainingAp, (byte) gmLevel, (byte) skinColor, (byte) gender,
-                    job, hair, face, mapToSave, meso, hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
+                    // the meso in a trade goes back to the character if the server stops.
+                    job, hair, face, mapToSave, meso + miniroom_inventory.getMeso(), hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
                     (short) (byte) buddylist.getCapacity(), getMonsterBook().getCover(), dojo, dojoRecord,
                     petstring, subcategory, marriageId, currentrep, totalrep,
                     name, tama);
@@ -1972,23 +2235,30 @@ public class TacosCharacter extends TacosPlayer {
                 throw new DatabaseException("Character not in database (" + id + ")");
             }
 
-            DQ_Skillmacros.deleteAndSaveAll(con, this);
-            DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
-            DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
-            DQ_Skills.deleteAndSaveAll(con, id, skills);
-            DQ_Savedlocations.deleteAndSaveAll(con, id, savedLocations);
-            DQ_Achievements.deleteByAccountId(con, accountid);
-            DQ_Accounts.updatePoints(con, client.getId(), nexonPoint, maplePoint, points, vpoints);
+            // the query classes log a failure and return false, the whole save is rolled back then.
+            boolean saved = true;
+            saved &= DQ_Skillmacros.deleteAndSaveAll(con, this);
+            saved &= DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
+            saved &= DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
+            saved &= DQ_Skills.deleteAndSaveAll(con, id, skills);
+            saved &= DQ_Savedlocations.deleteAndSaveAll(con, id, savedLocations);
+            saved &= DQ_Achievements.deleteByAccountId(con, accountid);
+            saved &= DQ_Accounts.updatePoints(con, client.getId(), nexonPoint, maplePoint, points, vpoints);
 
             if (cs != null) {
-                cs.save();
+                saved &= cs.save();
             }
             mount.saveMount(id);
 
-            DQ_Wishlist.deleteAndSaveAll(con, id, wishlist, getWishlistSize());
-            DQ_Trocklocations.deleteAndSaveAll(con, id, rocks);
-            DQ_Regrocklocations.deleteAndSaveAll(con, id, regrocks);
+            saved &= DQ_Wishlist.deleteAndSaveAll(con, id, wishlist, getWishlistSize());
+            saved &= DQ_Trocklocations.deleteAndSaveAll(con, id, rocks);
+            saved &= DQ_Regrocklocations.deleteAndSaveAll(con, id, regrocks);
 
+            if (!saved) {
+                DebugLogger.ErrorLog("saveToDB : rolling back, character " + id);
+                con.rollback();
+                return;
+            }
             con.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -2008,7 +2278,6 @@ public class TacosCharacter extends TacosPlayer {
         }
     }
 
-
     private String chalktext;
     private String teleportname = "";
     private long nextConsume = 0;
@@ -2018,8 +2287,7 @@ public class TacosCharacter extends TacosPlayer {
     private int totalCP;
     private int chair;
     // パチンコ
-    private int beansRange;
-    private int beansNum;
+    private final transient PachinkoHandler.State pachinko = new PachinkoHandler.State();
     // ポータルカウント
     private int portal_count = 1;
     // ペット回復薬
@@ -2028,14 +2296,15 @@ public class TacosCharacter extends TacosPlayer {
     private int pet_auto_cure_item_id = 0;
     private boolean smega;
     private boolean hasTutorialSummon = false;
-    private boolean canSetBeansNum;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleShop shop;
     private transient MapleTrade trade;
-    private transient Object playerShop;
+    private transient IPlayerShop playerShop;
+    // items and meso put in a trade or a personal shop
+    private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
-    private Object remoteStore = null;
+    private TacosMerchant remoteStore = null;
     private IDebugMan debugMan = null;
     private DebugShop debugShop = null;
 
@@ -2051,7 +2320,7 @@ public class TacosCharacter extends TacosPlayer {
             inventory[type.ordinal()] = new MapleInventory(type);
         }
         quests = new LinkedHashMap<>(); // Stupid erev quest.
-        stats = new PlayerStats(this);
+        stats = new PlayerStats();
         for (int i = 0; i < remainingSp.length; i++) {
             remainingSp[i] = 0;
         }
@@ -2075,17 +2344,6 @@ public class TacosCharacter extends TacosPlayer {
             savedLocations[i] = -1;
         }
         questinfo = new LinkedHashMap<>();
-    }
-
-    private void deleteWhereCharacterId(Connection con, String sql) throws SQLException {
-        deleteWhereCharacterId(con, sql, id);
-    }
-
-    public static void deleteWhereCharacterId(Connection con, String sql, int id) throws SQLException {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, id);
-        ps.executeUpdate();
-        ps.close();
     }
 
     public MapleQuestStatus getQuest(MapleQuest quest) {
@@ -2123,9 +2381,9 @@ public class TacosCharacter extends TacosPlayer {
     public void updateQuest(MapleQuestStatus quest, boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
-            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
             if (quest.getStatus() == 1 && !update) {
-                SendPacket(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
+                SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getQuest().getId(), quest.getNpc(), 0));
             }
         }
     }
@@ -2209,10 +2467,10 @@ public class TacosCharacter extends TacosPlayer {
 
     public void baseSkills() {
         if (GameConstants.getJobNumber(job) >= 3) { //third job.
-            List<Integer> skills = SkillFactory.getSkillsByJob(job);
+            List<Integer> skills = WzXML.SKILL.getSkillsByJob().get(job);
             if (skills != null) {
                 for (int i : skills) {
-                    Skill skil = SkillFactory.getSkill(i);
+                    Skill skil = WzXML.SKILL.getSkill().get(i);
                     if (skil != null && !skil.isInvisible() && skil.isFourthJob() && getSkillLevel(skil) <= 0 && getMasterLevel(skil) <= 0 && skil.getMasterLevel() > 0) {
                         changeSkillLevel(skil, (byte) 0, (byte) skil.getMasterLevel()); //usually 10 master
                     }
@@ -2243,9 +2501,7 @@ public class TacosCharacter extends TacosPlayer {
         } else {
             skills.put(skill, new SkillEntry(newLevel, newMasterlevel, expiration));
         }
-        if (GameConstants.isRecoveryIncSkill(skill.getId())) {
-            stats.relocHeal();
-        } else if (GameConstants.isElementAmp_Skill(skill.getId())) {
+        if (GameConstants.isElementAmp_Skill(skill.getId())) {
             stats.recalcLocalStats();
         }
 
@@ -2255,13 +2511,13 @@ public class TacosCharacter extends TacosPlayer {
         if (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000) {
             int charms = getItemQuantity(5130000, false);
             if (charms > 0) {
-                MapleInventoryManipulator.removeById(client, MapleInventoryType.CASH, 5130000, 1, true, false);
+                MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.CASH, 5130000, 1, true, false);
 
                 charms--;
                 if (charms > 0xFF) {
                     charms = 0xFF;
                 }
-                SendPacket(ResCUserLocal.useCharm((byte) charms, (byte) 0));
+                SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ProtectOnDieItemUse, PB_UserEffect.builder().count(charms).days(0).build()));
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = TacosSharedExpTable.getExpNeededForLevel(level);
@@ -2285,10 +2541,6 @@ public class TacosCharacter extends TacosPlayer {
         }
 
         sendStatChanged();
-
-        if (!stats.checkEquipDurabilitys(this, -100)) { //i guess this is how it works ?
-            dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
-        } //lol
         if (getPyramidSubway() != null) {
             stats.setHp((short) 50);
             getPyramidSubway().fail(this);
@@ -2338,9 +2590,9 @@ public class TacosCharacter extends TacosPlayer {
                 percentrep = 100 - percentrep + (level / 2);
             }
             if (percentrep > 0) {
-                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
+                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level, getName());
                 if (sensen > 0) {
-                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
+                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level, getName()); //and we stop here
                 }
             }
         }
@@ -2392,9 +2644,8 @@ public class TacosCharacter extends TacosPlayer {
             }
             sendStatChanged();
             if (show) { // still show the expgain even if it's not there
-                client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
+                SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
-            stats.checkEquipLevels(this, total);
         }
     }
 
@@ -2457,7 +2708,7 @@ public class TacosCharacter extends TacosPlayer {
                     for (int kills : q.getMobKills().values()) {
                         sb.append(String.format("%03d", kills));
                     }
-                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) q.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) q.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
                 }
                 if (q.getQuest().canComplete(this, null)) {
                     SendPacket(ResCWvsContext.QuestClear(q.getQuest().getId()));
@@ -2507,7 +2758,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
         } else if (job >= 100 && job <= 132) { // Warrior
-            Skill improvingMaxHP = SkillFactory.getSkill(1000001);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(1000001);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2515,7 +2766,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 200 && job <= 232) { // Magician
-            Skill improvingMaxMP = SkillFactory.getSkill(2000001);
+            Skill improvingMaxMP = WzXML.SKILL.getSkill().get(2000001);
             int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -2529,7 +2780,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(20, 24);
             maxmp += Randomizer.rand(14, 16);
         } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) { // Pirate
-            Skill improvingMaxHP = SkillFactory.getSkill(5100000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(5100000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2537,7 +2788,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(22, 26);
             maxmp += Randomizer.rand(18, 22);
         } else if (job >= 1100 && job <= 1111) { // Soul Master
-            Skill improvingMaxHP = SkillFactory.getSkill(11000000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(11000000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2545,7 +2796,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 1200 && job <= 1211) { // Flame Wizard
-            Skill improvingMaxMP = SkillFactory.getSkill(12000000);
+            Skill improvingMaxMP = WzXML.SKILL.getSkill().get(12000000);
             int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -2553,7 +2804,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(10, 14);
             maxmp += Randomizer.rand(22, 24);
         } else if (job >= 1500 && job <= 1512) { // Pirate
-            Skill improvingMaxHP = SkillFactory.getSkill(15100000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(15100000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2633,6 +2884,53 @@ public class TacosCharacter extends TacosPlayer {
         saveToDB(false);
     }
 
+    // item level.
+    public boolean gainExpToItem(int inc_exp) {
+        if (inc_exp <= 0) {
+            return false;
+        }
+        for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
+            Equip equip = (Equip) item;
+            ArrayList<CharacterWz.EquipInfoLevel> eils = WzXML.CHARACTER.getEquipLevelInfo(equip.getItemId());
+            if (!eils.isEmpty()) {
+                int nLevelUpType = equip.getLevelUpType();
+                int nLevel = Math.max(equip.getLevelLevel(), 1);
+                int nEXP = equip.getLevelEXP() + inc_exp;
+                if (TacosSharedExpTable.getExpNeededForLevel(120) <= nEXP) {
+                    nEXP = 0;
+                    if (nLevel < eils.size()) {
+                        EquipInfoLevel eil = eils.get(nLevel - 1);
+                        equip.incSTR(eil.getIncSTRMax());
+                        equip.incDEX(eil.getIncDEXMax());
+                        equip.incINT(eil.getIncINTMax());
+                        equip.incLUK(eil.getIncLUKMax());
+                        equip.incMaxHP(eil.getIncMHPMax());
+                        equip.incMaxMP(eil.getIncMMPMax());
+                        equip.incPAD(eil.getIncPADMax());
+                        equip.incMAD(eil.getIncMADMax());
+                        equip.incPDD(eil.getIncPDDMax());
+                        equip.incMDD(eil.getIncMDDMax());
+                        equip.incACC(eil.getIncACCMax());
+                        equip.incEVA(eil.getIncEVAMax());
+                        equip.incSpeed(eil.getIncSpeedMax());
+                        equip.incJump(eil.getIncJumpMax());
+                        nLevel++;
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .player(this)
+                                .build();
+                        SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+                        getMap().splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), getId());
+                    }
+                }
+                equip.setLevelUpType(nLevelUpType);
+                equip.setLevelLevel(nLevel);
+                equip.setLevelEXP(nEXP);
+                SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+            }
+        }
+        return true;
+    }
+
     public FameStatus canGiveFame(TacosCharacter from) {
         if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
@@ -2670,7 +2968,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setChair(int chair) {
         this.chair = chair;
-        stats.relocHeal();
     }
 
     public int getFamilyId() {
@@ -2814,20 +3111,7 @@ public class TacosCharacter extends TacosPlayer {
     /*
     // TODO : remove last, and first.
     public void showNote() {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-                ps.setString(1, getName());
-                try (ResultSet rs = ps.executeQuery()) {
-                    rs.last();
-                    int count = rs.getRow();
-                    rs.first();
-                    client.SendPacket(ResCWvsContext.MemoResult(rs, count));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Unable to show note" + e);
-        }
+        client.SendPacket(ResCWvsContext.MemoResult(DQ_Notes.loadByReceiver(getName())));
     }
      */
     public void deleteNote(int id, int fame) {
@@ -2835,7 +3119,7 @@ public class TacosCharacter extends TacosPlayer {
         if (gift != null && gift == fame && fame > 0) { //not exploited! hurray
             addFame(fame);
             sendStatChanged();
-            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
         }
         DQ_Notes.deleteById(id);
     }
@@ -2866,7 +3150,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean IsBerserk() {
-        Skill BerserkX = SkillFactory.getSkill(1320006);
+        Skill BerserkX = WzXML.SKILL.getSkill().get(1320006);
         int skilllevel = getSkillLevel(BerserkX);
 
         if (skilllevel < 1) {
@@ -2968,15 +3252,33 @@ public class TacosCharacter extends TacosPlayer {
         regrocks[getRegRockSize()] = getMapId();
     }
 
-    public Object getPlayerShop() {
+    public TacosHoldInventory getMiniRoomInventory() {
+        return this.miniroom_inventory;
+    }
+
+    // gives back what was left in the hold, false when something still does not fit.
+    public boolean returnMiniRoomInventory() {
+        this.miniroom_inventory.returnTo(this);
+        return this.miniroom_inventory.isEmpty();
+    }
+
+    // the mini room shown over its owner, a hired merchant has a balloon of its own.
+    public IPlayerShop getBalloonShop() {
+        if (playerShop == null || !playerShop.isOwner(this) || playerShop.getShopType() == 1 || !playerShop.isAvailable()) {
+            return null;
+        }
         return playerShop;
     }
 
-    public HiredMerchant getMyHiredMerchant() {
-        if (!(playerShop instanceof HiredMerchant)) {
+    public IPlayerShop getPlayerShop() {
+        return playerShop;
+    }
+
+    public TacosMerchant getMyHiredMerchant() {
+        if (!(playerShop instanceof TacosMerchant)) {
             return null;
         }
-        HiredMerchant merchant = (HiredMerchant) playerShop;
+        TacosMerchant merchant = (TacosMerchant) playerShop;
         if (!merchant.isOwner(this)) {
             return null;
         }
@@ -2984,7 +3286,7 @@ public class TacosCharacter extends TacosPlayer {
         return merchant;
     }
 
-    public void setPlayerShop(Object playerShop) {
+    public void setPlayerShop(IPlayerShop playerShop) {
         this.playerShop = playerShop;
     }
 
@@ -3246,9 +3548,9 @@ public class TacosCharacter extends TacosPlayer {
             getPyramidSubway().dispose(this);
         }
         if (playerShop != null && !dc) {
-            ShopDispatch.removeVisitor(playerShop, this);
-            if (ShopDispatch.isOwner(playerShop, this)) {
-                ShopDispatch.setOpen(playerShop, true);
+            playerShop.removeVisitor(this);
+            if (playerShop.isOwner(this)) {
+                playerShop.setOpen(true);
             }
         }
         TacosScriptNPC.getInstance().dispose(client);
@@ -3300,7 +3602,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void makeMFC(int familyid, int seniorid, int junior1, int junior2) {
         if (familyid > 0) {
-            MapleFamily f = getWorld().getFamily().getFamily(familyid);
+            MapleFamily f = (getWorld() != null) ? getWorld().getFamily().getFamily(familyid) : null;
             if (f == null) {
                 mfc = null;
             } else {
@@ -3336,36 +3638,16 @@ public class TacosCharacter extends TacosPlayer {
         SendPacket(ResCWvsContext.PachinkoResult(this));
     }
 
-    public int getBeansRange() {
-        return beansRange;
-    }
-
-    public void setBeansRange(int beansRange) {
-        this.beansRange = beansRange;
-    }
-
-    public int getBeansNum() {
-        return beansNum;
-    }
-
-    public void setBeansNum(int beansNum) {
-        this.beansNum = beansNum;
-    }
-
-    public boolean isCanSetBeansNum() {
-        return canSetBeansNum;
-    }
-
-    public void setCanSetBeansNum(boolean canSetBeansNum) {
-        this.canSetBeansNum = canSetBeansNum;
+    public PachinkoHandler.State getPachinko() {
+        return pachinko;
     }
 
     // 雇用商人
-    public void setRemoteStore(Object playerShop) {
-        this.remoteStore = playerShop;
+    public void setRemoteStore(TacosMerchant merchant) {
+        this.remoteStore = merchant;
     }
 
-    public Object getRemoteStore() {
+    public TacosMerchant getRemoteStore() {
         return this.remoteStore;
     }
 
@@ -3511,7 +3793,7 @@ public class TacosCharacter extends TacosPlayer {
             return false;
         }
 
-        MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, item_slot, (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(client.getPlayer(), MapleInventoryType.USE, item_slot, (short) 1, false);
         if (map.getConsumeItemCoolTime() > 0) {
             this.setNextConsume(time + (this.map.getConsumeItemCoolTime() * 1000));
         }
@@ -3538,15 +3820,14 @@ public class TacosCharacter extends TacosPlayer {
                 map.userLeaveField(this);
             }
 
-            Object shop = this.getPlayerShop();
-            if (shop != null) {
-                ShopDispatch.removeVisitor(shop, this);
-                if (ShopDispatch.isOwner(shop, this)) {
-                    if (ShopDispatch.getShopType(shop) == 1 && ShopDispatch.isAvailable(shop)) {
-                        ShopDispatch.setOpen(shop, true);
-                    } else {
-                        ShopDispatch.closeShop(shop, true, true, 6);
-                    }
+            IPlayerShop shop = this.getPlayerShop();
+            if (shop instanceof MaplePlayerShop && !shop.isOwner(this)) {
+                ((MaplePlayerShop) shop).leave(this);
+            } else if (shop != null) {
+                shop.removeVisitor(this);
+                // a personal shop gives the items back, a hired merchant being managed goes to the store bank.
+                if (shop.isOwner(this)) {
+                    shop.closeShop(true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
                 }
             }
         } catch (Throwable e) {
@@ -3620,7 +3901,7 @@ public class TacosCharacter extends TacosPlayer {
     // used by script
     public void updateInfoQuest(int questid, String data) {
         questinfo.put(questid, data);
-        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
+        SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
     }
 
     // used by script
@@ -3649,7 +3930,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public int getSkillLevel(int skillid) {
-        return getSkillLevel(SkillFactory.getSkill(skillid));
+        return getSkillLevel(WzXML.SKILL.getSkill().get(skillid));
     }
 
     // used by script
@@ -3727,7 +4008,7 @@ public class TacosCharacter extends TacosPlayer {
                     expandInventory((byte) 3, 4);
                     expandInventory((byte) 4, 4);
                     SendPacket(ResCScriptMan.getEvanTutorial("UI/tutorial/evan/14/0"));
-                    dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
+                    Notice("The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
             sendStatChanged();
@@ -3853,49 +4134,43 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public void gainExp(int total, boolean show, boolean inChat, boolean white) {
-        try {
-            int prevexp = getExp();
-            int needed = TacosSharedExpTable.getExpNeededForLevel(level);
-            if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
-                if (exp + total > needed) {
+        int prevexp = getExp();
+        int needed = TacosSharedExpTable.getExpNeededForLevel(level);
+        if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
+            if (exp + total > needed) {
+                setExp(needed);
+            } else {
+                exp += total;
+            }
+        } else {
+            boolean leveled = false;
+            if (exp + total >= needed) {
+                exp += total;
+                levelUp();
+                leveled = true;
+                needed = TacosSharedExpTable.getExpNeededForLevel(level);
+                if (exp > needed) {
                     setExp(needed);
-                } else {
-                    exp += total;
                 }
             } else {
-                boolean leveled = false;
-                if (exp + total >= needed) {
-                    exp += total;
-                    levelUp();
-                    leveled = true;
-                    needed = TacosSharedExpTable.getExpNeededForLevel(level);
-                    if (exp > needed) {
-                        setExp(needed);
-                    }
-                } else {
-                    exp += total;
-                }
+                exp += total;
+            }
+            if (total > 0) {
+                familyRep(prevexp, needed, leveled);
+            }
+        }
+        if (total != 0) {
+            if (exp < 0) { // After adding, and negative
                 if (total > 0) {
-                    familyRep(prevexp, needed, leveled);
+                    setExp(needed);
+                } else if (total < 0) {
+                    setExp(0);
                 }
             }
-            if (total != 0) {
-                if (exp < 0) { // After adding, and negative
-                    if (total > 0) {
-                        setExp(needed);
-                    } else if (total < 0) {
-                        setExp(0);
-                    }
-                }
-                sendStatChanged();
-                if (show) { // still show the expgain even if it's not there
-                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
-                }
-                if (total > 0) {
-                    stats.checkEquipLevels(this, total); //gms like
-                }
+            sendStatChanged();
+            if (show) { // still show the expgain even if it's not there
+                SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
             }
-        } catch (Exception e) {
         }
     }
 
@@ -3923,7 +4198,7 @@ public class TacosCharacter extends TacosPlayer {
         meso += gain;
         sendStatChanged(enableActions);
         if (show) {
-            client.SendPacket((!inChat
+            SendPacket((!inChat
                     ? ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MESO).Inc_Meso(gain).build())
                     : ResCWvsContext.Message(OpsMessage.MS_IncMoneyMessage, PB_Message.builder().Inc_Meso(gain).build())));
         }
@@ -3941,12 +4216,12 @@ public class TacosCharacter extends TacosPlayer {
         if (ret == null || ret.skillevel <= 0) {
             return 0;
         }
-        return (byte) Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        return (byte) Math.min(skill.getMaxLevel(), ret.skillevel);
     }
 
     // used by script
     public byte getMasterLevel(int skill) {
-        return getMasterLevel(SkillFactory.getSkill(skill));
+        return getMasterLevel(WzXML.SKILL.getSkill().get(skill));
     }
 
     // used by script
@@ -4043,12 +4318,16 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public void dropMessage(int type, String message) {
-        if (type == -1) {
-            SendPacket(ResCWvsContext.ScriptProgressMessage(message));
-        } else if (type == -2) {
-            SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
-        } else {
-            client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+        switch (type) {
+            case -1 -> {
+                SendPacket(ResCWvsContext.ScriptProgressMessage(message));
+            }
+            case -2 -> {
+                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Chat(0, message)); //0 or what
+            }
+            default -> {
+                SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+            }
         }
     }
 
@@ -4098,7 +4377,7 @@ public class TacosCharacter extends TacosPlayer {
         int possessed = getInventory(type).countById(id);
 
         if (possessed > 0) {
-            MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
+            MapleInventoryManipulator.removeById(this, type, id, possessed, true, false);
 
             PB_UserEffect pb = PB_UserEffect.builder()
                     .item_id(id)
@@ -4216,7 +4495,6 @@ public class TacosCharacter extends TacosPlayer {
             e.printStackTrace();
             System.out.println("endPartyQuest error");
         }
-
     }
 
     // used by script
@@ -4235,7 +4513,300 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public boolean StartPachinko(int type) {
-        SendPacket(Res_JMS_CField_Pachinko.openBeans(this, type));
+        SendPacket(Res_JMS_CField_Pachinko.PachinkoOpen(this, type));
         return true;
+    }
+
+    public class PlayerStats {
+
+        public int str;
+        public int dex;
+        public int luk;
+        public int int_;
+        public int hp;
+        public int maxhp;
+        public int mp;
+        public int maxmp;
+        public int equipmentBonusExp;
+        public int expMod;
+        public int dropMod;
+        public int levelBonus;
+        public boolean equippedWelcomeBackRing;
+        public boolean hasPartyBonus;
+        private boolean isRecalc = false;
+        private short localmaxhp;
+        private short localmaxmp;
+        private int localstr;
+        private int localdex;
+        private int localluk;
+        private int localint_;
+        private int magic;
+        private int watk;
+
+        public int getStr() {
+            return str;
+        }
+
+        public int getDex() {
+            return dex;
+        }
+
+        public int getLuk() {
+            return luk;
+        }
+
+        public int getInt() {
+            return int_;
+        }
+
+        public void setStr(int str) {
+            this.str = str;
+            recalcLocalStats();
+        }
+
+        public void setDex(int dex) {
+            this.dex = dex;
+            recalcLocalStats();
+        }
+
+        public void setLuk(int luk) {
+            this.luk = luk;
+            recalcLocalStats();
+        }
+
+        public void setInt(int int_) {
+            this.int_ = int_;
+            recalcLocalStats();
+        }
+
+        public boolean setHp(int newhp) {
+            return setHp(newhp, false);
+        }
+
+        public boolean setHp(int newhp, boolean silent) {
+            int oldHp = hp;
+            hp = Math.max(0, Math.min(newhp, localmaxhp));
+            if (!silent) {
+                updatePartyMemberHP();
+            }
+            if (oldHp > hp && !isAlive()) {
+                playerDead();
+            }
+            return hp != oldHp;
+        }
+
+        public boolean setMp(int newmp) {
+            int oldMp = mp;
+            mp = Math.max(0, Math.min(newmp, localmaxmp));
+            return mp != oldMp;
+        }
+
+        public void setMaxHp(int hp) {
+            this.maxhp = hp;
+            recalcLocalStats();
+        }
+
+        public void setMaxMp(int mp) {
+            this.maxmp = mp;
+            recalcLocalStats();
+        }
+
+        public int getHp() {
+            return hp;
+        }
+
+        public int getMaxHp() {
+            return maxhp;
+        }
+
+        public int getMp() {
+            return mp;
+        }
+
+        public int getMaxMp() {
+            return maxmp;
+        }
+
+        public int getTotalDex() {
+            return localdex;
+        }
+
+        public int getTotalInt() {
+            return localint_;
+        }
+
+        public int getTotalStr() {
+            return localstr;
+        }
+
+        public int getTotalLuk() {
+            return localluk;
+        }
+
+        public int getTotalMagic() {
+            return magic;
+        }
+
+        public int getTotalWatk() {
+            return watk;
+        }
+
+        public short getCurrentMaxHp() {
+            return localmaxhp;
+        }
+
+        public short getCurrentMaxMp() {
+            return localmaxmp;
+        }
+
+        public void recalcLocalStats() {
+            recalcLocalStats(false);
+        }
+
+        public void recalcLocalStats(boolean first_login) {
+            if (isRecalc) {
+                return;
+            }
+            isRecalc = true;
+            int oldmaxhp = localmaxhp;
+            int localmaxhp_ = maxhp;
+            int localmaxmp_ = maxmp;
+            int percent_hp = 0;
+            int percent_mp = 0;
+            localdex = dex;
+            localint_ = int_;
+            localstr = str;
+            localluk = luk;
+            magic = localint_;
+            watk = 0;
+            if (job == 500 || (520 <= job && job <= 522)) {
+                watk = 20; // bullet
+            } else if (job == 400 || (410 <= job && job <= 412) || (1400 <= job && job <= 1412)) {
+                watk = 30; // stars
+            }
+            equippedWelcomeBackRing = false;
+            hasPartyBonus = false;
+            boolean canEquipLevel = level >= 120 && !GameConstants.isKOC(job);
+            equipmentBonusExp = 0;
+            dropMod = 1;
+            expMod = 1;
+            levelBonus = 0;
+
+            for (Item item : getInventory(MapleInventoryType.EQUIPPED)) {
+                Equip equip = (Equip) item;
+                localmaxhp_ += equip.getMaxHP();
+                localmaxmp_ += equip.getMaxMP();
+                localdex += equip.getDEX();
+                localint_ += equip.getINT();
+                localstr += equip.getSTR();
+                localluk += equip.getLUK();
+                magic += equip.getMAD() + equip.getINT();
+                watk += equip.getPAD();
+                if (equip.getItemId() == 1112127) {
+                    equippedWelcomeBackRing = true;
+                } else {
+                    for (int eb_bonus : GameConstants.Equipments_Bonus) {
+                        if (equip.getItemId() == eb_bonus) {
+                            equipmentBonusExp += GameConstants.Equipment_Bonus_EXP(eb_bonus);
+                            break;
+                        }
+                    }
+                }
+                percent_hp += equip.getMaxHPr();
+                percent_mp += equip.getMaxMPr();
+            }
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            for (Item item : getInventory(MapleInventoryType.CASH)) {
+                int item_id = item.getItemId();
+                if (expMod < 3 && (item_id == 5211060 || item_id == 5211050 || item_id == 5211051 || item_id == 5211052 || item_id == 5211053 || item_id == 5211054)) {
+                    expMod = 3; // overwrite
+                } else if (expMod == 1 && (item_id == 5210000 || item_id == 5210001 || item_id == 5210002 || item_id == 5210003 || item_id == 5210004 || item_id == 5210005 || item_id == 5211061 || item_id == 5211000 || item_id == 5211001 || item_id == 5211002 || item_id == 5211003 || item_id == 5211046 || item_id == 5211047 || item_id == 5211048 || item_id == 5211049)) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210006 && (hour >= 22 || hour <= 2)) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210007 && hour >= 2 && hour <= 6) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210008 && hour >= 6 && hour <= 10) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210009 && hour >= 10 && hour <= 14) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210010 && hour >= 14 && hour <= 18) {
+                    expMod = 2;
+                } else if (expMod == 1 && item_id == 5210011 && hour >= 18 && hour <= 22) {
+                    expMod = 2;
+                }
+                if (dropMod == 1) {
+                    if (item_id == 5360009 || item_id == 5360010 || item_id == 5360011 || item_id == 5360012 || item_id == 5360013 || item_id == 5360014 || item_id == 5360017 || item_id == 5360050 || item_id == 5360053 || item_id == 5360042 || item_id == 5360052) {
+                        dropMod = 2;
+                    } else if (item_id == 5360000 && hour >= 0 && hour <= 6) {
+                        dropMod = 2;
+                    } else if (item_id == 5360001 && hour >= 6 && hour <= 12) {
+                        dropMod = 2;
+                    } else if (item_id == 5360002 && hour >= 12 && hour <= 18) {
+                        dropMod = 2;
+                    } else if (item_id == 5360003 && hour >= 18 && hour <= 24) {
+                        dropMod = 2;
+                    }
+                }
+                if (item_id == 5650000) {
+                    hasPartyBonus = true;
+                } else if (item_id == 5590001) {
+                    levelBonus = 10;
+                } else if (levelBonus == 0 && item_id == 5590000) {
+                    levelBonus = 5;
+                }
+            }
+            magic += getSkillLevel(WzXML.SKILL.getSkill().get(22000000));
+            localmaxhp_ += (percent_hp * localmaxhp_) / 100f;
+            localmaxmp_ += (percent_mp * localmaxmp_) / 100f;
+            magic = Math.min(magic, 1999); // buffs can make it higher
+
+            switch (job) {
+                case 322: { // Crossbowman
+                    watk += getExpertWatk(3220004);
+                    break;
+                }
+                case 312: { // Bowmaster
+                    watk += getExpertWatk(3120005);
+                    break;
+                }
+                case 2112: { // Aran
+                    watk += getExpertWatk(21120001);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            Skill blessoffairy = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(job));
+            int boflevel = getSkillLevel(blessoffairy);
+            if (boflevel > 0) {
+                watk += blessoffairy.getEffect(boflevel).getX();
+                magic += blessoffairy.getEffect(boflevel).getY();
+            }
+
+            localmaxhp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxhp_)));
+            localmaxmp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxmp_)));
+
+            if (first_login) {
+                silentEnforceMaxHpMp();
+            } else {
+                enforceMaxHpMp();
+            }
+
+            if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
+                updatePartyMemberHP();
+            }
+            isRecalc = false;
+        }
+
+        private int getExpertWatk(int skill_id) {
+            Skill expert = WzXML.SKILL.getSkill().get(skill_id);
+            int boostLevel = getSkillLevel(expert);
+            if (boostLevel <= 0) {
+                return 0;
+            }
+            return expert.getEffect(boostLevel).getX();
+        }
     }
 }

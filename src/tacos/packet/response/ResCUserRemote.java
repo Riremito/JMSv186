@@ -32,7 +32,7 @@ import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -66,10 +66,10 @@ public class ResCUserRemote {
             sp.Encode4(attack.nSkillID); // nSkillID
         }
 
-        OpsSkill skill = OpsSkill.find(attack.nSkillID);
+        OpsSkill_BB skill = OpsSkill_BB.find(attack.nSkillID);
         if (Config.PostBB()) {
-            if (skill == OpsSkill.SNIPER_STRAFE) {
-                OpsSkill passive_skill = OpsSkill.CROSSBOWMASTER_ULTIMATE_STRAFE;
+            if (skill == OpsSkill_BB.SNIPER_STRAFE) {
+                OpsSkill_BB passive_skill = OpsSkill_BB.CROSSBOWMASTER_ULTIMATE_STRAFE;
                 int nPassiveSLV = chr.getSkillLevel(passive_skill);
                 sp.Encode1(nPassiveSLV); // nPassiveSLV
                 if (nPassiveSLV != 0) {
@@ -257,16 +257,37 @@ public class ResCUserRemote {
         return sp;
     }
 
+    // CUser::OnEffect
     public static ServerPacket UserEffectRemote(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
-        sp.Encode4(pb.player.getId());
+        sp.Encode4(pb.player.getId()); // dwCharacterId
         sp.EncodeBuffer(ResCUserLocal.EffectData(ops, pb));
         return sp;
     }
 
     // CUserRemote::OnSetTemporaryStat
+    public static ServerPacket UserTemporaryStatSet(TacosCharacter chr, int buff_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
+
+        sp.Encode4(chr.getId()); // dwCharacterId
+        sp.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr, chr.getBuff().getCTS(buff_id))); // SecondaryStat::DecodeForRemote
+        sp.Encode2(0); // tDelay
+        return sp;
+    }
+
     // CUserRemote::OnResetTemporaryStat
+    public static ServerPacket UserTemporaryStatReset(TacosCharacter chr, int buff_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatReset);
+
+        sp.Encode4(chr.getId()); // dwCharacterId
+        int[] buff_mask = RD_CUser.getRemoteBuffMask(RD_CUser.getRemoteBuffs(chr.getBuff().getCTS(buff_id)));
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]); // uFlagTemp
+        }
+        return sp;
+    }
+
     // CUserRemote::OnReceiveHP
     public static ServerPacket UserHP(int cid, int curhp, int maxhp) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHP);
@@ -277,47 +298,6 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket showPetLevelUp(TacosCharacter chr, int index) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(4);
-        sp.Encode1(0);
-        sp.Encode4(index);
-        return sp;
-    }
-
-    public static ServerPacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(from_playerid);
-        sp.Encode1(15);
-        sp.Encode4(itemId);
-        sp.Encode1(effect != null && effect.length() > 0 ? 1 : 0);
-        if (effect != null && effect.length() > 0) {
-            sp.EncodeStr(effect);
-        }
-        return sp;
-    }
-
-    //its likely that durability items use this
-    public static ServerPacket showHpHealed(int cid, int amount) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(cid);
-        sp.Encode1(10); //Type
-        sp.Encode4(amount);
-        return sp;
-    }
-
-    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, boolean is_success) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(17);
-        sp.Encode4(is_success ? 0 : 1);
-        return sp;
-    }
 
     public static byte[] addRingInfo(List<MapleRing> rings) {
         ServerPacket data = new ServerPacket();

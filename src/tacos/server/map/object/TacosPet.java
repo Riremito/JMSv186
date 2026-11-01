@@ -18,9 +18,9 @@
  */
 package tacos.server.map.object;
 
-import odin.server.MapleItemInformationProvider;
 import tacos.database.query.DQ_Pets;
 import tacos.server.TacosWorld;
+import tacos.wz.WzNameStorage;
 
 /**
  *
@@ -40,7 +40,7 @@ public class TacosPet extends TacosMapObject {
     private short closeness = 0;
     private short skill_mask = -1; // 0xFFFF
 
-    private String name;
+    private String name = "";
     private boolean summoned = false;
     private int unique_id;
     private int item_id;
@@ -101,7 +101,7 @@ public class TacosPet extends TacosMapObject {
     }
 
     public static TacosPet createPet(int itemid, int uniqueid) {
-        return createPet(itemid, MapleItemInformationProvider.getInstance().getName(itemid), 1, 0, 100, uniqueid, itemid == 5000054 ? 18000 : 0);
+        return createPet(itemid, WzNameStorage.ITEM.get(itemid).getName(), 1, 0, 100, uniqueid, itemid == 5000054 ? 18000 : 0);
     }
 
     public static TacosPet createPet(int itemid, String name, int level, int closeness, int fullness, int uniqueid, int secondsLeft) {

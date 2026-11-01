@@ -55,6 +55,10 @@ public class ServerPacket {
         // do nothing.
     }
 
+    public int getEncoded() {
+        return this.encoded;
+    }
+
     // make hello packet buffer.
     public boolean setHello() {
         if (this.encoded < 2) {

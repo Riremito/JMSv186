@@ -48,8 +48,9 @@ public class ReqCField_Coconut {
 
         switch (header) {
             case CP_CoconutHit: {
-                short nTarget = cp.Decode2(); // not checked.
-                short nDelay = cp.Decode2(); // delay?
+                // CField_Coconut::BasicActionAttack
+                short nTarget = cp.Decode2();
+                short nDelay = cp.Decode2(); // tDelay
                 OnCoconutHit(chr, nTarget, nDelay);
                 return true;
             }
@@ -141,6 +142,7 @@ public class ReqCField_Coconut {
 
     }
 
+    // CField_Coconut::BasicActionAttack
     private static void OnCoconutHit(TacosCharacter chr, short nTarget, short nDelay) {
         MapleCoconut coconut_map = null;
         if (coconut_map == null) {

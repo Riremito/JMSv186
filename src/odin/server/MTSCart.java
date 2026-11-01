@@ -46,7 +46,7 @@ public class MTSCart {
     private List<Integer> notYetSold = new ArrayList<>(10);
     private int owedNX = 0;
 
-    public MTSCart(int characterId) throws SQLException {
+    public MTSCart(int characterId) {
         this.characterId = characterId;
         for (SimpleImmutableEntry<Item, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
             transfer.add(item.getKey());
@@ -113,19 +113,20 @@ public class MTSCart {
         owedNX += newNX;
     }
 
-    public void save() throws SQLException {
+    public boolean save() {
         List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : getInventory()) {
             itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
-        ItemLoader.MTS_TRANSFER.saveItems(itemsWithType, characterId);
+        boolean saved = ItemLoader.MTS_TRANSFER.saveItems(itemsWithType, characterId);
         DQ_MtsCart.replace(characterId, cart, owedNX);
         //notYetSold shouldnt be saved here
+        return saved;
     }
 
-    public void loadCart() throws SQLException {
+    public void loadCart() {
         for (int iId : DQ_MtsCart.getItemIds(characterId)) {
             if (iId < 0) {
                 owedNX -= iId;
@@ -135,7 +136,7 @@ public class MTSCart {
         }
     }
 
-    public void loadNotYetSold() throws SQLException {
+    public void loadNotYetSold() {
         for (int pId : DQ_MtsItems.getIdsByCharacterId(characterId)) {
             if (MTSStorage.getInstance().check(pId)) {
                 notYetSold.add(pId);

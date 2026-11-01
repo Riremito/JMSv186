@@ -30,6 +30,7 @@ import tacos.packet.ops.OpsGoldHammer;
  */
 public class ResCUIGoldHammer {
 
+    // LP_GoldHammerResult
     public static ServerPacket GoldHammerResult(OpsGoldHammer m_nReturnResult, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
 
@@ -38,7 +39,7 @@ public class ResCUIGoldHammer {
             case GoldHammerRes_Success:
             case GoldHammerRes_Fail: {
                 sp.Encode4(0);
-                sp.Encode4(equip.getViciousHammer(), Region.JMS.check()); // m_nIUC
+                sp.Encode4(equip.getCIUC(), Region.JMS.check()); // m_nIUC
                 break;
             }
             case GoldHammerRes_Done: {

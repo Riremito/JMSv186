@@ -40,9 +40,10 @@ public class ResCField_SnowBall {
 
     }
 
+    // CField_SnowBall::OnSnowBallState
     public static ServerPacket SnowBallState(int m_nState, MapleSnowballs ball1, MapleSnowballs ball2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallState);
-        sp.Encode1(m_nState); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
+        sp.Encode1(m_nState); // 1 = playing (hits are sent only in this state), 2 = m_aSnowBall[0] wins, 3 = m_aSnowBall[1] wins
         sp.Encode4(ball1 == null ? 0 : (ball1.getSnowmanHP() / 75)); // m_aSnowMan[0].m_nHP
         sp.Encode4(ball2 == null ? 0 : (ball2.getSnowmanHP() / 75)); // m_aSnowMan[1].m_nHP
 
@@ -51,14 +52,15 @@ public class ResCField_SnowBall {
         sp.Encode2(ball2 == null ? 0 : ball2.getPosition()); // m_nXPos
         sp.Encode1(0); // m_nSpeedDegree
 
-        // first
+        // read only by the first state packet of the field
         sp.Encode2(0); // m_nDamageSnowBall
         sp.Encode2(0); // m_nDamageSnowMan[0]
         sp.Encode2(0); // m_nDamageSnowMan[1]
         return sp;
     }
 
-    public static ServerPacket SnowBallHit(int nTarget, int nDamage, int unused, int tDelay) {
+    // CField_SnowBall::OnSnowBallHit
+    public static ServerPacket SnowBallHit(int nTarget, int nDamage, int tDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallHit);
         sp.Encode1(nTarget); // nTarget
         sp.Encode2(nDamage); // nDamage
@@ -66,6 +68,7 @@ public class ResCField_SnowBall {
         return sp;
     }
 
+    // CField_SnowBall::OnSnowBallMsg
     public static ServerPacket SnowBallMsg(int team, int message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallMsg);
         sp.Encode1(team); // 0 is down, 1 is up
@@ -73,6 +76,7 @@ public class ResCField_SnowBall {
         return sp;
     }
 
+    // CField_SnowBall::OnSnowBallTouch
     public static ServerPacket SnowBallTouch() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallTouch);
         return sp;

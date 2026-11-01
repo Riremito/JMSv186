@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosSingleMacro;
 import tacos.config.Config;
@@ -35,8 +34,7 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
  */
 public class ReqCFuncKeyMappedMan {
 
-    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnPacket(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
 
         if (chr == null) {
             return false;
@@ -62,6 +60,7 @@ public class ReqCFuncKeyMappedMan {
         return false;
     }
 
+    // CMacroSysMan::FlushToSvr
     public static boolean OnUserMacroSysDataModified(TacosCharacter chr, ClientPacket cp) {
         // MACROSYSDATA::Encode
         byte macro_count = cp.Decode1();
@@ -88,6 +87,7 @@ public class ReqCFuncKeyMappedMan {
         return true;
     }
 
+    // CFuncKeyMappedMan::ChangePetConsumeItemID, CFuncKeyMappedMan::ChangePetConsumeMPItemID, CFuncKeyMappedMan::SaveFuncKeyMap
     public static boolean OnFuncKeyMappedModified(TacosCharacter chr, ClientPacket cp) {
         int funckey_type = cp.Decode4();
 

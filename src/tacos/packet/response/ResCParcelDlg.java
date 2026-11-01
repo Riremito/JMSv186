@@ -94,8 +94,8 @@ public class ResCParcelDlg {
 
     };
 
-    // 宅配
-    public static ServerPacket Open(boolean isQuick, boolean isNPC) {
+    // CParcelDlg::OnPacket, 宅配
+    public static ServerPacket Parcel_Open(boolean isQuick, boolean isNPC) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         // 0x3B or 0x40
         if (isQuick) {
@@ -112,9 +112,17 @@ public class ResCParcelDlg {
         return sp;
     }
 
-    public static ServerPacket Send() {
+    // CParcelDlg::OnPacket
+    public static ServerPacket Parcel_Send() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         sp.Encode1((byte) Action.SEND.Get());
+        return sp;
+    }
+
+    // CParcelDlg::OnPacket, CParcelDlg::NoticeResult
+    public static ServerPacket Parcel_Failed() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
+        sp.Encode1(Action.ERROR_14.Get());
         return sp;
     }
 }

@@ -63,7 +63,7 @@ public class ResCUser {
     }
 
     // CUser::OnMiniRoomBalloon
-    public static ServerPacket sendPlayerShopBox(TacosCharacter chr) {
+    public static ServerPacket UserMiniRoomBalloon(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
@@ -73,7 +73,7 @@ public class ResCUser {
 
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
-    public static ServerPacket getScrollEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
+    public static ServerPacket UserItemUpgradeEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -110,11 +110,62 @@ public class ResCUser {
         return sp;
     }
 
+    public static ServerPacket UserItemUpgradeEffect(TacosCharacter chr, boolean success, boolean cursed, boolean legendary_spirit) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
+
+        sp.Encode4(chr.getId());
+
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode1(cursed ? 2 : (success ? 1 : 0));
+            sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+            sp.Encode4(0); // item ID
+            sp.Encode4(0); // 1 = 書の名前表示
+            sp.Encode1(0);
+            sp.Encode1(0);
+            sp.Encode4(0); // m_nEnchantCategory
+            return sp;
+        }
+
+        sp.Encode1(success ? 1 : 0); // m_bSuccess
+        sp.Encode1(cursed ? 1 : 0); // m_bCursed
+        sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+        sp.Encode1(0);
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            sp.Encode1(0);
+        }
+        sp.Encode4(0); // m_nEnchantCategory
+        return sp;
+    }
+
     // CUser::ShowItemHyperUpgradeEffect
+    public static ServerPacket UserItemHyperUpgradeEffect(TacosCharacter chr, boolean success, boolean legendary_spirit) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemHyperUpgradeEffect);
+
+        sp.Encode4(chr.getId());
+
+        sp.Encode1(success ? 1 : 0); // m_bSuccess
+        sp.Encode1(success ? 0 : 1); // m_bCursed
+        sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+        sp.Encode4(0); // m_nEnchantCategory
+        return sp;
+    }
+
     // CUser::ShowItemOptionUpgradeEffect
+    public static ServerPacket UserItemOptionUpgradeEffect(TacosCharacter chr, boolean success, boolean legendary_spirit) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemOptionUpgradeEffect);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(success ? 1 : 0); // m_bSuccess
+        sp.Encode1(success ? 0 : 1); // m_bCursed
+        sp.Encode1(legendary_spirit ? 1 : 0); // bEnchantSkill
+        sp.Encode4(0); // m_nEnchantCategory
+        return sp;
+    }
+
     // CUser::ShowItemReleaseEffect
     public static ServerPacket UserItemReleaseEffect(TacosCharacter chr, short equip_item_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
+
         sp.Encode4(chr.getId());
         sp.Encode2(equip_item_slot);
         return sp;
@@ -151,7 +202,7 @@ public class ResCUser {
     }
 
     // CUser::OnShowPQReward
-    public static ServerPacket UserFishingSuccess(TacosCharacter chr) {
+    public static ServerPacket Fishing_Caught(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
 
         sp.Encode4(chr.getId());

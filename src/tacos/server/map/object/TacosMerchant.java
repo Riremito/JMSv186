@@ -19,20 +19,37 @@
 package tacos.server.map.object;
 
 import java.util.AbstractMap;
+import tacos.packet.ops.OpsMREnterResult;
+import tacos.packet.ops.OpsESWithdrawAll;
+import odin.server.shops.MaplePlayerShop;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.InvTypeDB;
+import tacos.client.TacosStoreBank;
+import tacos.client.TacosHoldInventory;
+import odin.server.shops.IPlayerShop;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import odin.server.shops.HiredMerchant;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosRoom;
+import odin.client.inventory.Item;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.server.map.TacosMap;
+import odin.client.inventory.Item.ItemFlag;
+import odin.constants.GameConstants;
+import odin.server.MapleInventoryManipulator;
+import tacos.server.TacosWorld;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.database.query.DQ_Hiredmerch;
 
 /**
  *
  * @author Riremito
  */
-public class TacosMerchant extends TacosMapObject {
+public class TacosMerchant extends TacosMapObject implements IPlayerShop {
 
     private boolean open = false;
     private final TacosCharacter[] visitors = new TacosCharacter[4];
@@ -40,40 +57,32 @@ public class TacosMerchant extends TacosMapObject {
     private final List<String> blacklist = new LinkedList<>();
     private final int room_id;
 
-    public TacosMerchant(TacosCharacter owner) {
-        TacosRoom room = owner.getWorld().createRoom();
-        room.setMerchant(this);
-        this.room_id = room.getId();
-    }
-
     public int getRoomId() {
         return this.room_id;
     }
 
-    public boolean enter(TacosCharacter visitor) {
+    // the owner starts managing the shop and the visitors are sent out.
+    public OpsMREnterResult enter(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(false);
-            removeAllVisitors(0, 0);
-            visitor.setPlayerShop((HiredMerchant) this);
-            visitor.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(visitor, (HiredMerchant) this, false));
-            return true;
+            removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
+            visitor.setPlayerShop(this);
+            visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
+            return OpsMREnterResult.MREnterResult_Success;
         }
         if (!isOpen()) {
-            visitor.DebugMsg("商店の主人が物品整理中でございます。もうしばらく後でご利用ください。");
-            return false;
+            return OpsMREnterResult.MREnterResult_IsManaging; // 商店の主人が物品整理中でございます。
         }
         if (getFreeSlot() == -1) {
-            visitor.DebugMsg("This shop has reached it's maximum capacity, please come by later.");
-            return false;
+            return OpsMREnterResult.MREnterResult_Full;
         }
         if (isInBlackList(visitor.getName())) {
-            visitor.DebugMsg("You have been banned from this store.");
-            return false;
+            return OpsMREnterResult.MREnterResult_OnBlockedList;
         }
-        visitor.setPlayerShop((HiredMerchant) this);
+        visitor.setPlayerShop(this);
         addVisitor(visitor);
-        visitor.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(visitor, (HiredMerchant) this, false));
-        return true;
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
+        return OpsMREnterResult.MREnterResult_Success;
     }
 
     public boolean leave(TacosCharacter visitor) {
@@ -131,7 +140,7 @@ public class TacosMerchant extends TacosMapObject {
     public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (0 < i) {
-            SendPacket(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
+            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor));
             visitors[i - 1] = visitor;
             if (getOwnerId() != visitor.getId()) {
                 this.visitors_names.add(visitor.getName());
@@ -142,8 +151,8 @@ public class TacosMerchant extends TacosMapObject {
     public void removeVisitor(TacosCharacter visitor) {
         byte slot = getVisitorSlot(visitor);
         if (0 < slot) {
-            SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(slot));
             visitors[slot - 1] = null;
+            SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot));
         }
     }
 
@@ -163,12 +172,13 @@ public class TacosMerchant extends TacosMapObject {
         for (int i = 0; i < visitors.length; i++) {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
-                if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
-                }
-                SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)));
-                visitor.setPlayerShop(null);
                 visitors[i] = null;
+                if (type != -1) {
+                    // the reason is read only for the own slot, an unknown reason shows an empty notice.
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1, error));
+                }
+                SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1));
+                visitor.setPlayerShop(null);
             }
         }
     }
@@ -205,10 +215,332 @@ public class TacosMerchant extends TacosMapObject {
     }
 
     public void sendBlackList(TacosCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverBlackList(blacklist));
     }
 
     public void sendVisitor(TacosCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors_names));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverVisitList(visitors_names));
+    }
+
+
+    public final static byte HIRED_MERCHANT = 1;
+    public final static byte PLAYER_SHOP = 2;
+    public final static byte OMOK = 3;
+    public final static byte MATCH_CARD = 4;
+
+    protected boolean available = false;
+    protected String ownerName;
+    protected String des;
+    protected String pass;
+    protected int owneraccount;
+    protected int itemId;
+    protected int channel;
+    protected int map;
+    // the items and meso of this shop, saved as InvTypeDB.Employee and the hiredmerch row of the owner.
+    private final TacosHoldInventory goods = new TacosHoldInventory();
+    protected List<BoughtItem> bought = new LinkedList<>();
+    protected List<MaplePlayerShopItem> items = new LinkedList<>();
+    private int storeid;
+    private int foothold_id;
+    private int item_sub_type;
+    private long start;
+
+    @SuppressWarnings("unchecked")
+    public TacosMerchant(TacosCharacter owner, int itemId, String desc) {
+        TacosRoom room = owner.getWorld().createRoom();
+        room.setMerchant(this);
+        this.room_id = room.getId();
+        this.setPosition(owner.getPosition());
+        this.ownerName = owner.getName();
+        this.owneraccount = owner.getAccountId();
+        this.itemId = itemId;
+        this.des = desc;
+        this.pass = "";
+        this.map = owner.getMapId();
+        this.channel = owner.getClient().getChannelId();
+        this.item_sub_type = itemId % 100;
+        this.foothold_id = owner.getFootholdId();
+        start = System.currentTimeMillis();
+        setOwnerId(owner.getId());
+    }
+
+    public int getMeso() {
+        return goods.getMeso();
+    }
+
+    public void setMeso(int meso) {
+        goods.setMeso(meso);
+        save();
+    }
+
+    private boolean save() {
+        goods.setItems(MaplePlayerShop.getStocks(items));
+        return saveGoods();
+    }
+
+    private boolean saveGoods() {
+        if (!DQ_Inventoryitems.add(InvTypeDB.Employee, getOwnerId(), goods.getItems())) {
+            return false;
+        }
+        return DQ_Hiredmerch.save(getOwnerId(), owneraccount, goods.getMeso(), start);
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public int getOwnerAccId() {
+        return owneraccount;
+    }
+
+    public String getDescription() {
+        if (des == null) {
+            return "";
+        }
+        return des;
+    }
+
+    public List<MaplePlayerShopItem> getItems() {
+        return items;
+    }
+
+    public void addItem(MaplePlayerShopItem item) {
+        items.add(item);
+        save();
+    }
+
+    public boolean removeItem(int item) {
+        return false;
+    }
+
+    public void removeFromSlot(int slot) {
+        items.remove(slot);
+        save();
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public boolean isOwner(TacosCharacter chr) {
+        return chr.getId() == getOwnerId() && chr.getName().equals(ownerName);
+    }
+
+    public String getPassword() {
+        if (pass == null) {
+            return "";
+        }
+        return pass;
+    }
+
+    public TacosCharacter getMCOwner() {
+        return getMap().getPlayerById(getOwnerId());
+    }
+
+    public TacosMap getMap() {
+        return TacosWorld.find(0).getChannelServer(channel).findMap(map);
+    }
+
+    public int getGameType() {
+        if (getShopType() == HIRED_MERCHANT) { //hiredmerch
+            return 5;
+        } else if (getShopType() == PLAYER_SHOP) { //shop lol
+            return 4;
+        } else if (getShopType() == OMOK) { //omok
+            return 1;
+        } else if (getShopType() == MATCH_CARD) { //matchcard
+            return 2;
+        }
+        return 0;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean b) {
+        this.available = b;
+    }
+
+    public List<BoughtItem> getBoughtItems() {
+        return bought;
+    }
+
+    public static final class BoughtItem {
+
+        public int id;
+        public int quantity;
+        public int totalPrice;
+        public String buyer;
+
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
+            this.id = id;
+            this.quantity = quantity;
+            this.totalPrice = totalPrice;
+            this.buyer = buyer;
+        }
+    }
+
+    public void setTest(int owner_id, int fh, int st, int store_id) {
+        this.foothold_id = fh;
+        this.item_sub_type = st % 100;
+        this.storeid = store_id;
+        setOwnerId(owner_id); // overwritten
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public int getItemSubType() {
+        return this.item_sub_type;
+    }
+
+    public byte getShopType() {
+        return HIRED_MERCHANT;
+    }
+
+    public void setStoreid(int storeid) {
+        this.storeid = storeid;
+    }
+
+    public List<MaplePlayerShopItem> searchItem(int itemSearch) {
+        List<MaplePlayerShopItem> itemz = new LinkedList<>();
+        for (MaplePlayerShopItem item : items) {
+            if (item.item.getItemId() == itemSearch && item.bundles > 0) {
+                itemz.add(item);
+            }
+        }
+        return itemz;
+    }
+
+    public void buy(TacosCharacter chr, int item, short quantity) {
+        MaplePlayerShopItem pItem = items.get(item);
+        Item shopItem = pItem.item;
+        Item newItem = shopItem.copy();
+        short perbundle = newItem.getQuantity();
+        newItem.setQuantity((short) (quantity * perbundle));
+
+        byte flag = newItem.getFlag();
+
+        if (ItemFlag.KARMA_EQ.check(flag)) {
+            newItem.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
+        } else if (ItemFlag.KARMA_USE.check(flag)) {
+            newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
+        }
+
+        if (MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
+            pItem.bundles -= quantity; // Number remaining in the store
+            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
+
+            int price = pItem.price * quantity;
+            chr.gainMeso(-price, false);
+            // the tax is taken from this sale only.
+            setMeso(getMeso() + price - GameConstants.EntrustedStoreTax(price));
+        } else {
+            chr.Alert("Your inventory is full.");
+            chr.updateInv();
+        }
+    }
+
+    // the goods stay in `goods`, saved as InvTypeDB.Employee.
+    private void remove(boolean remove_from_channel, int reason) {
+        save();
+        items.clear();
+        removeAllVisitors(reason, 0);
+        if (remove_from_channel) {
+            TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
+        }
+        getMap().removeMerchant(this);
+        TacosWorld.find(0).removeRoom(this.room_id);
+    }
+
+    // what is left goes to the store bank.
+    private void storeGoods() {
+        if (goods.isEmpty()) {
+            DQ_Hiredmerch.deleteByCharacterId(getOwnerId());
+            return;
+        }
+        TacosStoreBank.putMerchantGoods(getOwnerId());
+        goods.clear();
+    }
+
+    // the owner is offline or disconnected while managing the shop, the goods go to the store bank.
+    public void closeShop(boolean saveItems, boolean remove, int reason) {
+        remove(remove, reason);
+        storeGoods();
+    }
+
+    // the owner pressed the start button, the employee appears on the map.
+    public void open(TacosCharacter owner) {
+        setStoreid(owner.getChannelServer().addMerchant(this));
+        setOpen(true);
+        setAvailable(true);
+        owner.setPlayerShop(null);
+        getMap().addMerchant(this);
+    }
+
+    public boolean isOnMap() {
+        return getMap().getMerchantByOid(getObjectId()) == this;
+    }
+
+    // the meso of the sales go to the owner.
+    public boolean withdrawMoney(TacosCharacter owner) {
+        if (getMeso() <= 0 || !goods.hasMesoRoomIn(owner) || !owner.gainMeso(getMeso(), false)) {
+            return false;
+        }
+        setMeso(0);
+        owner.saveToDB(false);
+        return true;
+    }
+
+    // the sold out items are removed and the meso go to the owner.
+    public void arrangeItems(TacosCharacter owner) {
+        items.removeIf(item -> item.bundles <= 0);
+        save();
+        withdrawMoney(owner);
+    }
+
+    // the meso go back to the owner if they fit, the items go back if all of them fit, the rest goes to the store bank.
+    public OpsESWithdrawAll closeByOwner(TacosCharacter owner) {
+        remove(true, OpsMRLeave.ESLeave_DestoryByAdmin.get());
+        OpsESWithdrawAll result = OpsESWithdrawAll.ESWithdrawAll_Done;
+        if (!goods.hasMesoRoomIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_OverPrice;
+        } else if (goods.hasOnlyItemIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_OnlyItem;
+        } else if (!goods.hasRoomIn(owner)) {
+            result = OpsESWithdrawAll.ESWithdrawAll_NoSlot;
+        }
+        if (result != OpsESWithdrawAll.ESWithdrawAll_OverPrice) {
+            if (0 < goods.getMeso() && owner.gainMeso(goods.getMeso(), false)) {
+                goods.setMeso(0);
+            }
+            if (result == OpsESWithdrawAll.ESWithdrawAll_Done) {
+                goods.returnTo(owner);
+                if (!goods.getItems().isEmpty()) {
+                    result = OpsESWithdrawAll.ESWithdrawAll_Unknown;
+                }
+            }
+            saveGoods();
+            owner.saveToDB(false);
+        }
+        storeGoods();
+        owner.setPlayerShop(null);
+        owner.setRemoteStore(null);
+        return result;
+    }
+
+    public int getChannel() {
+        return channel;
+    }
+
+    // milliseconds since the shop was created.
+    public int getPassedTime() {
+        return (int) (System.currentTimeMillis() - start);
+    }
+
+    public int getStoreId() {
+        return storeid;
     }
 }

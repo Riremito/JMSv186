@@ -128,6 +128,41 @@ public class DQ_Inventoryitems {
         return false;
     }
 
+    // moves the items of one owner to another place, e.g. hired merchant goods to the store bank.
+    public static boolean changeType(InvTypeDB from, InvTypeDB to, int owner_id) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET type = ? WHERE type = ? AND characterid = ?")) {
+                ps.setByte(1, (byte) to.ordinal());
+                ps.setByte(2, (byte) from.ordinal());
+                ps.setInt(3, owner_id);
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "changeType");
+        }
+
+        return false;
+    }
+
+    // all owners.
+    public static boolean changeType(InvTypeDB from, InvTypeDB to) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET type = ? WHERE type = ?")) {
+                ps.setByte(1, (byte) to.ordinal());
+                ps.setByte(2, (byte) from.ordinal());
+                ps.executeUpdate();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "changeType");
+        }
+
+        return false;
+    }
+
     public static Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
         return load(itb, owner_id, false);
     }
@@ -171,7 +206,7 @@ public class DQ_Inventoryitems {
                                 }
                             }
                         }
-                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(equip.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(equip, mit));
                     } else {
                         Item item = new Item(item_id, (short) item_slot, (short) item_quantity, (byte) item_flag);
                         item.setUniqueId(item_uid);
@@ -191,7 +226,7 @@ public class DQ_Inventoryitems {
                                 item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                             }
                         }
-                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(item.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(item, mit));
                     }
                 }
                 return items;
@@ -219,5 +254,18 @@ public class DQ_Inventoryitems {
         }
 
         return ret;
+    }
+    public static boolean deleteByCharacterId(int character_id) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, character_id);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteByCharacterId");
+        }
+        return false;
     }
 }

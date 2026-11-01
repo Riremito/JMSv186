@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.server.life.MapleMonsterStats;
-import odin.server.life.Element;
-import odin.server.life.ElementalEffectiveness;
+import odin.server.life.MapleMonsterStats.Element;
+import odin.server.life.MapleMonsterStats.ElementalEffectiveness;
 import java.util.LinkedList;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import lombok.Getter;
@@ -118,7 +118,7 @@ public class MobWz extends WzXML {
         private String portal;
     }
 
-    public MapleMonsterStats loadMonsterStats(int mob_id) {
+    private MapleMonsterStats loadMonsterStats(int mob_id) {
         MapleData monsterData = getImg(mob_id);
         if (monsterData == null) {
             return null;

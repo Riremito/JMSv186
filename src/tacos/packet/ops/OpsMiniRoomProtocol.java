@@ -26,6 +26,7 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMiniRoomProtocol implements IPacketOps {
+    // GMS v95
     MRP_Create(0),
     MRP_CreateResult(1),
     MRP_Invite(2),
@@ -40,62 +41,62 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     MRP_Balloon(11),
     MRP_NotAvailableField(12),
     MRP_FreeMarketClip(13),
-    MRP_CheckSSN2,
-    TRP_PutItem,
-    TRP_PutMoney,
-    TRP_Trade,
-    TRP_UnTrade,
-    TRP_MoveItemToInventory,
-    TRP_ItemCRC,
-    TRP_LimitFail,
-    PSP_PutItem,
-    PSP_BuyItem,
-    PSP_BuyResult,
-    PSP_Refresh,
-    PSP_AddSoldItem,
-    PSP_MoveItemToInventory,
-    PSP_Ban,
-    PSP_KickedTimeOver,
-    PSP_DeliverBlackList,
-    PSP_AddBlackList,
-    PSP_DeleteBlackList,
-    ESP_PutItem,
-    ESP_BuyItem,
-    ESP_BuyResult,
-    ESP_Refresh,
-    ESP_AddSoldItem,
-    ESP_MoveItemToInventory,
-    ESP_GoOut,
-    ESP_ArrangeItem,
-    ESP_WithdrawAll,
-    ESP_WithdrawAllResult,
-    ESP_WithdrawMoney,
-    ESP_WithdrawMoneyResult,
-    ESP_AdminChangeTitle,
-    ESP_DeliverVisitList,
-    ESP_DeliverBlackList,
-    ESP_AddBlackList,
-    ESP_DeleteBlackList,
-    MGRP_TieRequest,
-    MGRP_TieResult,
-    MGRP_GiveUpRequest,
-    MGRP_GiveUpResult,
-    MGRP_RetreatRequest,
-    MGRP_RetreatResult,
-    MGRP_LeaveEngage,
-    MGRP_LeaveEngageCancel,
-    MGRP_Ready,
-    MGRP_CancelReady,
-    MGRP_Ban,
-    MGRP_Start,
-    MGRP_GameResult,
-    MGRP_TimeOver,
-    ORP_PutStoneChecker,
-    ORP_InvalidStonePosition,
-    ORP_InvalidStonePosition_Normal,
-    ORP_InvalidStonePosition_By33,
-    MGP_TurnUpCard,
-    MGP_MatchCard,
+    MRP_CheckSSN2(14),
+    TRP_PutItem(15),
+    TRP_PutMoney(16),
+    TRP_Trade(17),
+    TRP_UnTrade(18),
+    TRP_MoveItemToInventory(19),
+    TRP_ItemCRC(20),
+    TRP_LimitFail(21),
+    PSP_PutItem(22),
+    PSP_BuyItem(23),
+    PSP_BuyResult(24),
+    PSP_Refresh(25),
+    PSP_AddSoldItem(26),
+    PSP_MoveItemToInventory(27),
+    PSP_Ban(28),
+    PSP_KickedTimeOver(29),
+    PSP_DeliverBlackList(30),
+    PSP_AddBlackList(31),
+    PSP_DeleteBlackList(32),
+    ESP_PutItem(33),
+    ESP_BuyItem(34),
+    ESP_BuyResult(35),
+    ESP_Refresh(36),
+    ESP_AddSoldItem(37),
+    ESP_MoveItemToInventory(38),
+    ESP_GoOut(39),
+    ESP_ArrangeItem(40),
+    ESP_WithdrawAll(41),
+    ESP_WithdrawAllResult(42),
+    ESP_WithdrawMoney(43),
+    ESP_WithdrawMoneyResult(44),
+    ESP_AdminChangeTitle(45),
+    ESP_DeliverVisitList(46),
+    ESP_DeliverBlackList(47),
+    ESP_AddBlackList(48),
+    ESP_DeleteBlackList(49),
+    MGRP_TieRequest(50),
+    MGRP_TieResult(51),
+    MGRP_GiveUpRequest(52),
+    MGRP_GiveUpResult(53),
+    MGRP_RetreatRequest(54),
+    MGRP_RetreatResult(55),
+    MGRP_LeaveEngage(56),
+    MGRP_LeaveEngageCancel(57),
+    MGRP_Ready(58),
+    MGRP_CancelReady(59),
+    MGRP_Ban(60),
+    MGRP_Start(61),
+    MGRP_GameResult(62),
+    MGRP_TimeOver(63),
+    ORP_PutStoneChecker(64),
+    ORP_InvalidStonePosition(65),
+    ORP_InvalidStonePosition_Normal(66),
+    ORP_InvalidStonePosition_By33(67),
+    MGP_TurnUpCard(68),
+    MGP_MatchCard(69),
     UNKNOWN;
 
     private int value;
@@ -184,7 +185,9 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_DeleteBlackList.set(45);
             return;
         }
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
+        // JMS v186, JMS v187
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            clear();
             MRP_Create.set(0);
             MRP_CreateResult.set(1);
             MRP_Invite.set(2);
@@ -197,16 +200,9 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             MRP_Avatar.set(9);
             MRP_Leave.set(10);
             MRP_Balloon.set(11);
-            MRP_NotAvailableField.set(0);
-            MRP_FreeMarketClip.set(0);
-            MRP_CheckSSN2.set(0);
             TRP_PutItem.set(13);
             TRP_PutMoney.set(14);
             TRP_Trade.set(15);
-            TRP_UnTrade.set(0);
-            TRP_MoveItemToInventory.set(0);
-            TRP_ItemCRC.set(0);
-            TRP_LimitFail.set(0);
             PSP_PutItem.set(19);
             PSP_BuyItem.set(20);
             PSP_BuyResult.set(21);
@@ -258,6 +254,29 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             return;
         }
         if (Config.LessOrEqual(Region.GMS, 83)) {
+            clear();
+            MRP_Create.set(0);
+            MRP_CreateResult.set(1);
+            MRP_Invite.set(2);
+            MRP_InviteResult.set(3);
+            MRP_Enter.set(4);
+            MRP_EnterResult.set(5);
+            MRP_Chat.set(6);
+            MRP_GameMessage.set(7);
+            MRP_UserChat.set(8);
+            MRP_Avatar.set(9);
+            MRP_Leave.set(10);
+            MRP_Balloon.set(11);
+            MRP_NotAvailableField.set(12);
+            MRP_FreeMarketClip.set(13);
+            MRP_CheckSSN2.set(14);
+            TRP_PutItem.set(15);
+            TRP_PutMoney.set(16);
+            TRP_Trade.set(17);
+            TRP_UnTrade.set(18);
+            TRP_MoveItemToInventory.set(19);
+            TRP_ItemCRC.set(20);
+            TRP_LimitFail.set(21);
             PSP_PutItem.set(22);
             PSP_BuyItem.set(23);
             PSP_BuyResult.set(24);
@@ -281,6 +300,31 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_WithdrawAllResult.set(42);
             ESP_WithdrawMoney.set(43);
             ESP_WithdrawMoneyResult.set(44);
+            ESP_AdminChangeTitle.set(45);
+            ESP_DeliverVisitList.set(46);
+            ESP_DeliverBlackList.set(47);
+            ESP_AddBlackList.set(48);
+            ESP_DeleteBlackList.set(49);
+            MGRP_TieRequest.set(50);
+            MGRP_TieResult.set(51);
+            MGRP_GiveUpRequest.set(52);
+            MGRP_GiveUpResult.set(53);
+            MGRP_RetreatRequest.set(54);
+            MGRP_RetreatResult.set(55);
+            MGRP_LeaveEngage.set(56);
+            MGRP_LeaveEngageCancel.set(57);
+            MGRP_Ready.set(58);
+            MGRP_CancelReady.set(59);
+            MGRP_Ban.set(60);
+            MGRP_Start.set(61);
+            MGRP_GameResult.set(62);
+            MGRP_TimeOver.set(63);
+            ORP_PutStoneChecker.set(64);
+            ORP_InvalidStonePosition.set(65);
+            ORP_InvalidStonePosition_Normal.set(66);
+            ORP_InvalidStonePosition_By33.set(67);
+            MGP_TurnUpCard.set(68);
+            MGP_MatchCard.set(69);
             return;
         }
     }

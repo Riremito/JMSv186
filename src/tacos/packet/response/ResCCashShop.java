@@ -128,7 +128,7 @@ public class ResCCashShop {
     }
 
     // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
-    public static ServerPacket presentDialog() {
+    public static ServerPacket PresentDialog() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_PRESENT_DIALOG);
         // 多分未実装
         return sp;
@@ -182,14 +182,9 @@ public class ResCCashShop {
                 }
                 sp.Encode2(chr.getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(client.getCharSlots()); // m_nCharacterSlotCount
-                sp.Encode2(0);// m_nBuyCharacterCount
-                sp.Encode2(client.getCharaterCount());// m_nCharacterCount
-                break;
-            }
-            // test
-            // CCashShop::OnCashItemResSetWishFailed
-            case CashItemRes_SetWish_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoStock.get());
+                // JMS v147 does not have these.
+                sp.Encode2(0, !Config.LessOrEqual(Region.JMS, 147)); // m_nBuyCharacterCount
+                sp.Encode2(client.getCharaterCount(), !Config.LessOrEqual(Region.JMS, 147)); // m_nCharacterCount
                 break;
             }
             // showBoughtCSItem
@@ -197,11 +192,6 @@ public class ResCCashShop {
             case CashItemRes_Buy_Done:
             case CashItemRes_FreeCashItem_Done: {
                 sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, client));
-                break;
-            }
-            // CCashShop::OnCashItemResBuyFailed
-            case CashItemRes_Buy_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoRemainCash.get());
                 break;
             }
             case CashItemRes_UseCoupon_Done: {
@@ -230,27 +220,15 @@ public class ResCCashShop {
             case CashItemRes_GiftCoupon_Done: {
                 break;
             }
-            case CashItemRes_UseCoupon_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_InvalidCoupon.get());
-                break;
-            }
             // CCashShop::OnCashItemResIncSlotCountDone
             case CashItemRes_IncSlotCount_Done: {
                 sp.Encode1(cis.inc_slot_type.getType());
                 sp.Encode2(chr.getInventory(cis.inc_slot_type).getSlotLimit());
                 break;
             }
-            // CCashShop::OnCashItemResIncSlotCountFailed
-            case CashItemRes_IncSlotCount_Failed: {
-                break;
-            }
             // CCashShop::OnCashItemResIncTrunkCountDone
             case CashItemRes_IncTrunkCount_Done: {
                 sp.Encode2(chr.getStorage().getSlot());
-                break;
-            }
-            // CCashShop::OnCashItemResIncTrunkCountFailed
-            case CashItemRes_IncTrunkCount_Failed: {
                 break;
             }
             // CCashShop::OnCashItemResMoveLtoSDone
@@ -259,19 +237,9 @@ public class ResCCashShop {
                 sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(cis.item));
                 break;
             }
-            // CCashShop::OnCashItemResMoveLtoSFailed
-            case CashItemRes_MoveLtoS_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoEmptyPos.get());
-                break;
-            }
             // CCashShop::OnCashItemResMoveStoLDone
             case CashItemRes_MoveStoL_Done: {
                 sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, client));
-                break;
-            }
-            // CCashShop::OnCashItemResMoveStoLFailed
-            case CashItemRes_MoveStoL_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoEmptyPos.get());
                 break;
             }
             // CCashShop::OnCashItemResDestroyDone
@@ -279,17 +247,13 @@ public class ResCCashShop {
                 sp.Encode8(cis.item.getUniqueId());
                 break;
             }
-            // CCashShop::OnCashItemResDestroyFailed
-            case CashItemRes_Destroy_Failed: {
-                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_InvalidPassportID.get()); // msg
-                break;
-            }
             // CCashShop::OnCashItemResBuyNormalDone
             case CashItemRes_BuyNormal_Done: {
-                break;
-            }
-            // CCashShop::OnCashItemResBuyNormalFailed
-            case CashItemRes_BuyNormal_Failed: {
+                // the item is added to the inventory by InventoryOperation, this scrolls the inventory to it.
+                sp.Encode4(1); // count
+                sp.Encode2(cis.item.getQuantity());
+                sp.Encode2(cis.item.getPosition()); // nPOS
+                sp.Encode4(cis.item.getItemId());
                 break;
             }
             /*
@@ -305,6 +269,23 @@ public class ResCCashShop {
             }
         }
 
+        return sp;
+    }
+
+    // CCashShop::OnCashItemRes*Failed, CCashShop::NoticeFailReason
+    public static ServerPacket CashItemResultFailed(OpsCashItem ops, OpsCashItemFailReason reason) {
+        return CashItemResultFailed(ops, reason, 0);
+    }
+
+    public static ServerPacket CashItemResultFailed(OpsCashItem ops, OpsCashItemFailReason reason, int item_SN) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
+
+        sp.Encode1(ops.get());
+        sp.Encode1(reason.get());
+        // CCashShop::OnCashItemResBuyFailed, CCashShop::OnCashItemResBuyNormalFailed
+        if ((ops == OpsCashItem.CashItemRes_Buy_Failed || ops == OpsCashItem.CashItemRes_BuyNormal_Failed) && (reason == OpsCashItemFailReason.CashItemFailReason_NoStock || reason == OpsCashItemFailReason.CashItemFailReason_NotAvailableTime)) {
+            sp.Encode4(item_SN);
+        }
         return sp;
     }
 
@@ -388,7 +369,8 @@ public class ResCCashShop {
     }
 
     // アバターランダムボックス
-    public static ServerPacket OnCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
+    // CCashShop::OnCashItemGachaponResult
+    public static ServerPacket CashShopCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
@@ -405,11 +387,20 @@ public class ResCCashShop {
         return sp;
     }
 
-    public static ServerPacket cashItemExpired(int uniqueid) {
+    // CCashShop::OnCashItemGachaponResult
+    public static ServerPacket CashShopCashItemGachaponFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
+
+        sp.Encode1(OpsCashItem.CashItemRes_GashItemGachapon_Failed.get());
+        return sp;
+    }
+
+    // CCashShop::OnCashItemResult
+    public static ServerPacket CashItemResult_Expire_Done(long sn) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
-        sp.Encode1(113); //use to be 5d
-        sp.Encode8(uniqueid);
+        sp.Encode1(OpsCashItem.CashItemRes_Expire_Done.get());
+        sp.Encode8(sn); // liSN
         return sp;
     }
 }

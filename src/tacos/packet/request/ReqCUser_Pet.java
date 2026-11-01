@@ -19,16 +19,18 @@
 package tacos.packet.request;
 
 import tacos.server.map.object.TacosPet;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosDrop;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.PetCommand;
+import tacos.wz.ItemWz.PetCommand;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -53,28 +55,25 @@ public class ReqCUser_Pet {
 
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
-    // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
-
         TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
-
         TacosPet pet = null;
-        // outside CUser
-        if (Config.LessOrEqual(Region.JMS, 147)) {
-            long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
+        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
+            pet = chr.getPetByIndex(0); // JMS131
+        } else if (Config.Between(Region.JMS, 147, 180) || Config.Equal(Region.GMS, 95)) {
+            long pet_uid = cp.Decode8(); // JMS147-180
             pet = chr.getPetByUniqueId(pet_uid);
-        } else {
-            int pet_index = cp.Decode4();
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
+            int pet_index = cp.Decode4(); // JMS186
             pet = chr.getPetByIndex(pet_index);
         }
-
         if (pet == null) {
             DebugLogger.ErrorLog("OnPetPacket : no pet.");
             return true;
@@ -129,22 +128,23 @@ public class ReqCUser_Pet {
             return false;
         }
 
-        int inc_fullness = MapleItemInformationProvider.getInstance().getInt(item_id, "spec/inc");
+        int inc_fullness = WzXML.ITEM.getItemInfo(item_id).getInc();
         int pet_previous_level = pet.getLevel();
         pet.feed(inc_fullness, (item_type == MapleInventoryType.CASH) ? 100 : 10);
-        MapleInventoryManipulator.removeById(chr.getClient(), item_type, item_id, 1, true, false);
+        MapleInventoryManipulator.removeById(chr, item_type, item_id, 1, true, false);
         chr.updateInv();
 
         // 情報更新
         chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
-            chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
-            map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, 0), chr.getId());
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(0).build()));
+            map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().player(chr).index(0).build()), chr.getId());
         }
         return true;
     }
 
+    // CVecCtrlPet::EndUpdateActive
     public static boolean OnPetMove(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
@@ -157,15 +157,17 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CPet::DoAction
     public static boolean OnPetAction(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, pet, nType, nAction, pet_message), chr.getId());
         return true;
     }
 
+    // CPet::ParseCommand
     public static void OnPetInteractionRequest(TacosCharacter chr, ClientPacket cp) {
         int petIndex = cp.Decode4();
 
@@ -192,16 +194,17 @@ public class ReqCUser_Pet {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= TacosPet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
-                    chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
-                    map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().index(petIndex).build()));
+                    map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_Pet, PB_UserEffect.builder().player(chr).index(petIndex).build()), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
 
-        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, pet, command, success, false), chr.getId());
     }
 
+    // CPet::SendDropPickUpRequest
     public static boolean OnPetDropPickUpRequest(TacosCharacter chr, TacosPet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
@@ -219,7 +222,7 @@ public class ReqCUser_Pet {
         }
 
         TacosDrop mapitem = chr.getMap().getDropByOid(drop_id);
-        if (mapitem == null) {
+        if (mapitem == null || !mapitem.isVisible(chr)) {
             return false;
         }
 
@@ -227,6 +230,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
+    // CWvsContext::SendStatChangeItemUseRequestByPetQ
     public static boolean OnStatChangeItemUse(TacosCharacter chr, ClientPacket cp) {
         byte unk1 = cp.Decode1();
         int timestamp = cp.Decode4();
@@ -277,8 +281,8 @@ public class ReqCUser_Pet {
             }
             if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
-            } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, !mapitem.isPlayerDrop());
+            } else if (MapleInventoryManipulator.checkSpace(chr, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                MapleInventoryManipulator.addFromDrop(chr, mapitem.getItem(), true, !mapitem.isPlayerDrop());
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }

@@ -26,6 +26,7 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsScriptMan implements IPacketOps {
+    // GMS v95
     SM_SAY(0),
     SM_SAYIMAGE(1),
     SM_ASKYESNO(2),
@@ -84,7 +85,19 @@ public enum OpsScriptMan implements IPacketOps {
 
     public static void init() {
         if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            clear();
+            SM_SAY.set(0);
+            SM_SAYIMAGE.set(1);
+            SM_ASKYESNO.set(2);
+            SM_ASKTEXT.set(3);
+            SM_ASKNUMBER.set(4);
+            SM_ASKMENU.set(5);
+            SM_ASKQUIZ.set(6);
+            SM_ASKSPEEDQUIZ.set(7);
             SM_ASKAVATAR.set(9);
+            SM_ASKPET.set(10);
+            SM_ASKPETALL.set(11);
+            SM_SCRIPT.set(12);
             SM_ASKACCEPT.set(14);
             SM_ASKBOXTEXT.set(15);
             SM_ASKSLIDEMENU.set(16);

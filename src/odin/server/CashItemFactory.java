@@ -1,12 +1,9 @@
 package odin.server;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
-import tacos.database.query.DQ_CashshopModifiedItems;
 import tacos.wz.WzXML;
 
 public class CashItemFactory {
@@ -20,7 +17,7 @@ public class CashItemFactory {
         return instance;
     }
 
-    protected CashItemFactory() {
+    private CashItemFactory() {
     }
 
     public CashItemInfo getItem(int item_SN) {
@@ -54,19 +51,5 @@ public class CashItemFactory {
         }
 
         return 0;
-    }
-
-    public CashModInfo getModInfo(int sn) {
-        CashModInfo ret = itemMods.get(sn);
-        if (ret == null) {
-            if (initialized) {
-                return null;
-            }
-            ret = DQ_CashshopModifiedItems.load(sn);
-            if (ret != null) {
-                itemMods.put(sn, ret);
-            }
-        }
-        return ret;
     }
 }

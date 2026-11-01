@@ -27,15 +27,16 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_Coconut {
 
-    // not checked.
+    // CField_Coconut::OnCoconutHit
     public static ServerPacket CoconutHit(int nTarget, int nDelay, int nState) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoconutHit);
         sp.Encode2(nTarget); // -1 = ALL
         sp.Encode2(nDelay); // nDelay
-        sp.Encode1(nState); // 1 = spawn, 3 = destroy
+        sp.Encode1(nState); // object state of the coconut
         return sp;
     }
 
+    // CField_Coconut::OnCoconutScore
     public static ServerPacket CoconutScore(int[] coconutscore) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoconutScore);
         sp.Encode2(coconutscore[0]); // maple team score

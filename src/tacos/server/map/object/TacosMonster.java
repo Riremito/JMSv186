@@ -21,7 +21,6 @@ package tacos.server.map.object;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import odin.client.inventory.Equip;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,11 +35,9 @@ import odin.client.inventory.Item;
 import odin.client.Skill;
 import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
+import tacos.packet.ops.OpsMobStat;
 import odin.handling.world.MapleParty;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import java.awt.Point;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
@@ -56,12 +53,11 @@ import odin.server.maps.MapScriptMethods;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
-import odin.server.life.Element;
+import odin.server.life.MapleMonsterStats.Element;
 import odin.server.life.MapleMonsterStats;
-import odin.server.life.MonsterDropEntry;
-import odin.server.life.OverrideMonsterStats;
+import tacos.wz.ServerImg;
+import tacos.wz.ServerImg.RewardData;
 
 /**
  *
@@ -170,7 +166,6 @@ public class TacosMonster extends TacosMapObject {
         this.last_hit_skill_id = last_hit_skill_id;
     }
 
-
     private int stance;
 
     public int getStance() {
@@ -208,6 +203,7 @@ public class TacosMonster extends TacosMapObject {
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
+    private final TacosMobBuff buffs = new TacosMobBuff();
     private ScheduledFuture<?> dropItemSchedule;
 
     public TacosMonster(int id, MapleMonsterStats stats) {
@@ -470,7 +466,7 @@ public class TacosMonster extends TacosMapObject {
             highestDamageChar = attacker.getId();
         }
         if (exp > 0) {
-            exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
+            exp *= attacker.getEXPMod();
             exp *= attacker.getChannelServer().getExpRate();
             exp *= 1.25; // JMS
             //do this last just incase someone has a 2x exp card and its set to max value
@@ -665,7 +661,7 @@ public class TacosMonster extends TacosMapObject {
         for (TacosCharacter chr : map.getAllPlayers()) {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
-        MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
+        MapScriptMethods.startScript_FirstUser(client.getPlayer(), "shammos_Fenter");
     }
 
     public void sendSpawnData(TacosClient client) {
@@ -701,35 +697,53 @@ public class TacosMonster extends TacosMapObject {
         return eventInstance;
     }
 
-    public void applyStatus(TacosCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom) {
-        applyStatus(from, status, poison, duration, venom, true);
+    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom) {
+        applyStatus(from, stat, value, skill_id, poison, duration, venom, true);
     }
 
-    public void applyStatus(TacosCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom, boolean checkboss) {
-        if (!isAlive()) {
-            return;
+    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom, boolean checkboss) {
+        if (canApplyStatus(from, stat, skill_id, venom, checkboss) && getBuff().update(stat, skill_id, value, (int) duration)) {
+            map.broadcastPacket(ResCMobPool.MobStatSet(this, skill_id));
         }
-        Skill skilz = SkillFactory.getSkill(status.getSkill());
+    }
+
+    // all statuses of one skill, sent in one MobStatSet
+    public void applyStatus(TacosCharacter from, Map<OpsMobStat, Integer> statuses, int skill_id, long duration) {
+        boolean updated = false;
+        for (Map.Entry<OpsMobStat, Integer> status : statuses.entrySet()) {
+            if (canApplyStatus(from, status.getKey(), skill_id, false, true) && getBuff().update(status.getKey(), skill_id, status.getValue(), (int) duration)) {
+                updated = true;
+            }
+        }
+        if (updated) {
+            map.broadcastPacket(ResCMobPool.MobStatSet(this, skill_id));
+        }
+    }
+
+    private boolean canApplyStatus(TacosCharacter from, OpsMobStat stat, int skill_id, boolean venom, boolean checkboss) {
+        if (!isAlive()) {
+            return false;
+        }
+        Skill skilz = WzXML.SKILL.getSkill().get(skill_id);
         if (skilz != null) {
             switch (stats.getEffectiveness(skilz.getElement())) {
                 case IMMUNE:
                 case STRONG:
-                    return;
+                    return false;
                 case NORMAL:
                 case WEAK:
                     break;
                 default:
-                    return;
+                    return false;
             }
         }
         // compos don't have an elemental (they have 2 - so we have to hack here...)
-        int statusSkill = status.getSkill();
-        switch (statusSkill) {
+        switch (skill_id) {
             case 2111006: { // FP compo
                 switch (stats.getEffectiveness(Element.POISON)) {
                     case IMMUNE:
                     case STRONG:
-                        return;
+                        return false;
                 }
                 break;
             }
@@ -737,7 +751,7 @@ public class TacosMonster extends TacosMapObject {
                 switch (stats.getEffectiveness(Element.ICE)) {
                     case IMMUNE:
                     case STRONG:
-                        return;
+                        return false;
                 }
                 break;
             }
@@ -746,22 +760,21 @@ public class TacosMonster extends TacosMapObject {
             case 14110004: {
                 switch (stats.getEffectiveness(Element.POISON)) {
                     case WEAK:
-                        return;
+                        return false;
                 }
                 break;
             }
         }
-        MonsterStatus stat = status.getStati();
-        if (stats.isNoDoom() && stat == MonsterStatus.DOOM) {
-            return;
+        if (stats.isNoDoom() && stat == OpsMobStat.MS_Doom) {
+            return false;
         }
 
         if (stats.isBoss()) {
-            if (stat == MonsterStatus.STUN) {
-                return;
+            if (stat == OpsMobStat.MS_Stun) {
+                return false;
             }
-            if (checkboss && stat != (MonsterStatus.SPEED) && stat != (MonsterStatus.NINJA_AMBUSH) && stat != (MonsterStatus.WATK)) {
-                return;
+            if (checkboss && stat != OpsMobStat.MS_Speed && stat != OpsMobStat.MS_Ambush && stat != OpsMobStat.MS_PAD) {
+                return false;
             }
         }
         if (venom) {
@@ -770,38 +783,39 @@ public class TacosMonster extends TacosMapObject {
 
             switch (from.getJob()) {
                 case 412:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4120005));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4120005));
                     if (poisonLevel <= 0) {
-                        return;
+                        return false;
                     }
-                    matk = SkillFactory.getSkill(4120005).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4120005).getEffect(poisonLevel).getMatk();
                     break;
                 case 422:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4220005));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4220005));
                     if (poisonLevel <= 0) {
-                        return;
+                        return false;
                     }
-                    matk = SkillFactory.getSkill(4220005).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4220005).getEffect(poisonLevel).getMatk();
                     break;
                 case 1411:
                 case 1412:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(14110004));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(14110004));
                     if (poisonLevel <= 0) {
-                        return;
+                        return false;
                     }
-                    matk = SkillFactory.getSkill(14110004).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(14110004).getEffect(poisonLevel).getMatk();
                     break;
                 case 434:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4340001));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4340001));
                     if (poisonLevel <= 0) {
-                        return;
+                        return false;
                     }
-                    matk = SkillFactory.getSkill(4340001).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4340001).getEffect(poisonLevel).getMatk();
                     break;
                 default:
-                    return; // Hack, using venom without the job required
+                    return false; // Hack, using venom without the job required
             }
         }
+        return true;
     }
 
     public void setFake(boolean fake) {
@@ -810,6 +824,17 @@ public class TacosMonster extends TacosMapObject {
 
     public TacosMap getMap() {
         return map;
+    }
+
+    public TacosMobBuff getBuff() {
+        return buffs;
+    }
+
+    public void updateBuffs(long time_current) {
+        for (int buff_id : getBuff().getTimeoutIds(time_current)) {
+            map.broadcastPacket(ResCMobPool.MobStatReset(this, buff_id));
+            getBuff().remove(buff_id);
+        }
     }
 
     public List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
@@ -1159,21 +1184,22 @@ public class TacosMonster extends TacosMapObject {
     }
 
     public void handleSteal(TacosCharacter chr) {
-        Skill steal = SkillFactory.getSkill(4201004);
+        Skill steal = WzXML.SKILL.getSkill().get(4201004);
         int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
-            ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(TacosReward.getMonsterDrops(getId()));
+            ArrayList<RewardData> list_reward = ServerImg.getAutoRewardData(getId());
+            ArrayList<RewardData> dropEntry = (list_reward != null) ? new ArrayList<>(list_reward) : new ArrayList<>();
             Collections.shuffle(dropEntry);
             Item idrop;
-            for (MonsterDropEntry d : dropEntry) {
-                if (d.itemId > 0 && d.questid == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
-                    if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {
-                        Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
-                        idrop = MapleItemInformationProvider.getInstance().randomizeStats(eq);
+            for (RewardData d : dropEntry) {
+                if (d.getItem() > 0 && d.getQuestId() == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
+                    if (GameConstants.getInventoryType(d.getItem()) == MapleInventoryType.EQUIP) {
+                        idrop = MapleItemInformationProvider.getInstance().getEquipById(d.getItem());
                     } else {
-                        idrop = new Item(d.itemId, (byte) 0, (short) (d.Maximum != 1 ? Randomizer.nextInt(d.Maximum - d.Minimum) + d.Minimum : 1), (byte) 0);
+                        int range = d.getMax() - d.getMin();
+                        idrop = new Item(d.getItem(), (byte) 0, (short) (d.getMin() + ((0 < range) ? Randomizer.nextInt(range) : 0)), (byte) 0);
                     }
-                    stolen = d.itemId;
+                    stolen = d.getItem();
                     map.spawnMobDrop(idrop, map.calcDropPos(new Point(getPosition()), getPosition()), this, chr, (byte) 0, (short) 0, 0);
                     break;
                 }
@@ -1208,5 +1234,52 @@ public class TacosMonster extends TacosMapObject {
 
     public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
+    }
+
+    public static class OverrideMonsterStats {
+
+        private long hp;
+        private int exp;
+        private int mp;
+
+        public OverrideMonsterStats() {
+            hp = 0;
+            exp = 0;
+            mp = 0;
+        }
+
+        public OverrideMonsterStats(long hp, int mp, int exp, boolean change) {
+            this.hp = /*change ? (hp * 3L / 2L) : */ hp;
+            this.mp = mp;
+            this.exp = exp;
+        }
+
+        public OverrideMonsterStats(long hp, int mp, int exp) {
+            this(hp, mp, exp, true);
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public void setOExp(int exp) {
+            this.exp = exp;
+        }
+
+        public long getHp() {
+            return hp;
+        }
+
+        public void setOHp(long hp) {
+            this.hp = hp;
+        }
+
+        public int getMp() {
+            return mp;
+        }
+
+        public void setOMp(int mp) {
+            this.mp = mp;
+        }
     }
 }

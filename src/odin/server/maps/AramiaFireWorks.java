@@ -28,8 +28,8 @@ import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
+import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
 
 public class AramiaFireWorks {
@@ -70,7 +70,7 @@ public class AramiaFireWorks {
     }
 
     private void broadcastServer(TacosCharacter player, int itemid) {
-        player.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("<Channel " + player.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").item_id(itemid).build()));
+        player.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("<Channel " + player.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + WzNameStorage.ITEM.get(itemid).getName() + "} has reached the limit!").item_id(itemid).build()));
     }
 
     public short getKegsPercentage() {

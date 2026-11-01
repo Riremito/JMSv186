@@ -26,7 +26,7 @@ import tacos.client.TacosSummonSkill;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 
 /**
  *
@@ -42,7 +42,7 @@ public class TacosSummon extends TacosMapObject {
     private int summon_time;
     private int summon_hp = 1;
     // client data.
-    OpsSkill skill;
+    OpsSkill_BB skill;
     OpsMoveAbility move_ability;
     OpsAssist assist;
 
@@ -87,7 +87,7 @@ public class TacosSummon extends TacosMapObject {
         this.summon_hp = hp;
     }
 
-    public OpsSkill getSkill() {
+    public OpsSkill_BB getSkill() {
         return this.skill;
     }
 
@@ -108,7 +108,7 @@ public class TacosSummon extends TacosMapObject {
     }
 
     private void setSummonData(int nSkillID) {
-        this.skill = OpsSkill.find(nSkillID);
+        this.skill = OpsSkill_BB.find(nSkillID);
         switch (this.skill) {
             case DARKKNIGHT_BEHOLDER -> {
                 // ダークスピリット

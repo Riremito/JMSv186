@@ -31,6 +31,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMapleTVMan {
 
+    // CMapleTVMan::OnSetMessage
     public static ServerPacket MapleTVUpdateMessage(byte nFlag, int m_nMessageType, TacosCharacter chr_from, List<String> messages, TacosCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVUpdateMessage);
 
@@ -57,12 +58,14 @@ public class ResCMapleTVMan {
         return sp;
     }
 
+    // CMapleTVMan::OnClearMessage
     public static ServerPacket MapleTVClearMessage() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVClearMessage);
 
         return sp;
     }
 
+    // CMapleTVMan::OnSendMessageResult
     public static ServerPacket MapleTVSendMessageResult(OpsMapleTV ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVSendMessageResult);
         boolean isOK = ops == OpsMapleTV.MapleTVResCode_Success; // fail with error message

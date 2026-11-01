@@ -27,11 +27,11 @@ import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
-import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.PartyOperation;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
+import odin.handling.world.MapleParty.PartyOperation;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
-import odin.client.PlayerStats;
+import tacos.client.TacosCharacter.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
@@ -156,6 +156,7 @@ public class ReqCClientSocket {
         return false;
     }
 
+    // CClientSocket::OnConnect
     public static boolean OnMigrateIn(TacosClient client, ClientPacket cp) {
         int unk1 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 197));
         int character_id = cp.Decode4(); // m_dwCharacterId
@@ -245,10 +246,6 @@ public class ReqCClientSocket {
                     chr.updateMapById(chr.getPosMap(), chr.getPortal());
                 }
                 client.getChannelServer().getOnlinePlayers().add(chr);
-                // group            
-                if (chr.getParty() != null) {
-                    client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
-                }
                 // friend
                 chr.setOnlineFriends();
                 chr.notityOnlineToFriends(true);
@@ -270,6 +267,10 @@ public class ReqCClientSocket {
                 }
 
                 chr.sendSetField(true);
+                // group, JMS147 crashes on LP_PartyResult before the field is set.
+                if (chr.getParty() != null) {
+                    client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+                }
                 if (Region.CMS.check()) {
                     // CMS causes crash without sending this packet when you use npc talk's avatar change.
                     chr.SendPacket(ResCWvsContext.CharacterCash(chr));
@@ -305,7 +306,7 @@ public class ReqCClientSocket {
                 chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
                 // guild
                 if (0 < chr.getGuildId()) {
-                    chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+                    chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
                     List<ServerPacket> packetList = client.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), true);
                     if (packetList != null) {
                         for (ServerPacket pack : packetList) {
@@ -316,8 +317,8 @@ public class ReqCClientSocket {
                     }
                 }
                 // family
-                chr.SendPacket(ResCWvsContext.getFamilyData());
-                chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+                chr.SendPacket(ResCWvsContext.FamilyPrivilegeList());
+                chr.SendPacket(ResCWvsContext.FamilyInfoResult(chr));
                 chr.sendStatChanged(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
                 //chr.showNote();
                 chr.baseSkills(); // ?_?
@@ -350,7 +351,7 @@ public class ReqCClientSocket {
                 world.getITC().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
                 transfer.SendPacket(ResCStage.SetITC(transfer));
-                ReqCITC.MTSUpdate(client, MTSStorage.getInstance().getCart(transfer.getId()));
+                ReqCITC.MTSUpdate(client.getPlayer(), MTSStorage.getInstance().getCart(transfer.getId()));
                 break;
             }
             case CASHSHOP_SERVER: {
@@ -423,7 +424,7 @@ public class ReqCClientSocket {
         }
 
         // invalid name.
-        if (name.getBytes().length < 2 || (Content.CharacterNameLength.getInt() - 1) < name.getBytes().length | WzXML.ETC.isForbiddenName(name)) {
+        if (name.getBytes().length < 2 || Content.CharacterNameLength.getInt() - 1 < name.getBytes().length || WzXML.ETC.isForbiddenName(name)) {
             client.SendPacket(ResCUserLocal.KOC_UI_Response(3));
             return true;
         }

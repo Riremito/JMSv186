@@ -120,6 +120,7 @@ public class ReqCMobPool {
         return false;
     }
 
+    // CMob::GenerateMovePath
     public static boolean OnMove(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         byte unk1 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         short moveid = cp.Decode2();
@@ -199,6 +200,7 @@ public class ReqCMobPool {
         chr.SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
     }
 
+    // CMob::ApplyControl
     public static boolean OnMobApplyCtrl(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         if (monster.getOwnerId() == chr.getId()) {
             monster.setNextAttackPossible(true);
@@ -206,6 +208,7 @@ public class ReqCMobPool {
         return true;
     }
 
+    // CMob::SendDropPickUpRequest
     public static boolean OnMobDropPickUpRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobDropPickUpRequest : not coded.");
         return true;
@@ -222,6 +225,7 @@ public class ReqCMobPool {
         タイラス護衛
         mod id : 9300093
      */
+    // CMob::Update
     public static boolean OnMobHitByMob(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_dwCharacterId = cp.Decode4();
         int m_dwMobID = cp.Decode4();
@@ -249,6 +253,7 @@ public class ReqCMobPool {
         ダークスター等
         mob id : 8500004
      */
+    // CMob::TryFirstSelfDestruction
     public static boolean OnMobSelfDestruct(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int nActionType = monster.getStats().getSelfD();
         if (nActionType == -1) {
@@ -295,11 +300,13 @@ public class ReqCMobPool {
         return true;
     }
 
+    // CMob::UpdateTimeBomb
     public static boolean OnMobTimeBombEnd(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobTimeBombEnd : not coded");
         return true;
     }
 
+    // CMob::SendCollisionEscort
     public static boolean OnMobEscortCollision(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_nCurrentDestIndex = cp.Decode4();
 
@@ -348,12 +355,14 @@ public class ReqCMobPool {
         return true;
     }
 
+    // CMob::SendRequestEscortPath
     public static boolean OnMobRequestEscortInfo(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.DebugLog("OnMobRequestEscortInfo : ...");
         chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(monster, map));
         return true;
     }
 
+    // CMob::SendEscortStopEndRequest
     public static boolean OnMobEscortStopEndRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobEscortStopEndRequest : not coded");
         return true;

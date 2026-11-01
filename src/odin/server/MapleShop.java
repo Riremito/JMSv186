@@ -1,6 +1,7 @@
 package odin.server;
 
 import tacos.server.map.object.TacosPet;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -8,9 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import odin.client.inventory.Item;
-import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Shopitems;
 import tacos.database.query.DQ_Shops;
@@ -64,7 +63,7 @@ public class MapleShop {
 
     // used by script.
     public boolean add(int item_id, int price) {
-        return addItem(new MapleShopItem((short) MapleItemInformationProvider.getInstance().getSlotMax(item_id), item_id, price, 0, 0));
+        return addItem(new MapleShopItem(MapleItemInformationProvider.getInstance().getSlotMax(item_id), item_id, price, 0, 0));
     }
 
     public boolean addItem(MapleShopItem item) {
@@ -81,7 +80,7 @@ public class MapleShop {
         chr.SendPacket(ResCShopDlg.OpenShopDlg(chr.getClient(), getNpcId(), items));
     }
 
-    public boolean buy(TacosClient client, TacosCharacter chr, int itemId, short quantity) {
+    public boolean buy(TacosCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
@@ -91,45 +90,47 @@ public class MapleShop {
 
         int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
 
-        if (item.getPrice() < 0 || client.getPlayer().getMeso() < price) {
+        if (item.getPrice() < 0 || chr.getMeso() < price) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoMoney));
             return false;
         }
 
-        if (!MapleInventoryManipulator.checkSpace(client, itemId, quantity, "")) {
+        if (!MapleInventoryManipulator.checkSpace(chr, itemId, quantity, "")) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
 
+        // the required item and the bought item go in one packet
+        PB_InvOp.Builder io = PB_InvOp.builder();
         if (0 < item.getReqItem()) {
             if (2 <= quantity) {
                 chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
                 return false;
             }
 
-            MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, io);
         }
 
         chr.gainMeso(-price, false);
 
         if (GameConstants.isPet(itemId)) {
-            MapleInventoryManipulator.addById(client, itemId, quantity, "", TacosPet.createPet(itemId, TacosWorld.getNextItemUniqueId()), -1);
+            MapleInventoryManipulator.addById(chr, itemId, quantity, "", TacosPet.createPet(itemId, TacosWorld.getNextItemUniqueId()), -1, io);
         } else {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
             if (GameConstants.isRechargable(itemId)) {
-                quantity = ii.getSlotMax(client, item.getItemId());
+                quantity = ii.getSlotMax(item.getItemId());
             }
 
-            MapleInventoryManipulator.addById(client, itemId, quantity);
+            MapleInventoryManipulator.addById(chr, itemId, quantity, null, null, 0, io);
         }
+        chr.sendInventoryOperation(false, io);
 
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         return true;
     }
 
-    public void sell(TacosClient client, MapleInventoryType type, byte slot, short quantity) {
-        TacosCharacter chr = client.getPlayer();
+    public void sell(TacosCharacter chr, MapleInventoryType type, byte slot, short quantity) {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
@@ -153,10 +154,10 @@ public class MapleShop {
             return;
         }
         if (quantity <= iQuant && iQuant > 0) {
-            MapleInventoryManipulator.removeFromSlot(client, type, slot, quantity, false);
+            MapleInventoryManipulator.removeFromSlot(chr, type, slot, quantity, false);
             double price;
             if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(client, item.getItemId());
+                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(item.getItemId());
             } else {
                 price = ii.getPrice(item.getItemId());
             }
@@ -164,43 +165,41 @@ public class MapleShop {
             if (price != -1.0 && recvMesos > 0) {
                 chr.gainMeso(recvMesos, false);
             }
-            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         }
     }
 
-    public boolean recharge(TacosClient client, byte slot) {
-        TacosCharacter chr = client.getPlayer();
+    public boolean recharge(TacosCharacter chr, byte slot) {
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
-            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        short slotMax = ii.getSlotMax(client, item.getItemId());
+        short slotMax = ii.getSlotMax(item.getItemId());
         int skill = GameConstants.getMasterySkill(chr.getJob());
 
         if (skill != 0) {
-            slotMax += chr.getSkillLevel(SkillFactory.getSkill(skill)) * 10;
+            slotMax += chr.getSkillLevel(WzXML.SKILL.getSkill().get(skill)) * 10;
         }
         if (item.getQuantity() < slotMax) {
             int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (chr.getMeso() >= price) {
                 item.setQuantity(slotMax);
-                client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, item).build()));
                 chr.gainMeso(-price, false, true, false);
-                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+                chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;
-            } else {
-                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
-                return false;
             }
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+            return false;
         }
-        client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
+        chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
         return false;
     }
 
-    protected MapleShopItem findById(int itemId) {
+    private MapleShopItem findById(int itemId) {
         for (MapleShopItem item : items) {
             if (item.getItemId() == itemId) {
                 return item;
@@ -239,5 +238,38 @@ public class MapleShop {
 
     public int getId() {
         return id;
+    }
+
+    public static class MapleShopItem {
+
+        private short buyable;
+        private int itemId;
+        private int price;
+        private int reqItem;
+        private int reqItemQ;
+
+        public MapleShopItem(short buyable, int itemId, int price, int reqItem, int reqItemQ) {
+            this.buyable = buyable;
+            this.itemId = itemId;
+            this.price = price;
+            this.reqItem = reqItem;
+            this.reqItemQ = reqItemQ;
+        }
+
+        public int getItemId() {
+            return itemId;
+        }
+
+        public int getPrice() {
+            return price;
+        }
+
+        public int getReqItem() {
+            return reqItem;
+        }
+
+        public int getReqItemQ() {
+            return reqItemQ;
+        }
     }
 }

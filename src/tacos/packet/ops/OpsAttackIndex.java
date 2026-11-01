@@ -31,7 +31,7 @@ public enum OpsAttackIndex implements IPacketOps {
     AttackIndex_Counter(-2),
     AttackIndex_Obstacle(-3),
     AttackIndex_Stat(-4),
-    UNKNOWN(-999);
+    UNKNOWN(-999); // -1 is AttackIndex_Mob_Magic
 
     private int value;
 
@@ -62,20 +62,30 @@ public enum OpsAttackIndex implements IPacketOps {
         return UNKNOWN;
     }
 
-    public static void init() {
-        if (Config.GreaterOrEqual(Region.JMS, 147)) {
-            AttackIndex_Mob_Magic.set(0);
-            AttackIndex_Mob_Physical.set(-1);
-            AttackIndex_Obstacle.set(-2);
-            AttackIndex_Stat.set(-3);
-            AttackIndex_Counter.set(-1000);
+    public static void clear() {
+        for (OpsAttackIndex ops : values()) {
+            ops.set(UNKNOWN.get());
         }
+    }
+
+    public static void init() {
         if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            clear();
             AttackIndex_Mob_Magic.set(0);
             AttackIndex_Mob_Physical.set(-1);
             AttackIndex_Counter.set(-2);
             AttackIndex_Obstacle.set(-3);
             AttackIndex_Stat.set(-4);
+            return;
+        }
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
+            clear();
+            AttackIndex_Mob_Magic.set(0);
+            AttackIndex_Mob_Physical.set(-1);
+            AttackIndex_Obstacle.set(-2);
+            AttackIndex_Stat.set(-3);
+            AttackIndex_Counter.set(-1000); // not used
+            return;
         }
     }
 }

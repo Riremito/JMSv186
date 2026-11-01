@@ -105,79 +105,6 @@ CREATE TABLE IF NOT EXISTS `alliances` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `auth_server_channel`
---
-
-DROP TABLE IF EXISTS `auth_server_channel`;
-CREATE TABLE IF NOT EXISTS `auth_server_channel` (
-  `channelid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `world` int NOT NULL DEFAULT '0',
-  `number` int DEFAULT NULL,
-  `key` varchar(40) NOT NULL DEFAULT '',
-  PRIMARY KEY (`channelid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `auth_server_channel_ip`
---
-
-DROP TABLE IF EXISTS `auth_server_channel_ip`;
-CREATE TABLE IF NOT EXISTS `auth_server_channel_ip` (
-  `channelconfigid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `channelid` int UNSIGNED NOT NULL DEFAULT '0',
-  `name` tinytext NOT NULL,
-  `value` tinytext NOT NULL,
-  PRIMARY KEY (`channelconfigid`),
-  KEY `channelid` (`channelid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `auth_server_cs`
---
-
-DROP TABLE IF EXISTS `auth_server_cs`;
-CREATE TABLE IF NOT EXISTS `auth_server_cs` (
-  `CashShopServerId` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `key` varchar(40) NOT NULL,
-  `world` int UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`CashShopServerId`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `auth_server_login`
---
-
-DROP TABLE IF EXISTS `auth_server_login`;
-CREATE TABLE IF NOT EXISTS `auth_server_login` (
-  `loginserverid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `key` varchar(40) NOT NULL DEFAULT '',
-  `world` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`loginserverid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `auth_server_mts`
---
-
-DROP TABLE IF EXISTS `auth_server_mts`;
-CREATE TABLE IF NOT EXISTS `auth_server_mts` (
-  `MTSServerId` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `key` varchar(40) NOT NULL,
-  `world` int UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`MTSServerId`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `bbs_replies`
 --
 
@@ -214,21 +141,6 @@ CREATE TABLE IF NOT EXISTS `bbs_threads` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `bosslog`
---
-
-DROP TABLE IF EXISTS `bosslog`;
-CREATE TABLE IF NOT EXISTS `bosslog` (
-  `bosslogid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `characterid` int UNSIGNED NOT NULL,
-  `bossid` varchar(20) NOT NULL,
-  `lastattempt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`bosslogid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `buddies`
 --
 
@@ -242,19 +154,6 @@ CREATE TABLE IF NOT EXISTS `buddies` (
   PRIMARY KEY (`id`),
   KEY `buddies_ibfk_1` (`characterid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `cashshop_limit_sell`
---
-
-DROP TABLE IF EXISTS `cashshop_limit_sell`;
-CREATE TABLE IF NOT EXISTS `cashshop_limit_sell` (
-  `serial` int NOT NULL,
-  `amount` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`serial`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -366,24 +265,6 @@ CREATE TABLE IF NOT EXISTS `character_slots` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `cheatlog`
---
-
-DROP TABLE IF EXISTS `cheatlog`;
-CREATE TABLE IF NOT EXISTS `cheatlog` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `characterid` int NOT NULL DEFAULT '0',
-  `offense` tinytext NOT NULL,
-  `count` int NOT NULL DEFAULT '0',
-  `lastoffensetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `param` tinytext NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `cid` (`characterid`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `csequipment`
 --
 
@@ -409,14 +290,24 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
   `speed` int NOT NULL DEFAULT '0',
   `jump` int NOT NULL DEFAULT '0',
   `ViciousHammer` tinyint NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
+  `growthLevelUpType` int NOT NULL DEFAULT '0',
+  `growthLevel` int NOT NULL DEFAULT '0',
+  `growthEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` tinyint NOT NULL DEFAULT '0',
+  `rank` int NOT NULL DEFAULT '0',
+  `hidden` int NOT NULL DEFAULT '0',
   `potential1` smallint NOT NULL DEFAULT '0',
   `potential2` smallint NOT NULL DEFAULT '0',
   `potential3` smallint NOT NULL DEFAULT '0',
+  `socket1` smallint NOT NULL DEFAULT '0',
+  `socket2` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -456,66 +347,6 @@ CREATE TABLE IF NOT EXISTS `csitems` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `drop_data`
---
-
-DROP TABLE IF EXISTS `drop_data`;
-CREATE TABLE IF NOT EXISTS `drop_data` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `dropperid` int NOT NULL,
-  `itemid` int NOT NULL DEFAULT '0',
-  `minimum_quantity` int NOT NULL DEFAULT '1',
-  `maximum_quantity` int NOT NULL DEFAULT '1',
-  `questid` int NOT NULL DEFAULT '0',
-  `chance` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `mobid` (`dropperid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `drop_data_global`
---
-
-DROP TABLE IF EXISTS `drop_data_global`;
-CREATE TABLE IF NOT EXISTS `drop_data_global` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `continent` int NOT NULL,
-  `dropType` tinyint(1) NOT NULL DEFAULT '0',
-  `itemid` int NOT NULL DEFAULT '0',
-  `minimum_quantity` int NOT NULL DEFAULT '1',
-  `maximum_quantity` int NOT NULL DEFAULT '1',
-  `questid` int NOT NULL DEFAULT '0',
-  `chance` int NOT NULL DEFAULT '0',
-  `comments` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `mobid` (`continent`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `drop_data_vana`
---
-
-DROP TABLE IF EXISTS `drop_data_vana`;
-CREATE TABLE IF NOT EXISTS `drop_data_vana` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `dropperid` int NOT NULL,
-  `flags` set('is_mesos') NOT NULL DEFAULT '',
-  `itemid` int NOT NULL DEFAULT '0',
-  `minimum_quantity` int NOT NULL DEFAULT '1',
-  `maximum_quantity` int NOT NULL DEFAULT '1',
-  `questid` int NOT NULL DEFAULT '0',
-  `chance` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `mobid` (`dropperid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `dueyequipment`
 --
 
@@ -541,14 +372,24 @@ CREATE TABLE IF NOT EXISTS `dueyequipment` (
   `speed` int NOT NULL DEFAULT '0',
   `jump` int NOT NULL DEFAULT '0',
   `ViciousHammer` tinyint NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
+  `growthLevelUpType` int NOT NULL DEFAULT '0',
+  `growthLevel` int NOT NULL DEFAULT '0',
+  `growthEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` tinyint NOT NULL DEFAULT '0',
+  `rank` int NOT NULL DEFAULT '0',
+  `hidden` int NOT NULL DEFAULT '0',
   `potential1` smallint NOT NULL DEFAULT '0',
   `potential2` smallint NOT NULL DEFAULT '0',
   `potential3` smallint NOT NULL DEFAULT '0',
+  `socket1` smallint NOT NULL DEFAULT '0',
+  `socket2` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -606,23 +447,6 @@ CREATE TABLE IF NOT EXISTS `dueypackages` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `eventstats`
---
-
-DROP TABLE IF EXISTS `eventstats`;
-CREATE TABLE IF NOT EXISTS `eventstats` (
-  `eventstatid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `event` varchar(30) NOT NULL,
-  `instance` varchar(30) NOT NULL,
-  `characterid` int NOT NULL,
-  `channel` int NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`eventstatid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `famelog`
 --
 
@@ -653,20 +477,6 @@ CREATE TABLE IF NOT EXISTS `families` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `game_poll_reply`
---
-
-DROP TABLE IF EXISTS `game_poll_reply`;
-CREATE TABLE IF NOT EXISTS `game_poll_reply` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `AccountId` int UNSIGNED NOT NULL,
-  `SelectAns` tinyint UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `gifts`
 --
 
@@ -679,21 +489,6 @@ CREATE TABLE IF NOT EXISTS `gifts` (
   `sn` int NOT NULL DEFAULT '0',
   `uniqueid` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`giftid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `gmlog`
---
-
-DROP TABLE IF EXISTS `gmlog`;
-CREATE TABLE IF NOT EXISTS `gmlog` (
-  `gmlogid` int NOT NULL AUTO_INCREMENT,
-  `cid` int NOT NULL DEFAULT '0',
-  `command` tinytext NOT NULL,
-  `mapid` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`gmlogid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
@@ -743,94 +538,6 @@ CREATE TABLE IF NOT EXISTS `hiredmerch` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `hiredmerchequipment`
---
-
-DROP TABLE IF EXISTS `hiredmerchequipment`;
-CREATE TABLE IF NOT EXISTS `hiredmerchequipment` (
-  `inventoryequipmentid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `inventoryitemid` int UNSIGNED NOT NULL DEFAULT '0',
-  `upgradeslots` int NOT NULL DEFAULT '0',
-  `level` int NOT NULL DEFAULT '0',
-  `str` int NOT NULL DEFAULT '0',
-  `dex` int NOT NULL DEFAULT '0',
-  `int` int NOT NULL DEFAULT '0',
-  `luk` int NOT NULL DEFAULT '0',
-  `hp` int NOT NULL DEFAULT '0',
-  `mp` int NOT NULL DEFAULT '0',
-  `watk` int NOT NULL DEFAULT '0',
-  `matk` int NOT NULL DEFAULT '0',
-  `wdef` int NOT NULL DEFAULT '0',
-  `mdef` int NOT NULL DEFAULT '0',
-  `acc` int NOT NULL DEFAULT '0',
-  `avoid` int NOT NULL DEFAULT '0',
-  `hands` int NOT NULL DEFAULT '0',
-  `speed` int NOT NULL DEFAULT '0',
-  `jump` int NOT NULL DEFAULT '0',
-  `ViciousHammer` tinyint NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
-  `durability` int NOT NULL DEFAULT '-1',
-  `enhance` tinyint NOT NULL DEFAULT '0',
-  `potential1` smallint NOT NULL DEFAULT '0',
-  `potential2` smallint NOT NULL DEFAULT '0',
-  `potential3` smallint NOT NULL DEFAULT '0',
-  `hpR` smallint NOT NULL DEFAULT '0',
-  `mpR` smallint NOT NULL DEFAULT '0',
-  PRIMARY KEY (`inventoryequipmentid`),
-  KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `hiredmerchitems`
---
-
-DROP TABLE IF EXISTS `hiredmerchitems`;
-CREATE TABLE IF NOT EXISTS `hiredmerchitems` (
-  `inventoryitemid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `characterid` int DEFAULT NULL,
-  `accountid` int DEFAULT NULL,
-  `packageid` int DEFAULT NULL,
-  `itemid` int NOT NULL DEFAULT '0',
-  `inventorytype` int NOT NULL DEFAULT '0',
-  `position` int NOT NULL DEFAULT '0',
-  `quantity` int NOT NULL DEFAULT '0',
-  `owner` tinytext,
-  `GM_Log` tinytext,
-  `uniqueid` int NOT NULL DEFAULT '-1',
-  `flag` int NOT NULL DEFAULT '0',
-  `expiredate` bigint NOT NULL DEFAULT '-1',
-  `type` tinyint(1) NOT NULL DEFAULT '0',
-  `sender` varchar(13) NOT NULL DEFAULT '',
-  PRIMARY KEY (`inventoryitemid`),
-  KEY `inventoryitems_ibfk_1` (`characterid`),
-  KEY `characterid` (`characterid`),
-  KEY `inventorytype` (`inventorytype`),
-  KEY `accountid` (`accountid`),
-  KEY `packageid` (`packageid`),
-  KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `htsquads`
---
-
-DROP TABLE IF EXISTS `htsquads`;
-CREATE TABLE IF NOT EXISTS `htsquads` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `channel` int UNSIGNED NOT NULL,
-  `leaderid` int UNSIGNED NOT NULL DEFAULT '0',
-  `status` int UNSIGNED NOT NULL DEFAULT '0',
-  `members` int UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `inventoryequipment`
 --
 
@@ -856,7 +563,9 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
   `speed` int NOT NULL DEFAULT '0',
   `jump` int NOT NULL DEFAULT '0',
   `ViciousHammer` int NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
+  `growthLevelUpType` int NOT NULL DEFAULT '0',
+  `growthLevel` int NOT NULL DEFAULT '0',
+  `growthEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` int NOT NULL DEFAULT '0',
   `rank` int NOT NULL DEFAULT '0',
@@ -864,9 +573,14 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
   `potential1` int UNSIGNED NOT NULL DEFAULT '0',
   `potential2` int UNSIGNED NOT NULL DEFAULT '0',
   `potential3` int UNSIGNED NOT NULL DEFAULT '0',
+  `socket1` int UNSIGNED NOT NULL DEFAULT '0',
+  `socket2` int UNSIGNED NOT NULL DEFAULT '0',
   `hpR` int NOT NULL DEFAULT '0',
   `mpR` int NOT NULL DEFAULT '0',
   `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -904,21 +618,6 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `inventorylog`
---
-
-DROP TABLE IF EXISTS `inventorylog`;
-CREATE TABLE IF NOT EXISTS `inventorylog` (
-  `inventorylogid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `inventoryitemid` int UNSIGNED NOT NULL DEFAULT '0',
-  `msg` tinytext NOT NULL,
-  PRIMARY KEY (`inventorylogid`),
-  KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `inventoryslot`
 --
 
@@ -937,35 +636,6 @@ CREATE TABLE IF NOT EXISTS `inventoryslot` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `ipbans`
---
-
-DROP TABLE IF EXISTS `ipbans`;
-CREATE TABLE IF NOT EXISTS `ipbans` (
-  `ipbanid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `ip` varchar(40) NOT NULL DEFAULT '',
-  PRIMARY KEY (`ipbanid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `ipvotelog`
---
-
-DROP TABLE IF EXISTS `ipvotelog`;
-CREATE TABLE IF NOT EXISTS `ipvotelog` (
-  `vid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `accid` varchar(45) NOT NULL DEFAULT '0',
-  `ipaddress` varchar(30) NOT NULL DEFAULT '127.0.0.1',
-  `votetime` varchar(100) NOT NULL DEFAULT '0',
-  `votetype` tinyint UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`vid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `keymap`
 --
 
@@ -978,33 +648,6 @@ CREATE TABLE IF NOT EXISTS `keymap` (
   `action` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `keymap_ibfk_1` (`characterid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `macbans`
---
-
-DROP TABLE IF EXISTS `macbans`;
-CREATE TABLE IF NOT EXISTS `macbans` (
-  `macbanid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `mac` varchar(30) NOT NULL,
-  PRIMARY KEY (`macbanid`),
-  UNIQUE KEY `mac_2` (`mac`)
-) ENGINE=MEMORY DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `macfilters`
---
-
-DROP TABLE IF EXISTS `macfilters`;
-CREATE TABLE IF NOT EXISTS `macfilters` (
-  `macfilterid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `filter` varchar(30) NOT NULL,
-  PRIMARY KEY (`macfilterid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
@@ -1067,14 +710,24 @@ CREATE TABLE IF NOT EXISTS `mtsequipment` (
   `speed` int NOT NULL DEFAULT '0',
   `jump` int NOT NULL DEFAULT '0',
   `ViciousHammer` tinyint NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
+  `growthLevelUpType` int NOT NULL DEFAULT '0',
+  `growthLevel` int NOT NULL DEFAULT '0',
+  `growthEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` tinyint NOT NULL DEFAULT '0',
+  `rank` int NOT NULL DEFAULT '0',
+  `hidden` int NOT NULL DEFAULT '0',
   `potential1` smallint NOT NULL DEFAULT '0',
   `potential2` smallint NOT NULL DEFAULT '0',
   `potential3` smallint NOT NULL DEFAULT '0',
+  `socket1` smallint NOT NULL DEFAULT '0',
+  `socket2` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -1171,14 +824,24 @@ CREATE TABLE IF NOT EXISTS `mtstransferequipment` (
   `speed` int NOT NULL DEFAULT '0',
   `jump` int NOT NULL DEFAULT '0',
   `ViciousHammer` tinyint NOT NULL DEFAULT '0',
-  `itemEXP` int NOT NULL DEFAULT '0',
+  `growthLevelUpType` int NOT NULL DEFAULT '0',
+  `growthLevel` int NOT NULL DEFAULT '0',
+  `growthEXP` int NOT NULL DEFAULT '0',
   `durability` int NOT NULL DEFAULT '-1',
   `enhance` tinyint NOT NULL DEFAULT '0',
+  `rank` int NOT NULL DEFAULT '0',
+  `hidden` int NOT NULL DEFAULT '0',
   `potential1` smallint NOT NULL DEFAULT '0',
   `potential2` smallint NOT NULL DEFAULT '0',
   `potential3` smallint NOT NULL DEFAULT '0',
+  `socket1` smallint NOT NULL DEFAULT '0',
+  `socket2` smallint NOT NULL DEFAULT '0',
   `hpR` smallint NOT NULL DEFAULT '0',
   `mpR` smallint NOT NULL DEFAULT '0',
+  `incattackSpeed` int NOT NULL DEFAULT '0',
+  `tuc` int NOT NULL DEFAULT '0',
+  `ViciousHammerMax` int NOT NULL DEFAULT '0',
+  `potentialCount` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -1213,20 +876,6 @@ CREATE TABLE IF NOT EXISTS `mts_items` (
   `expiration` bigint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `mulungdojo`
---
-
-DROP TABLE IF EXISTS `mulungdojo`;
-CREATE TABLE IF NOT EXISTS `mulungdojo` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `charid` int NOT NULL DEFAULT '0',
-  `stage` tinyint NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -1308,39 +957,6 @@ CREATE TABLE IF NOT EXISTS `playernpcs` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `playernpcs_equip`
---
-
-DROP TABLE IF EXISTS `playernpcs_equip`;
-CREATE TABLE IF NOT EXISTS `playernpcs_equip` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `npcid` int NOT NULL,
-  `equipid` int NOT NULL,
-  `equippos` int NOT NULL,
-  `charid` int NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `playernpcs_equip_ibfk_1` (`charid`),
-  KEY `playernpcs_equip_ibfk_2` (`npcid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `questactions`
---
-
-DROP TABLE IF EXISTS `questactions`;
-CREATE TABLE IF NOT EXISTS `questactions` (
-  `questactionid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `questid` int NOT NULL DEFAULT '0',
-  `status` int NOT NULL DEFAULT '0',
-  `data` blob NOT NULL,
-  PRIMARY KEY (`questactionid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `questinfo`
 --
 
@@ -1353,21 +969,6 @@ CREATE TABLE IF NOT EXISTS `questinfo` (
   PRIMARY KEY (`questinfoid`),
   KEY `characterid` (`characterid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `questrequirements`
---
-
-DROP TABLE IF EXISTS `questrequirements`;
-CREATE TABLE IF NOT EXISTS `questrequirements` (
-  `questrequirementid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `questid` int NOT NULL DEFAULT '0',
-  `status` int NOT NULL DEFAULT '0',
-  `data` blob NOT NULL,
-  PRIMARY KEY (`questrequirementid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -1407,56 +1008,6 @@ CREATE TABLE IF NOT EXISTS `queststatusmobs` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `reactordrops`
---
-
-DROP TABLE IF EXISTS `reactordrops`;
-CREATE TABLE IF NOT EXISTS `reactordrops` (
-  `reactordropid` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `reactorid` int NOT NULL,
-  `itemid` int NOT NULL,
-  `chance` int NOT NULL,
-  `questid` int NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`reactordropid`),
-  KEY `reactorid` (`reactorid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 PACK_KEYS=1;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `readable_cheatlog`
---
-
-DROP TABLE IF EXISTS `readable_cheatlog`;
-CREATE TABLE IF NOT EXISTS `readable_cheatlog` (
-  `accountname` varchar(13) DEFAULT NULL,
-  `accountid` int DEFAULT NULL,
-  `name` varchar(13) DEFAULT NULL,
-  `characterid` int DEFAULT NULL,
-  `offense` tinytext,
-  `count` int DEFAULT NULL,
-  `lastoffensetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `param` tinytext
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `readable_last_hour_cheatlog`
---
-
-DROP TABLE IF EXISTS `readable_last_hour_cheatlog`;
-CREATE TABLE IF NOT EXISTS `readable_last_hour_cheatlog` (
-  `accountname` varchar(13) DEFAULT NULL,
-  `accountid` int DEFAULT NULL,
-  `name` varchar(13) DEFAULT NULL,
-  `characterid` int DEFAULT NULL,
-  `numrepos` decimal(32,0) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `regrocklocations`
 --
 
@@ -1467,24 +1018,6 @@ CREATE TABLE IF NOT EXISTS `regrocklocations` (
   `mapid` int DEFAULT NULL,
   PRIMARY KEY (`trockid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `reports`
---
-
-DROP TABLE IF EXISTS `reports`;
-CREATE TABLE IF NOT EXISTS `reports` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `reporttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `reporterid` int NOT NULL,
-  `victimid` int NOT NULL,
-  `reason` tinyint NOT NULL,
-  `chatlog` text NOT NULL,
-  `status` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -1590,39 +1123,6 @@ CREATE TABLE IF NOT EXISTS `skills` (
 -- --------------------------------------------------------
 
 --
--- テーブルの構造 `skills_cooldowns`
---
-
-DROP TABLE IF EXISTS `skills_cooldowns`;
-CREATE TABLE IF NOT EXISTS `skills_cooldowns` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `charid` int NOT NULL,
-  `SkillID` int NOT NULL,
-  `length` bigint NOT NULL,
-  `StartTime` bigint UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `speedruns`
---
-
-DROP TABLE IF EXISTS `speedruns`;
-CREATE TABLE IF NOT EXISTS `speedruns` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `type` varchar(13) NOT NULL,
-  `leader` varchar(13) NOT NULL,
-  `timestring` varchar(1024) NOT NULL,
-  `time` bigint NOT NULL DEFAULT '0',
-  `members` varchar(1024) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
 -- テーブルの構造 `storages`
 --
 
@@ -1661,38 +1161,6 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
   `characterid` int NOT NULL,
   `sn` int NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `wz_oxdata`
---
-
-DROP TABLE IF EXISTS `wz_oxdata`;
-CREATE TABLE IF NOT EXISTS `wz_oxdata` (
-  `questionset` smallint NOT NULL DEFAULT '0',
-  `questionid` smallint NOT NULL DEFAULT '0',
-  `question` varchar(200) NOT NULL DEFAULT '',
-  `display` varchar(200) NOT NULL DEFAULT '',
-  `answer` enum('o','x') NOT NULL,
-  PRIMARY KEY (`questionset`,`questionid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `zaksquads`
---
-
-DROP TABLE IF EXISTS `zaksquads`;
-CREATE TABLE IF NOT EXISTS `zaksquads` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `channel` int UNSIGNED NOT NULL,
-  `leaderid` int UNSIGNED NOT NULL DEFAULT '0',
-  `status` int UNSIGNED NOT NULL DEFAULT '0',
-  `members` int UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 

@@ -29,6 +29,7 @@ import tacos.packet.request.parse.ParseCMovePath;
  */
 public class ResCUser_FoxMan {
 
+    // LP_FoxManEnterField
     public static ServerPacket FoxManEnterField(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManEnterField);
 
@@ -89,6 +90,7 @@ public class ResCUser_FoxMan {
         return sp;
     }
 
+    // LP_FoxManLeaveField
     public static ServerPacket FoxManLeaveField(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManLeaveField);
 

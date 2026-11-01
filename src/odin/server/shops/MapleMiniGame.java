@@ -22,6 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.packet.ops.OpsMRLeave;
+import tacos.packet.ops.OpsMiniRoomType;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.Collections;
@@ -35,39 +38,36 @@ import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import odin.constants.GameConstants;
-import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.ItemLoader;
-import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
-import java.sql.SQLException;
 
-public class MapleMiniGame {
+public class MapleMiniGame implements IPlayerShop {
 
     public final static byte HIRED_MERCHANT = 1;
     public final static byte PLAYER_SHOP = 2;
     public final static byte OMOK = 3;
     public final static byte MATCH_CARD = 4;
+    // the win, tie and lose counts are kept in the custom data of these quests as "losses,ties,wins"
+    private static final int OMOK_RECORD_QUEST_ID = 122200;
+    private static final int MATCH_CARD_RECORD_QUEST_ID = 122210;
 
     private Point position = new Point();
     private int objectId;
 
-    protected boolean open = false;
-    protected boolean available = false;
-    protected String ownerName;
-    protected String des;
-    protected String pass;
-    protected int ownerId;
-    protected int owneraccount;
-    protected int itemId;
-    protected int channel;
-    protected int map;
-    protected AtomicInteger meso = new AtomicInteger(0);
-    protected TacosCharacter chrs[];
-    protected List<String> visitors = new LinkedList<>();
-    protected List<BoughtItem> bought = new LinkedList<>();
-    protected List<MaplePlayerShopItem> items = new LinkedList<>();
+    private boolean open = false;
+    private boolean available = false;
+    private String ownerName;
+    private String des;
+    private String pass;
+    private int ownerId;
+    private int owneraccount;
+    private int itemId;
+    private int channel;
+    private int map;
+    private AtomicInteger meso = new AtomicInteger(0);
+    private TacosCharacter[] chrs;
+    private List<String> visitors = new LinkedList<>();
+    private List<BoughtItem> bought = new LinkedList<>();
+    private List<MaplePlayerShopItem> items = new LinkedList<>();
 
     private final static int slots = 2; //change?!
     private boolean[] exitAfter;
@@ -171,35 +171,6 @@ public class MapleMiniGame {
         return open;
     }
 
-    public boolean saveItems() {
-        if (getShopType() != HIRED_MERCHANT) { //hired merch only
-            return false;
-        }
-        Integer packageid = DQ_Hiredmerch.add(ownerId, owneraccount, meso.get());
-        if (packageid == null) {
-            return false;
-        }
-        List<SimpleImmutableEntry<Item, MapleInventoryType>> iters = new ArrayList<>();
-        Item item;
-        for (MaplePlayerShopItem pItems : items) {
-            if (pItems.item == null || pItems.bundles <= 0) {
-                continue;
-            }
-            if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
-                continue;
-            }
-            item = pItems.item.copy();
-            item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-            iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
-        }
-        try {
-            ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
-            return true;
-        } catch (SQLException se) {
-        }
-        return false;
-    }
-
     public TacosCharacter getVisitor(int num) {
         return chrs[num];
     }
@@ -207,7 +178,7 @@ public class MapleMiniGame {
     public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, this));
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor, this));
             chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
@@ -219,7 +190,7 @@ public class MapleMiniGame {
         byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot), slot);
             chrs[slot - 1] = null;
         }
     }
@@ -241,9 +212,9 @@ public class MapleMiniGame {
             TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
                 }
-                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = null;
             }
@@ -335,13 +306,13 @@ public class MapleMiniGame {
 
     public int getGameType() {
         if (getShopType() == HIRED_MERCHANT) { //hiredmerch
-            return 5;
+            return OpsMiniRoomType.MR_EntrustedShop.get();
         } else if (getShopType() == PLAYER_SHOP) { //shop lol
-            return 4;
+            return OpsMiniRoomType.MR_PersonalShop.get();
         } else if (getShopType() == OMOK) { //omok
-            return 1;
+            return OpsMiniRoomType.MR_OmokRoom.get();
         } else if (getShopType() == MATCH_CARD) { //matchcard
-            return 2;
+            return OpsMiniRoomType.MR_MemoryGameRoom.get();
         }
         return 0;
     }
@@ -417,7 +388,8 @@ public class MapleMiniGame {
                 }
                 points[i] = 0;
             }
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, tie ? 1 : 2, x));
+            setGameResult(tie ? 1 : 2, x);
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, tie ? 1 : 2, x));
             this.setOpen(true);
             checkExitAfterGame();
         }
@@ -461,12 +433,12 @@ public class MapleMiniGame {
         return loser;
     }
 
-    public void send(TacosClient client) {
+    public void send(TacosCharacter chr) {
         if (getMCOwner() == null) {
             closeShop(false, false, 0);
             return;
         }
-        client.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(client, this));
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_MiniGame(chr, this));
     }
 
     public void setReady(int slot) {
@@ -481,12 +453,13 @@ public class MapleMiniGame {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
             // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameMoveOmok(move1, move2, type));
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_ORP_PutStoneChecker(move1, move2, type));
             boolean found = false;
             for (int y = 0; y < 15; y++) {
                 for (int x = 0; x < 15; x++) {
                     if (!found && searchCombo(x, y, type)) {
-                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, 2, getVisitorSlot(chr)));
+                        setGameResult(2, getVisitorSlot(chr));
+                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, 2, getVisitorSlot(chr)));
                         this.setOpen(true);
                         checkExitAfterGame();
                         found = true;
@@ -507,7 +480,7 @@ public class MapleMiniGame {
     public void exit(TacosCharacter player) {
         player.setPlayerShop(null);
         if (isOwner(player)) {
-            removeAllVisitors(3, 1);
+            removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
         } else {
             removeVisitor(player);
         }
@@ -610,6 +583,14 @@ public class MapleMiniGame {
         return Integer.parseInt(getData(chr).split(",")[0]);
     }
 
+    // updates the records before sending MGRP_GameResult
+    public void setGameResult(int type, int x) {
+        setPoints(x, type);
+        if (type != 0) {
+            setPoints(x == 1 ? 0 : 1, type == 2 ? 0 : 1);
+        }
+    }
+
     public void setPoints(int i, int type) { //lose = 0, tie = 1, win = 2
         TacosCharacter z;
         if (i == 0) {
@@ -620,18 +601,16 @@ public class MapleMiniGame {
         if (z != null) {
             String[] data = getData(z).split(",");
             data[type] = String.valueOf(Integer.parseInt(data[type]) + 1);
-            StringBuilder newData = new StringBuilder();
-            for (int s = 0; s < data.length; s++) {
-                newData.append(data[s]);
-                newData.append(",");
-            }
-            String newDat = newData.toString();
-            z.getQuestNAdd(MapleQuest.getInstance(GameType == 1 ? 122200 : 122210)).setCustomData(newDat.substring(0, newDat.length() - 1));
+            z.getQuestNAdd(getRecordQuest()).setCustomData(String.join(",", data));
         }
     }
 
+    private MapleQuest getRecordQuest() {
+        return MapleQuest.getInstance(GameType == 1 ? OMOK_RECORD_QUEST_ID : MATCH_CARD_RECORD_QUEST_ID);
+    }
+
     public String getData(TacosCharacter chr) {
-        MapleQuest quest = MapleQuest.getInstance(GameType == 1 ? 122200 : 122210);
+        MapleQuest quest = getRecordQuest();
         MapleQuestStatus record;
         if (chr.getQuestNoAdd(quest) == null) {
             record = chr.getQuestNAdd(quest);
@@ -662,13 +641,13 @@ public class MapleMiniGame {
     }
 
     public void closeShop(boolean s, boolean z, int reason) {
-        removeAllVisitors(3, 1);
+        removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
         if (getMCOwner() != null) {
             getMCOwner().setPlayerShop(null);
         }
         getMap().removeMiniGame(this.getObjectId());
     }
 
-    public void buy(TacosClient client, int z, short i) {
+    public void buy(TacosCharacter chr, int z, short i) {
     }
 }

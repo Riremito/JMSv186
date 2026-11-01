@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMCarnivalFail;
 import tacos.client.TacosCharacter;
 import odin.server.MapleCarnivalParty;
 import tacos.packet.ServerPacketHeader;
@@ -29,6 +30,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_MonsterCarnival {
 
+    // CField_MonsterCarnival::OnPersonalCP, CField_MonsterCarnival::OnTeamCP
     public static ServerPacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         // ?_?
         ServerPacket sp = new ServerPacket((party) ? ServerPacketHeader.LP_MCarnivalTeamCP : ServerPacketHeader.LP_MCarnivalPersonalCP);
@@ -42,6 +44,7 @@ public class ResCField_MonsterCarnival {
         return sp;
     }
 
+    // CField_MonsterCarnival::OnRequestResult
     public static ServerPacket MCarnivalResultSuccess(String name, int tab, int number) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalResultSuccess);
 
@@ -51,6 +54,15 @@ public class ResCField_MonsterCarnival {
         return sp;
     }
 
+    // CField_MonsterCarnival::OnRequestResult
+    public static ServerPacket MCarnivalResultFail(OpsMCarnivalFail reason) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalResultFail);
+
+        sp.Encode1(reason.get());
+        return sp;
+    }
+
+    // CField_MonsterCarnival::OnEnter
     public static ServerPacket MCarnivalEnter(TacosCharacter chr, int enemyavailable, int enemytotal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalEnter);
 
@@ -62,12 +74,16 @@ public class ResCField_MonsterCarnival {
         sp.Encode2(friendly.getTotalCP());
         sp.Encode2(enemyavailable);
         sp.Encode2(enemytotal);
-        sp.Encode8(0);
-        sp.Encode2(0);
+        // m_aSummonedMob : spelled count of each monster in the summon list.
+        int mob_count = (chr.getMap().getNodeInfo() != null) ? chr.getMap().getNodeInfo().getMobsToSpawn().size() : 0;
+        for (int i = 0; i < mob_count; i++) {
+            sp.Encode1(0);
+        }
         return sp;
     }
 
     //CPQ
+    // CField_MonsterCarnival::OnProcessForDeath
     public static ServerPacket MCarnivalDeath(String name, int lostCP, int team) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalDeath);
 

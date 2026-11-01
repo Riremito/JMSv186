@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.constants;
 
 import odin.client.inventory.MapleInventoryType;
-import odin.client.status.MonsterStatus;
+import tacos.packet.ops.OpsMobStat;
 import java.util.Calendar;
 import tacos.config.Config;
 import tacos.config.Region;
 
 public class GameConstants {
 
-    public static int[] eventCommonReward = {
+    public static final int[] eventCommonReward = {
         0, 40,
         1, 10,
         5060003, 18,
@@ -153,7 +153,7 @@ public class GameConstants {
         2000005, 10, // Power Elixir
         2000004, 10, // Elixir
         4280001, 4}; // Silver Box
-    public static int[] eventUncommonReward = {
+    public static final int[] eventUncommonReward = {
         2, 4,
         3, 4,
         2022179, 5,
@@ -177,7 +177,7 @@ public class GameConstants {
         4080100, 5,
         4080000, 5
     };
-    public static int[] eventRareReward = {
+    public static final int[] eventRareReward = {
         2049100, 5,
         2049116, 1,
         2049401, 10,
@@ -205,7 +205,7 @@ public class GameConstants {
         1012060, 2,
         1012061, 2
     };
-    public static int[] eventSuperReward = {
+    public static final int[] eventSuperReward = {
         2022121, 10,
         4031307, 50,
         3010127, 10,
@@ -216,8 +216,8 @@ public class GameConstants {
         1112428, 10,
         1112429, 10
     };
-    public static int[] Equipments_Bonus = {1122017};
-    public static int[] fishingReward = {
+    public static final int[] Equipments_Bonus = {1122017};
+    public static final int[] fishingReward = {
         0, 90, // Meso
         1, 70, // EXP
         2022179, 1, // Onyx Apple
@@ -254,24 +254,6 @@ public class GameConstants {
         4031648, 1, // Salmon (288cm)
         4031629, 1 // Pot
     };
-    private static final int[] mountexp = {0, 6, 25, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
-        2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
-
-    public static int getMountExpNeededForLevel(int level) {
-        return mountexp[level - 1];
-    }
-
-    public static int getTimelessRequiredEXP(int level) {
-        return 70 + (level * 10);
-    }
-
-    public static int getReverseRequiredEXP(int level) {
-        return 60 + (level * 5);
-    }
-
-    public static boolean isJobFamily(int baseJob, int currentJob) {
-        return currentJob >= baseJob && currentJob / 100 == baseJob / 100;
-    }
 
     public static boolean isKOC(int job) {
         return job >= 1000 && job < 2000;
@@ -343,19 +325,6 @@ public class GameConstants {
 
     public static boolean isAdventurer(int job) {
         return job >= 0 && job < 1000;
-    }
-
-    public static boolean isRecoveryIncSkill(int id) {
-        switch (id) {
-            case 1110000:
-            case 2000000:
-            case 1210000:
-            case 11110000:
-            case 4100002:
-            case 4200001:
-                return true;
-        }
-        return false;
     }
 
     public static boolean isLinkedAranSkill(int id) {
@@ -500,44 +469,12 @@ public class GameConstants {
         return MapleInventoryType.getByType(type);
     }
 
-    public static boolean isEquip(int itemId) {
-        return itemId / 1000000 == 1;
-    }
-
     public static boolean isCleanSlate(int itemId) {
         return itemId / 100 == 20490;
     }
 
     public static boolean isAccessoryScroll(int itemId) {
         return itemId / 100 == 20492;
-    }
-
-    public static boolean isChaosScroll(int itemId) {
-        if (itemId >= 2049105 && itemId <= 2049110) {
-            return false;
-        }
-        return itemId / 100 == 20491;
-    }
-
-    public static int getChaosNumber(int itemId) {
-        return itemId == 2049116 ? 10 : 5;
-    }
-
-    public static boolean isEquipScroll(int scrollId) {
-        return scrollId / 100 == 20493;
-    }
-
-    public static boolean isPotentialScroll(int scrollId) {
-        return scrollId / 100 == 20494;
-    }
-
-    public static boolean isSpecialScroll(int scrollId) {
-        switch (scrollId) {
-            case 2040727: // Spikes on show
-            case 2041058: // Cape for Cold protection
-                return true;
-        }
-        return false;
     }
 
     public static boolean isTwoHanded(int item_id) {
@@ -709,108 +646,6 @@ public class GameConstants {
         }
         return 0;
     }
-    public static boolean isReverseItem(int itemId) {
-        switch (itemId) {
-            case 1002790:
-            case 1002791:
-            case 1002792:
-            case 1002793:
-            case 1002794:
-            case 1082239:
-            case 1082240:
-            case 1082241:
-            case 1082242:
-            case 1082243:
-            case 1052160:
-            case 1052161:
-            case 1052162:
-            case 1052163:
-            case 1052164:
-            case 1072361:
-            case 1072362:
-            case 1072363:
-            case 1072364:
-            case 1072365:
-
-            case 1302086:
-            case 1312038:
-            case 1322061:
-            case 1332075:
-            case 1332076:
-            case 1372045:
-            case 1382059:
-            case 1402047:
-            case 1412034:
-            case 1422038:
-            case 1432049:
-            case 1442067:
-            case 1452059:
-            case 1462051:
-            case 1472071:
-            case 1482024:
-            case 1492025:
-
-            case 1342012:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public static boolean isTimelessItem(int itemId) {
-        switch (itemId) {
-            case 1032031: //shield earring, but technically
-            case 1102172:
-            case 1002776:
-            case 1002777:
-            case 1002778:
-            case 1002779:
-            case 1002780:
-            case 1082234:
-            case 1082235:
-            case 1082236:
-            case 1082237:
-            case 1082238:
-            case 1052155:
-            case 1052156:
-            case 1052157:
-            case 1052158:
-            case 1052159:
-            case 1072355:
-            case 1072356:
-            case 1072357:
-            case 1072358:
-            case 1072359:
-            case 1092057:
-            case 1092058:
-            case 1092059:
-
-            case 1122011:
-            case 1122012:
-
-            case 1302081:
-            case 1312037:
-            case 1322060:
-            case 1332073:
-            case 1332074:
-            case 1372044:
-            case 1382057:
-            case 1402046:
-            case 1412033:
-            case 1422037:
-            case 1432047:
-            case 1442063:
-            case 1452057:
-            case 1462050:
-            case 1472068:
-            case 1482023:
-            case 1492023:
-            case 1342011:
-                return true;
-            default:
-                return false;
-        }
-    }
 
     //if only there was a way to find in wz files -.-
     public static boolean isEffectRing(int itemid) {
@@ -857,63 +692,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getExpForLevel(int i, int itemId) {
-        if (isReverseItem(itemId)) {
-            return getReverseRequiredEXP(i);
-        } else if (getMaxLevel(itemId) > 0) {
-            return getTimelessRequiredEXP(i);
-        }
-        return 0;
-    }
-
-    public static int getMaxLevel(int itemId) {
-        if (isTimelessItem(itemId)) {
-            return 5;
-        } else if (isReverseItem(itemId)) {
-            return 3;
-        } else {
-            switch (itemId) {
-                case 1302109:
-                case 1312041:
-                case 1322067:
-                case 1332083:
-                case 1372048:
-                case 1382064:
-                case 1402055:
-                case 1412037:
-                case 1422041:
-                case 1432052:
-                case 1442073:
-                case 1452064:
-                case 1462058:
-                case 1472079:
-                case 1482035:
-
-                case 1302108:
-                case 1312040:
-                case 1322066:
-                case 1332082:
-                case 1372047:
-                case 1382063:
-                case 1402054:
-                case 1412036:
-                case 1422040:
-                case 1432051:
-                case 1442072:
-                case 1452063:
-                case 1462057:
-                case 1472078:
-                case 1482036:
-                    return 1;
-
-                case 1072376:
-                    return 2;
-            }
-        }
-        return 0;
-    }
-
-    public static MonsterStatus getStatFromWeapon(int itemid) {
+    public static OpsMobStat getStatFromWeapon(int itemid) {
         switch (itemid) {
             case 1302109:
             case 1312041:
@@ -930,7 +709,7 @@ public class GameConstants {
             case 1462058:
             case 1472079:
             case 1482035:
-                return MonsterStatus.ACC;
+                return OpsMobStat.MS_ACC;
             case 1302108:
             case 1312040:
             case 1322066:
@@ -946,7 +725,7 @@ public class GameConstants {
             case 1462057:
             case 1472078:
             case 1482036:
-                return MonsterStatus.SPEED;
+                return OpsMobStat.MS_Speed;
         }
         return null;
     }
@@ -1133,10 +912,8 @@ public class GameConstants {
                 if (mountid < 1902015 || mountid > 1902018) {
                     return false;
                 }
-            } else if (isEvan(jobid)) {
-                if (mountid < 1902040 || mountid > 1902042) {
-                    return false;
-                }
+            } else if (isEvan(jobid) && (mountid < 1902040 || mountid > 1902042)) {
+                return false;
             }
         }
         return true;
@@ -1148,18 +925,6 @@ public class GameConstants {
 
     public static boolean canScroll(int itemId) {
         return itemId / 100000 != 19 && itemId / 100000 != 16; //no mech/taming/dragon
-    }
-
-    public static boolean canHammer(int itemId) {
-        switch (itemId) {
-            case 1122000:
-            case 1122076: //ht, chaos ht
-                return false;
-        }
-        if (!canScroll(itemId)) {
-            return false;
-        }
-        return true;
     }
 
     public static int getMasterySkill(int job) {
@@ -1206,5 +971,4 @@ public class GameConstants {
                 return def;
         }
     }
-
 }

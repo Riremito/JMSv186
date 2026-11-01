@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.ArrayList;
+import tacos.debug.DebugLogger;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +39,6 @@ public class Alliance {
     private final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
 
     public Alliance() {
-        //System.out.println("[MapleGuildAlliance] Loading GuildAlliances");
         Collection<MapleGuildAlliance> allGuilds = MapleGuildAlliance.loadAll();
         for (MapleGuildAlliance g : allGuilds) {
             alliances.put(g.getId(), g);
@@ -49,7 +49,7 @@ public class Alliance {
         MapleGuildAlliance ret = alliances.get(allianceid);
         if (ret == null) {
             ret = new MapleGuildAlliance(allianceid);
-            if (ret == null || ret.getId() <= 0) { //failed to load
+            if (ret.getId() <= 0) { //failed to load
                 return null;
             }
             alliances.put(allianceid, ret);
@@ -138,8 +138,8 @@ public class Alliance {
     public void sendGuild(int allianceid) {
         MapleGuildAlliance alliance = getAlliance(allianceid);
         if (alliance != null) {
-            sendGuild(ResCWvsContext.getAllianceUpdate(alliance), -1, allianceid);
-            sendGuild(ResCWvsContext.getGuildAlliance(alliance), -1, allianceid);
+            sendGuild(ResCWvsContext.AllianceResult_UpdateAllianceInfo(alliance), -1, allianceid);
+            sendGuild(ResCWvsContext.AllianceResult_LoadGuildDone(alliance), -1, allianceid);
         }
     }
 
@@ -168,10 +168,9 @@ public class Alliance {
 
         MapleGuildAlliance alliance = getAlliance(allianceid);
 
-        sendGuild(ResCWvsContext.createGuildAlliance(alliance), -1, allianceid);
-        sendGuild(ResCWvsContext.getAllianceInfo(alliance), -1, allianceid);
-        sendGuild(ResCWvsContext.getGuildAlliance(alliance), -1, allianceid);
-        sendGuild(ResCWvsContext.changeAlliance(alliance, true), -1, allianceid);
+        sendGuild(ResCWvsContext.AllianceResult_CreateDone(alliance), -1, allianceid);
+        sendGuild(ResCWvsContext.AllianceResult_LoadDone(alliance), -1, allianceid);
+        sendGuild(ResCWvsContext.AllianceResult_LoadGuildDone(alliance), -1, allianceid);
         return true;
     }
 
@@ -197,16 +196,14 @@ public class Alliance {
             for (int i = 0; i < alliance.getNoGuilds(); i++) {
                 if (gid == alliance.getGuildId(i)) {
                     guild.setAllianceId(allianceid);
-                    guild.broadcast(ResCWvsContext.getAllianceInfo(alliance));
-                    guild.broadcast(ResCWvsContext.getGuildAlliance(alliance));
-                    guild.broadcast(ResCWvsContext.changeAlliance(alliance, true));
+                    guild.broadcast(ResCWvsContext.AllianceResult_LoadDone(alliance));
+                    guild.broadcast(ResCWvsContext.AllianceResult_LoadGuildDone(alliance));
                     guild.changeARank();
                     guild.writeToDB(false);
                 } else {
                     MapleGuild g_ = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
                     if (g_ != null) {
-                        g_.broadcast(ResCWvsContext.addGuildToAlliance(alliance, guild));
-                        g_.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, guild, true));
+                        g_.broadcast(ResCWvsContext.AllianceResult_Invite_Done(alliance, guild));
                     }
                 }
             }
@@ -225,14 +222,19 @@ public class Alliance {
                     }
                     continue; //just skip
                 }
-                if (g_ == null || gid == alliance.getGuildId(i)) {
+                if (g_ == null) {
+                    // the alliance is disbanded
                     guild.changeARank(5);
                     guild.setAllianceId(0);
-                    guild.broadcast(ResCWvsContext.disbandAlliance(allianceid));
-                } else if (g_ != null) {
+                    guild.broadcast(ResCWvsContext.AllianceResult_Destroy_Done(allianceid));
+                } else if (gid == alliance.getGuildId(i)) {
+                    // the guild that left reads its guild data (no alliance) and shows the client message (left / kicked)
+                    guild.changeARank(5);
+                    guild.setAllianceId(0);
+                    guild.broadcast(ResCWvsContext.AllianceResult_Withdraw_Done(alliance, guild, expelled));
+                } else {
                     guild.broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + g_.getName() + "] Guild has left the alliance.").build()));
-                    guild.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, g_, false));
-                    guild.broadcast(ResCWvsContext.removeGuildFromAlliance(alliance, g_, expelled));
+                    guild.broadcast(ResCWvsContext.AllianceResult_Withdraw_Done(alliance, g_, expelled));
                 }
 
             }
@@ -248,16 +250,16 @@ public class Alliance {
         MapleGuildAlliance alliance = getAlliance(allianceid);
         if (alliance != null) {
             if (start) {
-                ret.add(ResCWvsContext.getAllianceInfo(alliance));
-                ret.add(ResCWvsContext.getGuildAlliance(alliance));
+                ret.add(ResCWvsContext.AllianceResult_LoadDone(alliance));
+                ret.add(ResCWvsContext.AllianceResult_LoadGuildDone(alliance));
             }
-            ret.add(ResCWvsContext.getAllianceUpdate(alliance));
+            ret.add(ResCWvsContext.AllianceResult_UpdateAllianceInfo(alliance));
         }
         return ret;
     }
 
     public void save() {
-        System.out.println("Saving alliances...");
+        DebugLogger.InfoLog("Saving alliances...");
         for (MapleGuildAlliance a : alliances.values()) {
             a.saveToDb();
         }

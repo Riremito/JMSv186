@@ -28,6 +28,7 @@ import tacos.client.TacosForcedStat;
 import tacos.client.TacosMapleGift;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobSkill;
+import tacos.packet.ops.OpsMobStat;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCField;
@@ -99,7 +100,7 @@ public class TacosCommandTest {
                 return true;
             }
             case "/omok" -> {
-                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
+                chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_OmokTest(chr));
                 return true;
             }
             case "/fstest" -> {
@@ -268,10 +269,19 @@ public class TacosCommandTest {
                 chr.SendPacket(ResCMobPool.MobSuspendReset(monster));
             }
             case 16 -> {
-                chr.SendPacket(ResCMobPool.MobStatReset(monster));
+                int mob_skill_level = 1;
+                int mob_skill_id = OpsMobSkill.MOBSKILL_PHYSICALIMMUNE.get();
+                int buff_id = mob_skill_id | (mob_skill_level << 16);
+                if (monster.getBuff().update(OpsMobStat.MS_PImmune, buff_id, 1, 5000)) {
+                    chr.SendPacket(ResCMobPool.MobStatSet(monster, buff_id));
+                }
             }
             case 17 -> {
-                chr.SendPacket(ResCMobPool.MobStatSet(monster));
+                int mob_skill_level = 1;
+                int mob_skill_id = OpsMobSkill.MOBSKILL_PHYSICALIMMUNE.get();
+                int buff_id = mob_skill_id | (mob_skill_level << 16);
+                chr.SendPacket(ResCMobPool.MobStatReset(monster, buff_id));
+                monster.getBuff().remove(buff_id);
             }
             default -> {
             }

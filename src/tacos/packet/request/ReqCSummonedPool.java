@@ -30,7 +30,7 @@ import tacos.packet.response.ResCSummonedPool;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMoveAbility;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.server.map.object.TacosSummon;
 import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo;
 import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo.SummonDamage;
@@ -178,7 +178,7 @@ public class ReqCSummonedPool {
                 monster.damage(chr, damage.getDamage(), true);
             }
         }
-        if (summon.getSkill() == OpsSkill.VALKYRIE_GABIOTA) {
+        if (summon.getSkill() == OpsSkill_BB.VALKYRIE_GABIOTA) {
             chr.removeSummon(summon);
         }
     }
@@ -188,14 +188,14 @@ public class ReqCSummonedPool {
         int nSkillID = cp.Decode4();
         byte unk1 = cp.Decode1();
 
-        OpsSkill summoned_skill = OpsSkill.find(nSkillID);
+        OpsSkill_BB summoned_skill = OpsSkill_BB.find(nSkillID);
         switch (summon.getSkill()) {
             case DARKKNIGHT_BEHOLDER -> {
-                if (summoned_skill == OpsSkill.DARKKNIGHT_BEHOLDERS_HEALING) {
+                if (summoned_skill == OpsSkill_BB.DARKKNIGHT_BEHOLDERS_HEALING) {
                     // ダークスピリットヒール
                     return true;
                 }
-                if (summoned_skill == OpsSkill.DARKKNIGHT_BEHOLDERS_BUFF) {
+                if (summoned_skill == OpsSkill_BB.DARKKNIGHT_BEHOLDERS_BUFF) {
                     // ダークスピリットアップ
                     byte buff_type = cp.Decode1();
                     // TODO : random buff.

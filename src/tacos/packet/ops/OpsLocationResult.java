@@ -28,7 +28,7 @@ public enum OpsLocationResult implements IPacketOps {
     LR_ShopSvr(2),
     LR_OtherChannel(3),
     LR_Admin(4),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

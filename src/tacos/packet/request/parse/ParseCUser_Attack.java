@@ -19,6 +19,7 @@
 package tacos.packet.request.parse;
 
 import java.awt.Point;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.Skill;
-import odin.client.SkillFactory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -39,7 +39,7 @@ import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 
 /**
  *
@@ -111,7 +111,7 @@ public class ParseCUser_Attack {
             return null;
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
-            Skill skillLink = SkillFactory.getSkill(skill);
+            Skill skillLink = WzXML.SKILL.getSkill().get(skill);
             return skillLink.getEffect(skillLevel);
         }
         return skill_.getEffect(skillLevel);
@@ -168,7 +168,7 @@ public class ParseCUser_Attack {
             return false;
         }
         for (Buff buff : chr.getBuff().getAll()) {
-            switch (OpsSkill.find(buff.buff_id)) {
+            switch (OpsSkill_BB.find(buff.buff_id)) {
                 case HUNTER_SOUL_ARROW_BOW:
                 case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
                 case WINDBREAKER_SOUL_ARROW_BOW:
@@ -206,7 +206,7 @@ public class ParseCUser_Attack {
         attack.m_nLevel = chr.getLevel();
         attack.nSkillID = 0;
         attack.SkillLevel = 0;
-        attack.nMastery = chr.getStat().passive_mastery();
+        attack.nMastery = 0;
         attack.nBulletItemID = 0;
         attack.X = chr.getPosition().x;
         attack.Y = chr.getPosition().y;

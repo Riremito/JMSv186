@@ -62,28 +62,27 @@ public class DebugMan {
     private int status = 0;
 
     private int getStatus() {
-        return status;
+        return this.status;
     }
 
     private boolean updateStatus(int val) {
         switch (val) {
-            case 1: // next
+            case 1 -> // next
             {
                 this.status++;
                 return true;
             }
-            case 0: // prev
+            case 0 -> // prev
             {
                 this.status--;
                 return true;
             }
-            case -1: // cancel
+            case -1 -> // cancel
             {
                 this.status = -1;
                 return true;
             }
-            default: {
-                break;
+            default -> {
             }
         }
         return false;

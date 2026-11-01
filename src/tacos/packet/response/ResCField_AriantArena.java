@@ -27,13 +27,15 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_AriantArena {
 
-    public static ServerPacket showAriantScoreBoard() {
+    // CField_AriantArena::OnShowResult
+    public static ServerPacket ShowArenaResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShowArenaResult);
 
         return sp;
     }
 
-    public static ServerPacket updateAriantPQRanking(String name, int score, boolean empty) {
+    // CField_AriantArena::OnUserScore
+    public static ServerPacket ArenaScore(String name, int score, boolean empty) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ArenaScore);
 
         sp.Encode1(empty ? 0 : 1);

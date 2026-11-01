@@ -47,6 +47,7 @@ public class ReqCUIMessenger {
         return false;
     }
 
+    // CFadeWnd::SendCloseMessage, CUIMessenger::SendInviteMsg
     public static boolean OnMessenger(TacosCharacter chr, ClientPacket cp) {
         TacosWorld world = chr.getWorld();
         TacosMessenger messenger = world.getMessenger(chr);

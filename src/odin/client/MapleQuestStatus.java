@@ -97,10 +97,8 @@ public class MapleQuestStatus {
     }
 
     public boolean mobKilled(int id, int skillID) {
-        if (quest != null && quest.getSkillID() > 0) {
-            if (quest.getSkillID() != skillID) {
-                return false;
-            }
+        if (quest != null && quest.getSkillID() > 0 && quest.getSkillID() != skillID) {
+            return false;
         }
         Integer mob = killedMobs.get(id);
         if (mob != null) {

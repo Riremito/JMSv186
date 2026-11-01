@@ -19,17 +19,18 @@
 package tacos.client;
 
 import java.util.ArrayList;
+import tacos.wz.WzXML;
 import tacos.server.map.TacosMap;
 import odin.client.Skill;
-import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -67,33 +68,6 @@ public class TacosBuff {
         return new int[2]; // 8
     }
 
-    public static int[] getMobBuffBuffer() {
-        if (Config.GreaterOrEqual(Region.KMS, 197)) {
-            return new int[12]; // 48
-        }
-        if (Config.GreaterOrEqual(Region.EMS, 89)) {
-            return new int[9]; //36
-        }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
-            return new int[8]; // 32
-        }
-        // post bb ex.
-        if (Config.Equal(Region.KMST, 330) || Config.Equal(Region.GMS, 95) || Config.Equal(Region.THMS, 96) || Config.Equal(Region.IMS, 1)) {
-            return new int[4]; // 16
-        }
-        // JMS187-194 (Post-BB)
-        if (Config.PostBB()) {
-            return new int[5]; // 20
-        }
-        // KMS84, JMS180-186 (Pre-BB)
-        if (Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
-            return new int[4]; // 16
-        }
-        // KMS1 = none or 4.
-        // JMS131-165, KMS1-71, BMS24
-        return new int[1]; // 4
-    }
-
     public static class Buff {
 
         public OpsSecondaryStat ops;
@@ -127,8 +101,8 @@ public class TacosBuff {
         MapleStatEffect effect = null;
         // skill or item.
         if (0 < buff_id) {
-            OpsSkill ops_skill = OpsSkill.find(buff_id);
-            Skill skill = SkillFactory.getSkill(buff_id);
+            OpsSkill_BB ops_skill = OpsSkill_BB.find(buff_id);
+            Skill skill = WzXML.SKILL.getSkill().get(buff_id);
             if (skill == null) {
                 DebugLogger.ErrorLog("TacosBuff - update : skill.");
                 return false;
@@ -144,7 +118,7 @@ public class TacosBuff {
                 if (this.chr.getCoolTime().check(ops_skill)) {
                     return false;
                 }
-                if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
+                if (ops_skill != OpsSkill_BB.CAPTAIN_BATTLESHIP) {
                     this.chr.getCoolTime().add(ops_skill, effect.getCooldown());
                 }
             }
@@ -185,6 +159,11 @@ public class TacosBuff {
             }
         }
 
+        return apply(buff_id, effect);
+    }
+
+    // sets the buff of an effect, also used for party buffs (the caster's effect and level)
+    public boolean apply(int buff_id, MapleStatEffect effect) {
         long time = System.currentTimeMillis();
         int count = 0;
         for (SimpleImmutableEntry<OpsSecondaryStat, Integer> oi : effect.getOss()) {
@@ -224,6 +203,61 @@ public class TacosBuff {
             }
         }
         return false;
+    }
+
+    // mob skill disease.
+    public boolean updateDisease(OpsSecondaryStat ops, int buff_id, int buff_effect, int buff_time) {
+        // disabled in this region.
+        if (ops.get() < 0) {
+            return false;
+        }
+        if (has(OpsSecondaryStat.CTS_Holyshield)) {
+            return false;
+        }
+        long time = System.currentTimeMillis();
+        for (Buff buff : buffs) {
+            if (buff.ops == ops) {
+                buff.buff_effect = buff_effect;
+                buff.buff_effect_2 = 0;
+                buff.buff_id = buff_id;
+                buff.buff_time = buff_time;
+                buff.server_time = time;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean has(OpsSecondaryStat ops) {
+        for (Buff buff : buffs) {
+            if (buff.ops == ops && buff.buff_id != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isDisease(OpsSecondaryStat ops) {
+        for (OpsMobSkill oms : OpsMobSkill.values()) {
+            if (oms.getDisease() == ops) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // mob skill dispel, buffs from skills and items.
+    public ArrayList<Integer> getDispelIds() {
+        ArrayList<Integer> ret = new ArrayList<>();
+        for (Buff buff : buffs) {
+            if (buff.buff_id == 0 || buff.ops.isTwoState() || isDisease(buff.ops)) {
+                continue;
+            }
+            if (!ret.contains(buff.buff_id)) {
+                ret.add(buff.buff_id);
+            }
+        }
+        return ret;
     }
 
     public ArrayList<Buff> getCTS(int buff_id) {

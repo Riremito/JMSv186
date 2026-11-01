@@ -32,8 +32,9 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import tacos.wz.MapleData;
 import tacos.config.Config;
+import tacos.server.TacosWorld;
+import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
 
@@ -119,7 +120,7 @@ public class DebugShop {
             }
         }
         chr.setDebugShop(this);
-        chr.SendPacket(ResCShopDlg.OpenShopDlg_DS(this));
+        chr.SendPacket(ResCShopDlg.OpenShopDlg(this));
         return true;
     }
 
@@ -194,12 +195,8 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
-            if (md_item_sub_type != null) {
-                for (MapleData md_item : md_item_sub_type.getChildren()) {
-                    int item_id = Integer.parseInt(md_item.getName());
-                    this.addItemRecharge(item_id, item_recharge_price);
-                }
+            for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
+                this.addItemRecharge(item_id, item_recharge_price);
             }
         }
         return true;
@@ -207,13 +204,9 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
-        if (md_item_sub_type != null) {
-            for (MapleData md_item : md_item_sub_type.getChildren()) {
-                int item_id = Integer.parseInt(md_item.getName());
-                this.addItem(item_id);
-                item_count++;
-            }
+        for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
+            this.addItem(item_id);
+            item_count++;
         }
 
         DebugLogger.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");
@@ -264,13 +257,15 @@ public class DebugShop {
             return false;
         }
 
-        if (!MapleInventoryManipulator.checkSpace(chr.getClient(), item_id, quantity, "")) {
+        if (!MapleInventoryManipulator.checkSpace(chr, item_id, quantity, "")) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
-
-        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        MapleInventoryManipulator.addById(chr.getClient(), item_id, (short) quantity); // bool...?
+        if (GameConstants.isPet(item_id)) {
+            MapleInventoryManipulator.addById(chr, item_id, (short) quantity, "", TacosPet.createPet(item_id, TacosWorld.getNextItemUniqueId()), -1);
+        } else {
+            MapleInventoryManipulator.addById(chr, item_id, (short) quantity); // bool...?
+        }
         chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         chr.DebugMsg("DebugShop : buy " + item_id);
@@ -301,7 +296,7 @@ public class DebugShop {
         int item_price = miip.getWholePrice(item.getItemId());
         if (is_recharge_item) {
             double unit_price = miip.getPrice(item.getItemId());
-            item_price += (int) (unit_price * miip.getSlotMax(chr.getClient(), item.getItemId()));
+            item_price += (int) (unit_price * miip.getSlotMax(item.getItemId()));
         } else {
             item_price *= quantity;
         }
@@ -314,7 +309,7 @@ public class DebugShop {
             return false;
         }
 
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), GameConstants.getInventoryType(item_id), item_slot, (short) quantity, false);
+        MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item_id), item_slot, (short) quantity, false);
         chr.gainMeso(item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         return true;

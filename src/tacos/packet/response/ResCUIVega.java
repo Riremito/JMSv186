@@ -28,6 +28,7 @@ import tacos.packet.ops.OpsCashItem;
  */
 public class ResCUIVega {
 
+    // CUIVega::OnVegaResult
     public static ServerPacket VegaResult(OpsCashItem m_nRet1) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
 
