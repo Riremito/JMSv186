@@ -162,5 +162,4 @@ public enum OpsEntrustedShop implements IPacketOps {
         StoreBankRes_StoreBankLoadFailed.set(37);
         StoreBankRes_StoreBankBlock.set(38);
     }
-
 }

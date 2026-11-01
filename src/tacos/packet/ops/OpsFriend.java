@@ -81,5 +81,4 @@ public enum OpsFriend implements IPacketOps {
     public static void init() {
 
     }
-
 }

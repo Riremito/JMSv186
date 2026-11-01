@@ -53,5 +53,4 @@ public enum OpsLocationResult implements IPacketOps {
     public static void init() {
 
     }
-
 }

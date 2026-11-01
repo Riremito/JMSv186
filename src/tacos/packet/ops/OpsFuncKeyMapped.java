@@ -76,5 +76,4 @@ public enum OpsFuncKeyMapped implements IPacketOps {
             return;
         }
     }
-
 }

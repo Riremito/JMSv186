@@ -27,5 +27,4 @@ public interface IScriptNPC_with_start {
     public void start();
 
     public void action(int mode, int type, int selection);
-
 }

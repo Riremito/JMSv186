@@ -89,5 +89,4 @@ public enum OpsTransferChannel implements IPacketOps {
             return;
         }
     }
-
 }

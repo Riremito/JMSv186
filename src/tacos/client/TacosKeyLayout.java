@@ -51,5 +51,4 @@ public class TacosKeyLayout {
         this.keymap.remove(key);
         this.changed = true;
     }
-
 }

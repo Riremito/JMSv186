@@ -106,5 +106,4 @@ public class TacosScriptEvent extends TacosScript {
         IScriptEvent script = ((Invocable) em.getIv()).getInterface(IScriptEvent.class);
         return script.cancelSchedule();
     }
-
 }

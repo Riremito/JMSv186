@@ -30,5 +30,4 @@ public class ArdentmillPortal extends TacosSharedPortal {
     public ArdentmillPortal() {
         super(TacosConstants.MAP_ID_MEISTER_VILLE, TacosConstants.PORTAL_MEISTER_VILLE);
     }
-
 }

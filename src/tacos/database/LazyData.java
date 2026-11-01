@@ -61,5 +61,4 @@ public class LazyData {
     public boolean getOk() {
         return this.ok;
     }
-
 }

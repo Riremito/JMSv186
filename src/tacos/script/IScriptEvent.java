@@ -56,5 +56,4 @@ public interface IScriptEvent {
     public boolean allMonstersDead(OdinEventInstanceManager eim);
 
     public boolean cancelSchedule();
-
 }

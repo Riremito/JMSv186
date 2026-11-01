@@ -49,5 +49,4 @@ public enum OpsGoldHammer implements IPacketOps {
     public void set(int val) {
         this.value = val;
     }
-
 }

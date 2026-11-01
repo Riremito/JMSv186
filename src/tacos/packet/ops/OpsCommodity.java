@@ -73,5 +73,4 @@ public enum OpsCommodity implements IPacketOps {
         }
         return UNKNOWN;
     }
-
 }

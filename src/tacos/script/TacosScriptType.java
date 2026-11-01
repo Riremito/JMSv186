@@ -43,5 +43,4 @@ public enum TacosScriptType {
     public String get() {
         return this.folder_name;
     }
-
 }

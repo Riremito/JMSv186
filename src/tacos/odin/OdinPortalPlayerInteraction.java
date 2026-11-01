@@ -46,5 +46,4 @@ public class OdinPortalPlayerInteraction extends OdinAbstractPlayerInteraction {
         // rnj6_act.js
         spawnMonster(id, qty, this.portal.getPosition());
     }
-
 }

@@ -76,5 +76,4 @@ public class DQ_Regrocklocations {
         }
         return false;
     }
-
 }

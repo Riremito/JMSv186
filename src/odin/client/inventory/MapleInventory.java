@@ -264,5 +264,4 @@ public class MapleInventory implements Iterable<Item> {
     public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
     }
-
 }

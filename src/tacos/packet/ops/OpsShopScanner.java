@@ -64,5 +64,4 @@ public enum OpsShopScanner implements IPacketOps {
 
     public static void init() {
     }
-
 }

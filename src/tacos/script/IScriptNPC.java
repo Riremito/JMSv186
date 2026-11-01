@@ -26,5 +26,4 @@ public interface IScriptNPC {
 
     //public void start();
     public void action(int mode, int type, int selection);
-
 }

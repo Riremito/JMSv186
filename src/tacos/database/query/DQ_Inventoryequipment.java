@@ -154,5 +154,4 @@ public class DQ_Inventoryequipment {
 
         return false;
     }
-
 }

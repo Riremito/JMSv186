@@ -56,5 +56,4 @@ public class ResCUIGoldHammer {
         }
         return sp;
     }
-
 }

@@ -88,5 +88,4 @@ public enum OpsMREnterResult implements IPacketOps {
             return;
         }
     }
-
 }

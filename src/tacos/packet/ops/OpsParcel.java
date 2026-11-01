@@ -133,5 +133,4 @@ public enum OpsParcel implements IPacketOps {
         ParcelRes_DelayedNotify.set(28);
         ParcelRes_UnknownError.set(29);
     }
-
 }

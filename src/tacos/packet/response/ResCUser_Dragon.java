@@ -58,5 +58,4 @@ public class ResCUser_Dragon {
         sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         return sp;
     }
-
 }

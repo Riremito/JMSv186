@@ -279,5 +279,4 @@ public class DQ_Guilds {
             this.alliance = alliance;
         }
     }
-
 }

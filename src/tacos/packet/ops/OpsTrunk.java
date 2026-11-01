@@ -226,5 +226,4 @@ public enum OpsTrunk implements IPacketOps {
         }
         // GMS95
     }
-
 }

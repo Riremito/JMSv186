@@ -27,5 +27,4 @@ public interface IScriptQuest {
     public void start(int mode, int type, int selection);
 
     public void end(int mode, int type, int selection);
-
 }

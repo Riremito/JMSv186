@@ -61,5 +61,4 @@ public enum OpsMapleTV implements IPacketOps {
 
     public static void init() {
     }
-
 }

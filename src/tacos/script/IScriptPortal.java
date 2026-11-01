@@ -27,5 +27,4 @@ import tacos.odin.OdinPortalPlayerInteraction;
 public interface IScriptPortal {
 
     public boolean enter(OdinPortalPlayerInteraction ppi);
-
 }

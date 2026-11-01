@@ -133,5 +133,4 @@ public class DQ_Buddies {
 
         return true;
     }
-
 }

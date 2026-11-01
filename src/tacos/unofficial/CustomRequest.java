@@ -72,5 +72,4 @@ public class CustomRequest {
 
         return memory_hash.startsWith("");
     }
-
 }

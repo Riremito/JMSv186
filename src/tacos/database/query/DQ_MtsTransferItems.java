@@ -302,5 +302,4 @@ public class DQ_MtsTransferItems {
         }
         return false;
     }
-
 }

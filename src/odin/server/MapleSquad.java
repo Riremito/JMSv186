@@ -279,5 +279,4 @@ public class MapleSquad {
             members.remove(chr);
         }
     }
-
 }
