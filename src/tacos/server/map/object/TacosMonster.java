@@ -335,10 +335,40 @@ public class TacosMonster extends TacosMapObject {
         return false;
     }
 
+    // the client controller flag is lost when the controller changes.
+    @Override
+    public void setOwnerId(int owner_id) {
+        if (getOwnerId() != owner_id) {
+            setNextAttackPossible(false);
+        }
+        super.setOwnerId(owner_id);
+    }
+
+    // nLevel 2 makes the client chase the local user, the mob can not use attack and skill without the target.
+    public void setAggro(TacosCharacter chr) {
+        if (chr.getMap() != this.map) {
+            return;
+        }
+        int character_id = chr.getId();
+        if (getOwnerId() == character_id && getNextAttackPossible()) {
+            return;
+        }
+        if (getOwnerId() != character_id) {
+            TacosCharacter owner = this.map.getPlayerById(getOwnerId());
+            if (owner != null) {
+                owner.SendPacket(ResCMobPool.MobChangeController(this, 0));
+            }
+            setOwnerId(character_id);
+        }
+        setNextAttackPossible(true);
+        chr.SendPacket(ResCMobPool.MobChangeController(this, 2));
+    }
+
     public void damage(TacosCharacter from, long damage, boolean updateAttackTime, int lastSkill) {
         if (from == null || damage <= 0 || !isAlive()) {
             return;
         }
+        setAggro(from);
 
         // ボスモンスターレイド
         // ボスが弱すぎるのでダメージ計算式を変更して最低20回の攻撃ヒット回数を求める
