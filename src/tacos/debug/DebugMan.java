@@ -30,6 +30,18 @@ import tacos.packet.response.ResCScriptMan;
 public class DebugMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
+    private int npc_script_id = 0;
+
+    public int getNpcId() {
+        if (this.npc_script_id == 0) {
+            return DEFAULT_NPC_ID;
+        }
+        return this.npc_script_id;
+    }
+
+    public void setNpcId(int npc_script_id) {
+        this.npc_script_id = npc_script_id;
+    }
 
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
         IDebugMan dm = chr.getDebugMan();
@@ -37,6 +49,7 @@ public class DebugMan {
 
         switch (ops) {
             case SM_SAY:
+            case SM_ASKYESNO:
             case SM_ASKMENU:
             case SM_ASKAVATAR: {
                 if (action != -1) {
@@ -111,47 +124,51 @@ public class DebugMan {
         say(chr, nt, false, false);
     }
 
-    protected void askAvatar(TacosCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
-    }
-
-    protected void askMenu(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
-    }
-
     protected void say(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
             DebugLogger.ErrorLog("DebugMan : say.");
             askMenu(chr, nt, prev, next);
             return;
         }
-        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
+        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
     }
 
-    protected class NpcTag {
+    protected void askYesNo(TacosCharacter chr, NpcTag nt) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
+    }
+
+    protected void askMenu(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
+    }
+
+    protected void askAvatar(TacosCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
+    }
+
+    public class NpcTag {
 
         protected String msg = "";
 
-        protected void add(String text) {
+        public void add(String text) {
             this.add(text, true);
         }
 
-        protected void add(String text, boolean crlf) {
+        public void add(String text, boolean crlf) {
             this.msg += text;
             if (crlf) {
                 this.msg += "\r\n";
             }
         }
 
-        protected void addMenu(int num, String text) {
+        public void addMenu(int num, String text) {
             this.msg += "#L" + num + "##b" + text + "#k#l\r\n";
         }
 
-        protected void addMenuRed(int num, String text) {
+        public void addMenuRed(int num, String text) {
             this.msg += "#L" + num + "##r" + text + "#k#l\r\n";
         }
 
-        protected String get() {
+        public String get() {
             return this.msg;
         }
     }

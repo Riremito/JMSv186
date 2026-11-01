@@ -106,6 +106,7 @@ import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.js.TacosScriptNPC;
 import tacos.script.js.TacosScriptQuest;
+import tacos.script.npc.NpcMan;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
@@ -1363,8 +1364,13 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_script_id);
             return true;
         }
+        // npc from code.
+        if (NpcMan.start(chr, npc_info, npc_script_id, npc_id)) {
+            chr.DebugMsg("OnUserSelectNpc (Java) : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
+            return true;
+        }
         // npc from script.
-        chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript());
+        chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
         return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
     }
 

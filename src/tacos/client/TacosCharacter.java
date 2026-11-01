@@ -433,10 +433,20 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean changeMapById(int map_id) {
+        return changeMapById(map_id, null);
+    }
+
+    public boolean changeMapById(int map_id, String portal_name) {
         if (WzDataStorage.MAP.check(map_id)) {
             TacosMap map_to = findMap(map_id);
             if (map_to != null) {
-                TacosPortal portal_to = map_to.getPortal(0);
+                TacosPortal portal_to = null;
+                if (portal_name != null) {
+                    portal_to = map_to.getPortal(portal_name);
+                }
+                if (portal_to == null) {
+                    portal_to = map_to.getPortal(0);
+                }
                 if (portal_to != null) {
                     changeMapPortal(map_to, portal_to);
                     return true;
