@@ -92,4 +92,22 @@ public class ResCField_MonsterCarnival {
         sp.Encode1(lostCP);
         return sp;
     }
+
+    // CField_MonsterCarnival::OnShowMemberOutMsg, not tested.
+    public static ServerPacket MCarnivalMemberOut(int type, int team, String sCharacterName) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalMemberOut);
+
+        sp.Encode1(type);
+        sp.Encode1(team);
+        sp.EncodeStr(sCharacterName); // sCharacterName
+        return sp;
+    }
+
+    // CField_MonsterCarnival::OnShowGameResult, not tested.
+    public static ServerPacket MCarnivalGameResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalGameResult);
+
+        sp.Encode1(result);
+        return sp;
+    }
 }

@@ -45,6 +45,18 @@ public class ResCUser {
         return sp;
     }
 
+    // CUser::OnChat, not tested.
+    public static ServerPacket UserChatNLCPQ(TacosCharacter chr, String message, boolean bOnlyBalloon) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChatNLCPQ);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(chr.isGM() ? 1 : 0);
+        sp.EncodeStr(message);
+        sp.Encode1(bOnlyBalloon ? 1 : 0); // bOnlyBalloon
+        sp.EncodeStr(chr.getName());
+        return sp;
+    }
+
     // CUser::OnADBoard
     public static ServerPacket UserADBoard(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserADBoard);
@@ -71,7 +83,15 @@ public class ResCUser {
         return sp;
     }
 
-    // CUser::SetConsumeItemEffect
+    // CUser::SetConsumeItemEffect, not tested.
+    public static ServerPacket UserConsumeItemEffect(TacosCharacter chr, int nItemID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserConsumeItemEffect);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(nItemID); // nItemID
+        return sp;
+    }
+
     // CUser::ShowItemUpgradeEffect
     public static ServerPacket UserItemUpgradeEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
@@ -180,8 +200,26 @@ public class ResCUser {
         return sp;
     }
 
-    // CUser::OnHitByUser
-    // CUser::OnTeslaTriangle
+    // CUser::OnHitByUser, not tested.
+    public static ServerPacket UserHitByUser(TacosCharacter chr, int nDamage) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHitByUser);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(nDamage);
+        return sp;
+    }
+
+    // CUser::OnTeslaTriangle, not tested.
+    public static ServerPacket UserTeslaTriangle(TacosCharacter chr, int summon_id1, int summon_id2, int summon_id3) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTeslaTriangle);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(summon_id1); // dwID
+        sp.Encode4(summon_id2); // dwID
+        sp.Encode4(summon_id3); // dwID
+        return sp;
+    }
+
     // CUser::OnFollowCharacter
     public static ServerPacket UserFollowCharacter(TacosCharacter chr, boolean bTransferField) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
@@ -201,9 +239,37 @@ public class ResCUser {
         return sp;
     }
 
-    // CUser::OnShowPQReward
+    // CUser::OnShowPQReward, not tested.
+    public static ServerPacket UserShowPQReward(TacosCharacter chr, int[] aRare) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserShowPQReward);
+
+        sp.Encode4(chr.getId());
+        for (int i = 0; i < 6; i++) {
+            sp.Encode1(aRare[i]); // aRare
+        }
+        return sp;
+    }
+
+    // CUser::OnSetPhase, not tested.
+    public static ServerPacket UserSetPhase(TacosCharacter chr, int nPhase, int bShow) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetPhase);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(nPhase);
+        sp.Encode1(bShow);
+        return sp;
+    }
+
     public static ServerPacket Fishing_Caught(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
+
+        sp.Encode4(chr.getId());
+        return sp;
+    }
+
+    // CUser::ShowRecoverUpgradeCountEffect, not tested.
+    public static ServerPacket ShowPamsSongResult(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShowPamsSongResult);
 
         sp.Encode4(chr.getId());
         return sp;

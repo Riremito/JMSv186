@@ -592,6 +592,13 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnOpenFullClientDownloadLink, not tested.
+    public static ServerPacket SendOpenFullClientLink() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SendOpenFullClientLink);
+
+        return sp;
+    }
+
     // CWvsContext::OnMemoResult
     public static ServerPacket MemoResult(List<DQ_Notes.NoteRow> notes) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
@@ -632,10 +639,40 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnAntiMacroResult
-    // CWvsContext::OnClaimResult
-    // CWvsContext::OnSetClaimSvrAvailableTime
-    // CWvsContext::OnClaimSvrStatusChanged
+    // CWvsContext::OnAntiMacroResult, not tested.
+    public static ServerPacket AntiMacroResult(int nMode, int nAntiMacroType) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AntiMacroResult);
+
+        sp.Encode1(nMode);
+        sp.Encode1(nAntiMacroType);
+        return sp;
+    }
+
+    // CWvsContext::OnClaimResult, not tested.
+    public static ServerPacket ClaimResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClaimResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
+    // CWvsContext::OnSetClaimSvrAvailableTime, not tested.
+    public static ServerPacket SetClaimSvrAvailableTime(int nFrom, int nTo) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetClaimSvrAvailableTime);
+
+        sp.Encode1(nFrom);
+        sp.Encode1(nTo);
+        return sp;
+    }
+
+    // CWvsContext::OnClaimSvrStatusChanged, not tested.
+    public static ServerPacket ClaimSvrStatusChanged(boolean m_bClaimSvrConnected) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClaimSvrStatusChanged);
+
+        sp.Encode1(m_bClaimSvrConnected ? 1 : 0); // m_bClaimSvrConnected
+        return sp;
+    }
+
     //CWvsContext::OnSetTamingMobInfo
     public static ServerPacket SetTamingMobInfo(TacosCharacter chr, boolean levelup) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
@@ -711,7 +748,16 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnSkillResetItemResult
+    // CWvsContext::OnSkillResetItemResult, not tested.
+    public static ServerPacket SkillResetItemResult(TacosCharacter chr, boolean success) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillResetItemResult);
+
+        sp.Encode1(1);
+        sp.Encode4(chr.getId());
+        sp.Encode1(success ? 1 : 0);
+        return sp;
+    }
+
     // CWvsContext::OnGatherItemResult
     public static ServerPacket GatherItemResult(byte nTI) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GatherItemResult);
@@ -727,6 +773,30 @@ public class ResCWvsContext {
 
         sp.Encode1(0); // unused
         sp.Encode1(nTI);
+        return sp;
+    }
+
+    // CWvsContext::OnSueCharacterResult, not tested.
+    public static ServerPacket SueCharacterResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SueCharacterResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
+    // CWvsContext::OnTradeMoneyLimit, not tested.
+    public static ServerPacket TradeMoneyLimit(boolean is_limited) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TradeMoneyLimit);
+
+        sp.Encode1(is_limited ? 1 : 0);
+        return sp;
+    }
+
+    // CWvsContext::OnSetGender, not tested.
+    public static ServerPacket SetGender(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetGender);
+
+        sp.Encode1(chr.getGender()); // m_nGender
         return sp;
     }
 
@@ -1352,11 +1422,19 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
+    // CWvsContext::OnOpenGate, not tested.
+    public static ServerPacket OpenGate(int x, int y) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenGate);
+
+        sp.Encode2(x);
+        sp.Encode2(y);
+        return sp;
+    }
+
     // CWvsContext::OnFriendResult
     // CWvsContext::OnGuildResult
     // CWvsContext::OnAllianceResult
     // CWvsContext::OnTownPortal
-    // CWvsContext::OnOpenGate
     // CWvsContext::OnBroadcastMsg
     public static ServerPacket BroadcastMsg(OpsBroadcastMsg bm, PB_BroadcastMsg pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BroadcastMsg);
@@ -1493,7 +1571,14 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnShopLinkResult
+    // CWvsContext::OnShopLinkResult, not tested.
+    public static ServerPacket ShopLinkResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopLinkResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
     // CWvsContext::OnMarriageRequest
     public static ServerPacket MarriageRequest(String name, int cid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageRequest);
@@ -1547,15 +1632,55 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnWeddingGiftResult
-    // CWvsContext::OnNotifyMarriedPartnerMapTransfer
-    // CWvsContext::OnCashPetFoodResult
+    // CWvsContext::OnWeddingGiftResult, not tested.
+    public static ServerPacket WeddingGiftResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WeddingGiftResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
+    // CWvsContext::OnNotifyMarriedPartnerMapTransfer, not tested.
+    public static ServerPacket MarriedPartnerMapTransfer(int m_dwMarriedPartnerCurFieldID, int m_nMarriedPartnerID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriedPartnerMapTransfer);
+
+        sp.Encode4(m_dwMarriedPartnerCurFieldID); // m_dwMarriedPartnerCurFieldID
+        sp.Encode4(m_nMarriedPartnerID); // m_nMarriedPartnerID
+        return sp;
+    }
+
+    // CWvsContext::OnCashPetFoodResult, not tested.
+    public static ServerPacket CashPetFoodResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashPetFoodResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
     // CWvsContext::OnSetWeekEventMessage
     public static ServerPacket SetWeekEventMessage(String text) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetWeekEventMessage);
 
         sp.Encode1(-1);
         sp.EncodeStr(text);
+        return sp;
+    }
+
+    // CWvsContext::OnSetPotionDiscountRate, not tested.
+    public static ServerPacket SetPotionDiscountRate(int m_nPotionDiscountRate) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPotionDiscountRate);
+
+        sp.Encode1(m_nPotionDiscountRate); // m_nPotionDiscountRate
+        return sp;
+    }
+
+    // CWvsContext::OnBridleMobCatchFail, not tested.
+    public static ServerPacket BridleMobCatchFail(int bReason, int nItemID, int nMobID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BridleMobCatchFail);
+
+        sp.Encode1(bReason); // bReason
+        sp.Encode4(nItemID);
+        sp.Encode4(nMobID);
         return sp;
     }
 
@@ -1604,11 +1729,26 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnSetPotionDiscountRate
-    // CWvsContext::OnBridleMobCatchFail
-    // CWvsContext::OnImitatedNPCResult
+    // CWvsContext::OnImitatedNPCResult, not tested.
+    public static ServerPacket ImitatedNPCResult(int nResult) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCResult);
+
+        sp.Encode1(nResult);
+        return sp;
+    }
+
+    // CWvsContext::OnLimitedNPCDisableInfo, not tested.
+    public static ServerPacket LimitedNPCDisableInfo(int[] npc_ids) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LimitedNPCDisableInfo);
+
+        sp.Encode1(npc_ids.length);
+        for (int npc_id : npc_ids) {
+            sp.Encode4(npc_id);
+        }
+        return sp;
+    }
+
     // CWvsContext::OnImitatedNPCData
-    // CWvsContext::OnLimitedNPCDisableInfo
     // CWvsContext::OnMonsterBookSetCard
     public static ServerPacket MonsterBookSetCard(boolean is_added, int nCardID, int nCardCount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCard);
@@ -1630,7 +1770,15 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnHourChanged
+    // CWvsContext::OnHourChanged, not tested.
+    public static ServerPacket HourChanged(int day, int hour) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HourChanged);
+
+        sp.Encode2(day);
+        sp.Encode2(hour);
+        return sp;
+    }
+
     // CWvsContext::OnMiniMapOnOff
     public static ServerPacket MiniMapOnOff() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniMapOnOff);
@@ -1639,9 +1787,31 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnConsultAuthkeyUpdate
-    // CWvsContext::OnClassCompetitionAuthkeyUpdate
-    // CWvsContext::OnWebBoardAuthkeyUpdate
+    // CWvsContext::OnConsultAuthkeyUpdate, not tested.
+    public static ServerPacket ConsultAuthkeyUpdate(String str) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ConsultAuthkeyUpdate);
+
+        sp.EncodeStr(str); // str
+        return sp;
+    }
+
+    // CWvsContext::OnClassCompetitionAuthkeyUpdate, not tested.
+    public static ServerPacket ClassCompetitionAuthkeyUpdate(String str) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClassCompetitionAuthkeyUpdate);
+
+        sp.EncodeStr(str); // str
+        return sp;
+    }
+
+    // CWvsContext::OnWebBoardAuthkeyUpdate, not tested.
+    public static ServerPacket WebBoardAuthkeyUpdate(int nResult, String str) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WebBoardAuthkeyUpdate);
+
+        sp.Encode1(nResult);
+        sp.EncodeStr(str, nResult == 0); // str
+        return sp;
+    }
+
     // CWvsContext::OnSessionValue
     // CWvsContext::OnPartyValue
     // CWvsContext::OnFieldSetVariable
@@ -1680,6 +1850,32 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnPotionDiscountRateChanged, not tested.
+    public static ServerPacket PotionDiscountRateChanged(int nPOS, int nRate) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PotionDiscountRateChanged);
+
+        sp.Encode4(nPOS);
+        sp.Encode4(nRate);
+        return sp;
+    }
+
+    // CWvsContext::OnMapleTVUseRes, not tested.
+    public static ServerPacket MapleTVUseRes(String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVUseRes);
+
+        sp.EncodeStr(message);
+        return sp;
+    }
+
+    // CWvsContext::OnAvatarMegaphoneRes, not tested.
+    public static ServerPacket AvatarMegaphoneRes(int nResult, String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneRes);
+
+        sp.Encode1(nResult);
+        sp.EncodeStr(message, nResult != 96 && nResult != 97);
+        return sp;
+    }
+
     // CWvsContext::OnFamilyChartResult
     // CWvsContext::OnFamilyInfoResult
     // CWvsContext::OnFamilyResult
@@ -1705,6 +1901,55 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnClearAvatarMegaphone, not tested.
+    public static ServerPacket AvatarMegaphoneClearMessage() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneClearMessage);
+
+        return sp;
+    }
+
+    // CWvsContext::OnCancelNameChangeResult, not tested.
+    public static ServerPacket CancelNameChangeResult(int nResult, String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CancelNameChangeResult);
+
+        boolean has_detail = (nResult != 0 && nResult != -1);
+
+        sp.Encode1(nResult);
+        sp.Encode1(1, has_detail);
+        sp.EncodeStr(message, has_detail);
+        return sp;
+    }
+
+    // CWvsContext::OnCancelTransferWorldResult, not tested.
+    public static ServerPacket CancelTransferWorldResult(int nResult, String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CancelTransferWorldResult);
+
+        boolean has_detail = (nResult != 0 && nResult != 1);
+
+        sp.Encode1(nResult);
+        sp.Encode1(1, has_detail);
+        sp.EncodeStr(message, has_detail);
+        return sp;
+    }
+
+    // CWvsContext::OnDestroyShopResult, not tested.
+    public static ServerPacket DestroyShopResult(int nResult, String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyShopResult);
+
+        sp.Encode1(nResult);
+        sp.Encode1(1, nResult != 17);
+        sp.EncodeStr(message, nResult != 17);
+        return sp;
+    }
+
+    // CWvsContext::OnFakeGMNotice, not tested.
+    public static ServerPacket FAKEGMNOTICE(int nType) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FAKEGMNOTICE);
+
+        sp.Encode1(nType);
+        return sp;
+    }
+
     // CWvsContext::OnSuccessInUsegachaponBox
     public static ServerPacket SuccessInUseGachaponBox(int box_item_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SuccessInUseGachaponBox);
@@ -1712,10 +1957,40 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnNewYearCardRes
-    // CWvsContext::OnRandomMorphRes
-    // CWvsContext::OnCancelNameChangebyOther
-    // CWvsContext::OnSetBuyEquipExt
+    // CWvsContext::OnNewYearCardRes, not tested.
+    public static ServerPacket NewYearCardRes(int nMode, int nValue) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NewYearCardRes);
+
+        sp.Encode1(nMode);
+        sp.Encode4(nValue);
+        return sp;
+    }
+
+    // CWvsContext::OnRandomMorphRes, not tested.
+    public static ServerPacket RandomMorphRes(int nResult, int nReason, String sTarget) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RandomMorphRes);
+
+        sp.Encode1(nResult);
+        sp.Encode1(nReason, nResult == 1);
+        sp.EncodeStr(sTarget, nResult == 1 && nReason == 2); // sTarget
+        return sp;
+    }
+
+    // CWvsContext::OnCancelNameChangebyOther, not tested.
+    public static ServerPacket CancelNameChangeByOther() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CancelNameChangeByOther);
+
+        return sp;
+    }
+
+    // CWvsContext::OnSetBuyEquipExt, not tested.
+    public static ServerPacket SetBuyEquipExt(boolean m_bBuyEquipExt) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetBuyEquipExt);
+
+        sp.Encode1(m_bBuyEquipExt ? 1 : 0); // m_bBuyEquipExt
+        return sp;
+    }
+
     // CWvsContext::OnSetPassenserRequest
     public static ServerPacket SetPassenserRequest(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
@@ -1732,18 +2007,120 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // CWvsContext::OnDataCRCCheckFailed
-    // CWvsContext::OnCakePieEventResult
-    // CWvsContext::OnUpdateGMBoard
-    // CWvsContext::OnShowSlotMessage
-    // CWvsContext::OnWildHunterInfo
-    // CWvsContext::OnAccountMoreInfo
-    // CWvsContext::OnFindFirend
-    // CWvsContext::OnStageChange
-    // CWvsContext::OnDragonBallBox
-    // CWvsContext::OnAskWhetherUsePamsSong
-    // CWvsContext::OnTransferChannel
-    // CWvsContext::OnDisallowedDeliveryQuestList
+    // CWvsContext::OnDataCRCCheckFailed, not tested.
+    public static ServerPacket DataCRCCheckFailed(String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DataCRCCheckFailed);
+
+        sp.EncodeStr(message);
+        return sp;
+    }
+
+    // CWvsContext::OnCakePieEventResult, not tested.
+    public static ServerPacket CakePieEventResult(int value1, int value2, int value3, int nEventStatus, int value4) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CakePieEventResult);
+
+        sp.Encode1(1);
+        sp.Encode4(value1);
+        sp.Encode4(value2);
+        sp.Encode1(value3);
+        sp.Encode1(nEventStatus); // nEventStatus
+        sp.Encode1(value4);
+        sp.Encode1(0);
+        return sp;
+    }
+
+    // CWvsContext::OnUpdateGMBoard, not tested.
+    public static ServerPacket UpdateGMBoard(int m_nWebOpBoardIndex, String url) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UpdateGMBoard);
+
+        sp.Encode4(m_nWebOpBoardIndex); // m_nWebOpBoardIndex
+        sp.EncodeStr(url);
+        return sp;
+    }
+
+    // CWvsContext::OnShowSlotMessage, not tested.
+    public static ServerPacket ShowSlotMessage(int nEmptySlotMessageType) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShowSlotMessage);
+
+        sp.Encode1(nEmptySlotMessageType); // nEmptySlotMessageType
+        return sp;
+    }
+
+    // CWvsContext::OnWildHunterInfo, not tested.
+    public static ServerPacket WildHunterInfo(int nRidingType, int[] adwCapturedMob) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WildHunterInfo);
+
+        sp.Encode1(nRidingType);
+        for (int i = 0; i < 5; i++) {
+            sp.Encode4(adwCapturedMob[i]); // adwCapturedMob
+        }
+        return sp;
+    }
+
+    // CWvsContext::OnAccountMoreInfo, not tested.
+    public static ServerPacket AccountMoreInfo(int nMode) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AccountMoreInfo);
+
+        sp.Encode1(nMode);
+        return sp;
+    }
+
+    // CWvsContext::OnFindFirend, not tested.
+    public static ServerPacket FindFirend(int nMode, int nValue) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FindFirend);
+
+        sp.Encode1(nMode);
+        sp.Encode1(nValue, nMode == 9);
+        return sp;
+    }
+
+    // CWvsContext::OnStageChange, not tested.
+    public static ServerPacket StageChange(String name, int nState) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StageChange);
+
+        sp.EncodeStr(name);
+        sp.Encode1(nState);
+        return sp;
+    }
+
+    // CWvsContext::OnDragonBallBox, not tested.
+    public static ServerPacket DragonBallBox(int nDragonBall, boolean bShowUI, boolean bFull, boolean bAbleToSummon) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonBallBox);
+
+        sp.Encode4(nDragonBall);
+        sp.Encode1(bShowUI ? 1 : 0); // bShowUI
+        sp.Encode1(bFull ? 1 : 0);
+        sp.Encode1(bAbleToSummon ? 1 : 0); // bAbleToSummon
+        return sp;
+    }
+
+    // CWvsContext::OnAskWhetherUsePamsSong, not tested.
+    public static ServerPacket AskUserWhetherUsePamsSong() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AskUserWhetherUsePamsSong);
+
+        return sp;
+    }
+
+    // CWvsContext::OnTransferChannel, not tested.
+    public static ServerPacket TransferChannel(int nChannel, String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferChannel);
+
+        sp.Encode4(nChannel);
+        sp.EncodeStr(message);
+        return sp;
+    }
+
+    // CWvsContext::OnDisallowedDeliveryQuestList, not tested.
+    public static ServerPacket DisallowedDeliveryQuestList(int[] quest_ids) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DisallowedDeliveryQuestList);
+
+        sp.Encode4(quest_ids.length);
+        for (int quest_id : quest_ids) {
+            sp.Encode4(quest_id);
+        }
+        return sp;
+    }
+
     public static ServerPacket CharacterCash(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CMS_CharacterCash);
 
@@ -2490,6 +2867,13 @@ public class ResCWvsContext {
 
         sp.Encode1(family ? 1 : 0);
         sp.EncodeStr(name);
+        return sp;
+    }
+
+    // CWvsContext::OnLogoutGift, not tested.
+    public static ServerPacket LogoutGift() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LogoutGift);
+
         return sp;
     }
 }

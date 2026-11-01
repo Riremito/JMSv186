@@ -149,6 +149,17 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnCoupleMessage, not tested.
+    public static ServerPacket CoupleMessage(String sSender, String sChatText) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoupleMessage);
+
+        sp.Encode1(5);
+        sp.EncodeStr(sSender); // sSender
+        sp.Encode1(0);
+        sp.EncodeStr(sChatText); // sChatText
+        return sp;
+    }
+
     // CField::OnSummonItemInavailable
     public static ServerPacket MobSummonItemUseResult(boolean result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
@@ -241,6 +252,13 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnFieldObstacleAllReset, not tested.
+    public static ServerPacket FieldObstacleAllReset() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleAllReset);
+
+        return sp;
+    }
+
     // CField::OnBlowWeather
     public static ServerPacket BlowWeather(String msg, int itemid, boolean active) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
@@ -309,10 +327,58 @@ public class ResCField {
         return sp;
     }
 
+    // CField::OnSetQuestClear, not tested.
+    public static ServerPacket SetQuestClear() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetQuestClear);
+
+        return sp;
+    }
+
+    // CField::OnSetQuestTime, not tested.
+    public static ServerPacket SetQuestTime(int nQuestID, long ftStart, long ftEnd) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetQuestTime);
+
+        sp.Encode1(1); // count
+        sp.Encode4(nQuestID);
+        sp.Encode8(ftStart); // ftStart
+        sp.Encode8(ftEnd); // ftEnd
+        return sp;
+    }
+
+    // CField::OnWarnMessage, not tested.
+    public static ServerPacket Warn(String message) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Warn);
+
+        sp.EncodeStr(message);
+        return sp;
+    }
+
+    // CField::OnSetObjectState, not tested.
+    public static ServerPacket SetObjectState(String name, int state) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetObjectState);
+
+        sp.EncodeStr(name);
+        sp.Encode4(state);
+        return sp;
+    }
+
     // CField::OnDestroyClock
     public static ServerPacket DestroyClock() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
+        return sp;
+    }
+
+    // CField::OnStalkResult, not tested.
+    public static ServerPacket StalkResult(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StalkResult);
+
+        sp.Encode4(1); // count
+        sp.Encode4(chr.getId());
+        sp.Encode1(1);
+        sp.EncodeStr(chr.getName());
+        sp.Encode4(chr.getPosition().x);
+        sp.Encode4(chr.getPosition().y);
         return sp;
     }
 
@@ -338,6 +404,92 @@ public class ResCField {
             sp.Encode2(mp.r);
         }
 
+        return sp;
+    }
+
+    // CField::OnRequestFootHoldInfo, not tested.
+    public static ServerPacket RequestFootHoldInfo() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RequestFootHoldInfo);
+
+        return sp;
+    }
+
+    // CField_KillCount::OnKillCountInfo, not tested.
+    public static ServerPacket FieldKillCount(int m_nOnKill) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldKillCount);
+
+        sp.Encode4(m_nOnKill); // m_nOnKill
+        return sp;
+    }
+
+    // CMessageBoxPool::OnCreateFailed, not tested.
+    public static ServerPacket CreateMessgaeBoxFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateMessgaeBoxFailed);
+
+        return sp;
+    }
+
+    // CMessageBoxPool::OnMessageBoxEnterField, not tested.
+    public static ServerPacket MessageBoxEnterField(int dwMessageBoxID, int nItemID, String sHostName, String sMessage, int x, int y) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MessageBoxEnterField);
+
+        sp.Encode4(dwMessageBoxID); // dwMessageBoxID
+        sp.Encode4(nItemID); // nItemID
+        sp.EncodeStr(sHostName);
+        sp.EncodeStr(sMessage);
+        sp.Encode2(x); // ptHost.x
+        sp.Encode2(y); // ptHost.y
+        return sp;
+    }
+
+    // CMessageBoxPool::OnMessageBoxLeaveField, not tested.
+    public static ServerPacket MessageBoxLeaveField(int nLeaveType, int dwID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MessageBoxLeaveField);
+
+        sp.Encode1(nLeaveType);
+        sp.Encode4(dwID); // dwID
+        return sp;
+    }
+
+    // CField_GuildBoss::OnHealerMove, not tested.
+    public static ServerPacket HealerMove(int y) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HealerMove);
+
+        sp.Encode2(y);
+        return sp;
+    }
+
+    // CField_GuildBoss::OnPulleyStateChange, not tested.
+    public static ServerPacket PulleyStateChange(int m_nState) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PulleyStateChange);
+
+        sp.Encode1(m_nState); // m_nState
+        return sp;
+    }
+
+    // CField_Battlefield::OnScoreUpdate, not tested.
+    public static ServerPacket BattlefieldScore(int score1, int score2) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BattlefieldScore);
+
+        sp.Encode1(score1);
+        sp.Encode1(score2);
+        return sp;
+    }
+
+    // CField_Battlefield::OnTeamChanged, not tested.
+    public static ServerPacket BattlefieldTeamChanged(TacosCharacter chr, int nTeam) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BattlefieldTeamChanged);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(nTeam);
+        return sp;
+    }
+
+    // CField_Witchtower::OnScoreUpdate, not tested.
+    public static ServerPacket WitchtowerScore(int score) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WitchtowerScore);
+
+        sp.Encode1(score);
         return sp;
     }
 
@@ -374,6 +526,87 @@ public class ResCField {
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time_second);
+        return sp;
+    }
+
+    // CField_Tournament::OnTournament, not tested.
+    public static ServerPacket Tournament(int flag, int value1, int value2) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Tournament);
+
+        sp.Encode1(flag);
+        sp.Encode1(value1);
+        sp.Encode1(value2);
+        return sp;
+    }
+
+    // CField_Tournament::OnTournamentMatchTable, not tested.
+    public static ServerPacket TournamentMatchTable(byte[] m_aaMatch, int m_nState) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TournamentMatchTable);
+
+        sp.EncodeBuffer(m_aaMatch, 0x300); // m_aaMatch
+        sp.Encode1(m_nState); // m_nState
+        return sp;
+    }
+
+    // CField_Tournament::OnTournamentSetPrize, not tested.
+    public static ServerPacket TournamentSetPrize(int type, boolean has_prize, int prize1, int prize2) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TournamentSetPrize);
+
+        sp.Encode1(type);
+        sp.Encode1(has_prize ? 1 : 0);
+        sp.Encode4(prize1, has_prize);
+        sp.Encode4(prize2, has_prize);
+        return sp;
+    }
+
+    // CField_Tournament::OnTournamentUEW, not tested.
+    public static ServerPacket TournamentNoticeUEW(int round) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TournamentNoticeUEW);
+
+        sp.Encode1(round);
+        return sp;
+    }
+
+    // CField_Tournament::OnTournamentAvatarInfo, not tested.
+    public static ServerPacket TournamentAvatarInfo() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TournamentAvatarInfo);
+
+        return sp;
+    }
+
+    // CField_Wedding::OnWeddingProgress, not tested.
+    public static ServerPacket WeddingProgress(int nStep, int m_dwGroomID, int m_dwBrideID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WeddingProgress);
+
+        sp.Encode1(nStep);
+        sp.Encode4(m_dwGroomID); // m_dwGroomID
+        sp.Encode4(m_dwBrideID); // m_dwBrideID
+        return sp;
+    }
+
+    // CField_Wedding::OnWeddingCeremonyEnd, not tested.
+    public static ServerPacket WeddingCremonyEnd() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WeddingCremonyEnd);
+
+        return sp;
+    }
+
+    // CBattleRecordMan::OnDotDamageInfo, not tested.
+    public static ServerPacket BattleRecordDotDamageInfo(int damage, int count, boolean bAttrRate, int nDotAttrRate) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BattleRecordDotDamageInfo);
+
+        sp.Encode4(damage);
+        sp.Encode4(count);
+        sp.Encode1(bAttrRate ? 1 : 0); // bAttrRate
+        sp.Encode4(nDotAttrRate, bAttrRate); // nDotAttrRate
+        return sp;
+    }
+
+    // CBattleRecordMan::OnServerOnCalcRequestResult, not tested.
+    public static ServerPacket BattleRecordRequestResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BattleRecordRequestResult);
+
+        sp.Encode1(result);
         return sp;
     }
 }
