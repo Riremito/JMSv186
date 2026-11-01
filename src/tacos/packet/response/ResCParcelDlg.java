@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsParcel;
 
 /**
  *
@@ -27,84 +28,17 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCParcelDlg {
 
-    private enum Action {
-        // 不明
-        ERROR_09((byte) 0x09),
-        // NPCドイから宅配UIを開く
-        OPEN((byte) 0x0A),
-        // メルが足りません。
-        ERROR_0C((byte) 0x0C),
-        // 間違った要請です。
-        ERROR_0D((byte) 0x0D),
-        // 宛先の名前を再確認してください。
-        ERROR_0E((byte) 0x0E),
-        // 同じID内のキャラクターには送れません。
-        ERROR_0F((byte) 0x0F),
-        // 宛先の宅配保管箱に空きがありません。
-        ERROR_10((byte) 0x10),
-        // 宅配を受け取ることができないキャラクターです。
-        ERROR_11((byte) 0x11),
-        // 1個しか持てないアイテムが宛先の宅配保管箱にあります。
-        ERROR_12((byte) 0x12),
-        // 宅配物を発送しました。
-        SEND((byte) 0x13),
-        // 原因不明のエラーが発生しました。
-        ERROR_14((byte) 0x14),
-        // 空きがあるか確認してください。
-        ERROR_16((byte) 0x16),
-        // 1個しか持てないアイテムがありメルとアイテムを取り出すことができませんでした。
-        ERROR_17((byte) 0x17),
-        // 宅配物を受け取りました。
-        RECV((byte) 0x18),
-        // クラッシュ
-        ERROR_19((byte) 0x19),
-        // 宅配物到着! 通知
-        BALLOON_1A((byte) 0x1A),
-        // 速達UI
-        OPEN_EXPRESS((byte) 0x1B),
-        // 宅配物到着! 通知
-        BALLOON_1C((byte) 0x1C),
-        // 原因不明のエラーが発生しました。
-        ERROR_1D((byte) 0x1D),
-        UNKNOWN((byte) -1);
-
-        public static Action Find(byte b) {
-            for (Action o : Action.values()) {
-                if (o.Get() == b) {
-                    return o;
-                }
-            }
-
-            return UNKNOWN;
-        }
-
-        private byte value;
-
-        Action(byte b) {
-            value = b;
-        }
-
-        Action() {
-            value = -1;
-        }
-
-        public byte Get() {
-            return value;
-        }
-
-    };
-
     // CParcelDlg::OnPacket, 宅配
     public static ServerPacket Parcel_Open(boolean isQuick, boolean isNPC) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         // 0x3B or 0x40
         if (isQuick) {
             // 速達のUI
-            sp.Encode1(Action.OPEN_EXPRESS.Get());
+            sp.Encode1(OpsParcel.ParcelRes_OpenQuickSend.get());
             return sp;
         }
         // 通常のUI
-        sp.Encode1((byte) Action.OPEN.Get());
+        sp.Encode1(OpsParcel.ParcelRes_Loaded.get());
         // NPC会話 or 速達の通知から開いたかの判定
         sp.Encode1((byte) (isNPC ? 0 : 1));
         sp.Encode1((byte) 0);
@@ -115,14 +49,14 @@ public class ResCParcelDlg {
     // CParcelDlg::OnPacket
     public static ServerPacket Parcel_Send() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
-        sp.Encode1((byte) Action.SEND.Get());
+        sp.Encode1(OpsParcel.ParcelRes_ConfirmSend_Success.get());
         return sp;
     }
 
     // CParcelDlg::OnPacket, CParcelDlg::NoticeResult
     public static ServerPacket Parcel_Failed() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
-        sp.Encode1(Action.ERROR_14.Get());
+        sp.Encode1(OpsParcel.ParcelRes_ConfirmSend_Failure.get());
         return sp;
     }
 }
