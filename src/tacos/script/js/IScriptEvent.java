@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import tacos.odin.OdinEventInstanceManager;
 import tacos.client.TacosCharacter;

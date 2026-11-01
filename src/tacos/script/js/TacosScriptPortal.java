@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import java.util.regex.Pattern;
 import tacos.client.TacosCharacter;

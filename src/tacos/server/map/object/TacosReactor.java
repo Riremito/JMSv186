@@ -26,7 +26,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
-import tacos.script.TacosScriptReactor;
+import tacos.script.js.TacosScriptReactor;
 import tacos.wz.WzXML;
 
 /**

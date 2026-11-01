@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import tacos.server.map.object.TacosReactor;
 import javax.script.Invocable;

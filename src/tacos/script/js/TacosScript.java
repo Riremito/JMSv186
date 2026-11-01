@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import java.io.File;
 import java.io.FileNotFoundException;

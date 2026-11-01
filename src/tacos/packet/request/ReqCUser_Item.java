@@ -55,7 +55,7 @@ import odin.server.maps.SavedLocationType;
 import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.script.TacosScriptNPC;
+import tacos.script.js.TacosScriptNPC;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;

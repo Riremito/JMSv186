@@ -14,7 +14,7 @@ import tacos.wz.QuestWz;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.TacosScriptQuest;
+import tacos.script.js.TacosScriptQuest;
 import tacos.wz.WzXML;
 
 public class MapleQuest {

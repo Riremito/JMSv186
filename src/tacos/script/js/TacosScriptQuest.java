@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import javax.script.Invocable;
 import tacos.client.TacosCharacter;

@@ -25,7 +25,7 @@ import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
-import tacos.script.TacosScriptReactor;
+import tacos.script.js.TacosScriptReactor;
 
 /**
  *

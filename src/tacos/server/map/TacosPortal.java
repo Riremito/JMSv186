@@ -21,7 +21,7 @@ package tacos.server.map;
 import java.awt.Point;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
-import tacos.script.TacosScriptPortal;
+import tacos.script.js.TacosScriptPortal;
 
 /**
  *

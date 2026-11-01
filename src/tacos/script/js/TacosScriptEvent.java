@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.script.Invocable;

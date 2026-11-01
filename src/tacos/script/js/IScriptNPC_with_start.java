@@ -16,31 +16,15 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 /**
  *
  * @author Riremito
  */
-public enum TacosScriptType {
-    PORTAL("portal/"),
-    TELEPORT,
-    NPC("npc/"),
-    QUEST("quest/"),
-    REACOTR("reactor/"),
-    EVENT("event/"),
-    UNKNOWN;
-    private String folder_name;
+public interface IScriptNPC_with_start {
 
-    TacosScriptType() {
-        this.folder_name = "test/";
-    }
+    public void start();
 
-    TacosScriptType(String folder_name) {
-        this.folder_name = folder_name;
-    }
-
-    public String get() {
-        return this.folder_name;
-    }
+    public void action(int mode, int type, int selection);
 }

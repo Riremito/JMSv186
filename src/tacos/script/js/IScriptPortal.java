@@ -16,15 +16,15 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
+
+import tacos.odin.OdinPortalPlayerInteraction;
 
 /**
  *
  * @author Riremito
  */
-public interface IScriptQuest {
+public interface IScriptPortal {
 
-    public void start(int mode, int type, int selection);
-
-    public void end(int mode, int type, int selection);
+    public boolean enter(OdinPortalPlayerInteraction ppi);
 }

@@ -16,15 +16,14 @@
  *
  *
  */
-package tacos.script;
+package tacos.script.js;
 
 /**
  *
  * @author Riremito
  */
-public interface IScriptNPC_with_start {
+public interface IScriptNPC {
 
-    public void start();
-
+    //public void start();
     public void action(int mode, int type, int selection);
 }

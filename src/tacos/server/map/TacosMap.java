@@ -76,7 +76,7 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_FieldEffect;
-import tacos.script.TacosScriptEvent;
+import tacos.script.js.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
 import tacos.server.map.object.TacosDrop.DropEnterType;

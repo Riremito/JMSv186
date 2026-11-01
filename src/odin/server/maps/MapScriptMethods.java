@@ -37,8 +37,8 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import tacos.debug.DebugLogger;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
+import tacos.script.js.TacosScriptNPC;
+import tacos.script.js.TacosScriptQuest;
 import tacos.wz.WzXML;
 
 public class MapScriptMethods {

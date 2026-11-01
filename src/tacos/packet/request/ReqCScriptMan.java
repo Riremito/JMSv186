@@ -25,8 +25,8 @@ import tacos.debug.DebugMan;
 import tacos.odin.OdinNPCConversationManager;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
+import tacos.script.js.TacosScriptNPC;
+import tacos.script.js.TacosScriptQuest;
 
 /**
  *
