@@ -54,16 +54,20 @@ public class DebugManTest extends DebugMan implements IDebugMan {
                 nt.add("k : 黒 = #k黒");
                 nt.add("e : 太字 = #e太字#n");
                 nt.add("n : デフォルト = #nデフォルト");
+                nt.add("h : キャラクター名 = #h #"); // 空白必須
                 nt.add("m : マップ名 = #m910000000#");
                 nt.add("o : Mob名 = #o130101#");
                 nt.add("p : NPC名 = #p1012003#");
                 nt.add("t : アイテム名 = #t1302000#");
                 nt.add("q : スキル名 = #q4001344#");
-                nt.add("z : アイテム情報 = #z1302000#");
+                nt.add("z : アイテム情報 = #z1302000#"); // アイテム名, ToolTip付き
                 nt.add("v : アイテムアイコン1 = #v1302000#");
                 nt.add("i : アイテムアイコン2 = #i1302000#");
                 nt.add("s : スキルアイコン = #s4001344#");
                 nt.add("c : アイテム所持数 = #c2000004#");
+                nt.add("B : #B77#"); // プログレスバー
+                // #x
+                // #F#
                 nt.addMenu(11, "#m100000000#");
                 nt.addMenu(22, "#m200000000#");
                 super.askMenu(chr, nt);
