@@ -96,7 +96,7 @@ public class MapleShop {
         return true;
     }
 
-    public void sell(TacosCharacter chr, MapleInventoryType type, byte slot, short quantity) {
+    public void sell(TacosCharacter chr, MapleInventoryType type, int slot, int quantity) {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
@@ -111,7 +111,7 @@ public class MapleShop {
         if (quantity < 0) {
             return;
         }
-        short iQuant = item.getQuantity();
+        int iQuant = item.getQuantity();
         if (iQuant == 0xFFFF) {
             iQuant = 1;
         }

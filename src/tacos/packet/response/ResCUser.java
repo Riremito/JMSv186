@@ -183,11 +183,11 @@ public class ResCUser {
     }
 
     // CUser::ShowItemReleaseEffect
-    public static ServerPacket UserItemReleaseEffect(TacosCharacter chr, short equip_item_slot) {
+    public static ServerPacket UserItemReleaseEffect(TacosCharacter chr, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
 
         sp.Encode4(chr.getId());
-        sp.Encode2(equip_item_slot);
+        sp.Encode2(equip.getPosition());
         return sp;
     }
 

@@ -1609,7 +1609,7 @@ public class ReqCUser {
         boolean success = er == EnhancementResult.SUCCESS;
         boolean cursed = er == EnhancementResult.CURSED;
 
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1817,7 +1817,7 @@ public class ReqCUser {
             return false;
         }
         boolean success = true;
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1851,7 +1851,7 @@ public class ReqCUser {
             return false;
         }
         boolean success = true;
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1887,7 +1887,7 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false, io);
             io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
             chr.sendInventoryOperation(true, io);
-            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip.getPosition()));
+            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip));
         } else {
             chr.updateInv();
             return false;
@@ -2623,8 +2623,8 @@ public class ReqCUser {
         // 1. 最初の空きスロットを探す
         // 2. 空きスロット以降に存在するアイテムを探す
         // 3. アイテムを空きスロットに移動する
-        for (short slot_to = mi.getNextFreeSlot(); slot_to <= mi.getSlotLimit(); slot_to++) {
-            short slot_from = mi.getNextItem(slot_to);
+        for (int slot_to = mi.getNextFreeSlot(); slot_to <= mi.getSlotLimit(); slot_to++) {
+            int slot_from = mi.getNextItem(slot_to);
             if (slot_from == 0) {
                 break;
             }
@@ -2678,7 +2678,7 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendChangeSlotPositionRequest
-    public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
+    public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, int slot_from, int slot_to, int quantity) {
         if (chr.getPlayerShop() != null || chr.getTrade() != null) {
             return false;
         }

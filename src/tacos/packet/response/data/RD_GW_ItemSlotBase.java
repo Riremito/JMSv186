@@ -45,7 +45,7 @@ public class RD_GW_ItemSlotBase {
     public static byte[] EncodeSlot(Item item) {
         ServerPacket data = new ServerPacket();
 
-        short pos = item.getPosition();
+        int pos = item.getPosition();
         if (pos <= -1) {
             pos *= -1;
             if (pos > 100 && pos < 1000) {

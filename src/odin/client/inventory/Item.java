@@ -29,8 +29,8 @@ public class Item {
     protected MapleRing ring = null;
     private final int id;
     private int uniqueid = -1;
-    private short position;
-    private short quantity;
+    private int position;
+    private int quantity;
     private byte flag;
     private long expiration = -1;
     private TacosPet pet = null;
@@ -38,7 +38,7 @@ public class Item {
     private String GameMaster_log = null;
     private String giftFrom = "";
 
-    public Item(int id, short position, short quantity, byte flag, int uniqueid) {
+    public Item(int id, int position, int quantity, byte flag, int uniqueid) {
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -46,14 +46,14 @@ public class Item {
         this.uniqueid = uniqueid;
     }
 
-    public Item(int id, short position, short quantity, byte flag) {
+    public Item(int id, int position, int quantity, byte flag) {
         this.id = id;
         this.position = position;
         this.quantity = quantity;
         this.flag = flag;
     }
 
-    public Item(int id, byte position, short quantity) {
+    public Item(int id, byte position, int quantity) {
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -73,7 +73,7 @@ public class Item {
         return ret;
     }
 
-    public void setPosition(short position) {
+    public void setPosition(int position) {
         this.position = position;
 
         if (pet != null) {
@@ -81,7 +81,7 @@ public class Item {
         }
     }
 
-    public void setQuantity(short quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -182,12 +182,12 @@ public class Item {
     }
 
     // used by script
-    public short getPosition() {
+    public int getPosition() {
         return position;
     }
 
     // used by script
-    public short getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 

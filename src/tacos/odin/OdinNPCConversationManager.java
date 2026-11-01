@@ -545,11 +545,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void unequipEverything() {
         MapleInventory equipped = getPlayer().getInventory(MapleInventoryType.EQUIPPED);
         MapleInventory equip = getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<Short> ids = new LinkedList<>();
+        List<Integer> ids = new LinkedList<>();
         for (Item item : equipped.list()) {
             ids.add(item.getPosition());
         }
-        for (short id : ids) {
+        for (int id : ids) {
             MapleInventoryManipulator.unequip(getPlayer(), id, equip.getNextFreeSlot());
         }
     }

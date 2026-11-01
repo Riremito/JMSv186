@@ -648,6 +648,6 @@ public class MapleMiniGame implements IPlayerShop {
         getMap().removeMiniGame(this.getObjectId());
     }
 
-    public void buy(TacosCharacter chr, int z, short i) {
+    public void buy(TacosCharacter chr, int z, int i) {
     }
 }

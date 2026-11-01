@@ -42,7 +42,6 @@ import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import odin.server.MapleInventoryManipulator;
 import tacos.server.TacosWorld;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.database.query.DQ_Hiredmerch;
 
 /**
@@ -221,7 +220,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     public void sendVisitor(TacosCharacter chr) {
         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverVisitList(visitors_names));
     }
-
 
     public final static byte HIRED_MERCHANT = 1;
     public final static byte PLAYER_SHOP = 2;
@@ -414,12 +412,12 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         return itemz;
     }
 
-    public void buy(TacosCharacter chr, int item, short quantity) {
+    public void buy(TacosCharacter chr, int item, int quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         Item shopItem = pItem.item;
         Item newItem = shopItem.copy();
-        short perbundle = newItem.getQuantity();
-        newItem.setQuantity((short) (quantity * perbundle));
+        int perbundle = newItem.getQuantity();
+        newItem.setQuantity(quantity * perbundle);
 
         byte flag = newItem.getFlag();
 

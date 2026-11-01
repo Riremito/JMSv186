@@ -1939,7 +1939,7 @@ public class TacosCharacter extends TacosPlayer {
         for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.MiniRoom, this.id).values()) {
             Item item = mit.getKey();
             MapleInventory inv = getInventory(GameConstants.getInventoryType(item.getItemId()));
-            short slot = inv.getNextFreeSlot();
+            int slot = inv.getNextFreeSlot();
             if (slot < 0) {
                 no_slot.add(item);
                 continue;

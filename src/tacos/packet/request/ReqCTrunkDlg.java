@@ -122,7 +122,7 @@ public class ReqCTrunkDlg {
                         }
                     }
                     if (GameConstants.isThrowingStar(itemId) || GameConstants.isBullet(itemId)) {
-                        quantity = item.getQuantity();
+                        quantity = (short) item.getQuantity(); // TODO : cast
                     }
                     MapleInventoryManipulator.removeFromSlot(chr, type, slot, quantity, false);
                     item.setQuantity(quantity);
