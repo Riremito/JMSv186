@@ -31,11 +31,11 @@ public enum OpsNotifyLevelUp implements IPacketOps {
 
     private int value;
 
-    OpsNotifyLevelUp(int val) {
-        this.value = val;
+    private OpsNotifyLevelUp(int value) {
+        this.value = value;
     }
 
-    OpsNotifyLevelUp() {
+    private OpsNotifyLevelUp() {
         this.value = -1;
     }
 
@@ -45,7 +45,7 @@ public enum OpsNotifyLevelUp implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

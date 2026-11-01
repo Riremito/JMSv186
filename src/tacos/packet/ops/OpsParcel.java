@@ -63,11 +63,11 @@ public enum OpsParcel implements IPacketOps {
 
     private int value;
 
-    OpsParcel(int val) {
-        this.value = val;
+    private OpsParcel(int value) {
+        this.value = value;
     }
 
-    OpsParcel() {
+    private OpsParcel() {
         this.value = -1;
     }
 
@@ -77,14 +77,16 @@ public enum OpsParcel implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsParcel find(int val) {
+    public static OpsParcel find(int value) {
         for (OpsParcel ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

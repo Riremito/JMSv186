@@ -112,11 +112,11 @@ public enum OpsITC implements IPacketOps {
 
     private int value;
 
-    OpsITC(int val) {
-        this.value = val;
+    private OpsITC(int value) {
+        this.value = value;
     }
 
-    OpsITC() {
+    private OpsITC() {
         this.value = -1;
     }
 
@@ -126,24 +126,18 @@ public enum OpsITC implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsITC find(int val) {
+    public static OpsITC find(int value) {
         for (OpsITC ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void clear() {
-        for (OpsITC ops : values()) {
-            ops.set(UNKNOWN.get());
-        }
     }
 }

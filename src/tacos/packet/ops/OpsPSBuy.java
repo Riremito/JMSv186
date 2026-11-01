@@ -42,11 +42,11 @@ public enum OpsPSBuy implements IPacketOps {
 
     private int value;
 
-    OpsPSBuy(int val) {
-        this.value = val;
+    private OpsPSBuy(int value) {
+        this.value = value;
     }
 
-    OpsPSBuy() {
+    private OpsPSBuy() {
         this.value = -1;
     }
 
@@ -56,16 +56,7 @@ public enum OpsPSBuy implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsPSBuy find(int val) {
-        for (OpsPSBuy ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

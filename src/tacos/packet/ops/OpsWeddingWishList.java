@@ -46,11 +46,11 @@ public enum OpsWeddingWishList implements IPacketOps {
 
     private int value;
 
-    OpsWeddingWishList(int val) {
-        this.value = val;
+    private OpsWeddingWishList(int value) {
+        this.value = value;
     }
 
-    OpsWeddingWishList() {
+    private OpsWeddingWishList() {
         this.value = -1;
     }
 
@@ -60,7 +60,7 @@ public enum OpsWeddingWishList implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

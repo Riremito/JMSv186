@@ -51,11 +51,11 @@ public enum OpsNewYearCard implements IPacketOps {
 
     private int value;
 
-    OpsNewYearCard(int val) {
-        this.value = val;
+    private OpsNewYearCard(int value) {
+        this.value = value;
     }
 
-    OpsNewYearCard() {
+    private OpsNewYearCard() {
         this.value = -1;
     }
 
@@ -65,7 +65,7 @@ public enum OpsNewYearCard implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

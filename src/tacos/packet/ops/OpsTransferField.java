@@ -44,11 +44,11 @@ public enum OpsTransferField implements IPacketOps {
 
     private int value;
 
-    OpsTransferField(int val) {
-        this.value = val;
+    private OpsTransferField(int value) {
+        this.value = value;
     }
 
-    OpsTransferField() {
+    private OpsTransferField() {
         this.value = -1;
     }
 
@@ -58,17 +58,8 @@ public enum OpsTransferField implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsTransferField find(int val) {
-        for (OpsTransferField ops : OpsTransferField.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

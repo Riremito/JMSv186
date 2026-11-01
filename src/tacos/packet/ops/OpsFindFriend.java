@@ -36,11 +36,11 @@ public enum OpsFindFriend implements IPacketOps {
 
     private int value;
 
-    OpsFindFriend(int val) {
-        this.value = val;
+    private OpsFindFriend(int value) {
+        this.value = value;
     }
 
-    OpsFindFriend() {
+    private OpsFindFriend() {
         this.value = -1;
     }
 
@@ -50,7 +50,7 @@ public enum OpsFindFriend implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

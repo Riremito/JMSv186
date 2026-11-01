@@ -95,7 +95,7 @@ public class ReqCUIRaise {
             return false;
         }
 
-        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest_status.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest_status.getStatus())).str(quest_status.getCustomData() != null ? quest_status.getCustomData() : "").build()));
+        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest_status.getQuest().getId()).qt(OpsQuestRecordMessage.find(quest_status.getStatus())).str(quest_status.getCustomData() != null ? quest_status.getCustomData() : "").build()));
         chr.DebugMsg("OnRaiseRefesh : nQuestID = " + uQuestID);
         return true;
     }

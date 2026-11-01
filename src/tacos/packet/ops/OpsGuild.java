@@ -113,11 +113,11 @@ public enum OpsGuild implements IPacketOps {
 
     private int value;
 
-    OpsGuild(int val) {
-        this.value = val;
+    private OpsGuild(int value) {
+        this.value = value;
     }
 
-    OpsGuild() {
+    private OpsGuild() {
         this.value = -1;
     }
 
@@ -127,14 +127,16 @@ public enum OpsGuild implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsGuild find(int val) {
+    public static OpsGuild find(int value) {
         for (OpsGuild ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

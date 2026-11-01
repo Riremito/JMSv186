@@ -65,22 +65,22 @@ public enum OpsMovePathAttr {
     MPA_MOB_ATTACK_RUSH_STOP(36),
     UNKNOWN;
 
-    int value;
+    private int value;
 
-    OpsMovePathAttr(int val) {
-        value = val;
+    private OpsMovePathAttr(int value) {
+        this.value = value;
     }
 
-    OpsMovePathAttr() {
-        value = -1;
+    private OpsMovePathAttr() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int val) {
-        value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

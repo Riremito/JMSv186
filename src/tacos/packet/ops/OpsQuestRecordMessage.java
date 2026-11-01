@@ -30,29 +30,31 @@ public enum OpsQuestRecordMessage {
 
     private int value;
 
-    OpsQuestRecordMessage(int flag) {
-        value = flag;
+    private OpsQuestRecordMessage(int value) {
+        this.value = value;
     }
 
-    OpsQuestRecordMessage() {
-        value = -1;
+    private OpsQuestRecordMessage() {
+        this.value = -1;
     }
 
-    public boolean set(int flag) {
-        value = flag;
+    public boolean set(int value) {
+        this.value = value;
         return true;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public static OpsQuestRecordMessage get(int v) {
-        for (OpsQuestRecordMessage f : OpsQuestRecordMessage.values()) {
-            if (f.get() == v) {
-                return f;
+    public static OpsQuestRecordMessage find(int value) {
+        for (OpsQuestRecordMessage ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
-        return OpsQuestRecordMessage.UNKNOWN;
+        return UNKNOWN;
     }
 }

@@ -33,11 +33,11 @@ public enum OpsSueCharacter implements IPacketOps {
 
     private int value;
 
-    OpsSueCharacter(int val) {
-        this.value = val;
+    private OpsSueCharacter(int value) {
+        this.value = value;
     }
 
-    OpsSueCharacter() {
+    private OpsSueCharacter() {
         this.value = -1;
     }
 
@@ -47,7 +47,7 @@ public enum OpsSueCharacter implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

@@ -162,17 +162,17 @@ public enum OpsSecondaryStat implements IPacketOps {
     private int value;
     private TwoStateType two_state;
 
-    OpsSecondaryStat(int value) {
+    private OpsSecondaryStat(int value) {
         this.value = value;
         this.two_state = TwoStateType.NOT_TWO_STATE;
     }
 
-    OpsSecondaryStat(int value, TwoStateType two_state) {
+    private OpsSecondaryStat(int value, TwoStateType two_state) {
         this.value = value;
         this.two_state = two_state;
     }
 
-    OpsSecondaryStat() {
+    private OpsSecondaryStat() {
         this.value = -1;
         this.two_state = TwoStateType.NOT_TWO_STATE;
     }
@@ -212,10 +212,12 @@ public enum OpsSecondaryStat implements IPacketOps {
         return 1 << (this.value % 32);
     }
 
-    public static OpsSecondaryStat find(int val) {
-        for (OpsSecondaryStat ops : OpsSecondaryStat.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static OpsSecondaryStat find(int value) {
+        for (OpsSecondaryStat ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

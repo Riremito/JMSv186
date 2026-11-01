@@ -30,11 +30,11 @@ public enum OpsWebBoard implements IPacketOps {
 
     private int value;
 
-    OpsWebBoard(int val) {
-        this.value = val;
+    private OpsWebBoard(int value) {
+        this.value = value;
     }
 
-    OpsWebBoard() {
+    private OpsWebBoard() {
         this.value = -1;
     }
 
@@ -44,7 +44,7 @@ public enum OpsWebBoard implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

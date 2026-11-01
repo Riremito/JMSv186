@@ -33,11 +33,11 @@ public enum OpsAccountMoreInfo implements IPacketOps {
 
     private int value;
 
-    OpsAccountMoreInfo(int val) {
-        this.value = val;
+    private OpsAccountMoreInfo(int value) {
+        this.value = value;
     }
 
-    OpsAccountMoreInfo() {
+    private OpsAccountMoreInfo() {
         this.value = -1;
     }
 
@@ -47,7 +47,7 @@ public enum OpsAccountMoreInfo implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

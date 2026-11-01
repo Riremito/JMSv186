@@ -32,11 +32,11 @@ public enum OpsMCarnivalFail implements IPacketOps {
 
     private int value;
 
-    OpsMCarnivalFail(int val) {
-        this.value = val;
+    private OpsMCarnivalFail(int value) {
+        this.value = value;
     }
 
-    OpsMCarnivalFail() {
+    private OpsMCarnivalFail() {
         this.value = -1;
     }
 
@@ -46,16 +46,7 @@ public enum OpsMCarnivalFail implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsMCarnivalFail find(int val) {
-        for (OpsMCarnivalFail ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

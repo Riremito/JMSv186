@@ -33,11 +33,11 @@ public enum OpsBattlefieldTeam implements IPacketOps {
 
     private int value;
 
-    OpsBattlefieldTeam(int val) {
-        this.value = val;
+    private OpsBattlefieldTeam(int value) {
+        this.value = value;
     }
 
-    OpsBattlefieldTeam() {
+    private OpsBattlefieldTeam() {
         this.value = -1;
     }
 
@@ -47,7 +47,7 @@ public enum OpsBattlefieldTeam implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

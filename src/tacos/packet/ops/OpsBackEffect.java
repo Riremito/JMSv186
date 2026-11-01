@@ -31,11 +31,11 @@ public enum OpsBackEffect implements IPacketOps {
 
     private int value;
 
-    OpsBackEffect(int val) {
-        this.value = val;
+    private OpsBackEffect(int value) {
+        this.value = value;
     }
 
-    OpsBackEffect() {
+    private OpsBackEffect() {
         this.value = -1;
     }
 
@@ -45,7 +45,7 @@ public enum OpsBackEffect implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

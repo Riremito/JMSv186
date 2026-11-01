@@ -35,11 +35,11 @@ public enum OpsShopScanner implements IPacketOps {
 
     private int value;
 
-    OpsShopScanner(int val) {
-        this.value = val;
+    private OpsShopScanner(int value) {
+        this.value = value;
     }
 
-    OpsShopScanner() {
+    private OpsShopScanner() {
         this.value = -1;
     }
 
@@ -49,19 +49,18 @@ public enum OpsShopScanner implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsShopScanner find(int val) {
-        for (OpsShopScanner ops : OpsShopScanner.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static OpsShopScanner find(int value) {
+        for (OpsShopScanner ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void init() {
     }
 }

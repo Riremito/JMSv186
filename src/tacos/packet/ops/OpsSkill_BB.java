@@ -977,8 +977,8 @@ public enum OpsSkill_BB {
 
     private final int value;
 
-    private OpsSkill_BB(int skill_id) {
-        this.value = skill_id;
+    private OpsSkill_BB(int value) {
+        this.value = value;
     }
 
     private OpsSkill_BB() {
@@ -986,13 +986,15 @@ public enum OpsSkill_BB {
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public static OpsSkill_BB find(int skill_id) {
-        for (OpsSkill_BB o : OpsSkill_BB.values()) {
-            if (o.get() == skill_id) {
-                return o;
+    public static OpsSkill_BB find(int value) {
+        for (OpsSkill_BB ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

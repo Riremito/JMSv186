@@ -56,11 +56,11 @@ public enum OpsChatType implements IPacketOps {
 
     private int value;
 
-    OpsChatType(int val) {
-        this.value = val;
+    private OpsChatType(int value) {
+        this.value = value;
     }
 
-    OpsChatType() {
+    private OpsChatType() {
         this.value = -1;
     }
 
@@ -70,7 +70,7 @@ public enum OpsChatType implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

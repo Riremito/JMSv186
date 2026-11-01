@@ -34,11 +34,11 @@ public enum OpsAssist implements IPacketOps {
 
     private int value;
 
-    OpsAssist(int val) {
-        this.value = val;
+    private OpsAssist(int value) {
+        this.value = value;
     }
 
-    OpsAssist() {
+    private OpsAssist() {
         this.value = -1;
     }
 
@@ -48,16 +48,7 @@ public enum OpsAssist implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static void clear() {
-        for (OpsAssist ops : values()) {
-            ops.set(UNKNOWN.get());
-        }
-    }
-
-    public static void init() {
+    public void set(int value) {
+        this.value = value;
     }
 }

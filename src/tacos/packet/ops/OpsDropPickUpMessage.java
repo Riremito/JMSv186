@@ -33,20 +33,20 @@ public enum OpsDropPickUpMessage {
 
     private int value;
 
-    OpsDropPickUpMessage(int flag) {
-        value = flag;
+    private OpsDropPickUpMessage(int value) {
+        this.value = value;
     }
 
-    OpsDropPickUpMessage() {
-        value = -1;
+    private OpsDropPickUpMessage() {
+        this.value = -1;
     }
 
-    public boolean set(int flag) {
-        value = flag;
+    public boolean set(int value) {
+        this.value = value;
         return true;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 }

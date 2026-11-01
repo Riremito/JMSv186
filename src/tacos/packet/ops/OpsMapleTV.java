@@ -32,11 +32,11 @@ public enum OpsMapleTV implements IPacketOps {
 
     private int value;
 
-    OpsMapleTV(int val) {
-        this.value = val;
+    private OpsMapleTV(int value) {
+        this.value = value;
     }
 
-    OpsMapleTV() {
+    private OpsMapleTV() {
         this.value = -1;
     }
 
@@ -46,19 +46,7 @@ public enum OpsMapleTV implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsMapleTV find(int val) {
-        for (OpsMapleTV ops : OpsMapleTV.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
-    }
-
-    public static void init() {
+    public void set(int value) {
+        this.value = value;
     }
 }

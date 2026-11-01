@@ -40,11 +40,11 @@ public enum OpsClaim implements IPacketOps {
 
     private int value;
 
-    OpsClaim(int val) {
-        this.value = val;
+    private OpsClaim(int value) {
+        this.value = value;
     }
 
-    OpsClaim() {
+    private OpsClaim() {
         this.value = -1;
     }
 
@@ -54,7 +54,7 @@ public enum OpsClaim implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

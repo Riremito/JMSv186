@@ -33,11 +33,11 @@ public enum OpsMobAppear implements IPacketOps {
 
     private int value;
 
-    OpsMobAppear(int val) {
-        this.value = val;
+    private OpsMobAppear(int value) {
+        this.value = value;
     }
 
-    OpsMobAppear() {
+    private OpsMobAppear() {
         this.value = -1;
     }
 
@@ -47,14 +47,16 @@ public enum OpsMobAppear implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMobAppear find(int val) {
+    public static OpsMobAppear find(int value) {
         for (OpsMobAppear ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

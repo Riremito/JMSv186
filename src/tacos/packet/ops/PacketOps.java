@@ -44,13 +44,9 @@ public class PacketOps {
         OpsQuest.init();
         OpsMovePathAttr.init();
         OpsFuncKeyMapped.init();
-        OpsContiMove.init();
-        OpsMapTransfer.init();
         OpsMiniRoomProtocol.init();
-        OpsMiniRoomType.init();
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
-        OpsMRLeave.init();
         OpsBodyPart.init();
         OpsUI.init();
         OpsMoveAbility.init();

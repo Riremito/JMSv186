@@ -53,11 +53,11 @@ public enum OpsEmotion implements IPacketOps {
 
     private int value;
 
-    OpsEmotion(int val) {
-        this.value = val;
+    private OpsEmotion(int value) {
+        this.value = value;
     }
 
-    OpsEmotion() {
+    private OpsEmotion() {
         this.value = -1;
     }
 
@@ -67,7 +67,7 @@ public enum OpsEmotion implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

@@ -56,11 +56,11 @@ public enum OpsMREnterResult implements IPacketOps {
 
     private int value;
 
-    OpsMREnterResult(int val) {
-        this.value = val;
+    private OpsMREnterResult(int value) {
+        this.value = value;
     }
 
-    OpsMREnterResult() {
+    private OpsMREnterResult() {
         this.value = -1;
     }
 
@@ -70,17 +70,8 @@ public enum OpsMREnterResult implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsMREnterResult find(int val) {
-        for (OpsMREnterResult ops : OpsMREnterResult.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void init() {

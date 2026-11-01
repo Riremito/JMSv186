@@ -52,26 +52,28 @@ public enum OpsChangeStat {
 
     private int value;
 
-    OpsChangeStat(int flag) {
-        value = flag;
+    private OpsChangeStat(int value) {
+        this.value = value;
     }
 
-    OpsChangeStat() {
-        value = -1;
+    private OpsChangeStat() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int val) {
-        value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsChangeStat find(int val) {
-        for (OpsChangeStat o : OpsChangeStat.values()) {
-            if (o.get() == val) {
-                return o;
+    public static OpsChangeStat find(int value) {
+        for (OpsChangeStat ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

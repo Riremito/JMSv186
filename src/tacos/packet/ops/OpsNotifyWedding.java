@@ -30,11 +30,11 @@ public enum OpsNotifyWedding implements IPacketOps {
 
     private int value;
 
-    OpsNotifyWedding(int val) {
-        this.value = val;
+    private OpsNotifyWedding(int value) {
+        this.value = value;
     }
 
-    OpsNotifyWedding() {
+    private OpsNotifyWedding() {
         this.value = -1;
     }
 
@@ -44,7 +44,7 @@ public enum OpsNotifyWedding implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

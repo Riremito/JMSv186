@@ -30,11 +30,11 @@ public enum OpsNotifyJobChange implements IPacketOps {
 
     private int value;
 
-    OpsNotifyJobChange(int val) {
-        this.value = val;
+    private OpsNotifyJobChange(int value) {
+        this.value = value;
     }
 
-    OpsNotifyJobChange() {
+    private OpsNotifyJobChange() {
         this.value = -1;
     }
 
@@ -44,7 +44,7 @@ public enum OpsNotifyJobChange implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

@@ -117,11 +117,11 @@ public enum OpsParty implements IPacketOps {
 
     private int value;
 
-    OpsParty(int val) {
-        this.value = val;
+    private OpsParty(int value) {
+        this.value = value;
     }
 
-    OpsParty() {
+    private OpsParty() {
         this.value = -1;
     }
 
@@ -131,14 +131,14 @@ public enum OpsParty implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsParty find(int val) {
+    public static OpsParty find(int value) {
         for (OpsParty ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }

@@ -48,11 +48,11 @@ public enum OpsFamily implements IPacketOps {
 
     private int value;
 
-    OpsFamily(int val) {
-        this.value = val;
+    private OpsFamily(int value) {
+        this.value = value;
     }
 
-    OpsFamily() {
+    private OpsFamily() {
         this.value = -1;
     }
 
@@ -62,16 +62,7 @@ public enum OpsFamily implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsFamily find(int val) {
-        for (OpsFamily ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

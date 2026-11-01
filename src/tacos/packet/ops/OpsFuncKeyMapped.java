@@ -33,11 +33,11 @@ public enum OpsFuncKeyMapped implements IPacketOps {
 
     private int value;
 
-    OpsFuncKeyMapped(int val) {
-        this.value = val;
+    private OpsFuncKeyMapped(int value) {
+        this.value = value;
     }
 
-    OpsFuncKeyMapped() {
+    private OpsFuncKeyMapped() {
         this.value = -1;
     }
 
@@ -47,14 +47,16 @@ public enum OpsFuncKeyMapped implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsFuncKeyMapped find(int val) {
+    public static OpsFuncKeyMapped find(int value) {
         for (OpsFuncKeyMapped ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

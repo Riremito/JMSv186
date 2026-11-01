@@ -224,11 +224,11 @@ public enum OpsCashItem implements IPacketOps {
 
     private int value;
 
-    OpsCashItem(int val) {
-        this.value = val;
+    private OpsCashItem(int value) {
+        this.value = value;
     }
 
-    OpsCashItem() {
+    private OpsCashItem() {
         this.value = -1;
     }
 
@@ -238,14 +238,16 @@ public enum OpsCashItem implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsCashItem find(int val) {
+    public static OpsCashItem find(int value) {
         for (OpsCashItem ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

@@ -51,11 +51,11 @@ public enum OpsFriend implements IPacketOps {
 
     private int value;
 
-    OpsFriend(int val) {
-        this.value = val;
+    private OpsFriend(int value) {
+        this.value = value;
     }
 
-    OpsFriend() {
+    private OpsFriend() {
         this.value = -1;
     }
 
@@ -65,20 +65,18 @@ public enum OpsFriend implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsFriend find(int val) {
-        for (OpsFriend o : OpsFriend.values()) {
-            if (o.get() == val) {
-                return o;
+    public static OpsFriend find(int value) {
+        for (OpsFriend ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void init() {
-
     }
 }

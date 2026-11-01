@@ -33,13 +33,13 @@ public enum OpsTemporaryStat {
     _TS_NO(7),
     UNKNOWN;
 
-    int value;
+    private int value;
 
-    OpsTemporaryStat(int val) {
-        this.value = val;
+    private OpsTemporaryStat(int value) {
+        this.value = value;
     }
 
-    OpsTemporaryStat() {
+    private OpsTemporaryStat() {
         this.value = -1;
     }
 

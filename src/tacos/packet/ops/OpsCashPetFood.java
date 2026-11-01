@@ -30,11 +30,11 @@ public enum OpsCashPetFood implements IPacketOps {
 
     private int value;
 
-    OpsCashPetFood(int val) {
-        this.value = val;
+    private OpsCashPetFood(int value) {
+        this.value = value;
     }
 
-    OpsCashPetFood() {
+    private OpsCashPetFood() {
         this.value = -1;
     }
 
@@ -44,7 +44,7 @@ public enum OpsCashPetFood implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

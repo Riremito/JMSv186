@@ -132,20 +132,20 @@ public enum OpsMessage {
 
     private int value;
 
-    OpsMessage(int flag) {
-        value = flag;
+    private OpsMessage(int value) {
+        this.value = value;
     }
 
-    OpsMessage() {
-        value = -1;
+    private OpsMessage() {
+        this.value = -1;
     }
 
-    public boolean set(int flag) {
-        value = flag;
+    public boolean set(int value) {
+        this.value = value;
         return true;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 }

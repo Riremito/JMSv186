@@ -32,11 +32,11 @@ public enum OpsAntiMacroType implements IPacketOps {
 
     private int value;
 
-    OpsAntiMacroType(int val) {
-        this.value = val;
+    private OpsAntiMacroType(int value) {
+        this.value = value;
     }
 
-    OpsAntiMacroType() {
+    private OpsAntiMacroType() {
         this.value = -1;
     }
 
@@ -46,7 +46,7 @@ public enum OpsAntiMacroType implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

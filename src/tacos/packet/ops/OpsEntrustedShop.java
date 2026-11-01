@@ -69,11 +69,11 @@ public enum OpsEntrustedShop implements IPacketOps {
 
     private int value;
 
-    OpsEntrustedShop(int val) {
-        this.value = val;
+    private OpsEntrustedShop(int value) {
+        this.value = value;
     }
 
-    OpsEntrustedShop() {
+    private OpsEntrustedShop() {
         this.value = -1;
     }
 
@@ -83,14 +83,16 @@ public enum OpsEntrustedShop implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsEntrustedShop find(int val) {
-        for (OpsEntrustedShop ops : OpsEntrustedShop.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static OpsEntrustedShop find(int value) {
+        for (OpsEntrustedShop ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

@@ -32,11 +32,11 @@ public enum OpsMCarnivalTeam implements IPacketOps {
 
     private int value;
 
-    OpsMCarnivalTeam(int val) {
-        this.value = val;
+    private OpsMCarnivalTeam(int value) {
+        this.value = value;
     }
 
-    OpsMCarnivalTeam() {
+    private OpsMCarnivalTeam() {
         this.value = -1;
     }
 
@@ -46,7 +46,7 @@ public enum OpsMCarnivalTeam implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

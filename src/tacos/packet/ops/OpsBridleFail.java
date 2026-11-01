@@ -30,11 +30,11 @@ public enum OpsBridleFail implements IPacketOps {
 
     private int value;
 
-    OpsBridleFail(int val) {
-        this.value = val;
+    private OpsBridleFail(int value) {
+        this.value = value;
     }
 
-    OpsBridleFail() {
+    private OpsBridleFail() {
         this.value = -1;
     }
 
@@ -44,7 +44,7 @@ public enum OpsBridleFail implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

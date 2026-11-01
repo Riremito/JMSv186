@@ -50,11 +50,11 @@ public enum OpsMRLeave implements IPacketOps {
 
     private int value;
 
-    OpsMRLeave(int val) {
-        this.value = val;
+    private OpsMRLeave(int value) {
+        this.value = value;
     }
 
-    OpsMRLeave() {
+    private OpsMRLeave() {
         this.value = -1;
     }
 
@@ -64,19 +64,7 @@ public enum OpsMRLeave implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsMRLeave find(int val) {
-        for (OpsMRLeave ops : OpsMRLeave.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
-    }
-
-    public static void init() {
+    public void set(int value) {
+        this.value = value;
     }
 }

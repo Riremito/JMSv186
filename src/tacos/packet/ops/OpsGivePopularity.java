@@ -35,11 +35,11 @@ public enum OpsGivePopularity implements IPacketOps {
 
     private int value;
 
-    OpsGivePopularity(int val) {
-        this.value = val;
+    private OpsGivePopularity(int value) {
+        this.value = value;
     }
 
-    OpsGivePopularity() {
+    private OpsGivePopularity() {
         this.value = -1;
     }
 
@@ -49,7 +49,7 @@ public enum OpsGivePopularity implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

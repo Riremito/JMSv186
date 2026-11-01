@@ -31,11 +31,11 @@ public enum OpsQuestGuide implements IPacketOps {
 
     private int value;
 
-    OpsQuestGuide(int val) {
-        this.value = val;
+    private OpsQuestGuide(int value) {
+        this.value = value;
     }
 
-    OpsQuestGuide() {
+    private OpsQuestGuide() {
         this.value = -1;
     }
 
@@ -45,7 +45,7 @@ public enum OpsQuestGuide implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

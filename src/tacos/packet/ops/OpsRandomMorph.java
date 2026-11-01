@@ -33,11 +33,11 @@ public enum OpsRandomMorph implements IPacketOps {
 
     private int value;
 
-    OpsRandomMorph(int val) {
-        this.value = val;
+    private OpsRandomMorph(int value) {
+        this.value = value;
     }
 
-    OpsRandomMorph() {
+    private OpsRandomMorph() {
         this.value = -1;
     }
 
@@ -47,7 +47,7 @@ public enum OpsRandomMorph implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

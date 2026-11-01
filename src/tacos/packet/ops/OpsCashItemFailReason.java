@@ -100,11 +100,11 @@ public enum OpsCashItemFailReason implements IPacketOps {
 
     private int value;
 
-    OpsCashItemFailReason(int val) {
-        this.value = val;
+    private OpsCashItemFailReason(int value) {
+        this.value = value;
     }
 
-    OpsCashItemFailReason() {
+    private OpsCashItemFailReason() {
         this.value = -1;
     }
 
@@ -114,17 +114,8 @@ public enum OpsCashItemFailReason implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsCashItemFailReason find(int val) {
-        for (OpsCashItemFailReason ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

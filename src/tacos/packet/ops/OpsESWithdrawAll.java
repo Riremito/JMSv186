@@ -33,11 +33,11 @@ public enum OpsESWithdrawAll implements IPacketOps {
 
     private int value;
 
-    OpsESWithdrawAll(int val) {
-        this.value = val;
+    private OpsESWithdrawAll(int value) {
+        this.value = value;
     }
 
-    OpsESWithdrawAll() {
+    private OpsESWithdrawAll() {
         this.value = -1;
     }
 
@@ -47,16 +47,7 @@ public enum OpsESWithdrawAll implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsESWithdrawAll find(int val) {
-        for (OpsESWithdrawAll ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

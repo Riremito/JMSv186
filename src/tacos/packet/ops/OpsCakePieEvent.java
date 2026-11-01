@@ -34,11 +34,11 @@ public enum OpsCakePieEvent implements IPacketOps {
 
     private int value;
 
-    OpsCakePieEvent(int val) {
-        this.value = val;
+    private OpsCakePieEvent(int value) {
+        this.value = value;
     }
 
-    OpsCakePieEvent() {
+    private OpsCakePieEvent() {
         this.value = -1;
     }
 
@@ -48,7 +48,7 @@ public enum OpsCakePieEvent implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

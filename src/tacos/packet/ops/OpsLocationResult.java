@@ -32,11 +32,11 @@ public enum OpsLocationResult implements IPacketOps {
 
     private int value;
 
-    OpsLocationResult(int val) {
-        this.value = val;
+    private OpsLocationResult(int value) {
+        this.value = value;
     }
 
-    OpsLocationResult() {
+    private OpsLocationResult() {
         this.value = -1;
     }
 
@@ -46,11 +46,7 @@ public enum OpsLocationResult implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static void init() {
-
+    public void set(int value) {
+        this.value = value;
     }
 }

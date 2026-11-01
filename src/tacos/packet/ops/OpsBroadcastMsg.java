@@ -54,29 +54,30 @@ public enum OpsBroadcastMsg {
 
     private int value;
 
-    OpsBroadcastMsg(int v) {
-        value = v;
+    private OpsBroadcastMsg(int value) {
+        this.value = value;
     }
 
-    OpsBroadcastMsg() {
-        value = -1;
+    private OpsBroadcastMsg() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int v) {
-        value = v;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsBroadcastMsg find(byte b) {
-        for (OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
-            if (o.get() == b) {
-                return o;
+    public static OpsBroadcastMsg find(int value) {
+        for (OpsBroadcastMsg ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
-
         return UNKNOWN;
     }
 

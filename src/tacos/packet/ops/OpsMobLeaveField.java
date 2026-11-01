@@ -33,11 +33,11 @@ public enum OpsMobLeaveField implements IPacketOps {
 
     private int value;
 
-    OpsMobLeaveField(int val) {
-        this.value = val;
+    private OpsMobLeaveField(int value) {
+        this.value = value;
     }
 
-    OpsMobLeaveField() {
+    private OpsMobLeaveField() {
         this.value = -1;
     }
 
@@ -47,7 +47,7 @@ public enum OpsMobLeaveField implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 }

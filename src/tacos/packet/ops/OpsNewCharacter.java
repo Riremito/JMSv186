@@ -46,26 +46,28 @@ public enum OpsNewCharacter {
 
     private int value;
 
-    OpsNewCharacter(int flag) {
-        value = flag;
+    private OpsNewCharacter(int value) {
+        this.value = value;
     }
 
-    OpsNewCharacter() {
-        value = -1;
+    private OpsNewCharacter() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int val) {
-        value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsNewCharacter find(int val) {
-        for (OpsNewCharacter o : OpsNewCharacter.values()) {
-            if (o.get() == val) {
-                return o;
+    public static OpsNewCharacter find(int value) {
+        for (OpsNewCharacter ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

@@ -35,11 +35,11 @@ public enum Ops_Whisper implements IPacketOps {
 
     private int value;
 
-    Ops_Whisper(int val) {
-        this.value = val;
+    private Ops_Whisper(int value) {
+        this.value = value;
     }
 
-    Ops_Whisper() {
+    private Ops_Whisper() {
         this.value = -1;
     }
 
@@ -49,24 +49,22 @@ public enum Ops_Whisper implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static Ops_Whisper find(int val) {
-        for (Ops_Whisper ops : Ops_Whisper.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static Ops_Whisper find(int value) {
+        for (Ops_Whisper ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
     }
 
-    public boolean check(int flag) {
-        return (flag & get()) != 0;
-    }
-
-    public static void init() {
-
+    public boolean check(int value) {
+        return (value & get()) != 0;
     }
 }

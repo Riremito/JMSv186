@@ -39,11 +39,11 @@ public enum OpsTransferChannel implements IPacketOps {
 
     private int value;
 
-    OpsTransferChannel(int val) {
-        this.value = val;
+    private OpsTransferChannel(int value) {
+        this.value = value;
     }
 
-    OpsTransferChannel() {
+    private OpsTransferChannel() {
         this.value = -1;
     }
 
@@ -53,18 +53,8 @@ public enum OpsTransferChannel implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    // not used
-    public static IPacketOps find(int val) {
-        for (IPacketOps ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

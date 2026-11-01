@@ -42,11 +42,11 @@ public enum OpsForcedStat implements IPacketOps {
 
     private int value;
 
-    OpsForcedStat(int val) {
-        this.value = val;
+    private OpsForcedStat(int value) {
+        this.value = value;
     }
 
-    OpsForcedStat() {
+    private OpsForcedStat() {
         this.value = -1;
     }
 
@@ -56,16 +56,7 @@ public enum OpsForcedStat implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsForcedStat find(int val) {
-        for (OpsForcedStat ops : OpsForcedStat.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

@@ -75,11 +75,11 @@ public enum OpsUI implements IPacketOps {
 
     private int value;
 
-    OpsUI(int val) {
-        this.value = val;
+    private OpsUI(int value) {
+        this.value = value;
     }
 
-    OpsUI() {
+    private OpsUI() {
         this.value = -1;
     }
 
@@ -89,13 +89,13 @@ public enum OpsUI implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {
-        for (OpsUI o : OpsUI.values()) {
-            o.set(-1);
+        for (OpsUI ops : values()) {
+            ops.set(UNKNOWN.get());
         }
     }
 

@@ -36,11 +36,11 @@ public enum OpsGuildBBS implements IPacketOps {
 
     private int value;
 
-    OpsGuildBBS(int val) {
-        this.value = val;
+    private OpsGuildBBS(int value) {
+        this.value = value;
     }
 
-    OpsGuildBBS() {
+    private OpsGuildBBS() {
         this.value = -1;
     }
 
@@ -50,14 +50,16 @@ public enum OpsGuildBBS implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsGuildBBS find(int val) {
+    public static OpsGuildBBS find(int value) {
         for (OpsGuildBBS ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

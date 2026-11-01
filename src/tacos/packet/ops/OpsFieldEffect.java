@@ -35,24 +35,15 @@ public enum OpsFieldEffect {
 
     private int value;
 
-    OpsFieldEffect(int flag) {
-        value = flag;
+    private OpsFieldEffect(int value) {
+        this.value = value;
     }
 
-    OpsFieldEffect() {
-        value = -1;
+    private OpsFieldEffect() {
+        this.value = -1;
     }
 
     public int get() {
-        return value;
-    }
-
-    public static OpsFieldEffect find(int val) {
-        for (OpsFieldEffect o : OpsFieldEffect.values()) {
-            if (o.get() == val) {
-                return o;
-            }
-        }
-        return UNKNOWN;
+        return this.value;
     }
 }
