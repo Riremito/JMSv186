@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 public class MapleBBSThread {
@@ -33,7 +33,7 @@ public class MapleBBSThread {
     public int guildID;
     public int ownerID;
     public int icon;
-    public Map<Integer, MapleBBSReply> replies = new HashMap<>();
+    public Map<Integer, MapleBBSReply> replies = new TreeMap<>();
 
     public MapleBBSThread(int localthreadID, String name, String text, long timestamp,
             int guildID, int ownerID, int icon) {

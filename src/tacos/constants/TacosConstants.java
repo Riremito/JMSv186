@@ -18,7 +18,7 @@
  */
 package tacos.constants;
 
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 
 /**
  *
@@ -44,6 +44,15 @@ public class TacosConstants {
         }
 
         return 2388000 <= item_id;
+    }
+
+    public static boolean is_gold_hammer(int item_id) {
+        // 2470000
+        if (item_id / 10000 == 247) {
+            return true;
+        }
+        // TODO : 2470001, 2471000
+        return false;
     }
 
     // def
@@ -161,7 +170,7 @@ public class TacosConstants {
             return true;
         }
 
-        switch (OpsSkill.find(skill_id)) {
+        switch (OpsSkill_BB.find(skill_id)) {
             case BOWMASTER_STORM_ARROW:
             case CROSSBOWMASTER_PIERCING:
             // pirate
@@ -187,7 +196,7 @@ public class TacosConstants {
     }
 
     public static boolean is_keydown_skill_remote(int skill_id) {
-        switch (OpsSkill.find(skill_id)) {
+        switch (OpsSkill_BB.find(skill_id)) {
             case ARCHMAGE1_BIGBANG:
             case ARCHMAGE2_BIGBANG:
             case BISHOP_BIGBANG:
@@ -204,10 +213,10 @@ public class TacosConstants {
     }
 
     public static boolean is_mesp_explosion(int skill_id) {
-        return OpsSkill.find(skill_id) == OpsSkill.THIEFMASTER_MESO_EXPLOSION;
+        return OpsSkill_BB.find(skill_id) == OpsSkill_BB.THIEFMASTER_MESO_EXPLOSION;
     }
 
     public static boolean is_shadow_meso(int skill_id) {
-        return OpsSkill.find(skill_id) == OpsSkill.HERMIT_SHADOW_MESO;
+        return OpsSkill_BB.find(skill_id) == OpsSkill_BB.HERMIT_SHADOW_MESO;
     }
 }

@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
@@ -35,8 +34,7 @@ import tacos.config.Region;
 public class ReqCShopDlg {
 
     // CShopDlg::OnPacket
-    public static boolean OnPacket(TacosClient client, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnPacket(TacosCharacter chr, ClientPacket cp) {
         if (chr == null) {
             return false;
         }
@@ -58,19 +56,19 @@ public class ReqCShopDlg {
 
                 int itemId = cp.Decode4();
                 short quantity = cp.Decode2();
-                shop.buy(client, chr, itemId, quantity);
+                shop.buy(chr, itemId, quantity);
                 break;
             }
             case ShopReq_Sell: {
                 byte slot = (byte) cp.Decode2();
                 int itemId = cp.Decode4();
                 short quantity = cp.Decode2();
-                shop.sell(client, GameConstants.getInventoryType(itemId), slot, quantity);
+                shop.sell(chr, GameConstants.getInventoryType(itemId), slot, quantity);
                 break;
             }
             case ShopReq_Recharge: {
                 byte slot = (byte) cp.Decode2();
-                shop.recharge(client, slot);
+                shop.recharge(chr, slot);
                 break;
             }
             case ShopReq_Close: {

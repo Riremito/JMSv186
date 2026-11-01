@@ -25,12 +25,14 @@ import tacos.config.Region;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleNodes;
-import tacos.client.TacosBuff;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.ops.OpsMobStat;
+import java.util.List;
+import tacos.server.map.object.TacosMobBuff;
 
 /**
  *
@@ -58,17 +60,106 @@ public class ResCMobPool {
         return sp;
     }
 
+    // MobStat::DecodeTemporary order (not the bit order)
+    private static final OpsMobStat[] MOB_STAT_DECODE_ORDER = {
+        OpsMobStat.MS_PAD,
+        OpsMobStat.MS_PDR,
+        OpsMobStat.MS_MAD,
+        OpsMobStat.MS_MDR,
+        OpsMobStat.MS_ACC,
+        OpsMobStat.MS_EVA,
+        OpsMobStat.MS_Speed,
+        OpsMobStat.MS_Stun,
+        OpsMobStat.MS_Freeze,
+        OpsMobStat.MS_Poison,
+        OpsMobStat.MS_Seal,
+        OpsMobStat.MS_Darkness,
+        OpsMobStat.MS_PowerUp,
+        OpsMobStat.MS_MagicUp,
+        OpsMobStat.MS_PGuardUp,
+        OpsMobStat.MS_MGuardUp,
+        OpsMobStat.MS_PImmune,
+        OpsMobStat.MS_MImmune,
+        OpsMobStat.MS_Doom,
+        OpsMobStat.MS_Web,
+        OpsMobStat.MS_HardSkin,
+        OpsMobStat.MS_Ambush,
+        OpsMobStat.MS_Venom,
+        OpsMobStat.MS_Blind,
+        OpsMobStat.MS_SealSkill,
+        OpsMobStat.MS_Dazzle,
+        OpsMobStat.MS_PCounter,
+        OpsMobStat.MS_MCounter,
+        OpsMobStat.MS_RiseByToss,
+        OpsMobStat.MS_BodyPressure,
+        OpsMobStat.MS_Weakness,
+        OpsMobStat.MS_TimeBomb,
+        OpsMobStat.MS_Showdown,
+        OpsMobStat.MS_MagicCrash,
+        OpsMobStat.MS_DamagedElemAttr,
+        OpsMobStat.MS_HealByDamage
+    };
+
     // CMob::SetTemporaryStat
     public static byte[] CMob_SetTemporaryStat(TacosMonster monster) {
-        ServerPacket data = new ServerPacket();
+        return EncodeMobStat(monster.getBuff().getActive());
+    }
 
-        int[] buff_mask = TacosBuff.getMobBuffBuffer();
+    private static int[] getMobStatMask(List<TacosMobBuff.Buff> buffs) {
+        int[] buff_mask = TacosMobBuff.getBuffBuffer();
+        for (TacosMobBuff.Buff buff : buffs) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+        }
+        return buff_mask;
+    }
+
+    private static void EncodeMobStatMask(ServerPacket data, int[] buff_mask) {
         for (int index = 0; index < buff_mask.length; index++) {
             data.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
+    }
 
-        // MobStat::DecodeTemporary
-        // TODO
+    private static boolean hasMobStat(List<TacosMobBuff.Buff> buffs, OpsMobStat ops) {
+        for (TacosMobBuff.Buff buff : buffs) {
+            if (buff.ops == ops) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // MobStat::DecodeTemporary
+    public static byte[] EncodeMobStat(List<TacosMobBuff.Buff> buffs) {
+        ServerPacket data = new ServerPacket();
+
+        EncodeMobStatMask(data, getMobStatMask(buffs));
+        for (OpsMobStat ops : MOB_STAT_DECODE_ORDER) {
+            for (TacosMobBuff.Buff buff : buffs) {
+                if (buff.ops != ops) {
+                    continue;
+                }
+                data.Encode2(buff.buff_effect); // n
+                data.Encode4(buff.buff_id); // r
+                data.Encode2(buff.buff_time / 500); // t, 500ms
+            }
+        }
+        if (hasMobStat(buffs, OpsMobStat.MS_Burned)) {
+            data.Encode4(0); // count of BURNED_INFO
+            // BURNED_INFO: dwCharacterID, nSkillID, nDamage, tInterval, tEnd, nDotCount (Encode4 each)
+        }
+        if (hasMobStat(buffs, OpsMobStat.MS_PCounter)) {
+            data.Encode4(0); // wPCounter
+        }
+        if (hasMobStat(buffs, OpsMobStat.MS_MCounter)) {
+            data.Encode4(0); // wMCounter
+        }
+        if (hasMobStat(buffs, OpsMobStat.MS_PCounter) || hasMobStat(buffs, OpsMobStat.MS_MCounter)) {
+            data.Encode4(0); // nCounterProb
+        }
+        if (hasMobStat(buffs, OpsMobStat.MS_Disable)) {
+            data.Encode1(0); // bInvincible
+            data.Encode1(0); // bDisable
+        }
         return data.getBytes();
     }
 
@@ -224,20 +315,27 @@ public class ResCMobPool {
     }
 
     // CMob::OnStatSet
-    public static ServerPacket MobStatSet(TacosMonster monster) {
+    public static ServerPacket MobStatSet(TacosMonster monster, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
-        // TODO
+        sp.EncodeBuffer(EncodeMobStat(monster.getBuff().getMS(buff_id)));
+        sp.Encode2(0); // tDelay, not checked
+        sp.Encode1(0); // nCalcDamageStatIndex, not checked
         return sp;
     }
 
     // CMob::OnStatReset
-    public static ServerPacket MobStatReset(TacosMonster monster) {
+    public static ServerPacket MobStatReset(TacosMonster monster, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatReset);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
-        // TODO
+        List<TacosMobBuff.Buff> buffs = monster.getBuff().getMS(buff_id);
+        EncodeMobStatMask(sp, getMobStatMask(buffs));
+        if (hasMobStat(buffs, OpsMobStat.MS_Burned)) {
+            sp.Encode4(0); // count of burned info to remove, not checked
+        }
+        sp.Encode1(0); // nCalcDamageStatIndex, not checked
         return sp;
     }
 

@@ -19,6 +19,7 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 
 /**
@@ -61,6 +62,11 @@ public class TacosDrop extends TacosMapObject {
 
     public int getQuestId() {
         return this.quest_id;
+    }
+
+    // quest item is only visible to the players who are doing the quest.
+    public boolean isVisible(TacosCharacter chr) {
+        return this.quest_id <= 0 || chr.getQuestStatus(this.quest_id) == 1;
     }
 
     public boolean isPlayerDrop() {

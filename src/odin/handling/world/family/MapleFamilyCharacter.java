@@ -21,6 +21,7 @@
  */
 package odin.handling.world.family;
 
+import java.util.Objects;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import java.util.List;
@@ -171,6 +172,11 @@ public class MapleFamilyCharacter {
         return (o.getId() == id && o.getName().equals(name));
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
     public void setOnline(boolean f) {
         online = f;
     }
@@ -182,16 +188,12 @@ public class MapleFamilyCharacter {
             MapleFamilyCharacter chr = fam.getMFC(junior1);
             if (chr != null) {
                 ret.addAll(chr.getAllJuniors(fam));
-                //} else {
-                //	junior1 = 0;
             }
         }
         if (junior2 > 0) {
             MapleFamilyCharacter chr = fam.getMFC(junior2);
             if (chr != null) {
                 ret.addAll(chr.getAllJuniors(fam));
-                //} else {
-                //	junior2 = 0;
             }
         }
         return ret;
@@ -216,8 +218,6 @@ public class MapleFamilyCharacter {
                 } else if (chr.getJunior2() > 0 && chr.getJunior2() != id) {
                     pedigree.add(chr.getJunior2());
                 }
-                //} else {
-                //	seniorid = 0;
             }
         }
         if (junior1 > 0) {
@@ -230,8 +230,6 @@ public class MapleFamilyCharacter {
                 if (chr.getJunior2() > 0) {
                     pedigree.add(chr.getJunior2());
                 }
-                //} else {
-                //	junior1 = 0;
             }
         }
         if (junior2 > 0) {
@@ -244,8 +242,6 @@ public class MapleFamilyCharacter {
                 if (chr.getJunior2() > 0) {
                     pedigree.add(chr.getJunior2());
                 }
-                //} else {
-                //	junior2 = 0;
             }
         }
 

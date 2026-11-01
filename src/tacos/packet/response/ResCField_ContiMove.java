@@ -28,6 +28,7 @@ import tacos.packet.ops.OpsContiMove;
  */
 public class ResCField_ContiMove {
 
+    // CField_ContiMove::OnContiMove
     public static ServerPacket ContiMove(OpsContiMove ops1, OpsContiMove ops2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CONTIMOVE);
         sp.Encode1(ops1.get());
@@ -35,6 +36,7 @@ public class ResCField_ContiMove {
         return sp;
     }
 
+    // CField_ContiMove::OnContiState
     public static ServerPacket ContiState(OpsContiMove ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CONTISTATE);
         sp.Encode1(ops.get());

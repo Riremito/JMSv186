@@ -28,6 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class Res_JMS_CInstancePortalPool {
 
+    // LP_JMS_InstancePortalCreated
     public static ServerPacket InstancePortalCreated(TacosDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
 

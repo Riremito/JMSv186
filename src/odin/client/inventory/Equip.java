@@ -20,91 +20,487 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import tacos.config.Region;
-import odin.constants.GameConstants;
-import tacos.wz.ids.DWI_Random;
-import odin.server.Randomizer;
-import tacos.config.Config;
+import tacos.packet.ops.OpsGrade;
+import tacos.server.TacosEnhancement;
+import tacos.wz.CharacterWz.EquipInfo;
+import tacos.wz.WzXML;
 
 public class Equip extends Item {
 
-    public static enum ScrollResult {
-
-        SUCCESS, FAIL, CURSE
-    }
-    public static final int ARMOR_RATIO = 350000;
-    public static final int WEAPON_RATIO = 700000;
-
-    private int upgradeSlots = 0;
-    private int level = 0;
-    private int vicioushammer = 0;
-    private int enhance = 0;
-    private int str = 0;
-    private int dex = 0;
-    private int _int = 0;
-    private int luk = 0;
-    private int hp = 0;
-    private int mp = 0;
-    private int watk = 0;
-    private int matk = 0;
-    private int wdef = 0;
-    private int mdef = 0;
-    private int acc = 0;
-    private int avoid = 0;
-    private int hands = 0;
-    private int speed = 0;
-    private int jump = 0;
-    private int hpR = 0;
-    private int mpR = 0;
-    private int rank = 0;
-    private int hidden = 0;
-    private int potential1 = 0;
-    private int potential2 = 0;
-    private int potential3 = 0;
-    private int itemEXP = 0;
-    private int durability = -1;
-    private int incattackSpeed = 0; // 攻撃速度の書
-
-    public Equip(int id, short position, byte flag) {
-        super(id, position, (short) 1, flag);
-    }
+    // 変動可能数能力値
+    private int nRUC = 0;
+    private int nCUC = 0;
+    private int nSTR = 0;
+    private int nDEX = 0;
+    private int nINT = 0;
+    private int nLUK = 0;
+    private int nMaxHP = 0;
+    private int nMaxMP = 0;
+    private int nPAD = 0;
+    private int nMAD = 0;
+    private int nPDD = 0;
+    private int nMDD = 0;
+    private int nACC = 0;
+    private int nEVA = 0;
+    private int nCraft = 0;
+    private int nSpeed = 0;
+    private int nJump = 0;
+    // owner
+    // nAttribute (flag)
+    private int nLevelUpType = 0; // 成長装備
+    private int nLevel = 0; // 成長装備
+    private int nEXP = 0; // 成長装備
+    private int nDurability = -1; // 耐久装備
+    private int nIUC = 0; // ビシャスのハンマー使用可能回数
+    private int nCIUC = 0; // ビシャスのハンマー使用回数
+    private int nGrade = 0; // 潜在
+    private int hidden = 0; // 潜在
+    private int nCHUC = 0; // 装備強化
+    private int nOption1 = 0; // 潜在能力1
+    private int nOption2 = 0; // 潜在能力2
+    private int nOption3 = 0; // 潜在能力3
+    private int nSocket1 = 0; // 潜在能力4
+    private int nSocket2 = 0; // 潜在能力5 or カナトコ (共用)
+    private int nOptionCount = 0; // 潜在能力の数 (2LINE or 3LINE)
+    // 固定能力値
+    private int nTUC = 0; // アップグレード可能回数 (WZ)
+    private int nMaxHPr = 0;
+    private int nMaxMPr = 0;
+    private int nAttackSpeed = 0; // 攻撃速度
 
     public Equip(int id, short position, int uniqueid, byte flag) {
         super(id, position, (short) 1, flag, uniqueid);
     }
 
+    public TacosEnhancement getEnhancement() {
+        return new TacosEnhancement(this);
+    }
+
+    public EquipInfo getInfo() {
+        return WzXML.CHARACTER.getEquipInfo(getItemId());
+    }
+
+    // get.
+    public int getRUC() {
+        return this.nRUC;
+    }
+
+    public int getCUC() {
+        return this.nCUC;
+    }
+
+    public int getSTR() {
+        return this.nSTR;
+    }
+
+    public int getDEX() {
+        return this.nDEX;
+    }
+
+    public int getINT() {
+        return this.nINT;
+    }
+
+    public int getLUK() {
+        return this.nLUK;
+    }
+
+    public int getMaxHP() {
+        return this.nMaxHP;
+    }
+
+    public int getMaxMP() {
+        return this.nMaxMP;
+    }
+
+    public int getPAD() {
+        return this.nPAD;
+    }
+
+    public int getMAD() {
+        return this.nMAD;
+    }
+
+    public int getPDD() {
+        return this.nPDD;
+    }
+
+    public int getMDD() {
+        return this.nMDD;
+    }
+
+    public int getACC() {
+        return this.nACC;
+    }
+
+    public int getEVA() {
+        return this.nEVA;
+    }
+
+    public int getCraft() {
+        return this.nCraft;
+    }
+
+    public int getSpeed() {
+        return this.nSpeed;
+    }
+
+    public int getJump() {
+        return this.nJump;
+    }
+
+    // owner.
+    // nAttribute
+    public int getLevelUpType() {
+        return this.nLevelUpType;
+    }
+
+    public int getLevelLevel() {
+        return this.nLevel;
+
+    }
+
+    public int getLevelEXP() {
+        return this.nEXP;
+    }
+
+    public int getDurability() {
+        return this.nDurability;
+    }
+
+    // packet用, ビシャスのハンマー使用回数
+    public int getIUC() {
+        return (this.nIUC - 2) << 4 | this.nCIUC;
+    }
+
+    public int getMaxIUC() {
+        return this.nIUC;
+    }
+
+    public int getCIUC() {
+        return this.nCIUC;
+    }
+
+    public int getGrade() {
+        return this.nGrade;
+    }
+
+    public OpsGrade getOpsGrade() {
+        if (this.hidden != 0) {
+            return OpsGrade.HIDDEN;
+        }
+        switch (this.nGrade) {
+
+            case 1 -> {
+                return OpsGrade.RARE;
+            }
+            case 2 -> {
+                return OpsGrade.EPIC;
+            }
+            case 3 -> {
+                return OpsGrade.UNIQUE;
+            }
+            case 4 -> {
+                return OpsGrade.LEGENDARY;
+            }
+            default -> {
+                return OpsGrade.NONE;
+            }
+        }
+    }
+
+    public int getCHUC() {
+        return this.nCHUC;
+    }
+
+    public int getOption1() {
+        return this.nOption1;
+    }
+
+    public int getOption2() {
+        return this.nOption2;
+    }
+
+    public int getOption3() {
+        return this.nOption3;
+    }
+
+    public int getSocket1() {
+        return this.nSocket1;
+    }
+
+    public int getSocket2() {
+        return this.nSocket2;
+    }
+
+    public int getOptionCount() {
+        return this.nOptionCount;
+    }
+
+    // set.
+    public void setRUC(int nRUC) {
+        this.nRUC = nRUC;
+    }
+
+    public void setCUC(int nCUC) {
+        this.nCUC = nCUC;
+    }
+
+    public void setSTR(int nSTR) {
+        this.nSTR = checkShort(nSTR);
+    }
+
+    public void setDEX(int nDEX) {
+        this.nDEX = checkShort(nDEX);
+    }
+
+    public void setINT(int nINT) {
+        this.nINT = checkShort(nINT);
+    }
+
+    public void setLUK(int nLUK) {
+        this.nLUK = checkShort(nLUK);
+    }
+
+    public void setMaxHP(int nMaxHP) {
+        this.nMaxHP = checkShort(nMaxHP);
+    }
+
+    public void setMaxMP(int nMaxMP) {
+        this.nMaxMP = checkShort(nMaxMP);
+    }
+
+    public void setPAD(int nPAD) {
+        this.nPAD = checkShort(nPAD);
+    }
+
+    public void setMAD(int nMAD) {
+        this.nMAD = checkShort(nMAD);
+    }
+
+    public void setPDD(int nPDD) {
+        this.nPDD = checkShort(nPDD);
+    }
+
+    public void setMDD(int nMDD) {
+        this.nMDD = checkShort(nMDD);
+    }
+
+    public void setACC(int nACC) {
+        this.nACC = checkShort(nACC);
+    }
+
+    public void setEVA(int nEVA) {
+        this.nEVA = checkShort(nEVA);
+    }
+
+    public void setCraft(int nCraft) {
+        this.nCraft = checkShort(nCraft);
+    }
+
+    public void setSpeed(int nSpeed) {
+        this.nSpeed = checkShort(nSpeed);
+    }
+
+    public void setJump(int nJump) {
+        this.nJump = checkShort(nJump);
+    }
+
+    public void setLevelUpType(int nLevelUpType) {
+        this.nLevelUpType = nLevelUpType;
+    }
+
+    public void setLevelLevel(int nLevel) {
+        this.nLevel = nLevel;
+
+    }
+
+    public void setLevelEXP(int nEXP) {
+        this.nEXP = nEXP;
+    }
+
+    public void setMaxIUC(int nIUC) {
+        this.nIUC = nIUC;
+    }
+
+    public void setCIUC(int nCIUC) {
+        this.nCIUC = nCIUC;
+    }
+
+    public void setDurability(int nDurability) {
+        this.nDurability = nDurability;
+    }
+
+    public void setGrade(int nGrade) {
+        this.nGrade = nGrade;
+    }
+
+    public void setCHUC(int nCHUC) {
+        this.nCHUC = nCHUC;
+    }
+
+    public void setOption1(int nOption1) {
+        this.nOption1 = nOption1;
+    }
+
+    public void setPOption2(int nOption2) {
+        this.nOption2 = nOption2;
+    }
+
+    public void setOption3(int nOption3) {
+        this.nOption3 = nOption3;
+    }
+
+    public void setSocket1(int nSocket1) {
+        this.nSocket1 = nSocket1;
+    }
+
+    public void setSocket2(int nSocket2) {
+        this.nSocket2 = nSocket2;
+    }
+
+    public void setOptionCount(int nOptionCount) {
+        this.nOptionCount = nOptionCount;
+    }
+
+    // inc.
+    private int checkByte(int value) {
+        if (Byte.MAX_VALUE < value) {
+            return Byte.MAX_VALUE;
+        }
+        if (value < 0) {
+            return 0;
+        }
+        return value;
+    }
+
+    private int checkShort(int value) {
+        if (Short.MAX_VALUE < value) {
+            return Short.MAX_VALUE;
+        }
+        if (value < 0) {
+            return 0;
+        }
+        return value;
+    }
+
+    public void incRUC(int value) {
+        this.nRUC = checkByte(this.nRUC + value);
+    }
+
+    public void incCUC(int value) {
+        this.nCUC = checkByte(this.nCUC + value);
+    }
+
+    public void incSTR(int value) {
+        this.nSTR = checkShort(this.nSTR + value);
+    }
+
+    public void incDEX(int value) {
+        this.nDEX = checkShort(this.nDEX + value);
+    }
+
+    public void incINT(int value) {
+        this.nINT = checkShort(this.nINT + value);
+    }
+
+    public void incLUK(int value) {
+        this.nLUK = checkShort(this.nLUK + value);
+    }
+
+    public void incMaxHP(int value) {
+        this.nMaxHP = checkShort(this.nMaxHP + value);
+    }
+
+    public void incMaxMP(int value) {
+        this.nMaxMP = checkShort(this.nMaxMP + value);
+    }
+
+    public void incPAD(int value) {
+        this.nPAD = checkShort(this.nPAD + value);
+    }
+
+    public void incMAD(int value) {
+        this.nMAD = checkShort(this.nMAD + value);
+    }
+
+    public void incPDD(int value) {
+        this.nPDD = checkShort(this.nPDD + value);
+    }
+
+    public void incMDD(int value) {
+        this.nMDD = checkShort(this.nMDD + value);
+    }
+
+    public void incACC(int value) {
+        this.nACC = checkShort(this.nACC + value);
+    }
+
+    public void incEVA(int value) {
+        this.nEVA = checkShort(this.nEVA + value);
+    }
+
+    public void incCraft(int value) {
+        this.nCraft = checkShort(this.nCraft + value);
+    }
+
+    public void incSpeed(int value) {
+        this.nSpeed = checkShort(this.nSpeed + value);
+    }
+
+    public void incJump(int value) {
+        this.nJump = checkShort(this.nJump + value);
+    }
+
+    public void incCHUC(int value) {
+        this.nCHUC = checkByte(this.nCHUC + value);
+    }
+
+    public void incAttackSpeed(int value) {
+        this.nAttackSpeed = checkByte(this.nAttackSpeed + value);
+    }
+
+    // nSocket1.
+    // nSocket2.
     @Override
     public Item copy() {
         Equip ret = new Equip(getItemId(), getPosition(), getUniqueId(), getFlag());
-        ret.str = str;
-        ret.dex = dex;
-        ret._int = _int;
-        ret.luk = luk;
-        ret.hp = hp;
-        ret.mp = mp;
-        ret.matk = matk;
-        ret.mdef = mdef;
-        ret.watk = watk;
-        ret.wdef = wdef;
-        ret.acc = acc;
-        ret.avoid = avoid;
-        ret.hands = hands;
-        ret.speed = speed;
-        ret.jump = jump;
-        ret.enhance = enhance;
-        ret.upgradeSlots = upgradeSlots;
-        ret.level = level;
-        ret.itemEXP = itemEXP;
-        ret.durability = durability;
-        ret.vicioushammer = vicioushammer;
-        ret.rank = rank;
+        ret.nSTR = nSTR;
+        ret.nDEX = nDEX;
+        ret.nINT = nINT;
+        ret.nLUK = nLUK;
+        ret.nMaxHP = nMaxHP;
+        ret.nMaxMP = nMaxMP;
+        ret.nMAD = nMAD;
+        ret.nMDD = nMDD;
+        ret.nPAD = nPAD;
+        ret.nPDD = nPDD;
+        ret.nACC = nACC;
+        ret.nEVA = nEVA;
+        ret.nCraft = nCraft;
+        ret.nSpeed = nSpeed;
+        ret.nJump = nJump;
+        ret.nCHUC = nCHUC;
+        ret.nRUC = nRUC;
+        ret.nCUC = nCUC;
+        ret.nLevelUpType = nLevelUpType;
+        ret.nLevel = nLevel;
+        ret.nEXP = nEXP;
+        ret.nDurability = nDurability;
+        ret.nIUC = nIUC;
+        ret.nCIUC = nCIUC;
+        ret.nGrade = nGrade;
         ret.hidden = hidden;
-        ret.potential1 = potential1;
-        ret.potential2 = potential2;
-        ret.potential3 = potential3;
-        ret.hpR = hpR;
-        ret.mpR = mpR;
-        ret.incattackSpeed = incattackSpeed;
+        ret.nOption1 = nOption1;
+        ret.nOption2 = nOption2;
+        ret.nOption3 = nOption3;
+        ret.nSocket1 = nSocket1;
+        ret.nSocket2 = nSocket2;
+        ret.nOptionCount = nOptionCount;
+        ret.nMaxHPr = nMaxHPr;
+        ret.nMaxMPr = nMaxMPr;
+        ret.nTUC = nTUC;
+        ret.nAttackSpeed = nAttackSpeed;
         ret.setGiftFrom(getGiftFrom());
         ret.setOwner(getOwner());
         ret.setQuantity(getQuantity());
@@ -117,317 +513,9 @@ public class Equip extends Item {
         return 1;
     }
 
-    public int getUpgradeSlots() {
-        return upgradeSlots;
-    }
-
-    public int getStr() {
-        return str;
-    }
-
-    public int getDex() {
-        return dex;
-    }
-
-    public int getInt() {
-        return _int;
-    }
-
-    public int getLuk() {
-        return luk;
-    }
-
-    public int getHp() {
-        return hp;
-    }
-
-    public int getMp() {
-        return mp;
-    }
-
-    public int getWatk() {
-        return watk;
-    }
-
-    public int getMatk() {
-        return matk;
-    }
-
-    public int getWdef() {
-        return wdef;
-    }
-
-    public int getMdef() {
-        return mdef;
-    }
-
-    public int getAcc() {
-        return acc;
-    }
-
-    public int getAvoid() {
-        return avoid;
-    }
-
-    public int getHands() {
-        return hands;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public int getJump() {
-        return jump;
-    }
-
-    public void setStr(int str) {
-        if (str < 0) {
-            str = 0;
-        }
-        this.str = str;
-    }
-
-    public void setDex(int dex) {
-        if (dex < 0) {
-            dex = 0;
-        }
-        this.dex = dex;
-    }
-
-    public void setInt(int _int) {
-        if (_int < 0) {
-            _int = 0;
-        }
-        this._int = _int;
-    }
-
-    public void setLuk(int luk) {
-        if (luk < 0) {
-            luk = 0;
-        }
-        this.luk = luk;
-    }
-
-    public void setHp(int hp) {
-        if (hp < 0) {
-            hp = 0;
-        }
-        this.hp = hp;
-    }
-
-    public void setMp(int mp) {
-        if (mp < 0) {
-            mp = 0;
-        }
-        this.mp = mp;
-    }
-
-    public void setWatk(int watk) {
-        if (watk < 0) {
-            watk = 0;
-        }
-        this.watk = watk;
-    }
-
-    public void setMatk(int matk) {
-        if (matk < 0) {
-            matk = 0;
-        }
-        this.matk = matk;
-    }
-
-    public void setWdef(int wdef) {
-        if (wdef < 0) {
-            wdef = 0;
-        }
-        this.wdef = wdef;
-    }
-
-    public void setMdef(int mdef) {
-        if (mdef < 0) {
-            mdef = 0;
-        }
-        this.mdef = mdef;
-    }
-
-    public void setAcc(int acc) {
-        if (acc < 0) {
-            acc = 0;
-        }
-        this.acc = acc;
-    }
-
-    public void setAvoid(int avoid) {
-        if (avoid < 0) {
-            avoid = 0;
-        }
-        this.avoid = avoid;
-    }
-
-    public void setHands(int hands) {
-        if (hands < 0) {
-            hands = 0;
-        }
-        this.hands = hands;
-    }
-
-    public void setSpeed(int speed) {
-        if (speed < 0) {
-            speed = 0;
-        }
-        this.speed = speed;
-    }
-
-    public void setJump(int jump) {
-        if (jump < 0) {
-            jump = 0;
-        }
-        this.jump = jump;
-    }
-
-    public void setUpgradeSlots(int upgradeSlots) {
-        this.upgradeSlots = upgradeSlots;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public int getViciousHammer() {
-        return vicioushammer;
-    }
-
-    public void setViciousHammer(int ham) {
-        vicioushammer = ham;
-    }
-
-    public int getItemEXP() {
-        return itemEXP;
-    }
-
-    public void setItemEXP(int itemEXP) {
-        if (itemEXP < 0) {
-            itemEXP = 0;
-        }
-        this.itemEXP = itemEXP;
-    }
-
-    public int getEquipExp() {
-        if (itemEXP <= 0) {
-            return 0;
-        }
-        //aproximate value
-        if (GameConstants.isWeapon(getItemId())) {
-            return itemEXP / Equip.WEAPON_RATIO;
-        } else {
-            return itemEXP / Equip.ARMOR_RATIO;
-        }
-    }
-
-    public int getEquipExpForLevel() {
-        if (getEquipExp() <= 0) {
-            return 0;
-        }
-        int expz = getEquipExp();
-        for (int i = getBaseLevel(); i <= GameConstants.getMaxLevel(getItemId()); i++) {
-            if (expz >= GameConstants.getExpForLevel(i, getItemId())) {
-                expz -= GameConstants.getExpForLevel(i, getItemId());
-            } else { //for 0, dont continue;
-                break;
-            }
-        }
-        return expz;
-    }
-
-    public int getExpPercentage() {
-        if (getEquipLevel() < getBaseLevel() || getEquipLevel() > GameConstants.getMaxLevel(getItemId()) || GameConstants.getExpForLevel(getEquipLevel(), getItemId()) <= 0) {
-            return 0;
-        }
-        return getEquipExpForLevel() * 100 / GameConstants.getExpForLevel(getEquipLevel(), getItemId());
-    }
-
-    public int getEquipLevel() {
-        if (GameConstants.getMaxLevel(getItemId()) <= 0) {
-            return 0;
-        } else if (getEquipExp() <= 0) {
-            return getBaseLevel();
-        }
-        int levelz = getBaseLevel();
-        int expz = getEquipExp();
-        for (int i = levelz; (GameConstants.getStatFromWeapon(getItemId()) == null ? (i <= GameConstants.getMaxLevel(getItemId())) : (i < GameConstants.getMaxLevel(getItemId()))); i++) {
-            if (expz >= GameConstants.getExpForLevel(i, getItemId())) {
-                levelz++;
-                expz -= GameConstants.getExpForLevel(i, getItemId());
-            } else { //for 0, dont continue;
-                break;
-            }
-        }
-        return levelz;
-    }
-
-    public int getBaseLevel() {
-        return (GameConstants.getStatFromWeapon(getItemId()) == null ? 1 : 0);
-    }
-
     @Override
     public void setQuantity(short quantity) {
-        if (quantity < 0 || quantity > 1) {
-            throw new RuntimeException("Setting the quantity to " + quantity + " on an equip (itemid: " + getItemId() + ")");
-        }
-        super.setQuantity(quantity);
-    }
-
-    public int getDurability() {
-        return this.durability;
-    }
-
-    public void setDurability(int dur) {
-        this.durability = dur;
-    }
-
-    public int getEnhance() {
-        return enhance;
-    }
-
-    public void setEnhance(int en) {
-        this.enhance = en;
-    }
-
-    public int getPotential1() {
-        return potential1;
-    }
-
-    public void setPotential1(int en) {
-        this.potential1 = en;
-    }
-
-    public int getPotential2() {
-        return potential2;
-    }
-
-    public void setPotential2(int en) {
-        this.potential2 = en;
-    }
-
-    public int getPotential3() {
-        return potential3;
-    }
-
-    public void setPotential3(int en) {
-        this.potential3 = en;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
+        super.setQuantity((short) 1);
     }
 
     public int getHidden() {
@@ -438,87 +526,40 @@ public class Equip extends Item {
         this.hidden = hidden;
     }
 
-    public int getNewLines() {
-        // 3行
-        if (getPotential3() != 0) {
-            return 3;
-        }
-        // 初回抽選
-        if (getPotential1() == 0) {
-            // 初回は50%で3行 (テスト)
-            if (50 <= Randomizer.nextInt(100)) {
-                return 3;
-            }
-        }
-        // 2行
-        return 2;
+    public int getMaxHPr() {
+        return this.nMaxHPr;
     }
 
-    public int getNewRank(boolean master) {
-        // エピック抽選
-        if (2 <= getRank() || 50 <= Randomizer.nextInt(100)) {
-            // ユニーク抽選
-            if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
-                // レジェンダリー抽選
-                if (master) {
-                    if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) {
-                        if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
-                            return 4;
-                        }
-                    }
-                }
-                return 3;
-            }
-            return 2;
-        }
-        return 1;
+    public void setMaxHPr(int nMaxHPr) {
+        this.nMaxHPr = nMaxHPr;
     }
 
-    public boolean resetPotential(boolean hyper, boolean master) {
-        int lines = getNewLines();
-        int newrank = getNewRank(master);
-        if (getHidden() != 0) {
-            return false;
-        }
-        setHidden(1); // 未確認状態
-        setRank(newrank); // 等級
-
-        if (hyper) {
-            if (50 <= Randomizer.nextInt(100)) {
-                lines = 3;
-            }
-        }
-
-        setPotential1(DWI_Random.getRandomPotential(newrank));
-        setPotential2(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
-        if (lines == 3) {
-            setPotential3(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
-        }
-        return true;
+    public int getMaxMPr() {
+        return this.nMaxMPr;
     }
 
-    public int getHpR() {
-        return hpR;
+    public void setMaxMPr(int nMaxMPr) {
+        this.nMaxMPr = nMaxMPr;
     }
 
-    public void setHpR(int hp) {
-        this.hpR = hp;
+    public int getTUC() {
+        return this.nTUC;
     }
 
-    public int getMpR() {
-        return mpR;
+    public void setTUC(int nTUC) {
+        this.nTUC = nTUC;
     }
 
-    public void setMpR(int mp) {
-        this.mpR = mp;
+    public int getAttackSpeed() {
+        return nAttackSpeed;
     }
 
-    // 攻撃速度の書
-    public int getIncAttackSpeed() {
-        return incattackSpeed;
+    public void setAttackSpeed(int nAttackSpeed) {
+        this.nAttackSpeed = nAttackSpeed;
     }
 
-    public void setIncAttackSpeed(int incattackSpeed) {
-        this.incattackSpeed = incattackSpeed;
+    public enum ScrollResult {
+
+        SUCCESS, FAIL, CURSE
     }
 }

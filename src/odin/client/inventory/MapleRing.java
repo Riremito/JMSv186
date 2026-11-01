@@ -20,10 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import java.sql.SQLException;
-import tacos.client.TacosCharacter;
 import java.util.Comparator;
-import odin.server.MapleInventoryManipulator;
 import tacos.database.query.DQ_Rings;
 
 public class MapleRing {
@@ -49,12 +46,6 @@ public class MapleRing {
 
     public static MapleRing loadFromDb(int ringId, boolean equipped) {
         return DQ_Rings.load(ringId, equipped);
-    }
-
-    public static void addToDB(int itemid, TacosCharacter chr, String player, int id, int[] ringId) throws SQLException {
-        if (!DQ_Rings.add(itemid, chr, player, id, ringId)) {
-            throw new SQLException("Failed to insert into rings");
-        }
     }
 
     public int getRingId() {
@@ -94,10 +85,6 @@ public class MapleRing {
         int hash = 5;
         hash = 53 * hash + this.ringId;
         return hash;
-    }
-
-    public static void removeRingFromDb(TacosCharacter player) {
-        DQ_Rings.remove(player);
     }
 
     public static class RingComparator implements Comparator<MapleRing> {

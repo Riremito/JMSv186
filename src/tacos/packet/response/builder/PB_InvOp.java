@@ -68,6 +68,10 @@ public class PB_InvOp {
             return this;
         }
 
+        public boolean isEmpty() {
+            return idv.isEmpty();
+        }
+
         public PB_InvOp build() {
             return new PB_InvOp(Collections.unmodifiableList(idv));
         }

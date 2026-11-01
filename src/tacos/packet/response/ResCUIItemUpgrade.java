@@ -29,6 +29,7 @@ import tacos.packet.ops.OpsCashItem;
  */
 public class ResCUIItemUpgrade {
 
+    // CUIItemUpgrade::OnItemUpgradeResult
     public static ServerPacket ItemUpgradeResult(OpsCashItem m_nRet1, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
 
@@ -36,7 +37,7 @@ public class ResCUIItemUpgrade {
         switch (m_nRet1) {
             case CashItemRes_ItemUpgradeSuccess: {
                 sp.Encode4(0); // m_nResult
-                sp.Encode4(equip.getViciousHammer()); // m_nIUC
+                sp.Encode4(equip.getIUC()); // m_nIUC
                 break;
             }
             case CashItemRes_ItemUpgradeDone: {

@@ -47,7 +47,7 @@ public enum OpsFriend implements IPacketOps {
     FriendRes_IncMaxCount_Done(21),
     FriendRes_IncMaxCount_Unknown(22),
     FriendRes_PleaseWait(23),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

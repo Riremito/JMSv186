@@ -26,8 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import tacos.config.Config;
-import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 import tacos.wz.WzDataStorage;
@@ -39,11 +37,8 @@ import tacos.wz.WzXML;
  */
 public class CustomMap {
 
+    // NPC設置用, 現在未使用
     public static boolean addNPCtoMap(TacosMap map) {
-        if (!Config.GreaterOrEqual(Region.JMS, 186)) {
-            return false;
-        }
-
         int map_id = map.getId();
         Path file = Paths.get(Property_Java.getDir_Scripts() + "map/" + map_id + ".txt");
         if (Files.notExists(file)) {

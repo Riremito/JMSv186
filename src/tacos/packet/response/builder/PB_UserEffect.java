@@ -19,7 +19,7 @@
 package tacos.packet.response.builder;
 
 import lombok.Builder;
-import odin.handling.channel.handler.ItemMakerHandler;
+import tacos.packet.ops.fixed.OpsItemMaker;
 import tacos.client.TacosCharacter;
 
 /**
@@ -33,6 +33,11 @@ public class PB_UserEffect {
     public int item_id;
     public int item_quantity;
     public int skill_id;
+    public int skill_level;
     public boolean skill_on;
-    public ItemMakerHandler.ItemMakerResult maker;
+    public OpsItemMaker maker;
+    public String path; // effect path
+    public int count;
+    public int days;
+    public int index;
 }

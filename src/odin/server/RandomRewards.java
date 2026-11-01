@@ -20,8 +20,7 @@ public class RandomRewards {
         return instance;
     }
 
-    protected RandomRewards() {
-        //System.out.println("Loading RandomRewards :::");
+    private RandomRewards() {
         // Gold Box
         List<Integer> returnArray = new ArrayList<>();
 

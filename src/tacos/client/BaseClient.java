@@ -38,6 +38,9 @@ public class BaseClient {
     }
 
     public void SendPacket(ServerPacket packet) {
+        if (packet.getEncoded() == 0) {
+            return;
+        }
         this.session.write(packet);
     }
 

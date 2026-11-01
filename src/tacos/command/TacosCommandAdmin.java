@@ -25,8 +25,6 @@ import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
@@ -53,6 +51,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosFoothold;
+import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
 
@@ -272,6 +271,14 @@ public class TacosCommandAdmin {
                 target.getClient().getSession().close();
                 return true;
             }
+            case "/itemexp" -> {
+                int item_exp = TacosSharedExpTable.getExpNeededForLevel(120);
+                if (dcmd.check(1)) {
+                    item_exp = dcmd.getInt(1);
+                }
+                chr.gainExpToItem(item_exp);
+                return true;
+            }
             case "/drop" -> {
                 if (!dcmd.check(1)) {
                     return true;
@@ -292,10 +299,11 @@ public class TacosCommandAdmin {
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 Item item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
-                if (is_equip) {
-                    item = ii.randomizeStats((Equip) item);
+                if (is_pet) {
+                    int new_unique = TacosWorld.getNextItemUniqueId();
+                    item.setUniqueId(new_unique);
+                    item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                 }
-
                 map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
                 chr.DebugMsg("drop : " + item_id);
                 return true;
@@ -631,7 +639,7 @@ public class TacosCommandAdmin {
                 continue;
             }
             chr.DebugMsg("AddSkill : " + skill_id);
-            Skill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = WzXML.SKILL.getSkill().get(skill_id);
             chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
         }
         return true;
@@ -640,7 +648,7 @@ public class TacosCommandAdmin {
     private static boolean resetBasicSkill(TacosCharacter chr) {
         for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
-            Skill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = WzXML.SKILL.getSkill().get(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
         return true;

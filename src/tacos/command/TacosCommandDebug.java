@@ -19,6 +19,7 @@
 package tacos.command;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
@@ -26,18 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import odin.client.inventory.Equip;
+import odin.client.Skill;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
-import tacos.wz.MapleData;
-import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMonsterBook;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugManTest;
 import tacos.debug.DebugMan_CC;
+import tacos.debug.DebugMan_Maker;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
@@ -181,6 +181,15 @@ public class TacosCommandDebug {
                 ds.start(chr);
                 return true;
             }
+            case "/maker" -> {
+                Skill skill = WzXML.SKILL.getSkill().get(1007);
+                if (chr.getSkillLevel(skill) == 0) {
+                    chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
+                }
+                DebugMan_Maker dm = new DebugMan_Maker();
+                dm.start(chr);
+                return true;
+            }
             case "/npclocation" -> {
                 if (!dcmd.check(1)) {
                     return true;
@@ -282,14 +291,9 @@ public class TacosCommandDebug {
             case "/randomdrop" -> {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = WzDataStorage.ITEM.getRandom();
-                Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.getEquipById(itemid) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
-                String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
-
-                if (item_name == null) {
-                    item_name = "<null>";
-                }
-
+                String item_name = toDrop.getName();
                 chr.DebugMsgItem("randomdrop : " + toDrop.getItemId() + " - " + item_name, toDrop.getItemId());
                 DebugLogger.InfoLog("randomdrop : " + toDrop.getItemId() + " - " + item_name);
                 return true;
@@ -388,7 +392,15 @@ public class TacosCommandDebug {
             }
             case "/bossmap" -> {
                 DebugMan_WarpBoss dm = new DebugMan_WarpBoss();
-                dm.setMasterMonsters();
+                if (dcmd.check(1)) {
+                    if (dcmd.get(1).toLowerCase().equals("q")) {
+                        dm.setQuestBossMonsters(); // Quest Boss
+                    } else {
+                        dm.setBossMonsters(); // Area Boss
+                    }
+                } else {
+                    dm.setMasterMonsters(); // Master Monster
+                }
                 dm.start(chr);
                 return true;
             }
@@ -435,20 +447,13 @@ public class TacosCommandDebug {
                 return true;
             }
             case "/hm" -> {
-                List<Integer> ids = new ArrayList<>();
-                MapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
-                if (md_item_sub_type != null) {
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
-                        int item_id = Integer.parseInt(md_item.getName());
-                        ids.add(item_id);
-                    }
-                }
+                List<Integer> ids = WzXML.ITEM.getItemIds(503);
 
                 if (chr.getFootholdId() <= 0) {
                     return true;
                 }
 
-                List<HiredMerchant> hms = new ArrayList<>();
+                List<TacosMerchant> hms = new ArrayList<>();
                 Random rand = new Random();
                 int count = 0;
                 for (TacosFoothold mfh : map.getFootholds().values()) {
@@ -481,7 +486,7 @@ public class TacosCommandDebug {
 
                         fh_x = mfh.getX1() + fh_width / 2;
                         boolean bOK = true;
-                        for (HiredMerchant hm : hms) {
+                        for (TacosMerchant hm : hms) {
                             int distance = (int) Math.sqrt((hm.getPosition().x - fh_x) * (hm.getPosition().x - fh_x) + (hm.getPosition().y - fh_y) * (hm.getPosition().y - fh_y));
                             if (distance <= 100) {
                                 bOK = false;
@@ -493,7 +498,7 @@ public class TacosCommandDebug {
                         }
                     }
                     int item_id = ids.get(rand.nextInt(ids.size()));
-                    HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
+                    TacosMerchant hm = new TacosMerchant(chr, item_id, "DebugHiredMarchant");
                     hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
                     hm.setPosition(new Point(fh_x, fh_y));
                     map.addMerchant(hm);

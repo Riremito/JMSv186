@@ -21,11 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
@@ -51,7 +52,7 @@ public class MapScriptMethods {
         "待ってたぞ！勇気が有り余ってるなら入ってこい！"
     };
 
-    private static enum onFirstUserEnter {
+    private enum FirstUserEnterScript {
 
         dojang_Eff,
         PinkBeen_before,
@@ -76,16 +77,16 @@ public class MapScriptMethods {
         PRaid_B_Fenter,
         NULL;
 
-        private static onFirstUserEnter fromString(String Str) {
+        private static FirstUserEnterScript fromString(String name) {
             try {
-                return valueOf(Str);
+                return valueOf(name);
             } catch (IllegalArgumentException ex) {
                 return NULL;
             }
         }
     };
 
-    private static enum onUserEnter {
+    private enum UserEnterScript {
 
         babyPigMap,
         crash_Dragon,
@@ -164,36 +165,35 @@ public class MapScriptMethods {
         PRaid_FailEnter,
         NULL;
 
-        private static onUserEnter fromString(String Str) {
+        private static UserEnterScript fromString(String name) {
             try {
-                return valueOf(Str);
+                return valueOf(name);
             } catch (IllegalArgumentException ex) {
                 return NULL;
             }
         }
     };
 
-    public static void startScript_FirstUser(TacosClient client, String scriptName) {
-        TacosCharacter chr = client.getPlayer();
+    public static void startScript_FirstUser(TacosCharacter chr, String scriptName) {
         if (chr == null) {
             return;
-        } //o_O
+        }
         TacosMap map = chr.getMap();
-        switch (onFirstUserEnter.fromString(scriptName)) {
+        switch (FirstUserEnterScript.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (chr.getMapId() - 925000000) / 100;
-                int stage = (int) (temp - ((temp / 100) * 100));
+                int stage = temp % 100;
 
-                sendDojoClock(client, getTiming(stage) * 60);
-                sendDojoStart(client, stage - getDojoStageDec(stage));
+                sendDojoClock(chr.getClient(), getTiming(stage) * 60);
+                sendDojoStart(chr.getClient(), stage - getDojoStageDec(stage));
                 break;
             }
             case PinkBeen_before: {
-                handlePinkBeanStart(client);
+                handlePinkBeanStart(chr);
                 break;
             }
             case onRewordMap: {
-                reloadWitchTower(client);
+                reloadWitchTower(chr);
                 break;
             }
             //5120018 = ludi(none), 5120019 = orbis(start_itemTake - onUser)
@@ -340,8 +340,8 @@ public class MapScriptMethods {
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
                 map.resetFully();
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
                 Point pos1 = null, pos2 = null, pos3 = null;
                 int spawnPer = 0;
                 int mobId = 0;
@@ -392,7 +392,7 @@ public class MapScriptMethods {
                     TacosMonster shammos = WzXML.MOB.createMob(9300275);
                     map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
-                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));
+                    chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));
 
                 }
                 break;
@@ -433,30 +433,29 @@ public class MapScriptMethods {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("onFirstUserEnter : " + scriptName);
+                DebugLogger.ErrorLog("FirstUserEnterScript : " + scriptName);
                 break;
             }
         }
     }
 
-    public static void startScript_User(TacosClient client, String scriptName) {
-        TacosCharacter chr = client.getPlayer();
+    public static void startScript_User(TacosCharacter chr, String scriptName) {
         if (chr == null) {
             return;
         } //o_O
         String data = "";
-        switch (onUserEnter.fromString(scriptName)) {
+        switch (UserEnterScript.fromString(scriptName)) {
             case cygnusTest:
             case cygnusJobTutorial: {
-                showIntro(client, "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
+                showIntro(chr.getClient(), "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
                 chr.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((chr.getMapId() % 1000) / 100)));
                 if (chr.getMapId() == 921120500) {
-                    TacosScriptNPC.getInstance().dispose(client);
-                    TacosScriptQuest.getInstance().dispose(client);
-                    TacosScriptNPC.getInstance().start(client, 2022006);
+                    TacosScriptNPC.getInstance().dispose(chr.getClient());
+                    TacosScriptQuest.getInstance().dispose(chr.getClient());
+                    TacosScriptNPC.getInstance().start(chr.getClient(), 2022006);
                 }
                 break;
             }
@@ -529,20 +528,20 @@ public class MapScriptMethods {
             }
             case goAdventure: {
                 // BUG in MSEA v.91, so let's skip this part.
-                showIntro(client, "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case crash_Dragon:
-                showIntro(client, "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case getDragonEgg:
-                showIntro(client, "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case meetWithDragon:
-                showIntro(client, "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case PromiseDragon:
-                showIntro(client, "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case evanPromotion:
                 switch (chr.getMapId()) {
@@ -566,7 +565,7 @@ public class MapScriptMethods {
                         chr.changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
-                showIntro(client, data);
+                showIntro(chr.getClient(), data);
                 break;
             case TD_MC_title: {
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
@@ -583,6 +582,7 @@ public class MapScriptMethods {
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
+                // fall through
             case go20000:
             case go30000:
             case go40000:
@@ -598,35 +598,35 @@ public class MapScriptMethods {
                 break;
             }
             case goArcher: {
-                showIntro(client, "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goPirate: {
-                showIntro(client, "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goRogue: {
-                showIntro(client, "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goMagician: {
-                showIntro(client, "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goSwordman: {
-                showIntro(client, "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goLith: {
-                showIntro(client, "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr.getClient(), "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case TD_MC_Openning: {
-                showIntro(client, "Effect/Direction2.img/open");
+                showIntro(chr.getClient(), "Effect/Direction2.img/open");
                 break;
             }
             case TD_MC_gasi: {
-                showIntro(client, "Effect/Direction2.img/gasi");
+                showIntro(chr.getClient(), "Effect/Direction2.img/gasi");
                 break;
             }
             case aranDirection: {
@@ -650,16 +650,16 @@ public class MapScriptMethods {
                         data = "Effect/Direction1.img/aranTutorial/Maha";
                         break;
                 }
-                showIntro(client, data);
+                showIntro(chr.getClient(), data);
                 break;
             }
             case iceCave: {
-                chr.changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                chr.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000014), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000015), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000016), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000017), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000018), (byte) -1, (byte) 0);
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path("Effect/Direction1.img/aranTutorial/ClickLirin").build()));
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
@@ -668,7 +668,7 @@ public class MapScriptMethods {
             case rienArrow: {
                 if (chr.getInfoQuest(21019).equals("miss=o;helper=clear")) {
                     chr.updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    chr.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3").build()));
                 }
                 break;
             }
@@ -698,7 +698,7 @@ public class MapScriptMethods {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("onUserEnter : " + scriptName);
+                DebugLogger.ErrorLog("UserEnterScript : " + scriptName);
                 break;
             }
         }
@@ -745,7 +745,7 @@ public class MapScriptMethods {
     private static void showIntro(TacosClient client, String data) {
         client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
         client.SendPacket(ResCUserLocal.SetDirectionMode(true));
-        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
     }
 
     private static void sendDojoClock(TacosClient client, int time) {
@@ -759,8 +759,8 @@ public class MapScriptMethods {
         client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Tremble, PB_FieldEffect.builder().type(0).delay(1).build()));
     }
 
-    private static void handlePinkBeanStart(TacosClient client) {
-        TacosMap map = client.getPlayer().getMap();
+    private static void handlePinkBeanStart(TacosCharacter chr) {
+        TacosMap map = chr.getMap();
         map.resetFully();
 
         if (!map.containsNPC(2141000)) {
@@ -768,8 +768,7 @@ public class MapScriptMethods {
         }
     }
 
-    private static void reloadWitchTower(TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    private static void reloadWitchTower(TacosCharacter chr) {
         TacosMap map = chr.getMap();
         map.killAllMonsters(false);
 

@@ -19,6 +19,9 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import tacos.server.map.object.TacosMerchant;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 import odin.constants.GameConstants;
 import odin.handling.world.Alliance;
@@ -73,6 +76,7 @@ public class TacosWorld {
     private final Guild guild = new Guild();
     private final Alliance alliance = new Alliance();
     private final Family family = new Family();
+    private final List<TacosExpedition> expeditions = new CopyOnWriteArrayList<>();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
         this.id = id;
@@ -115,6 +119,25 @@ public class TacosWorld {
 
     public Party getParty() {
         return this.party;
+    }
+
+    public TacosExpedition findExpedition(int character_id) {
+        for (TacosExpedition expedition : this.expeditions) {
+            if (expedition.contains(character_id)) {
+                return expedition;
+            }
+        }
+        return null;
+    }
+
+    public TacosExpedition createExpedition(TacosCharacter master, int quest_id) {
+        TacosExpedition expedition = new TacosExpedition(this, master, quest_id);
+        this.expeditions.add(expedition);
+        return expedition;
+    }
+
+    public void removeExpedition(TacosExpedition expedition) {
+        this.expeditions.remove(expedition);
     }
 
     public Guild getGuild() {
@@ -260,13 +283,14 @@ public class TacosWorld {
         return player;
     }
 
-    public boolean hasMerchant(int character_id) {
+    public TacosMerchant findMerchant(int character_id) {
         for (TacosChannel channel : this.channels) {
-            if (channel.containsMerchant(character_id)) {
-                return true;
+            TacosMerchant merchant = channel.findMerchant(character_id);
+            if (merchant != null) {
+                return merchant;
             }
         }
-        return false;
+        return null;
     }
 
     // messenger.

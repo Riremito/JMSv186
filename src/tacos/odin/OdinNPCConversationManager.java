@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.util.ArrayList;
+import tacos.wz.WzXML;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.LinkedList;
@@ -32,12 +33,11 @@ import odin.client.inventory.Equip;
 import odin.client.Skill;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.SkillFactory;
-import odin.client.SkillEntry;
+import odin.client.Skill.SkillEntry;
 import odin.server.MapleCarnivalParty;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
@@ -46,9 +46,8 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
 import odin.server.MapleItemInformationProvider;
-import tacos.database.query.DQ_Hiredmerchants;
 import odin.handling.world.MapleParty;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.MapleCarnivalChallenge;
 import odin.handling.world.guild.MapleGuildAlliance;
@@ -71,6 +70,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosNpcShop;
+import tacos.wz.WzDataStorage;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
@@ -467,10 +467,10 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public int gainGachaponItem(int id, int quantity, String msg) {
         try {
-            if (!MapleItemInformationProvider.getInstance().itemExists(id)) {
+            if (!WzDataStorage.ITEM.check(id)) {
                 return -1;
             }
-            Item item = MapleInventoryManipulator.addbyId_Gachapon(client, id, (short) quantity);
+            Item item = MapleInventoryManipulator.addbyId_Gachapon(client.getPlayer(), id, (short) quantity);
 
             if (item == null) {
                 return -1;
@@ -550,7 +550,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             ids.add(item.getPosition());
         }
         for (short id : ids) {
-            MapleInventoryManipulator.unequip(getC(), id, equip.getNextFreeSlot());
+            MapleInventoryManipulator.unequip(getPlayer(), id, equip.getNextFreeSlot());
         }
     }
 
@@ -562,7 +562,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean hasSkill(int skillid) {
-        Skill theSkill = SkillFactory.getSkill(skillid);
+        Skill theSkill = WzXML.SKILL.getSkill().get(skillid);
         if (theSkill != null) {
             return client.getPlayer().getSkillLevel(theSkill) > 0;
         }
@@ -746,7 +746,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        client.SendPacket(ResCWvsContext.genericGuildMessage((byte) code));
+        client.SendPacket(ResCWvsContext.GuildResult(code));
     }
 
     public void disbandGuild() {
@@ -785,43 +785,43 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         Equip sel = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot);
         switch (type) {
             case 0:
-                sel.setStr(amount);
+                sel.setSTR(amount);
                 break;
             case 1:
-                sel.setDex(amount);
+                sel.setDEX(amount);
                 break;
             case 2:
-                sel.setInt(amount);
+                sel.setINT(amount);
                 break;
             case 3:
-                sel.setLuk(amount);
+                sel.setLUK(amount);
                 break;
             case 4:
-                sel.setHp(amount);
+                sel.setMaxHP(amount);
                 break;
             case 5:
-                sel.setMp(amount);
+                sel.setMaxMP(amount);
                 break;
             case 6:
-                sel.setWatk(amount);
+                sel.setPAD(amount);
                 break;
             case 7:
-                sel.setMatk(amount);
+                sel.setMAD(amount);
                 break;
             case 8:
-                sel.setWdef(amount);
+                sel.setPDD(amount);
                 break;
             case 9:
-                sel.setMdef(amount);
+                sel.setMDD(amount);
                 break;
             case 10:
-                sel.setAcc(amount);
+                sel.setACC(amount);
                 break;
             case 11:
-                sel.setAvoid(amount);
+                sel.setEVA(amount);
                 break;
             case 12:
-                sel.setHands(amount);
+                sel.setCraft(amount);
                 break;
             case 13:
                 sel.setSpeed(amount);
@@ -830,25 +830,25 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 sel.setJump(amount);
                 break;
             case 15:
-                sel.setUpgradeSlots((byte) amount);
+                sel.setRUC((byte) amount);
                 break;
             case 16:
-                sel.setViciousHammer((byte) amount);
+                sel.setCIUC((byte) amount);
                 break;
             case 17:
-                sel.setLevel((byte) amount);
+                sel.setCUC((byte) amount);
                 break;
             case 18:
-                sel.setEnhance((byte) amount);
+                sel.setCHUC((byte) amount);
                 break;
             case 19:
-                sel.setPotential1(amount);
+                sel.setOption1(amount);
                 break;
             case 20:
-                sel.setPotential2(amount);
+                sel.setPOption2(amount);
                 break;
             case 21:
-                sel.setPotential3(amount);
+                sel.setOption3(amount);
                 break;
             case 22:
                 sel.setOwner(getText());
@@ -857,16 +857,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 break;
         }
         chr.equipChanged();
-    }
-
-    public void giveMerchantMesos() {
-        long mesos = DQ_Hiredmerchants.getMesos(getPlayer().getId());
-        DQ_Hiredmerchants.clearMesos(getPlayer().getId());
-        client.getPlayer().gainMeso((int) mesos, true);
-    }
-
-    public long getMerchantMesos() {
-        return DQ_Hiredmerchants.getMesos(getPlayer().getId());
     }
 
     public int getDojoPoints() {
@@ -972,7 +962,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public Equip getEquip(int itemid) {
-        return (Equip) MapleItemInformationProvider.getInstance().getEquipById(itemid);
+        return MapleItemInformationProvider.getInstance().getDefaultEquipById(itemid);
     }
 
     public void setExpiration(Object statsSel, long expire) {
@@ -995,7 +985,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public boolean addFromDrop(Object statsSel) {
         if (statsSel instanceof Item) {
             Item it = (Item) statsSel;
-            return MapleInventoryManipulator.checkSpace(getClient(), it.getItemId(), it.getQuantity(), it.getOwner()) && MapleInventoryManipulator.addFromDrop(getClient(), it, false);
+            return MapleInventoryManipulator.checkSpace(getPlayer(), it.getItemId(), it.getQuantity(), it.getOwner()) && MapleInventoryManipulator.addFromDrop(getPlayer(), it, false);
         }
         return false;
     }
@@ -1019,50 +1009,50 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             Equip eq = (Equip) item;
             if (takeSlot) {
-                if (eq.getUpgradeSlots() < 1) {
+                if (eq.getRUC() < 1) {
                     return false;
                 } else {
-                    eq.setUpgradeSlots((byte) (eq.getUpgradeSlots() - 1));
+                    eq.setRUC((byte) (eq.getRUC() - 1));
                 }
             }
             if (type.equalsIgnoreCase("Slots")) {
-                eq.setUpgradeSlots((byte) (eq.getUpgradeSlots() + offset));
+                eq.setRUC((byte) (eq.getRUC() + offset));
             } else if (type.equalsIgnoreCase("Level")) {
-                eq.setLevel((byte) (eq.getLevel() + offset));
+                eq.setCUC((byte) (eq.getCUC() + offset));
             } else if (type.equalsIgnoreCase("Hammer")) {
-                eq.setViciousHammer((byte) (eq.getViciousHammer() + offset));
+                eq.setCIUC((byte) (eq.getCIUC() + offset));
             } else if (type.equalsIgnoreCase("STR")) {
-                eq.setStr((short) (eq.getStr() + offset));
+                eq.setSTR((short) (eq.getSTR() + offset));
             } else if (type.equalsIgnoreCase("DEX")) {
-                eq.setDex((short) (eq.getDex() + offset));
+                eq.setDEX((short) (eq.getDEX() + offset));
             } else if (type.equalsIgnoreCase("INT")) {
-                eq.setInt((short) (eq.getInt() + offset));
+                eq.setINT((short) (eq.getINT() + offset));
             } else if (type.equalsIgnoreCase("LUK")) {
-                eq.setLuk((short) (eq.getLuk() + offset));
+                eq.setLUK((short) (eq.getLUK() + offset));
             } else if (type.equalsIgnoreCase("HP")) {
-                eq.setHp((short) (eq.getHp() + offset));
+                eq.setMaxHP((short) (eq.getMaxHP() + offset));
             } else if (type.equalsIgnoreCase("MP")) {
-                eq.setMp((short) (eq.getMp() + offset));
+                eq.setMaxMP((short) (eq.getMaxMP() + offset));
             } else if (type.equalsIgnoreCase("WATK")) {
-                eq.setWatk((short) (eq.getWatk() + offset));
+                eq.setPAD((short) (eq.getPAD() + offset));
             } else if (type.equalsIgnoreCase("MATK")) {
-                eq.setMatk((short) (eq.getMatk() + offset));
+                eq.setMAD((short) (eq.getMAD() + offset));
             } else if (type.equalsIgnoreCase("WDEF")) {
-                eq.setWdef((short) (eq.getWdef() + offset));
+                eq.setPDD((short) (eq.getPDD() + offset));
             } else if (type.equalsIgnoreCase("MDEF")) {
-                eq.setMdef((short) (eq.getMdef() + offset));
+                eq.setMDD((short) (eq.getMDD() + offset));
             } else if (type.equalsIgnoreCase("ACC")) {
-                eq.setAcc((short) (eq.getAcc() + offset));
+                eq.setACC((short) (eq.getACC() + offset));
             } else if (type.equalsIgnoreCase("Avoid")) {
-                eq.setAvoid((short) (eq.getAvoid() + offset));
+                eq.setEVA((short) (eq.getEVA() + offset));
             } else if (type.equalsIgnoreCase("Hands")) {
-                eq.setHands((short) (eq.getHands() + offset));
+                eq.setCraft((short) (eq.getCraft() + offset));
             } else if (type.equalsIgnoreCase("Speed")) {
                 eq.setSpeed((short) (eq.getSpeed() + offset));
             } else if (type.equalsIgnoreCase("Jump")) {
                 eq.setJump((short) (eq.getJump() + offset));
             } else if (type.equalsIgnoreCase("ItemEXP")) {
-                eq.setItemEXP(eq.getItemEXP() + offset);
+                eq.setLevelEXP(eq.getLevelEXP() + offset);
             } else if (type.equalsIgnoreCase("Expiration")) {
                 eq.setExpiration((long) (eq.getExpiration() + offset));
             } else if (type.equalsIgnoreCase("Flag")) {
@@ -1075,8 +1065,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             item = eq.copy();
         }
-        MapleInventoryManipulator.removeFromSlot(getClient(), inv, (short) slot, item.getQuantity(), false);
-        return MapleInventoryManipulator.addFromDrop(getClient(), item, false);
+        MapleInventoryManipulator.removeFromSlot(getPlayer(), inv, (short) slot, item.getQuantity(), false);
+        return MapleInventoryManipulator.addFromDrop(getPlayer(), item, false);
     }
 
     public boolean replaceItem(int slot, int invType, Object statsSel, int upgradeSlots) {
@@ -1095,7 +1085,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 for (TacosCharacter chr : srv_channel.getOnlinePlayers().get()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);
-                        chr.dropMessage(5, "Your guild has gotten a " + msg + " buff.");
+                        chr.Notice("Your guild has gotten a " + msg + " buff.");
                     }
                 }
             }
@@ -1157,7 +1147,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void maxAllSkills() {
-        for (Skill skil : SkillFactory.getAllSkills()) {
+        for (Skill skil : WzXML.SKILL.getSkill().values()) {
             if (GameConstants.isApplicableSkill(skil.getId())) { //no db/additionals/resistance skills
                 teachSkill(skil.getId(), skil.getMaxLevel(), skil.getMaxLevel());
             }
@@ -1173,7 +1163,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (inv == null) {
             return false;
         }
-        return MapleInventoryManipulator.drop(client, inv, (short) slot, (short) quantity, true);
+        return MapleInventoryManipulator.drop(client.getPlayer(), inv, (short) slot, (short) quantity, true);
     }
 
     public void setQuestRecord(Object ch, int questid, String data) {

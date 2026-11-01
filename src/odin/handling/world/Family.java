@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class Family {
     private final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
 
     public Family() {
-        //System.out.println("[MapleFamily] Loading Families");
         Collection<MapleFamily> allGuilds = MapleFamily.loadAll();
         for (MapleFamily g : allGuilds) {
             if (g.isProper()) {
@@ -47,7 +47,7 @@ public class Family {
         MapleFamily ret = families.get(id);
         if (ret == null) {
             ret = new MapleFamily(id);
-            if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+            if (ret.getId() <= 0 || !ret.isProper()) { //failed to load
                 return null;
             }
             families.put(id, ret);
@@ -69,16 +69,16 @@ public class Family {
         }
     }
 
-    public int setRep(int fid, int cid, int addrep, int oldLevel) {
+    public int setRep(int fid, int cid, int addrep, int oldLevel, String from_name) {
         MapleFamily f = getFamily(fid);
         if (f != null) {
-            return f.setRep(cid, addrep, oldLevel);
+            return f.setRep(cid, addrep, oldLevel, from_name);
         }
         return 0;
     }
 
     public void save() {
-        System.out.println("Saving families...");
+        DebugLogger.InfoLog("Saving families...");
         for (MapleFamily a : families.values()) {
             a.writeToDB(false);
         }

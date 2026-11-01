@@ -24,7 +24,6 @@ import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -162,7 +161,7 @@ public class CustomMonsterBookDrop {
 
         CustomMonsterBookDrop cmbd = new CustomMonsterBookDrop(monster);
         for (int item_id : cmbd.getDropItems()) {
-            Item idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(item_id)) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
+            Item idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
             Point drop_pos = TacosReward.getDropPosition(monster, drop_type, dropped_count);
 
             map.spawnMobDrop(idrop, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, drop_type, (short) 0, 0);

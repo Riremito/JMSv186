@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.family;
 
 import java.util.List;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class MapleFamily {
         }
 
         if (leadername == null || members.size() < 2) {
-            System.err.println("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
+            DebugLogger.ErrorLog("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
             writeToDB(true);
             proper = false;
             return;
@@ -200,7 +201,7 @@ public class MapleFamily {
         MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (mgc.isOnline() != online) {
-                broadcast(ResCWvsContext.familyLoggedIn(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
+                broadcast(ResCWvsContext.FamilyNotifyLoginOrLogout(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
             }
             mgc.setOnline(online);
             mgc.setChannel((byte) channel);
@@ -208,7 +209,7 @@ public class MapleFamily {
         bDirty = true; // member formation has changed, update notifications
     }
 
-    public int setRep(int cid, int addrep, int oldLevel) {
+    public int setRep(int cid, int addrep, int oldLevel, String from_name) {
         MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (oldLevel > mgc.getLevel()) {
@@ -219,7 +220,7 @@ public class MapleFamily {
             if (mgc.isOnline()) {
                 List<Integer> dummy = new ArrayList<>();
                 dummy.add(mgc.getId());
-                broadcast(ResCWvsContext.changeRep(addrep), -1, dummy);
+                broadcast(ResCWvsContext.FamilyFamousPointIncResult(addrep, from_name), -1, dummy);
                 TacosWorld.find(0).getFamily().setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             } else {
                 setOfflineFamilyStatus(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
@@ -302,10 +303,6 @@ public class MapleFamily {
 
     public MapleFamilyCharacter getMFC(int cid) {
         return members.get(cid);
-    }
-
-    public int getMemberSize() {
-        return members.size();
     }
 
     public static void setOfflineFamilyStatus(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {

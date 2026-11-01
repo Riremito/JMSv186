@@ -31,7 +31,7 @@ public enum Ops_Whisper implements IPacketOps {
     WP_Blocked(1 << 5), // 0x20
     WP_Location_F(1 << 6), // 0x40
     WP_Manager(1 << 7), // 0x80
-    UNKNOWN(0);
+    UNKNOWN;
 
     private int value;
 

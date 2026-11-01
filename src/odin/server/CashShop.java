@@ -23,18 +23,17 @@ package odin.server;
 
 import odin.client.inventory.Equip;
 import tacos.server.map.object.TacosPet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.client.TacosCharacter;
 import tacos.server.TacosWorld;
 
 public class CashShop {
@@ -45,7 +44,7 @@ public class CashShop {
     private List<Item> inventory = new ArrayList<>();
     private List<Integer> uniqueids = new ArrayList<>();
 
-    public CashShop(int accountId, int characterId, int jobType) throws SQLException {
+    public CashShop(int accountId, int characterId, int jobType) {
         this.accountId = accountId;
         this.characterId = characterId;
 
@@ -95,7 +94,7 @@ public class CashShop {
         return null;
     }
 
-    public void checkExpire(TacosClient client) {
+    public void checkExpire(TacosCharacter chr) {
         List<Item> toberemove = new ArrayList<>();
         for (Item item : inventory) {
             if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
@@ -105,7 +104,7 @@ public class CashShop {
         if (!toberemove.isEmpty()) {
             for (Item item : toberemove) {
                 removeFromInventory(item);
-                client.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                chr.SendPacket(ResCCashShop.CashItemResult_Expire_Done(item.getUniqueId()));
             }
             toberemove.clear();
         }
@@ -133,9 +132,9 @@ public class CashShop {
         }
         Item ret = null;
         if (GameConstants.getInventoryType(cItem.getId()) == MapleInventoryType.EQUIP) {
-            Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(cItem.getId());
+            Equip eq = MapleItemInformationProvider.getInstance().getDefaultEquipById(cItem.getId());
             eq.setUniqueId(uniqueid);
-            eq.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
+            eq.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
             eq.setGiftFrom(gift);
             if (GameConstants.isEffectRing(cItem.getId()) && uniqueid > 0) {
                 MapleRing ring = MapleRing.loadFromDb(uniqueid);
@@ -143,10 +142,10 @@ public class CashShop {
                     eq.setRing(ring);
                 }
             }
-            ret = eq.copy();
+            ret = eq;
         } else {
             Item item = new Item(cItem.getId(), (byte) 0, (short) cItem.getCount(), (byte) 0, uniqueid);
-            item.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
+            item.setExpiration(System.currentTimeMillis() + period * 24 * 60 * 60 * 1000);
             item.setGiftFrom(gift);
             if (GameConstants.isPet(cItem.getId())) {
                 TacosPet pet = TacosPet.createPet(cItem.getId(), uniqueid);
@@ -154,7 +153,7 @@ public class CashShop {
                     item.setPet(pet);
                 }
             }
-            ret = item.copy();
+            ret = item;
         }
         return ret;
     }
@@ -187,13 +186,13 @@ public class CashShop {
         }
     }
 
-    public void save() throws SQLException {
+    public boolean save() {
         List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : inventory) {
             itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
-        factory.saveItems(itemsWithType, accountId);
+        return factory.saveItems(itemsWithType, accountId);
     }
 }

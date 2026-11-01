@@ -28,7 +28,6 @@ import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import odin.client.inventory.Equip;
-import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.Skill;
 import tacos.client.TacosClient;
@@ -36,7 +35,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
@@ -63,6 +62,7 @@ import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
 import tacos.server.TacosWorld;
+import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
 
 public abstract class OdinAbstractPlayerInteraction {
@@ -292,7 +292,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public boolean canHold(int itemid, int quantity) {
-        return MapleInventoryManipulator.checkSpace(client, itemid, quantity, "");
+        return MapleInventoryManipulator.checkSpace(client.getPlayer(), itemid, quantity, "");
     }
 
     public MapleQuestStatus getQuestRecord(int id) {
@@ -387,86 +387,85 @@ public abstract class OdinAbstractPlayerInteraction {
         client.getPlayer().modifyCSPoints(1, amount, true);
     }
 
-    public void gainItemPeriod(int id, short quantity, int period) { //period is in days
-        gainItem(id, quantity, false, period, -1, "");
+    public void gainItemPeriod(int item_id, short quantity, int period) { //period is in days
+        gainItem(item_id, quantity, false, period, -1, "");
     }
 
-    public void gainItemPeriod(int id, short quantity, long period, String owner) { //period is in days
-        gainItem(id, quantity, false, period, -1, owner);
+    public void gainItemPeriod(int item_id, short quantity, long period, String owner) { //period is in days
+        gainItem(item_id, quantity, false, period, -1, owner);
     }
 
-    public void gainItem(int id, short quantity) {
-        gainItem(id, quantity, false, 0, -1, "");
+    public void gainItem(int item_id, short quantity) {
+        gainItem(item_id, quantity, false, 0, -1, "");
     }
 
-    public void gainItem(int id, short quantity, boolean randomStats) {
-        gainItem(id, quantity, randomStats, 0, -1, "");
+    public void gainItem(int item_id, short quantity, boolean randomStats) {
+        gainItem(item_id, quantity, randomStats, 0, -1, "");
     }
 
-    public void Gashapon(int id, short quantity) {
-        Item item_info = gainItem(id, quantity, true, 0, -1, "");
+    public void Gashapon(int item_id, short quantity) {
+        Item item_info = gainItem(item_id, quantity, true, 0, -1, "");
         if (item_info != null) {
             this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item_info).build()));
         }
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, int slots) {
-        return gainItem(id, quantity, randomStats, 0, slots, "");
+    public Item gainItem(int item_id, short quantity, boolean randomStats, int slots) {
+        return gainItem(item_id, quantity, randomStats, 0, slots, "");
     }
 
-    public Item gainItem(int id, short quantity, long period) {
-        return gainItem(id, quantity, false, period, -1, "");
+    public Item gainItem(int item_id, short quantity, long period) {
+        return gainItem(item_id, quantity, false, period, -1, "");
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots) {
-        return gainItem(id, quantity, randomStats, period, slots, "");
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots) {
+        return gainItem(item_id, quantity, randomStats, period, slots, "");
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner) {
-        return gainItem(id, quantity, randomStats, period, slots, owner, client);
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots, String owner) {
+        return gainItem(item_id, quantity, randomStats, period, slots, owner, getPlayer());
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner, TacosClient target) {
-        TacosCharacter chr = target.getPlayer();
+    public Item gainItem(int item_id, short quantity, boolean randomStats, long period, int slots, String owner, TacosCharacter chr) {
         Item item_info = null;
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            MapleInventoryType type = GameConstants.getInventoryType(id);
+            MapleInventoryType type = GameConstants.getInventoryType(item_id);
 
-            if (!MapleInventoryManipulator.checkSpace(target, id, quantity, "")) {
+            if (!MapleInventoryManipulator.checkSpace(chr, item_id, quantity, "")) {
                 return null;
             }
-            if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
-                Equip item = (Equip) (randomStats ? ii.randomizeStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
+            if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(item_id) && !GameConstants.isBullet(item_id)) {
+                Equip item = randomStats ? ii.getEquipById(item_id) : ii.getDefaultEquipById(item_id);
                 if (period > 0) {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
                 if (slots > 0) {
-                    item.setUpgradeSlots((byte) (item.getUpgradeSlots() + slots));
+                    item.setRUC((byte) (item.getRUC() + slots));
                 }
                 if (owner != null) {
                     item.setOwner(owner);
                 }
-                String name = ii.getName(id);
-                if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
+                String name = item.getName();
+                if (item_id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
-                    chr.dropMessage(5, msg);
+                    chr.Notice(msg);
                 }
-                MapleInventoryManipulator.addbyItem(target, item.copy());
+                MapleInventoryManipulator.addbyItem(chr, item);
                 item_info = item;
             } else {
-                MapleInventoryManipulator.addById(target, id, quantity, owner == null ? "" : owner, null, period);
+                MapleInventoryManipulator.addById(chr, item_id, quantity, owner == null ? "" : owner, null, period);
             }
         } else {
-            MapleInventoryManipulator.removeById(target, GameConstants.getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item_id), item_id, -quantity, true, false);
         }
 
         PB_UserEffect pb = PB_UserEffect.builder()
-                .item_id(id)
+                .item_id(item_id)
                 .item_quantity(quantity)
                 .build();
-        target.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
+        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         return item_info;
     }
 
@@ -624,9 +623,9 @@ public abstract class OdinAbstractPlayerInteraction {
     public void givePartyItems(int id, short quantity, List<TacosCharacter> party) {
         for (TacosCharacter chr : party) {
             if (quantity >= 0) {
-                MapleInventoryManipulator.addById(chr.getClient(), id, quantity);
+                MapleInventoryManipulator.addById(chr, id, quantity);
             } else {
-                MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
+                MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
 
             PB_UserEffect pb = PB_UserEffect.builder()
@@ -650,7 +649,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player.getClient());
+                gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player);
             }
         }
     }
@@ -717,7 +716,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (TacosCharacter chr : party) {
             int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
-                MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
+                MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(id), id, possesed, true, false);
 
                 PB_UserEffect pb = PB_UserEffect.builder()
                         .item_id(id)
@@ -736,7 +735,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (level <= 0) {
             return;
         }
-        SkillFactory.getSkill(skill).getEffect(level).applyTo(client.getPlayer());
+        WzXML.SKILL.getSkill().get(skill).getEffect(level).applyTo(client.getPlayer());
     }
 
     public void useItem(int id) {
@@ -807,11 +806,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void teachSkill(int id, byte level, byte masterlevel) {
-        getPlayer().changeSkillLevel(SkillFactory.getSkill(id), level, masterlevel);
+        getPlayer().changeSkillLevel(WzXML.SKILL.getSkill().get(id), level, masterlevel);
     }
 
     public void teachSkill(int id, byte level) {
-        Skill skil = SkillFactory.getSkill(id);
+        Skill skil = WzXML.SKILL.getSkill().get(id);
         if (getPlayer().getSkillLevel(skil) > level) {
             level = getPlayer().getSkillLevel(skil);
         }
@@ -914,15 +913,15 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void AranTutInstructionalBubble(String data) {
-        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(data).build()));
     }
 
     public void ShowWZEffect(String data) {
-        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(data).build()));
     }
 
     public void showWZEffect(String data) {
-        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
     }
 
     public void EarnTitleMsg(String data) {
@@ -938,8 +937,8 @@ public abstract class OdinAbstractPlayerInteraction {
         return MapleInventoryType.getByType((byte) i);
     }
 
-    public String getItemName(int id) {
-        return MapleItemInformationProvider.getInstance().getName(id);
+    public String getItemName(int item_id) {
+        return WzNameStorage.ITEM.get(item_id).getName();
     }
 
     public void gainPet(int id, String name, int level, int closeness, int fullness, long period) {
@@ -956,14 +955,14 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(getPlayer(), id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
     }
 
     public void removeSlot(int invType, byte slot, short quantity) {
-        MapleInventoryManipulator.removeFromSlot(client, getInvType(invType), slot, quantity, true);
+        MapleInventoryManipulator.removeFromSlot(getPlayer(), getInvType(invType), slot, quantity, true);
     }
 
     public void gainGP(int gp) {

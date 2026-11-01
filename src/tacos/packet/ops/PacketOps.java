@@ -27,6 +27,7 @@ public class PacketOps {
     public static void initAll() {
         OpsAttackIndex.init();
         OpsCashItem.init();
+        OpsCashItemFailReason.init();
         OpsNewCharacter.init();
         OpsDBCHAR.init();
         OpsChangeStat.init();
@@ -49,7 +50,14 @@ public class PacketOps {
         OpsMiniRoomType.init();
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
+        OpsMRLeave.init();
+        OpsBodyPart.init();
         OpsUI.init();
         OpsMoveAbility.init();
+        OpsGuild.init();
+        OpsAlliance.init();
+        OpsParty.init();
+        OpsChatGroup.init();
+        OpsGrade.init();
     }
 }

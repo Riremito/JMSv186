@@ -26,7 +26,7 @@ import java.util.List;
 import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacket;
@@ -84,11 +84,16 @@ public class ReqCDropPool {
         return false;
     }
 
+    // CWvsContext::SendDropPickUpRequest
     public static boolean OnDropPickUpRequest(TacosCharacter chr, int object_id) {
         TacosMap map = chr.getMap();
         TacosDrop mapitem = map.getDropByOid(object_id);
         if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
+            return false;
+        }
+        if (!mapitem.isVisible(chr)) {
+            DebugLogger.ErrorLog("PickUp : quest item");
             return false;
         }
         if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
@@ -156,12 +161,12 @@ public class ReqCDropPool {
             DebugLogger.InfoLog("PickUp : useItem");
             return true;
         }
-        if (!MapleInventoryManipulator.checkSpace(chr.getClient(), mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+        if (!MapleInventoryManipulator.checkSpace(chr, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
             chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
             DebugLogger.ErrorLog("PickUp : checkSpace");
             return false;
         }
-        if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, !mapitem.isPlayerDrop())) {
+        if (!MapleInventoryManipulator.addFromDrop(chr, mapitem.getItem(), true, !mapitem.isPlayerDrop())) {
             DebugLogger.ErrorLog("PickUp : addFromDrop");
             return false;
         }

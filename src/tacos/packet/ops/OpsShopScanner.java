@@ -31,7 +31,7 @@ public enum OpsShopScanner implements IPacketOps {
     ShopScannerReq_LoadHotList(5),
     ShopScannerRes_SearchResult(6),
     ShopScannerRes_LoadHotListResult(7),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

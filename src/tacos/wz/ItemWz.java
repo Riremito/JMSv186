@@ -18,7 +18,6 @@
  */
 package tacos.wz;
 
-import odin.client.inventory.PetCommand;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -29,9 +28,7 @@ import tacos.unofficial.PotentialOptimization;
 import tacos.unofficial.PotentialOptimization.PotentialOptionData;
 import java.util.LinkedHashMap;
 import java.util.List;
-import odin.constants.GameConstants;
-import odin.client.inventory.MapleInventoryType;
-import odin.server.StructRewardItem;
+import lombok.Getter;
 
 /**
  *
@@ -82,7 +79,7 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public MapleData getItemImg(int item_sub_type) {
+    private MapleData getItemImg(int item_sub_type) {
         if (item_sub_type < 200) {
             return null;
         }
@@ -111,7 +108,7 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public MapleData getItemData_Pet(int id) {
+    private MapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
             return null;
@@ -143,11 +140,11 @@ public class ItemWz extends WzXML {
     ArrayList<Integer> list_UniquePotential = null;
     ArrayList<Integer> list_LegendaryPotential = null;
 
-    public MapleData getItemOption() {
+    private MapleData getItemOption() {
         return getData("ItemOption.img");
     }
 
-    public boolean loadItemOpton() {
+    private boolean loadItemOpton() {
         if (this.list_RarePotential != null) {
             return true;
         }
@@ -312,7 +309,7 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public int getHunger(int petId) {
+    private int getHunger(int petId) {
         if (map_petHunger == null) {
             map_petHunger = new HashMap<>();
         }
@@ -326,7 +323,19 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public MapleData getResolvedItemData(int id) {
+    // item ids of one item sub type (the children of Item.wz/xxxx/xxxx.img)
+    public List<Integer> getItemIds(int item_sub_type) {
+        List<Integer> ids = new ArrayList<>();
+        MapleData md_item_sub_type = getItemImg(item_sub_type);
+        if (md_item_sub_type != null) {
+            for (MapleData md_item : md_item_sub_type.getChildren()) {
+                ids.add(Integer.valueOf(md_item.getName()));
+            }
+        }
+        return ids;
+    }
+
+    private MapleData getResolvedItemData(int id) {
         MapleData md_character = WzXML.CHARACTER.getItemData(id);
         if (md_character != null) {
             return md_character;
@@ -427,90 +436,6 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public short loadSlotMax(int itemId) {
-        short ret = 0;
-        MapleData item = getResolvedItemData(itemId);
-        if (item != null) {
-            MapleData smEntry = item.getChildByPath("info/slotMax");
-            if (smEntry == null) {
-                if (GameConstants.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
-                    ret = 1;
-                } else {
-                    ret = 100;
-                }
-            } else {
-                ret = (short) item.getInt("info/slotMax");
-            }
-        }
-        return ret;
-    }
-
-    public int loadWholePrice(int itemId) {
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return -1;
-        }
-        MapleData pData = item.getChildByPath("info/price");
-        if (pData == null) {
-            return -1;
-        }
-        return item.getInt("info/price");
-    }
-
-    public double loadPrice(int itemId) {
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return -1;
-        }
-        Double pEntry;
-        MapleData pData = item.getChildByPath("info/unitPrice");
-        if (pData != null) {
-            pEntry = item.getDouble("info/unitPrice", 1.0);
-        } else {
-            pData = item.getChildByPath("info/price");
-            if (pData == null) {
-                return -1;
-            }
-            pEntry = (double) item.getInt("info/price", 1);
-        }
-        if (itemId == 2070019 || itemId == 2330007) {
-            pEntry = 1.0;
-        }
-        return pEntry;
-    }
-
-    public Map<String, Byte> loadItemMakeStats(int itemId) {
-        if (itemId / 10000 != 425) {
-            return null;
-        }
-        Map<String, Byte> ret = new LinkedHashMap<>();
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return null;
-        }
-        MapleData info = item.getChildByPath("info");
-        if (info == null) {
-            return null;
-        }
-        ret.put("incPAD", (byte) info.getInt("incPAD")); // WATK
-        ret.put("incMAD", (byte) info.getInt("incMAD")); // MATK
-        ret.put("incACC", (byte) info.getInt("incACC")); // ACC
-        ret.put("incEVA", (byte) info.getInt("incEVA")); // AVOID
-        ret.put("incSpeed", (byte) info.getInt("incSpeed")); // SPEED
-        ret.put("incJump", (byte) info.getInt("incJump")); // JUMP
-        ret.put("incMaxHP", (byte) info.getInt("incMaxHP")); // HP
-        ret.put("incMaxMP", (byte) info.getInt("incMaxMP")); // MP
-        ret.put("incSTR", (byte) info.getInt("incSTR")); // STR
-        ret.put("incINT", (byte) info.getInt("incINT")); // INT
-        ret.put("incLUK", (byte) info.getInt("incLUK")); // LUK
-        ret.put("incDEX", (byte) info.getInt("incDEX")); // DEX
-//	ret.put("incReqLevel", MapleDataTool.getInt("incReqLevel", info, 0)); // IDK!
-        ret.put("randOption", (byte) info.getInt("randOption")); // Black Crystal Wa/MA
-        ret.put("randStat", (byte) info.getInt("randStat")); // Dark Crystal - Str/Dex/int/Luk
-
-        return ret;
-    }
-
     public Map<Integer, Map<String, Integer>> loadEquipIncrements(int itemId) {
         Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
         MapleData item = getResolvedItemData(itemId);
@@ -557,213 +482,281 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public Map<String, Integer> loadEquipStats(int itemId) {
-        Map<String, Integer> ret = new LinkedHashMap<>();
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return null;
-        }
-        MapleData info = item.getChildByPath("info");
-        if (info == null) {
-            return null;
-        }
-        for (MapleData data : info.getChildren()) {
-            if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), info.getInt(data.getName()));
+    @Getter
+    public class ScrollData {
+
+        private int success;
+        private int incSTR;
+        private int incDEX;
+        private int incINT;
+        private int incLUK;
+        private int incMaxHP;
+        private int incMaxMP;
+        private int incPAD;
+        private int incMAD;
+        private int incPDD;
+        private int incMDD;
+        private int incACC;
+        private int incEVA;
+        private int incCraft;
+        private int incSpeed;
+        private int incJump;
+        private int preventslip;
+        private int warmsupport;
+        private int cursed;
+        private int recover;
+        private int randstat;
+        private int incRandVol;
+        private int noNegative;
+        private int forceUpgrade;
+        private int reset;
+        private int notExtend;
+        private HashMap<Integer, Integer> successRates;
+        private HashMap<Integer, Integer> cursedRates;
+        private HashMap<Integer, Integer> req;
+        private int incattackSpeed;
+    }
+
+    private final HashMap<Integer, ScrollData> scroll_data_list = new HashMap<>();
+
+    public ScrollData getScrollData(int item_id) {
+        ScrollData ret = this.scroll_data_list.get(item_id);
+        if (ret == null) {
+            MapleData md = getItemData(item_id);
+            if (md != null) {
+                MapleData md_info = md.getChildByPath("info");
+                if (md_info != null) {
+                    ret = new ScrollData();
+                    ret.success = md_info.getInt("success");
+                    ret.incSTR = md_info.getInt("incSTR");
+                    ret.incDEX = md_info.getInt("incDEX");
+                    ret.incINT = md_info.getInt("incINT");
+                    ret.incLUK = md_info.getInt("incLUK");
+                    ret.incMaxHP = md_info.getInt("incMaxHP");
+                    ret.incMaxMP = md_info.getInt("incMaxMP");
+                    ret.incPAD = md_info.getInt("incPAD");
+                    ret.incMAD = md_info.getInt("incMAD");
+                    ret.incPDD = md_info.getInt("incPDD");
+                    ret.incMDD = md_info.getInt("incMDD");
+                    ret.incACC = md_info.getInt("incACC");
+                    ret.incEVA = md_info.getInt("incEVA");
+                    ret.incCraft = md_info.getInt("incCraft");
+                    ret.incSpeed = md_info.getInt("incSpeed");
+                    ret.incJump = md_info.getInt("incJump");
+                    ret.preventslip = md_info.getInt("preventslip"); // 2040727, スパイクの書
+                    ret.warmsupport = md_info.getInt("warmsupport"); // 2041058, 防寒の書
+                    ret.cursed = md_info.getInt("cursed");
+                    ret.recover = md_info.getInt("recover"); // 2049000, 白の書
+                    ret.randstat = md_info.getInt("randstat"); // 2049100, 混沌の書
+                    ret.incRandVol = md_info.getInt("incRandVol"); // 2049116, 驚きの混沌の書
+                    ret.noNegative = md_info.getInt("noNegative"); // 2049122, 肯定の混沌の書
+                    ret.forceUpgrade = md_info.getInt("forceUpgrade"); // 2049304, 3星装備強化の書
+                    ret.reset = md_info.getInt("reset"); // 2049600
+                    ret.notExtend = md_info.getInt("notExtend"); // 2049402
+                    ret.successRates = new HashMap<>();
+                    MapleData md_successRates = md_info.getChildByPath("successRates"); // 2047000
+                    if (md_successRates != null) {
+                        for (MapleData data : md_successRates.getChildren()) {
+                            ret.successRates.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.cursedRates = new HashMap<>();
+                    MapleData md_cursedRates = md_info.getChildByPath("cursedRates"); // 2047000
+                    if (md_cursedRates != null) {
+                        for (MapleData data : md_cursedRates.getChildren()) {
+                            ret.cursedRates.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.req = new HashMap<>();
+                    MapleData md_req = md_info.getChildByPath("req"); // 2044909
+                    if (md_req != null) {
+                        for (MapleData data : md_req.getChildren()) {
+                            ret.req.put(Integer.valueOf(data.getName()), (Integer) data.getData());
+                        }
+                    }
+                    ret.incattackSpeed = md_info.getInt("incattackSpeed");// 2044709, 攻撃速度の書
+                }
             }
         }
-        ret.put("tuc", info.getInt("tuc"));
-        ret.put("reqLevel", info.getInt("reqLevel"));
-        ret.put("reqJob", info.getInt("reqJob"));
-        ret.put("reqSTR", info.getInt("reqSTR"));
-        ret.put("reqDEX", info.getInt("reqDEX"));
-        ret.put("reqINT", info.getInt("reqINT"));
-        ret.put("reqLUK", info.getInt("reqLUK"));
-        ret.put("reqPOP", info.getInt("reqPOP"));
-        ret.put("cash", info.getInt("cash"));
-        ret.put("canLevel", info.getChildByPath("level") == null ? 0 : 1);
-        ret.put("cursed", info.getInt("cursed"));
-        ret.put("success", info.getInt("success"));
-        ret.put("setItemID", info.getInt("setItemID"));
-        ret.put("equipTradeBlock", info.getInt("equipTradeBlock"));
-        ret.put("durability", info.getInt("durability", -1));
-
-        if (GameConstants.isMagicWeapon(itemId)) {
-            ret.put("elemDefault", info.getInt("elemDefault", 100));
-            ret.put("incRMAS", info.getInt("incRMAS", 100)); // Poison
-            ret.put("incRMAF", info.getInt("incRMAF", 100)); // Fire
-            ret.put("incRMAL", info.getInt("incRMAL", 100)); // Lightning
-            ret.put("incRMAI", info.getInt("incRMAI", 100)); // Ice
-        }
-
+        this.scroll_data_list.put(item_id, ret);
         return ret;
     }
 
-    public List<Integer> loadScrollReqs(int itemId) {
-        List<Integer> ret = new ArrayList<>();
-        MapleData data = getResolvedItemData(itemId).getChildByPath("req");
+    @Getter
+    public class ItemInfo {
 
-        if (data == null) {
-            return ret;
+        private int slotMax;
+        private int price;
+        private double unitPrice;
+        private int cash;
+        private int only;
+        private int quest;
+        private int tradeBlock;
+        private int accountSharable;
+        private int pickUpBlock;
+        private int notSale;
+        private int consumeOnPickup;
+        private int stateChangeItem;
+        private int meso;
+        private int mesomax;
+        private int mesomin;
+        private int mesostdev;
+        private int dama;
+        private int inc;
+        private int lv;
+        private int mob;
+        private int incPAD;
+        private int incMAD;
+        private int incACC;
+        private int incEVA;
+        private int incSpeed;
+        private int incJump;
+        private int incMaxHP;
+        private int incMaxMP;
+        private int incSTR;
+        private int incINT;
+        private int incLUK;
+        private int incDEX;
+        private int randOption;
+        private int randStat;
+        private int masterLevel;
+        private int reqSkillLevel;
+        private int success;
+        private ArrayList<Integer> skill;
+        private int questId;
+        private ArrayList<Integer> consumeItem;
+        private ArrayList<Integer> req;
+        private ArrayList<SimpleImmutableEntry<Integer, Integer>> summonMob;
+    }
+
+    private final HashMap<Integer, ItemInfo> item_info_list = new HashMap<>();
+
+    public ItemInfo getItemInfo(int item_id) {
+        if (this.item_info_list.containsKey(item_id)) {
+            return this.item_info_list.get(item_id);
         }
-        for (MapleData req : data.getChildren()) {
-            ret.add(data.getInt(req.getName()));
+        ItemInfo ret = null;
+        MapleData md = getItemData(item_id);
+        if (md != null) {
+            ret = new ItemInfo();
+            ret.slotMax = md.getInt("info/slotMax", 100);
+            ret.price = md.getInt("info/price", -1);
+            if (md.getChildByPath("info/unitPrice") != null) {
+                ret.unitPrice = md.getDouble("info/unitPrice", 1.0);
+            } else {
+                ret.unitPrice = ret.price;
+            }
+            if (item_id == 2070019 || item_id == 2330007) {
+                ret.unitPrice = 1.0;
+            }
+            ret.cash = md.getInt("info/cash");
+            ret.only = md.getInt("info/only");
+            ret.quest = md.getInt("info/quest");
+            ret.tradeBlock = md.getInt("info/tradeBlock");
+            ret.accountSharable = md.getInt("info/accountSharable");
+            ret.pickUpBlock = md.getInt("info/pickUpBlock");
+            ret.notSale = md.getInt("info/notSale");
+            // 0 = not, 1 = consume on pickup, 2 = consume + party
+            ret.consumeOnPickup = md.getInt("spec/consumeOnPickup");
+            if (ret.consumeOnPickup == 0) {
+                ret.consumeOnPickup = md.getInt("specEx/consumeOnPickup");
+            }
+            if (ret.consumeOnPickup == 1 && md.getInt("spec/party") > 0) {
+                ret.consumeOnPickup = 2;
+            }
+            ret.stateChangeItem = md.getInt("info/stateChangeItem");
+            ret.meso = md.getInt("info/meso"); // 5200000, メル袋
+            ret.mesomax = md.getInt("info/mesomax"); // 5202000, ランダムメル袋
+            ret.mesomin = md.getInt("info/mesomin");
+            ret.mesostdev = md.getInt("info/mesostdev");
+            ret.dama = md.getInt("info/dama"); // 5201000, パチンコ玉
+            ret.inc = md.getInt("spec/inc"); // pet food
+            ret.lv = md.getInt("info/lv"); // 400xxxx, monster crystal level
+            ret.mob = md.getInt("info/mob"); // 238xxxx, monster card
+            // 425xxxx, item maker gem
+            ret.incPAD = md.getInt("info/incPAD");
+            ret.incMAD = md.getInt("info/incMAD");
+            ret.incACC = md.getInt("info/incACC");
+            ret.incEVA = md.getInt("info/incEVA");
+            ret.incSpeed = md.getInt("info/incSpeed");
+            ret.incJump = md.getInt("info/incJump");
+            ret.incMaxHP = md.getInt("info/incMaxHP");
+            ret.incMaxMP = md.getInt("info/incMaxMP");
+            ret.incSTR = md.getInt("info/incSTR");
+            ret.incINT = md.getInt("info/incINT");
+            ret.incLUK = md.getInt("info/incLUK");
+            ret.incDEX = md.getInt("info/incDEX");
+            ret.randOption = md.getInt("info/randOption"); // Black Crystal Wa/MA
+            ret.randStat = md.getInt("info/randStat"); // Dark Crystal - Str/Dex/int/Luk
+            // 228xxxx, 229xxxx, 562xxxx, skill book and mastery book
+            ret.masterLevel = md.getInt("info/masterLevel");
+            ret.reqSkillLevel = md.getInt("info/reqSkillLevel");
+            ret.success = md.getInt("info/success");
+            ret.skill = new ArrayList<>();
+            MapleData md_skill = md.getChildByPath("info/skill");
+            if (md_skill != null) {
+                for (int i = 0; i < md_skill.getChildren().size(); i++) {
+                    ret.skill.add(md_skill.getInt(Integer.toString(i)));
+                }
+            }
+            // 422xxxx, quest item
+            ret.questId = md.getInt("info/questId");
+            ret.consumeItem = new ArrayList<>();
+            MapleData md_consume_item = md.getChildByPath("info/consumeItem");
+            if (md_consume_item != null) {
+                for (MapleData consume : md_consume_item) {
+                    ret.consumeItem.add(md_consume_item.getInt(consume.getName()));
+                }
+            }
+            // equip ids the scroll can be used on
+            ret.req = new ArrayList<>();
+            MapleData md_req = md.getChildByPath("req");
+            if (md_req != null) {
+                for (MapleData data : md_req.getChildren()) {
+                    ret.req.add(md_req.getInt(data.getName()));
+                }
+            }
+            // 210xxxx, summon sack, [mob id, prob]
+            ret.summonMob = new ArrayList<>();
+            MapleData md_mob = md.getChildByPath("mob");
+            if (md_mob != null) {
+                for (MapleData child : md_mob.getChildren()) {
+                    ret.summonMob.add(new SimpleImmutableEntry<>(child.getInt("id"), child.getInt("prob")));
+                }
+            }
         }
+        this.item_info_list.put(item_id, ret);
         return ret;
     }
 
-    public List<SimpleImmutableEntry<Integer, Integer>> loadSummonMobs(int itemId) {
-        if (!GameConstants.isSummonSack(itemId)) {
-            return null;
+    /**
+     *
+     * @author Danny (Leifde)
+     */
+    public static class PetCommand {
+
+        private int petId;
+        private int skillId;
+        private int prob;
+        private int inc;
+
+        public PetCommand(int petId, int skillId, int prob, int inc) {
+            this.petId = petId;
+            this.skillId = skillId;
+            this.prob = prob;
+            this.inc = inc;
         }
-        MapleData data = getResolvedItemData(itemId).getChildByPath("mob");
-        if (data == null) {
-            return null;
+
+        public int getSkillId() {
+            return skillId;
         }
-        List<SimpleImmutableEntry<Integer, Integer>> mobPairs = new ArrayList<>();
 
-        for (MapleData child : data.getChildren()) {
-            mobPairs.add(new SimpleImmutableEntry<>(
-                    child.getInt("id"),
-                    child.getInt("prob")));
+        public int getProbability() {
+            return prob;
         }
-        return mobPairs;
-    }
 
-    public int loadCardMobId(int id) {
-        MapleData data = getResolvedItemData(id);
-        return data.getInt("info/mob");
-    }
-
-    public short loadItemMakeLevel(int itemId) {
-        if (itemId / 10000 != 400) {
-            return 0;
+        public int getIncrease() {
+            return inc;
         }
-        return (short) getResolvedItemData(itemId).getInt("info/lv");
-    }
-
-    public byte loadConsumeOnPickup(int itemId) {
-        // 0 = not, 1 = consume on pickup, 2 = consume + party
-        MapleData data = getResolvedItemData(itemId);
-        byte consume = (byte) data.getInt("spec/consumeOnPickup");
-        if (consume == 0) {
-            consume = (byte) data.getInt("specEx/consumeOnPickup");
-        }
-        if (consume == 1) {
-            if (getResolvedItemData(itemId).getInt("spec/party") > 0) {
-                consume = 2;
-            }
-        }
-        return consume;
-    }
-
-    public boolean loadDropRestricted(int itemId) {
-        MapleData data = getResolvedItemData(itemId);
-
-        return data.getInt("info/tradeBlock") == 1 || data.getInt("info/quest") == 1;
-    }
-
-    public boolean loadPickupRestricted(int itemId) {
-        return getResolvedItemData(itemId).getInt("info/only") == 1;
-    }
-
-    public boolean loadAccountShared(int itemId) {
-        return getResolvedItemData(itemId).getInt("info/accountSharable") == 1;
-    }
-
-    public int loadStateChangeItem(int itemId) {
-        return getResolvedItemData(itemId).getInt("info/stateChangeItem");
-    }
-
-    public int loadMeso(int itemId) {
-        return getResolvedItemData(itemId).getInt("info/meso");
-    }
-
-    // info/damaとか
-    public int loadIntField(int itemId, String text) {
-        return getResolvedItemData(itemId).getInt(text);
-    }
-
-    public boolean loadPickupBlocked(int itemId) {
-        return getResolvedItemData(itemId).getInt("info/pickUpBlock") == 1;
-    }
-
-    public boolean loadCantSell(int itemId) { //true = cant sell, false = can sell
-        return getResolvedItemData(itemId).getInt("info/notSale") == 1;
-    }
-
-    public SimpleImmutableEntry<Integer, List<StructRewardItem>> loadRewardItem(int itemid) {
-        MapleData data = getResolvedItemData(itemid);
-        if (data == null) {
-            return null;
-        }
-        MapleData rewards = data.getChildByPath("reward");
-        if (rewards == null) {
-            return null;
-        }
-        int totalprob = 0; // As there are some rewards with prob above 2000, we can't assume it's always 100
-        List<StructRewardItem> all = new ArrayList<>();
-
-        for (MapleData reward : rewards) {
-            StructRewardItem struct = new StructRewardItem();
-
-            struct.itemid = reward.getInt("item");
-            struct.prob = (byte) reward.getInt("prob");
-            struct.quantity = (short) reward.getInt("count");
-            struct.effect = reward.getString("Effect");
-            struct.worldmsg = reward.getString("worldMsg", null);
-            struct.period = reward.getInt("period", -1);
-
-            totalprob += struct.prob;
-
-            all.add(struct);
-        }
-        return new SimpleImmutableEntry<>(totalprob, all);
-    }
-
-    public Map<String, Integer> loadSkillStats(int itemId) {
-        if (!(itemId / 10000 == 228 || itemId / 10000 == 229 || itemId / 10000 == 562)) { // Skillbook and mastery book
-            return null;
-        }
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return null;
-        }
-        MapleData info = item.getChildByPath("info");
-        if (info == null) {
-            return null;
-        }
-        Map<String, Integer> ret = new LinkedHashMap<>();
-        for (MapleData data : info.getChildren()) {
-            if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), info.getInt(data.getName()));
-            }
-        }
-        ret.put("masterLevel", info.getInt("masterLevel"));
-        ret.put("reqSkillLevel", info.getInt("reqSkillLevel"));
-        ret.put("success", info.getInt("success"));
-
-        MapleData skill = info.getChildByPath("skill");
-
-        for (int i = 0; i < skill.getChildren().size(); i++) { // List of allowed skillIds
-            ret.put("skillid" + i, skill.getInt(Integer.toString(i)));
-        }
-        return ret;
-    }
-
-    public SimpleImmutableEntry<Integer, List<Integer>> loadQuestItemInfo(int itemId) {
-        if (itemId / 10000 != 422 || getResolvedItemData(itemId) == null) {
-            return null;
-        }
-        MapleData itemD = getResolvedItemData(itemId).getChildByPath("info");
-        if (itemD == null || itemD.getChildByPath("consumeItem") == null) {
-            return null;
-        }
-        List<Integer> consumeItems = new ArrayList<>();
-        MapleData md_consume_item = itemD.getChildByPath("consumeItem");
-        for (MapleData consume : md_consume_item) {
-            consumeItems.add(md_consume_item.getInt(consume.getName()));
-        }
-        return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
     }
 }

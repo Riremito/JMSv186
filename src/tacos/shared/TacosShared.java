@@ -18,7 +18,6 @@
  */
 package tacos.shared;
 
-import java.util.Map;
 import odin.client.inventory.Equip;
 import odin.server.MapleItemInformationProvider;
 import tacos.config.Config;
@@ -31,9 +30,7 @@ import tacos.config.Region;
 public class TacosShared {
 
     public static int getDurabilityMax(Equip equip) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Map<String, Integer> eqStats = ii.getEquipStats(equip.getItemId());
-        int durability_max = eqStats.get("durability");
+        int durability_max = equip.getInfo().getDurability();
 
         return durability_max;
     }
@@ -53,6 +50,18 @@ public class TacosShared {
         int price = (int) (price_t * per);
 
         return price;
+    }
+
+    public static boolean isHorntailNecklace(int item_id) {
+        switch (item_id) {
+            case 1122000: {
+                return true;
+            }
+            case 1122076: {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean is_ignore_master_level_for_common(int skill_id) {

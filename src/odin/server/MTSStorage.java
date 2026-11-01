@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.constants.GameConstants;
+import tacos.debug.DebugLogger;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.database.query.DQ_MtsItems;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.server.TacosITC;
@@ -47,18 +47,13 @@ public class MTSStorage {
     private final AtomicInteger packageId;
     private final Map<Integer, MTSItemInfo> buyNow; //packageid to mtsiteminfo
     private boolean end = false;
-    private ReentrantReadWriteLock mutex;
-    private ReentrantReadWriteLock cart_mutex;
     //mts_cart is just characterid, itemid
     //mts_items is id/packageid, tab(byte), price, characterid, seller, expiration
 
     public MTSStorage() {
-        //System.out.println("Loading MTSStorage::");
         idToCart = new LinkedHashMap<>();
         buyNow = new LinkedHashMap<>();
         packageId = new AtomicInteger(1);
-        mutex = new ReentrantReadWriteLock();
-        cart_mutex = new ReentrantReadWriteLock();
     }
 
     public static MTSStorage getInstance() {
@@ -84,55 +79,30 @@ public class MTSStorage {
     }
 
     public MTSItemInfo getSingleItem(int packageid) {
-        mutex.readLock().lock();
-        try {
-            return buyNow.get(packageid);
-        } finally {
-            mutex.readLock().unlock();
-        }
+        return buyNow.get(packageid);
     }
 
     public void addToBuyNow(MTSCart cart, Item item, int price, int cid, String seller, long expiration) {
-        int id;
-        mutex.writeLock().lock();
-        try {
-            id = packageId.incrementAndGet();
-            buyNow.put(id, new MTSItemInfo(price, item, seller, id, cid, expiration));
-        } finally {
-            mutex.writeLock().unlock();
-        }
+        int id = packageId.incrementAndGet();
+        buyNow.put(id, new MTSItemInfo(price, item, seller, id, cid, expiration));
         cart.addToNotYetSold(id);
     }
 
     public boolean removeFromBuyNow(int id, int cidBought, boolean check) {
-        Item item = null;
-        mutex.writeLock().lock();
-        try {
-            if (buyNow.containsKey(id)) {
-                MTSItemInfo r = buyNow.get(id);
-                if (!check || r.getCharacterId() == cidBought) {
-                    item = r.getItem();
-                    buyNow.remove(id);
-                }
-            }
-        } finally {
-            mutex.writeLock().unlock();
+        MTSItemInfo r = buyNow.get(id);
+        if (r == null || (check && r.getCharacterId() != cidBought)) {
+            return false;
         }
-        if (item != null) {
-            cart_mutex.readLock().lock();
-            try {
-                for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
-                    c.getValue().removeFromCart(id);
-                    c.getValue().removeFromNotYetSold(id);
-                    if (c.getKey() == cidBought) {
-                        c.getValue().addToInventory(item);
-                    }
-                }
-            } finally {
-                cart_mutex.readLock().unlock();
+        Item item = r.getItem();
+        buyNow.remove(id);
+        for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
+            c.getValue().removeFromCart(id);
+            c.getValue().removeFromNotYetSold(id);
+            if (c.getKey() == cidBought) {
+                c.getValue().addToInventory(item);
             }
         }
-        return item != null;
+        return true;
     }
 
     public void loadBuyNow() {
@@ -154,7 +124,7 @@ public class MTSStorage {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugLogger.ExceptionLog(e.toString());
         }
         packageId.set(lastPackage);
     }
@@ -165,69 +135,43 @@ public class MTSStorage {
         }
         this.end = isShutDown;
         if (isShutDown) {
-            System.out.println("Saving MTS...");
+            DebugLogger.InfoLog("Saving MTS...");
         }
         Map<Integer, ArrayList<Item>> expire = new HashMap<>();
         List<Integer> toRemove = new ArrayList<>();
         long now = System.currentTimeMillis();
         Map<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> items = new HashMap<>();
         List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
-        mutex.writeLock().lock(); //lock wL so rL will also be locked
-        try {
-            for (MTSItemInfo m : buyNow.values()) {
-                if (now > m.getEndingDate()) {
-                    if (!expire.containsKey(m.getCharacterId())) {
-                        expire.put(m.getCharacterId(), new ArrayList<>());
-                    }
-                    expire.get(m.getCharacterId()).add(m.getItem());
-                    toRemove.add(m.getId());
-                    items.put(m.getId(), null); //destroy from the mtsitems.
-                } else {
-                    rowsToSave.add(new DQ_MtsItems.TabOneRow(m.getId(), m.getCharacterId(), m.getPrice(), m.getSeller(), m.getEndingDate()));
-                    if (!items.containsKey(m.getId())) {
-                        items.put(m.getId(), new ArrayList<>());
-                    }
-                    items.get(m.getId()).add(new SimpleImmutableEntry<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
-                }
+        for (MTSItemInfo m : buyNow.values()) {
+            if (now > m.getEndingDate()) {
+                expire.computeIfAbsent(m.getCharacterId(), k -> new ArrayList<>()).add(m.getItem());
+                toRemove.add(m.getId());
+                items.put(m.getId(), null); //destroy from the mtsitems.
+            } else {
+                rowsToSave.add(new DQ_MtsItems.TabOneRow(m.getId(), m.getCharacterId(), m.getPrice(), m.getSeller(), m.getEndingDate()));
+                items.computeIfAbsent(m.getId(), k -> new ArrayList<>()).add(new SimpleImmutableEntry<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
             }
+        }
+        buyNow.keySet().removeAll(toRemove);
+        DQ_MtsItems.replaceTabOne(rowsToSave);
+        if (isShutDown) {
+            DebugLogger.InfoLog("Saving MTS items...");
+        }
+        for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
+            ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
+        }
+        if (isShutDown) {
+            DebugLogger.InfoLog("Saving MTS carts...");
+        }
+        for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
             for (int i : toRemove) {
-                buyNow.remove(i);
+                c.getValue().removeFromCart(i);
+                c.getValue().removeFromNotYetSold(i);
             }
-            DQ_MtsItems.replaceTabOne(rowsToSave);
-        } finally {
-            mutex.writeLock().unlock();
-        }
-        if (isShutDown) {
-            System.out.println("Saving MTS items...");
-        }
-        try {
-            for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
-                ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
+            for (Item item : expire.getOrDefault(c.getKey(), new ArrayList<>())) {
+                c.getValue().addToInventory(item);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if (isShutDown) {
-            System.out.println("Saving MTS carts...");
-        }
-        cart_mutex.writeLock().lock();
-        try {
-            for (Entry<Integer, MTSCart> c : idToCart.entrySet()) {
-                for (int i : toRemove) {
-                    c.getValue().removeFromCart(i);
-                    c.getValue().removeFromNotYetSold(i);
-                }
-                if (expire.containsKey(c.getKey())) {
-                    for (Item item : expire.get(c.getKey())) {
-                        c.getValue().addToInventory(item);
-                    }
-                }
-                c.getValue().save();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            cart_mutex.writeLock().unlock();
+            c.getValue().save();
         }
         lastUpdate = System.currentTimeMillis();
     }
@@ -239,45 +183,27 @@ public class MTSStorage {
     }
 
     public MTSCart getCart(int characterId) {
-        MTSCart ret;
-        cart_mutex.readLock().lock();
-        try {
-            ret = idToCart.get(characterId);
-        } finally {
-            cart_mutex.readLock().unlock();
-        }
+        MTSCart ret = idToCart.get(characterId);
         if (ret == null) {
-            cart_mutex.writeLock().lock();
-            try {
-                ret = new MTSCart(characterId);
-                idToCart.put(characterId, ret);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                cart_mutex.writeLock().unlock();
-            }
+            ret = new MTSCart(characterId);
+            idToCart.put(characterId, ret);
         }
         return ret;
     }
 
     public List<MTSItemInfo> getCurrentNotYetSold(MTSCart cart) {
-        mutex.readLock().lock();
-        try {
-            List<MTSItemInfo> nys = new ArrayList<>();
-            MTSItemInfo r;
-            List<Integer> nyss = new ArrayList<>(cart.getNotYetSold());
-            for (int i : nyss) {
-                r = buyNow.get(i);
-                if (r == null) {
-                    cart.removeFromNotYetSold(i);
-                } else {
-                    nys.add(r);
-                }
+        List<MTSItemInfo> nys = new ArrayList<>();
+        MTSItemInfo r;
+        List<Integer> nyss = new ArrayList<>(cart.getNotYetSold());
+        for (int i : nyss) {
+            r = buyNow.get(i);
+            if (r == null) {
+                cart.removeFromNotYetSold(i);
+            } else {
+                nys.add(r);
             }
-            return nys;
-        } finally {
-            mutex.readLock().unlock();
         }
+        return nys;
     }
 
     public List<MTSItemInfo> getBuyNow(int type, int page) {
@@ -319,12 +245,12 @@ public class MTSStorage {
 
     public static class MTSItemInfo {
 
-        private int price;
-        private int id; //packageid
-        private int cid;
-        private Item item;
-        private String seller;
-        private long date;
+        private final int price;
+        private final int id; // packageid
+        private final int cid;
+        private final Item item;
+        private final String seller;
+        private final long date;
 
         public MTSItemInfo(int price, Item item, String seller, int id, int cid, long date) {
             this.item = item;
@@ -348,7 +274,7 @@ public class MTSStorage {
         }
 
         public int getTaxes() {
-            return TacosITC.m_nCommissionBase + (int) (price * TacosITC.m_nCommissionRate / 100);
+            return TacosITC.m_nCommissionBase + price * TacosITC.m_nCommissionRate / 100;
         }
 
         public int getId() {

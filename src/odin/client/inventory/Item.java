@@ -22,6 +22,7 @@ package odin.client.inventory;
 
 import odin.constants.GameConstants;
 import tacos.server.map.object.TacosPet;
+import tacos.wz.WzNameStorage;
 
 public class Item {
 
@@ -38,7 +39,6 @@ public class Item {
     private String giftFrom = "";
 
     public Item(int id, short position, short quantity, byte flag, int uniqueid) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -47,7 +47,6 @@ public class Item {
     }
 
     public Item(int id, short position, short quantity, byte flag) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
@@ -55,10 +54,13 @@ public class Item {
     }
 
     public Item(int id, byte position, short quantity) {
-        super();
         this.id = id;
         this.position = position;
         this.quantity = quantity;
+    }
+
+    public String getName() {
+        return WzNameStorage.ITEM.get(this.id).getName();
     }
 
     public Item copy() {
@@ -189,4 +191,26 @@ public class Item {
         return quantity;
     }
 
+    public enum ItemFlag {
+
+        LOCK(0x01),
+        SPIKES(0x02),
+        COLD(0x04),
+        UNTRADEABLE(0x08),
+        KARMA_EQ(0x10),
+        KARMA_USE(0x02);
+        private final int i;
+
+        private ItemFlag(int i) {
+            this.i = i;
+        }
+
+        public int getValue() {
+            return i;
+        }
+
+        public boolean check(int flag) {
+            return (flag & i) == i;
+        }
+    }
 }

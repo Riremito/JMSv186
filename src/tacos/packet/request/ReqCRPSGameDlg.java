@@ -38,8 +38,7 @@ import tacos.packet.response.builder.PB_UserEffect;
  */
 public class ReqCRPSGameDlg {
 
-    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnPacket(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         if (chr == null) {
             return true;
         }
@@ -62,6 +61,7 @@ public class ReqCRPSGameDlg {
         return false;
     }
 
+    // CRPSGameDlg::SendSelection
     public static boolean OnRPSGame(TacosCharacter chr, ClientPacket cp) {
         TacosClient client = chr.getClient();
         int tax = 1000;
@@ -114,7 +114,7 @@ public class ReqCRPSGameDlg {
                 }
                 if (10 <= chr.getCntStraightVictories()) {
                     int item_id = 4031341;
-                    MapleInventoryManipulator.addById(client, item_id, (short) 1, "", null, 0);
+                    MapleInventoryManipulator.addById(chr, item_id, (short) 1, "", null, 0);
 
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .item_id(item_id)
@@ -138,7 +138,7 @@ public class ReqCRPSGameDlg {
                 chr.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Quit));
                 if (1 <= chr.getCntStraightVictories()) {
                     int item_id = 4031332 + (chr.getCntStraightVictories() - 1);
-                    MapleInventoryManipulator.addById(client, item_id, (short) 1, "", null, 0);
+                    MapleInventoryManipulator.addById(chr, item_id, (short) 1, "", null, 0);
 
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .item_id(item_id)

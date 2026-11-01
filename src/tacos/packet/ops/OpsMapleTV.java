@@ -28,7 +28,7 @@ public enum OpsMapleTV implements IPacketOps {
     MapleTVResCode_IsNotGM(1),
     MapleTVResCode_WrongUser(2),
     MapleTVResCode_TimeOut(3),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

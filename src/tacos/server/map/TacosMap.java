@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
@@ -35,19 +36,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import odin.handling.world.PartyOperation;
+import odin.handling.world.MapleParty.PartyOperation;
 import tacos.odin.OdinEventManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.maps.MapleMapEffect;
-import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
@@ -96,9 +94,10 @@ import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.builder.PB_UserEffect;
-import odin.server.maps.MapleNodes;
 
 /**
  *
@@ -245,11 +244,11 @@ public class TacosMap extends TacosMapData {
         // user enter script.
         if (!getFirstUserEnter().equals("")) {
             if (getCharactersSize() == 1) {
-                MapScriptMethods.startScript_FirstUser(chr.getClient(), getFirstUserEnter());
+                MapScriptMethods.startScript_FirstUser(chr, getFirstUserEnter());
             }
         }
         if (!getUserEnter().equals("")) {
-            MapScriptMethods.startScript_User(chr.getClient(), getUserEnter());
+            MapScriptMethods.startScript_User(chr, getUserEnter());
         }
         // station clock.
         if (hasClock()) {
@@ -278,9 +277,15 @@ public class TacosMap extends TacosMapData {
         }
         chr.silentPartyUpdate();
         chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
-        chr.updatePartyMemberHP();
-        chr.receivePartyMemberHP();
         return true;
+    }
+
+    // LP_UserHP is ignored until the remote user is created, send it after UserEnterField.
+    private void sendPartyHP(TacosCharacter to, TacosCharacter from) {
+        if (to.getParty() == null || from.getParty() == null || to.getParty().getId() != from.getParty().getId()) {
+            return;
+        }
+        to.SendPacket(ResCUserRemote.UserHP(from.getId(), from.getStat().getHp(), from.getStat().getCurrentMaxHp()));
     }
 
     public boolean sendExpedition(TacosCharacter chr, TacosMonster monster) {
@@ -379,11 +384,15 @@ public class TacosMap extends TacosMapData {
         }
         sendExpedition(chr, null);
 
-        splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId());
+        splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId()); // including pet for remote user. (JMS186)
         // pet.
         chr.updatePets();
         for (TacosPet pet : chr.getPets()) {
-            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
+            if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
+                splitSendPacket(chr, ResCUser_Pet.PetActivated(chr, pet)); // pet for local and remote. (JMS131)
+            } else {
+                chr.SendPacket(ResCUser_Pet.PetTransferField(chr, pet)); // pet for local user. (JMS186)
+            }
         }
         // summon.
         chr.updateSummons();
@@ -415,7 +424,9 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 // pet.
                 for (TacosPet pet : player.getPets()) {
-                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
+                        chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
+                    }
                 }
                 // summon.
                 for (TacosSummon summon : player.getSummons()) {
@@ -429,6 +440,9 @@ public class TacosMap extends TacosMapData {
                 if (player.getSkillPet() != null) {
                     chr.SendPacket(ResCUser_SkillPet.SkillPetTransferField(player.getSkillPet()));
                 }
+                // party hp
+                sendPartyHP(chr, player);
+                sendPartyHP(player, chr);
             }
         }
         // mob
@@ -458,17 +472,14 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.merchants.values()) {
+        for (TacosMerchant employee : this.merchants.values()) {
             chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
         }
         // drop
         for (TacosDrop drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuestId();
-            if (0 < quest_id) {
-                if (chr.getQuestStatus(quest_id) != 1) {
-                    continue;
-                }
+            if (!drop.isVisible(chr)) {
+                continue;
             }
             int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
@@ -558,18 +569,24 @@ public class TacosMap extends TacosMapData {
             if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 for (TacosPet pet : chr.getPets()) {
-                    player.SendPacket(ResCUser_Pet.TransferField(chr, pet));
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
+                        player.SendPacket(ResCUser_Pet.PetActivated(chr, pet));
+                    }
                 }
                 for (TacosSummon summon : chr.getSummons()) {
                     player.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
                 for (TacosPet pet : player.getPets()) {
-                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                    if (Region.KMS.check() || Region.KMST.check() || Config.LessOrEqual(Region.JMS, 131)) {
+                        chr.SendPacket(ResCUser_Pet.PetActivated(player, pet));
+                    }
                 }
                 for (TacosSummon summon : player.getSummons()) {
                     chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
+                sendPartyHP(chr, player);
+                sendPartyHP(player, chr);
             }
             if (area_states.get(player_number) == MapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
@@ -618,17 +635,14 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.merchants.values()) {
+        for (TacosMerchant employee : this.merchants.values()) {
             // none.
         }
         // drop
         for (TacosDrop drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuestId();
-            if (0 < quest_id) {
-                if (chr.getQuestStatus(quest_id) != 1) {
-                    continue;
-                }
+            if (!drop.isVisible(chr)) {
+                continue;
             }
             int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
@@ -693,6 +707,15 @@ public class TacosMap extends TacosMapData {
     public void broadcastPacket(ServerPacket packet) {
         for (TacosCharacter player : getAllPlayers()) {
             player.SendPacket(packet);
+        }
+    }
+
+    // to the players who can see the drop.
+    public void broadcastDropPacket(TacosDrop drop, ServerPacket packet) {
+        for (TacosCharacter player : getAllPlayers()) {
+            if (drop.isVisible(player)) {
+                player.SendPacket(packet);
+            }
         }
     }
 
@@ -1207,9 +1230,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // merchant.
-    private final LinkedHashMap<Integer, HiredMerchant> merchants = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, TacosMerchant> merchants = new LinkedHashMap<>();
 
-    public void addMerchant(HiredMerchant merchant) {
+    public void addMerchant(TacosMerchant merchant) {
         if (merchant.getObjectId() == 0) {
             merchant.setObjectId();
         }
@@ -1217,20 +1240,22 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCEmployeePool.EmployeeEnterField(merchant));
     }
 
-    public void removeMerchant(HiredMerchant merchant) {
-        this.merchants.remove(merchant.getObjectId());
-        broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
+    public void removeMerchant(TacosMerchant merchant) {
+        // a shop that was never opened is not on the map.
+        if (this.merchants.remove(merchant.getObjectId(), merchant)) {
+            broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
+        }
     }
 
-    public List<HiredMerchant> getAllMerchants() {
-        ArrayList<HiredMerchant> ret = new ArrayList<>();
-        for (HiredMerchant merchant : this.merchants.values()) {
+    public List<TacosMerchant> getAllMerchants() {
+        ArrayList<TacosMerchant> ret = new ArrayList<>();
+        for (TacosMerchant merchant : this.merchants.values()) {
             ret.add(merchant);
         }
         return ret;
     }
 
-    public HiredMerchant getMerchantByOid(int object_id) {
+    public TacosMerchant getMerchantByOid(int object_id) {
         return this.merchants.get(object_id);
     }
 
@@ -1330,11 +1355,11 @@ public class TacosMap extends TacosMapData {
         mdrop.setDelay(0);
     }
 
-    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, TacosCharacter chr, byte droptype, short quest_id, int delay) {
+    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, TacosCharacter chr, byte droptype, int quest_id, int delay) {
         TacosDrop mdrop = new TacosDrop(idrop, 0, quest_id, dropPos, chr.getId(), droptype, false);
         addDrop(mdrop);
         mdrop.setDelay(delay);
-        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
+        broadcastDropPacket(mdrop, ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         mdrop.setDelay(0);
     }
 
@@ -1342,7 +1367,7 @@ public class TacosMap extends TacosMapData {
         Item idrop = null;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
-            idrop = ii.randomizeStats((Equip) ii.getEquipById(itemid));
+            idrop = ii.getEquipById(itemid);
         } else {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }
@@ -1683,10 +1708,14 @@ public class TacosMap extends TacosMapData {
                 }
             }
         }
+        // mob buff.
+        for (TacosMonster monster : getAllMonsters()) {
+            monster.updateBuffs(time_current);
+        }
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
-                if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
+                if (sp.getMobTime() != -1 && sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
                     TacosMonster monster = sp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
@@ -1752,7 +1781,7 @@ public class TacosMap extends TacosMapData {
                                 player.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
                                 int max_hp = (int) monster.getMobMaxHp();
                                 int damage = max_hp / (70 - mist.getSkillLevel());
-                                //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
+                                //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), OpsMobStat.MS_Poison, 1, mist.getSourceSkill().getId(), true, mist.getDuration(), false);
                                 monster.setHp(Math.max(1, monster.getHp() - damage));
                                 splitSendPacket(monster, ResCMobPool.MobDamaged(monster, damage, 0));
                                 /*
@@ -2160,11 +2189,40 @@ public class TacosMap extends TacosMapData {
         activateItemReactors(drop, owner.getClient());
     }
 
-    public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, int quest_id, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
-        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
+        TacosDrop drop = new TacosDrop(item, 0, quest_id, droppos, owner.getId(), (byte) 2, playerDrop);
         addDrop(drop);
-        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
-        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
+        broadcastDropPacket(drop, ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
+        broadcastDropPacket(drop, ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
+    }
+
+    public static class MapleMapEffect {
+
+        private String msg = "";
+        private int itemId = 0;
+        private boolean active = true;
+        private boolean jukebox = false;
+
+        public MapleMapEffect(String msg, int itemId) {
+            this.msg = msg;
+            this.itemId = itemId;
+        }
+
+        public void setJukebox(boolean actie) {
+            this.jukebox = actie;
+        }
+
+        public ServerPacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
+            return jukebox ? ResCField.PlayJukeBox(0, "") : ResCField.BlowWeather(null, 0, false);
+        }
+
+        public ServerPacket makeStartData() {
+            return jukebox ? ResCField.PlayJukeBox(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
+        }
+
+        public void sendStartData(TacosCharacter chr) {
+            chr.SendPacket(makeStartData());
+        }
     }
 }

@@ -19,6 +19,8 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,6 +72,42 @@ public class DQ_Notes {
         }
 
         return null;
+    }
+
+    public static final class NoteRow {
+
+        public final int id;
+        public final String from;
+        public final String message;
+        public final long timestamp;
+        public final int gift;
+
+        public NoteRow(int id, String from, String message, long timestamp, int gift) {
+            this.id = id;
+            this.from = from;
+            this.message = message;
+            this.timestamp = timestamp;
+            this.gift = gift;
+        }
+    }
+
+    // notes sent to the character
+    public static List<NoteRow> loadByReceiver(String to) {
+        List<NoteRow> ret = new ArrayList<>();
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE `to`=?")) {
+                ps.setString(1, to);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new NoteRow(rs.getInt("id"), rs.getString("from"), rs.getString("message"), rs.getLong("timestamp"), rs.getInt("gift")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadByReceiver");
+        }
+        return ret;
     }
 
     public static boolean deleteById(int noteId) {

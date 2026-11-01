@@ -26,7 +26,7 @@ public enum OpsQuestRecordMessage {
     QUEST_START(0),
     QUEST_UPDATE(1),
     QUEST_COMPLETE(2),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

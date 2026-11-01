@@ -1,0 +1,157 @@
+/*
+ * Copyright (C) 2025 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.packet.request;
+
+import tacos.client.TacosCharacter.BuddyList;
+import tacos.client.TacosCharacter;
+import tacos.client.TacosCharacter.BuddyList.BuddylistEntry;
+import tacos.config.Config;
+import tacos.config.Region;
+import tacos.debug.DebugLogger;
+import tacos.packet.ClientPacket;
+import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.builder.PB_Friend;
+import tacos.packet.response.ResCWvsContext;
+import tacos.server.TacosFriend;
+
+/**
+ *
+ * @author Riremito
+ */
+public class ReqCUser_Friend {
+
+    public static boolean OnFriendRequest(TacosCharacter chr, ClientPacket cp) {
+        byte flag = cp.Decode1();
+        OpsFriend ops_req = OpsFriend.find(flag);
+        DebugLogger.DebugLog("OnFriendRequest : " + ops_req + " (" + flag + ")");
+        BuddyList buddylist = chr.getBuddylist();
+
+        switch (ops_req) {
+            case FriendReq_LoadFriend: {
+                return true;
+            }
+            case FriendReq_SetFriend: {
+                String friend_name = cp.DecodeStr();
+                String friend_tag = (Config.LessOrEqual(Region.KMS, 55) || Config.LessOrEqual(Region.JMS, 147)) ? "" : cp.DecodeStr(); // KMS65, JMS164
+
+                if (12 < friend_name.length() || 16 < friend_tag.length()) {
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Unknown, PB_Friend.builder().build()));
+                    return true;
+                }
+                if (buddylist.isFull()) {
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullMe, PB_Friend.builder().build()));
+                    return true;
+                }
+                BuddylistEntry ble_found = buddylist.get(friend_name);
+                if (ble_found != null) {
+                    if (ble_found.getGroup().equals(friend_tag)) {
+                        chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_AlreadySet, PB_Friend.builder().build()));
+                        return true;
+                    }
+                    ble_found.setGroup(friend_tag);
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
+                    return true;
+                }
+
+                TacosFriend friend = TacosFriend.findByName(chr, friend_name);
+                // invalid character name
+                if (friend == null) {
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_UnknownUser, PB_Friend.builder().build()));
+                    return true;
+                }
+                if (friend.getOnline()) {
+                    if (friend.getCharacter().getBuddylist().isFull()) {
+                        chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullOther, PB_Friend.builder().build()));
+                        return true;
+                    }
+                    TacosCharacter online_friend = friend.getCharacter();
+                    BuddylistEntry ble_hidden = new BuddylistEntry(chr.getName(), chr.getId(), friend_tag, chr.getChannelId(), true, chr.getLevel(), chr.getJob());
+                    ble_hidden.setHidden(true);
+                    online_friend.getBuddylist().put(ble_hidden);
+                    online_friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(online_friend).build()));
+                    // 事前に友達リストに追加しないと拒否を押した場合に無限ループが発生する
+                    online_friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_Invite, PB_Friend.builder().friend_id(chr.getId()).friend_name(chr.getName()).friend_level(chr.getLevel()).friend_job(chr.getJob()).friend_tag("\u30de\u30a4\u53cb\u672a\u6307\u5b9a").build()));
+                }
+                BuddylistEntry ble_new = new BuddylistEntry(friend.getName(), friend.getId(), friend_tag, 0, true, friend.getLevel(), friend.getJob());
+                chr.getBuddylist().put(ble_new);
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(chr).build()));
+                return true;
+            }
+            case FriendReq_AcceptFriend: {
+                // 友達申し込み承認
+                int friend_id = cp.Decode4();
+
+                if (buddylist.isFull()) {
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullMe, PB_Friend.builder().build()));
+                    return true;
+                }
+                BuddylistEntry ble_hidden = chr.getBuddylist().get(friend_id);
+
+                if (ble_hidden == null) {
+                    return true;
+                }
+
+                TacosCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
+                if (friend != null) {
+                    BuddylistEntry ble_offline = friend.getBuddylist().get(chr.getId());
+                    if (ble_offline != null) {
+                        ble_offline.setChannel(chr.getChannelId());
+                    }
+                    friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(friend).build()));
+                }
+
+                ble_hidden.setHidden(false);
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(chr).build()));
+                return true;
+            }
+            case FriendReq_DeleteFriend: {
+                // 友達申し込み拒否
+                int friend_id = cp.Decode4();
+                chr.getBuddylist().remove(friend_id);
+
+                TacosCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
+                if (friend != null) {
+                    BuddylistEntry ble_offline = friend.getBuddylist().get(chr.getId());
+                    if (ble_offline != null) {
+                        ble_offline.setChannel(0);
+                    }
+                    friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(friend).build()));
+                }
+
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_DeleteFriend_Done, PB_Friend.builder().chr(chr).build()));
+                return true;
+            }
+            case FriendReq_NotifyLogin: {
+                return true;
+            }
+            case FriendReq_NotifyLogout: {
+                return true;
+            }
+            case FriendReq_IncMaxCount: {
+                return true;
+            }
+            default: {
+                DebugLogger.ErrorLog("OnFriendRequest not coded : " + flag);
+                break;
+            }
+        }
+
+        return false;
+    }
+}

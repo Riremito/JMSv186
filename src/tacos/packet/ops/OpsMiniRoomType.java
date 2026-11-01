@@ -30,7 +30,7 @@ public enum OpsMiniRoomType implements IPacketOps {
     MR_EntrustedShop(5),
     MR_CashTradingRoom(6),
     MR_TypeNo(7),
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 

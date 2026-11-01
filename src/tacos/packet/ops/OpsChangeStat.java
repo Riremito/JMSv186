@@ -27,29 +27,29 @@ import tacos.config.Region;
  */
 public enum OpsChangeStat {
     // JMS v186, GMS v95
-    CS_SKIN(0x1),
-    CS_FACE(0x2),
-    CS_HAIR(0x4),
-    CS_PETSN(0x8),
-    CS_LEV(0x10),
-    CS_JOB(0x20),
-    CS_STR(0x40),
-    CS_DEX(0x80),
-    CS_INT(0x100),
-    CS_LUK(0x200),
-    CS_HP(0x400),
-    CS_MHP(0x800),
-    CS_MP(0x1000),
-    CS_MMP(0x2000),
-    CS_AP(0x4000),
-    CS_SP(0x8000),
-    CS_EXP(0x10000),
-    CS_POP(0x20000),
-    CS_MONEY(0x40000),
-    CS_PETSN2(0x80000),
-    CS_PETSN3(0x100000),
-    CS_TEMPEXP(0x200000),
-    UNKNOWN(-1);
+    CS_SKIN(1), // 0x1
+    CS_FACE(1 << 1), // 0x2
+    CS_HAIR(1 << 2), // 0x4
+    CS_PETSN(1 << 3), // 0x8
+    CS_LEV(1 << 4), // 0x10
+    CS_JOB(1 << 5), // 0x20
+    CS_STR(1 << 6), // 0x40
+    CS_DEX(1 << 7), // 0x80
+    CS_INT(1 << 8), // 0x100
+    CS_LUK(1 << 9), // 0x200
+    CS_HP(1 << 10), // 0x400
+    CS_MHP(1 << 11), // 0x800
+    CS_MP(1 << 12), // 0x1000
+    CS_MMP(1 << 13), // 0x2000
+    CS_AP(1 << 14), // 0x4000
+    CS_SP(1 << 15), // 0x8000
+    CS_EXP(1 << 16), // 0x10000
+    CS_POP(1 << 17), // 0x20000
+    CS_MONEY(1 << 18), // 0x40000
+    CS_PETSN2(1 << 19), // 0x80000
+    CS_PETSN3(1 << 20), // 0x100000
+    CS_TEMPEXP(1 << 21), // 0x200000
+    UNKNOWN;
 
     private int value;
 
@@ -78,9 +78,16 @@ public enum OpsChangeStat {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsChangeStat ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
-        if (Config.Between(Region.CMS, 73, 88)) {
-            // same as JMS146?
+        if (Config.Between(Region.CMS, 73, 88) || Config.Equal(Region.JMS, 146)) {
+            // CMS73-88 is same as JMS146?
+            clear();
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
             CS_HAIR.set(1 << 2);
@@ -105,42 +112,34 @@ public enum OpsChangeStat {
             CS_TEMPEXP.set(1 << 21); // OK. wz data lost exp values?
             return;
         }
-        if (Config.PostBB()) {
-            CS_PETSN2.set(0x00100000);
-            CS_PETSN3.set(0x00200000);
-            CS_TEMPEXP.set(0x00400000);
-            return;
-        }
-
-        // JMS131 and 147+ is asme as JMS186
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0)) {
-            return;
-        }
-        // JMS146 only?
-        if (Config.Equal(Region.JMS, 146)) {
+        // GMS95 reads CS_PETSN2 at 0x80000 (GW_CharacterStat::DecodeChangeStat)
+        if (Config.PostBB() && !Region.GMS.check()) {
+            clear();
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
             CS_HAIR.set(1 << 2);
             CS_PETSN.set(1 << 3);
-            CS_PETSN2.set(1 << 4);
-            CS_PETSN3.set(1 << 5);
-            CS_LEV.set(1 << 6);
-            CS_JOB.set(1 << 7);
-            CS_STR.set(1 << 8);
-            CS_DEX.set(1 << 9);
-            CS_INT.set(1 << 10);
-            CS_LUK.set(1 << 11);
-            CS_HP.set(1 << 12);
-            CS_MHP.set(1 << 13);
-            CS_MP.set(1 << 14);
-            CS_MMP.set(1 << 15);
-            CS_AP.set(1 << 16);
-            CS_SP.set(1 << 17);
-            CS_EXP.set(1 << 18);
-            CS_POP.set(1 << 19);
-            CS_MONEY.set(1 << 20);
-            CS_TEMPEXP.set(1 << 21);
+            CS_LEV.set(1 << 4);
+            CS_JOB.set(1 << 5);
+            CS_STR.set(1 << 6);
+            CS_DEX.set(1 << 7);
+            CS_INT.set(1 << 8);
+            CS_LUK.set(1 << 9);
+            CS_HP.set(1 << 10);
+            CS_MHP.set(1 << 11);
+            CS_MP.set(1 << 12);
+            CS_MMP.set(1 << 13);
+            CS_AP.set(1 << 14);
+            CS_SP.set(1 << 15);
+            CS_EXP.set(1 << 16);
+            CS_POP.set(1 << 17);
+            CS_MONEY.set(1 << 18);
+            // 1 << 19 : ?
+            CS_PETSN2.set(1 << 20); // 0x100000
+            CS_PETSN3.set(1 << 21); // 0x200000
+            CS_TEMPEXP.set(1 << 22); // 0x400000
             return;
         }
+        // JMS131, JMS147+ and other Pre-BB versions are same as GMS95
     }
 }

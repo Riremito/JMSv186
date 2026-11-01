@@ -125,6 +125,20 @@ public class WzXML {
         xml_cache.add(new SimpleImmutableEntry<>(data_path, md));
     }
 
+    // WZ data log with the full path of the data
+    private static boolean dataLog(MapleData data, String text) {
+        String data_path = "null";
+        if (data != null) {
+            data_path = data.getName();
+            MapleData parent_data = (MapleData) data.getParent();
+            while (parent_data != null) {
+                data_path = parent_data.getName() + "/" + data_path;
+                parent_data = (MapleData) parent_data.getParent();
+            }
+        }
+        return DebugLogger.XmlDataLog(data_path, text);
+    }
+
     private static MapleData getXmlCache(String data_path) {
         for (SimpleImmutableEntry<String, MapleData> pair : xml_cache) {
             if (pair.getKey().equals(data_path)) {
@@ -535,7 +549,7 @@ public class WzXML {
                 return dataToInt(data, def);
             }
             if (data == null) {
-                //DebugLogger.XmlDataLog(null, "getIntExpression");
+                //dataLog(null, "getIntExpression");
                 return def;
             }
             if (data.getType() != DataType.STRING) {
@@ -548,18 +562,18 @@ public class WzXML {
         // get data.
         private static int dataToInt(MapleData data, int def) {
             if (data == null) {
-                //DebugLogger.XmlDataLog(null, "getInt");
+                //dataLog(null, "getInt");
                 return def;
             }
             Object ret = data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getInt def");
+                dataLog(data, "getInt def");
                 return def;
             }
 
             switch (data.getType()) {
                 case SHORT:
-                    DebugLogger.XmlDataLog(data, "getInt = short");
+                    dataLog(data, "getInt = short");
                     return (Short) ret;
                 case INT: {
                     return (Integer) ret;
@@ -571,11 +585,11 @@ public class WzXML {
                     return ((Double) ret).intValue();
                 }
                 case STRING: {
-                    DebugLogger.XmlDataLog(data, "getInt = string");
+                    dataLog(data, "getInt = string");
                     return Integer.parseInt((String) ret);
                 }
                 default: {
-                    DebugLogger.XmlDataLog(data, "getInt = others");
+                    dataLog(data, "getInt = others");
                     break;
                 }
             }
@@ -586,7 +600,7 @@ public class WzXML {
         // for Map.wz, 749050100.img, info/decHP, pinkbean cake map
         private static long dataToLong(MapleData data, long def) {
             if (data == null) {
-                DebugLogger.XmlDataLog(null, "getLong");
+                dataLog(null, "getLong");
                 return def;
             }
             if (data.getType() != DataType.STRING) {
@@ -594,7 +608,7 @@ public class WzXML {
             }
             String ret = (String) data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getLong def");
+                dataLog(data, "getLong def");
                 return def;
             }
             return Long.parseLong(ret);
@@ -603,12 +617,12 @@ public class WzXML {
         // for Map.wz, info/recovery
         private static Float dataToFloat(MapleData data, float def) {
             if (data == null) {
-                DebugLogger.XmlDataLog(null, "getFloat");
+                dataLog(null, "getFloat");
                 return def;
             }
             Float ret = (Float) data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getFloat def");
+                dataLog(data, "getFloat def");
                 return def;
             }
             return (Float) data.getData();
@@ -617,12 +631,12 @@ public class WzXML {
         // for Item.wz, unitPrice star/bullet
         private static Double dataToDouble(MapleData data, double def) {
             if (data == null) {
-                DebugLogger.XmlDataLog(null, "getDouble");
+                dataLog(null, "getDouble");
                 return def;
             }
             Double ret = (Double) data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getDouble def");
+                dataLog(data, "getDouble def");
                 return def;
             }
             return ret;
@@ -630,12 +644,12 @@ public class WzXML {
 
         private static String dataToString(MapleData data, String def) {
             if (data == null) {
-                //DebugLogger.XmlDataLog(null, "getString");
+                //dataLog(null, "getString");
                 return def;
             }
             String ret = (String) data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getString def");
+                dataLog(data, "getString def");
                 return def;
             }
             return ret;
@@ -644,12 +658,12 @@ public class WzXML {
         // for Reactor.wz, lt, rb
         private static Point dataToPoint(MapleData data) {
             if (data == null) {
-                DebugLogger.XmlDataLog(null, "getPoint");
+                dataLog(null, "getPoint");
                 return null;
             }
             Point ret = (Point) data.getData();
             if (ret == null) {
-                DebugLogger.XmlDataLog(data, "getPoint def");
+                dataLog(data, "getPoint def");
                 return null;
             }
             return ret;

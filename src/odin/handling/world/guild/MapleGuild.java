@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import java.util.List;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.Lock;
 import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import tacos.config.Region;
@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.config.Config;
 import tacos.database.query.DQ_BbsReplies;
 import tacos.database.query.DQ_BbsThreads;
@@ -45,6 +44,7 @@ import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsGuild;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ServerPacket;
@@ -56,7 +56,7 @@ public class MapleGuild {
         NONE, DISBAND, EMBELMCHANGE
     }
     private final List<MapleGuildCharacter> members = new CopyOnWriteArrayList<>();
-    private final String rankTitles[] = new String[5]; // 1 = master, 2 = jr, 5 = lowest member
+    private final String[] rankTitles = new String[5]; // 1 = master, 2 = jr, 5 = lowest member
     private String name;
     private String notice;
     private int id;
@@ -73,9 +73,6 @@ public class MapleGuild {
     private boolean bDirty = true;
     private boolean proper = true;
     private final Map<Integer, MapleBBSThread> bbs = new HashMap<>();
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock rL = lock.readLock();
-    private final Lock wL = lock.writeLock();
     private boolean init = false;
 
     public MapleGuild(int guildid) {
@@ -106,7 +103,7 @@ public class MapleGuild {
 
         List<DQ_Characters.GuildMemberRow> memberRows = DQ_Characters.getGuildMembers(guildid);
         if (memberRows.isEmpty()) {
-            System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
+            DebugLogger.ErrorLog("No members in guild " + id + ".  Impossible... guild is disbanding");
             writeToDB(true);
             proper = false;
             return;
@@ -120,7 +117,7 @@ public class MapleGuild {
         }
 
         if (!leaderCheck) {
-            System.err.println("Leader " + leader + " isn't in guild " + id + ".  Impossible... guild is disbanding.");
+            DebugLogger.ErrorLog("Leader " + leader + " isn't in guild " + id + ".  Impossible... guild is disbanding.");
             writeToDB(true);
             proper = false;
             return;
@@ -166,7 +163,7 @@ public class MapleGuild {
                 }
             }
 
-            broadcast(ResCWvsContext.guildDisband(id));
+            broadcast(ResCWvsContext.GuildResult_RemoveGuild_Done(id));
         }
     }
 
@@ -215,32 +212,22 @@ public class MapleGuild {
 
     // multi-purpose function that reaches every member of guild (except the character with exceptionId) in all channels with as little access to rmi as possible
     public void broadcast(ServerPacket packet, int exceptionId, BCOp bcop) {
-        wL.lock();
-        try {
-            buildNotifications();
-        } finally {
-            wL.unlock();
-        }
+        buildNotifications();
 
-        rL.lock();
-        try {
-            for (MapleGuildCharacter mgc : members) {
-                if (bcop == BCOp.DISBAND) {
-                    if (mgc.isOnline()) {
-                        TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
-                    } else {
-                        setOfflineGuildStatus(0, (byte) 5, (byte) 5, mgc.getId());
-                    }
-                } else if (mgc.isOnline() && mgc.getId() != exceptionId) {
-                    if (bcop == BCOp.EMBELMCHANGE) {
-                        TacosWorld.find(0).getGuild().changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
-                    } else {
-                        TacosWorld.find(0).getGuild().sendGuildPacket(mgc.getId(), packet, exceptionId, id);
-                    }
+        for (MapleGuildCharacter mgc : members) {
+            if (bcop == BCOp.DISBAND) {
+                if (mgc.isOnline()) {
+                    TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
+                } else {
+                    setOfflineGuildStatus(0, (byte) 5, (byte) 5, mgc.getId());
+                }
+            } else if (mgc.isOnline() && mgc.getId() != exceptionId) {
+                if (bcop == BCOp.EMBELMCHANGE) {
+                    TacosWorld.find(0).getGuild().changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
+                } else {
+                    TacosWorld.find(0).getGuild().sendGuildPacket(mgc.getId(), packet, exceptionId, id);
                 }
             }
-        } finally {
-            rL.unlock();
         }
 
     }
@@ -279,9 +266,9 @@ public class MapleGuild {
             }
         }
         if (bBroadcast) {
-            broadcast(ResCWvsContext.guildMemberOnline(id, cid, online), cid);
+            broadcast(ResCWvsContext.GuildResult_NotifyLoginOrLogout(id, cid, online), cid);
             if (allianceid > 0) {
-                TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
+                TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.AllianceResult_NotifyLoginOrLogout(allianceid, id, cid, online), id, allianceid);
             }
         }
         bDirty = true; // member formation has changed, update notifications
@@ -326,23 +313,18 @@ public class MapleGuild {
 
     public int addGuildMember(MapleGuildCharacter mgc) {
         // first of all, insert it into the members keeping alphabetical order of lowest ranks ;)
-        wL.lock();
-        try {
-            if (members.size() >= capacity) {
-                return 0;
+        if (members.size() >= capacity) {
+            return 0;
+        }
+        for (int i = members.size() - 1; i >= 0; i--) {
+            if (members.get(i).getGuildRank() < 5 || members.get(i).getName().compareTo(mgc.getName()) < 0) {
+                members.add(i + 1, mgc);
+                bDirty = true;
+                break;
             }
-            for (int i = members.size() - 1; i >= 0; i--) {
-                if (members.get(i).getGuildRank() < 5 || members.get(i).getName().compareTo(mgc.getName()) < 0) {
-                    members.add(i + 1, mgc);
-                    bDirty = true;
-                    break;
-                }
-            }
-        } finally {
-            wL.unlock();
         }
         gainGP(50);
-        broadcast(ResCWvsContext.newGuildMember(mgc));
+        broadcast(ResCWvsContext.GuildResult_JoinGuild_Done(mgc));
         if (allianceid > 0) {
             TacosWorld.find(0).getAlliance().sendGuild(allianceid);
         }
@@ -350,53 +332,43 @@ public class MapleGuild {
     }
 
     public void leaveGuild(MapleGuildCharacter mgc) {
-        broadcast(ResCWvsContext.memberLeft(mgc, false));
+        broadcast(ResCWvsContext.GuildResult_WithdrawGuild_Done(mgc, false));
         gainGP(-50);
-        wL.lock();
-        try {
-            bDirty = true;
-            members.remove(mgc);
-            if (mgc.isOnline()) {
-                TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
-            } else {
-                setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, mgc.getId());
-            }
-            if (allianceid > 0) {
-                TacosWorld.find(0).getAlliance().sendGuild(allianceid);
-            }
-        } finally {
-            wL.unlock();
+        bDirty = true;
+        members.remove(mgc);
+        if (mgc.isOnline()) {
+            TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
+        } else {
+            setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, mgc.getId());
+        }
+        if (allianceid > 0) {
+            TacosWorld.find(0).getAlliance().sendGuild(allianceid);
         }
     }
 
     public void expelMember(MapleGuildCharacter initiator, String name, int cid) {
-        wL.lock();
-        try {
-            Iterator<MapleGuildCharacter> itr = members.iterator();
-            while (itr.hasNext()) {
-                MapleGuildCharacter mgc = itr.next();
+        Iterator<MapleGuildCharacter> itr = members.iterator();
+        while (itr.hasNext()) {
+            MapleGuildCharacter mgc = itr.next();
 
-                if (mgc.getId() == cid && initiator.getGuildRank() < mgc.getGuildRank()) {
-                    broadcast(ResCWvsContext.memberLeft(mgc, true));
+            if (mgc.getId() == cid && initiator.getGuildRank() < mgc.getGuildRank()) {
+                broadcast(ResCWvsContext.GuildResult_WithdrawGuild_Done(mgc, true));
 
-                    bDirty = true;
+                bDirty = true;
 
-                    gainGP(-50);
-                    if (allianceid > 0) {
-                        TacosWorld.find(0).getAlliance().sendGuild(allianceid);
-                    }
-                    if (mgc.isOnline()) {
-                        TacosWorld.find(0).getGuild().setGuildAndRank(cid, 0, 5, 5);
-                    } else {
-                        DQ_Notes.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
-                        setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, cid);
-                    }
-                    members.remove(mgc);
-                    break;
+                gainGP(-50);
+                if (allianceid > 0) {
+                    TacosWorld.find(0).getAlliance().sendGuild(allianceid);
                 }
+                if (mgc.isOnline()) {
+                    TacosWorld.find(0).getGuild().setGuildAndRank(cid, 0, 5, 5);
+                } else {
+                    DQ_Notes.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
+                    setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, cid);
+                }
+                members.remove(mgc);
+                break;
             }
-        } finally {
-            wL.unlock();
         }
     }
 
@@ -432,14 +404,12 @@ public class MapleGuild {
                     setOfflineGuildStatus((short) this.id, (byte) mgc.getGuildRank(), (byte) newRank, cid);
                 }
                 mgc.setAllianceRank((byte) newRank);
-                //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.changeAllianceRank(allianceid, mgc), -1, allianceid);
-                //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.updateAllianceRank(allianceid, mgc), -1, allianceid);
                 TacosWorld.find(0).getAlliance().sendGuild(allianceid);
                 return;
             }
         }
         // it should never get to this point unless cid was incorrect o_O
-        System.err.println("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
+        DebugLogger.ErrorLog("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
     }
 
     public void changeRank(int cid, int newRank) {
@@ -451,17 +421,17 @@ public class MapleGuild {
                     setOfflineGuildStatus((short) this.id, (byte) newRank, (byte) mgc.getAllianceRank(), cid);
                 }
                 mgc.setGuildRank((byte) newRank);
-                broadcast(ResCWvsContext.changeRank(mgc));
+                broadcast(ResCWvsContext.GuildResult_SetMemberGrade_Done(mgc));
                 return;
             }
         }
         // it should never get to this point unless cid was incorrect o_O
-        System.err.println("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
+        DebugLogger.ErrorLog("INFO: unable to find the correct id for changeRank({" + cid + "}, {" + newRank + "})");
     }
 
     public void setGuildNotice(String notice) {
         this.notice = notice;
-        broadcast(ResCWvsContext.guildNotice(id, notice));
+        broadcast(ResCWvsContext.GuildResult_SetNotice_Done(id, notice));
     }
 
     public void memberLevelJobUpdate(MapleGuildCharacter mgc) {
@@ -480,9 +450,9 @@ public class MapleGuild {
                 if (old_job != mgc.getJobId()) {
                     this.broadcast(ResCWvsContext.NotifyJobChange(false, mgc.getJobId(), mgc.getName()), mgc.getId());
                 }
-                broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
+                broadcast(ResCWvsContext.GuildResult_ChangeLevelOrJob(mgc));
                 if (allianceid > 0) {
-                    TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
+                    TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.AllianceResult_ChangeLevelOrJob(mgc, allianceid), id, allianceid);
                 }
                 break;
             }
@@ -493,7 +463,7 @@ public class MapleGuild {
         for (int i = 0; i < 5; i++) {
             rankTitles[i] = ranks[i];
         }
-        broadcast(ResCWvsContext.rankTitleChange(id, ranks));
+        broadcast(ResCWvsContext.GuildResult_SetGradeName_Done(id, ranks));
     }
 
     public void setGuildEmblem(short bg, byte bgcolor, short logo, byte logocolor) {
@@ -520,7 +490,7 @@ public class MapleGuild {
             return false;
         }
         capacity += 5;
-        broadcast(ResCWvsContext.guildCapacityChange(this.id, this.capacity));
+        broadcast(ResCWvsContext.GuildResult_IncMaxMemberNum_Done(this.id, this.capacity));
 
         DQ_Guilds.updateCapacity(id, capacity);
         return true;
@@ -534,7 +504,7 @@ public class MapleGuild {
             amount = -gp;
         } //0 lowest
         gp += amount;
-        broadcast(ResCWvsContext.updateGP(id, gp));
+        broadcast(ResCWvsContext.GuildResult_IncPoint_Done(id, gp));
         if (broadcast) {
             broadcast(ResCWvsContext.Message(OpsMessage.MS_IncGPMessage, PB_Message.builder().Inc_GP(amount).build()));
         }
@@ -564,28 +534,46 @@ public class MapleGuild {
     // keep in mind that this will be called by a handler most of the time
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
-    public static MapleGuildResponse sendInvite(TacosClient client, String targetName) {
-        TacosCharacter chr = client.getPlayer();
-        TacosCharacter mc = client.getChannelServer().getOnlinePlayers().findByName(targetName);
+    public static MapleGuildResponse sendInvite(TacosCharacter chr, String targetName) {
+        TacosCharacter mc = chr.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }
         if (mc.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
         }
-        mc.SendPacket(ResCWvsContext.guildInvite(chr.getGuildId(), chr.getName(), chr.getLevel(), chr.getJob()));
+        mc.SendPacket(ResCWvsContext.GuildResult_InviteGuild(chr.getGuildId(), chr.getName(), chr.getLevel(), chr.getJob()));
         return null;
     }
 
+    // newest first, the notice (id 0) is not included.
     public List<MapleBBSThread> getBBS() {
-        List<MapleBBSThread> ret = new ArrayList<>(bbs.values());
+        List<MapleBBSThread> ret = new ArrayList<>();
+        for (MapleBBSThread thread : bbs.values()) {
+            if (!thread.isNotice()) {
+                ret.add(thread);
+            }
+        }
         Collections.sort(ret, new MapleBBSThread.ThreadComparator());
         return ret;
     }
 
+    public MapleBBSThread getBBSNotice() {
+        return bbs.get(0);
+    }
+
+    public MapleBBSThread getBBSThread(int localthreadid) {
+        return bbs.get(localthreadid);
+    }
+
     public int addBBSThread(String title, String text, int icon, boolean bNotice, int posterID) {
-        int add = bbs.get(0) == null ? 1 : 0; //add 1 if no notice
-        int ret = bNotice ? 0 : Math.max(1, bbs.size() + add);
+        int ret = 0;
+        if (!bNotice) {
+            for (int localthreadid : bbs.keySet()) {
+                ret = Math.max(ret, localthreadid);
+            }
+            ret++;
+        }
         bbs.put(ret, new MapleBBSThread(ret, title, text, System.currentTimeMillis(), this.id, posterID, icon));
         return ret;
     }
@@ -593,7 +581,10 @@ public class MapleGuild {
     public void editBBSThread(int localthreadid, String title, String text, int icon, int posterID, int guildRank) {
         MapleBBSThread thread = bbs.get(localthreadid);
         if (thread != null && (thread.ownerID == posterID || guildRank <= 2)) {
-            bbs.put(localthreadid, new MapleBBSThread(localthreadid, title, text, System.currentTimeMillis(), this.id, thread.ownerID, icon));
+            thread.name = title;
+            thread.text = text;
+            thread.icon = icon;
+            thread.timestamp = System.currentTimeMillis();
         }
     }
 
@@ -607,7 +598,11 @@ public class MapleGuild {
     public void addBBSReply(int localthreadid, String text, int posterID) {
         MapleBBSThread thread = bbs.get(localthreadid);
         if (thread != null) {
-            thread.replies.put(thread.replies.size(), new MapleBBSReply(thread.replies.size(), posterID, text, System.currentTimeMillis()));
+            int replyid = 0;
+            for (int id : thread.replies.keySet()) {
+                replyid = Math.max(replyid, id + 1);
+            }
+            thread.replies.put(replyid, new MapleBBSReply(replyid, posterID, text, System.currentTimeMillis()));
         }
     }
 
@@ -662,4 +657,69 @@ public class MapleGuild {
         return java.util.Collections.unmodifiableCollection(members);
     }
 
+
+    public enum MapleGuildResponse {
+
+        NOT_IN_CHANNEL(OpsGuild.GuildRes_JoinGuild_UnknownUser),
+        ALREADY_IN_GUILD(OpsGuild.GuildRes_JoinGuild_AlreadyJoined),
+        NOT_IN_GUILD(OpsGuild.GuildRes_WithdrawGuild_NotJoined);
+        private final OpsGuild ops;
+
+        private MapleGuildResponse(OpsGuild ops) {
+            this.ops = ops;
+        }
+
+        public int getValue() {
+            return ops.get();
+        }
+
+        // used by script
+        public ServerPacket getPacket() {
+            return ResCWvsContext.GuildResult(ops);
+        }
+
+    }
+
+    public static class MapleGuildSummary {
+
+        private String name;
+        private short logoBG;
+        private short logo;
+        private byte logoBGColor;
+        private byte logoColor;
+        private int allianceid;
+
+        public MapleGuildSummary(MapleGuild g) {
+            name = g.getName();
+            logoBG = (short) g.getLogoBG();
+            logoBGColor = (byte) g.getLogoBGColor();
+            logo = (short) g.getLogo();
+            logoColor = (byte) g.getLogoColor();
+            allianceid = g.getAllianceId();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public short getLogoBG() {
+            return logoBG;
+        }
+
+        public byte getLogoBGColor() {
+            return logoBGColor;
+        }
+
+        public short getLogo() {
+            return logo;
+        }
+
+        public byte getLogoColor() {
+            return logoColor;
+        }
+
+        public int getAllianceId() {
+            return allianceid;
+        }
+    }
 }

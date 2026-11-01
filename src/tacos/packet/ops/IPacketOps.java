@@ -26,6 +26,5 @@ public interface IPacketOps {
 
     public int get();
 
-    public void set(int val);
-
+    public void set(int value);
 }

@@ -10,16 +10,15 @@ import tacos.wz.WzXML;
 public class ItemMakerFactory {
 
     private final static ItemMakerFactory instance = new ItemMakerFactory();
-    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
-    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
+    private Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
+    private Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
         return instance;
     }
 
-    protected ItemMakerFactory() {
-        //System.out.println("Loading ItemMakerFactory :::");
+    private ItemMakerFactory() {
         WzXML.ETC.loadItemMake(gemCache, createCache);
     }
 
@@ -31,13 +30,26 @@ public class ItemMakerFactory {
         return createCache.get(itemid);
     }
 
+    public static class RandomReward {
+
+        public final int itemId;
+        public final int count;
+        public final int prob;
+
+        public RandomReward(int itemId, int count, int prob) {
+            this.itemId = itemId;
+            this.count = count;
+            this.prob = prob;
+        }
+    }
+
     public static class GemCreateEntry {
 
         private int reqLevel;
         private int reqMakerLevel;
         private int cost;
         private int quantity;
-        private List<SimpleImmutableEntry<Integer, Integer>> randomReward = new ArrayList<>();
+        private List<RandomReward> randomReward = new ArrayList<>();
         private List<SimpleImmutableEntry<Integer, Integer>> reqRecipe = new ArrayList<>();
 
         public GemCreateEntry(int cost, int reqLevel, int reqMakerLevel, int quantity) {
@@ -47,7 +59,7 @@ public class ItemMakerFactory {
             this.quantity = quantity;
         }
 
-        public List<SimpleImmutableEntry<Integer, Integer>> getRandomReward() {
+        public List<RandomReward> getRandomReward() {
             return randomReward;
         }
 
@@ -67,8 +79,12 @@ public class ItemMakerFactory {
             return cost;
         }
 
-        public void addRandomReward(int itemId, int prob) {
-            randomReward.add(new SimpleImmutableEntry<>(itemId, prob));
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void addRandomReward(int itemId, int count, int prob) {
+            randomReward.add(new RandomReward(itemId, count, prob));
         }
 
         public void addReqRecipe(int itemId, int count) {

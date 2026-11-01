@@ -19,6 +19,8 @@
 package tacos;
 
 import tacos.config.Content;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.InvTypeDB;
 import tacos.property.Property;
 import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
@@ -100,6 +102,8 @@ public class Start {
             System.exit(0);
         }
         DQ_Accounts.resetLoginState();
+        // hired merchants are not kept over a restart, their goods go to the store bank.
+        DQ_Inventoryitems.changeType(InvTypeDB.Employee, InvTypeDB.StoreBank);
 
         MapTimer.getInstance().start();
         CloneTimer.getInstance().start();

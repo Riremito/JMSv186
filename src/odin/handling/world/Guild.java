@@ -21,14 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.debug.DebugLogger;
 import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import odin.handling.world.guild.MapleGuildSummary;
+import odin.handling.world.guild.MapleGuild.MapleGuildSummary;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 import tacos.server.TacosWorld;
@@ -38,7 +37,6 @@ public class Guild {
     private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
 
     public Guild() {
-        //System.out.println("[MapleGuild] Loading Guilds");
         Collection<MapleGuild> allGuilds = MapleGuild.loadAll();
         for (MapleGuild g : allGuilds) {
             if (g.isProper()) {
@@ -55,7 +53,7 @@ public class Guild {
         MapleGuild ret = guilds.get(id);
         if (ret == null) {
             ret = new MapleGuild(id);
-            if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+            if (ret.getId() <= 0 || !ret.isProper()) { //failed to load
                 return null;
             }
             guilds.put(id, ret);
@@ -227,58 +225,14 @@ public class Guild {
     }
 
     public void save() {
-        System.out.println("Saving guilds...");
+        DebugLogger.InfoLog("Saving guilds...");
         for (MapleGuild a : guilds.values()) {
             a.writeToDB(false);
         }
     }
 
-    public List<MapleBBSThread> getBBS(int gid) {
-        MapleGuild g = getGuild(gid);
-        if (g != null) {
-            return g.getBBS();
-        }
-        return null;
-    }
-
-    public int addBBSThread(int guildid, String title, String text, int icon, boolean bNotice, int posterID) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            return g.addBBSThread(title, text, icon, bNotice, posterID);
-        }
-        return -1;
-    }
-
-    public void editBBSThread(int guildid, int localthreadid, String title, String text, int icon, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.editBBSThread(localthreadid, title, text, icon, posterID, guildRank);
-        }
-    }
-
-    public void deleteBBSThread(int guildid, int localthreadid, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.deleteBBSThread(localthreadid, posterID, guildRank);
-        }
-    }
-
-    public void addBBSReply(int guildid, int localthreadid, String text, int posterID) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.addBBSReply(localthreadid, text, posterID);
-        }
-    }
-
-    public void deleteBBSReply(int guildid, int localthreadid, int replyid, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.deleteBBSReply(localthreadid, replyid, posterID, guildRank);
-        }
-    }
-
     public void changeEmblem(int gid, int affectedPlayers, MapleGuildSummary mgs) {
-        sendGuildPacket(affectedPlayers, ResCWvsContext.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
+        sendGuildPacket(affectedPlayers, ResCWvsContext.GuildResult_SetMark_Done(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
         setGuildAndRank(affectedPlayers, -1, -1, -1);	//respawn player
     }
 
