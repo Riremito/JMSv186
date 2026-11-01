@@ -1363,11 +1363,6 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_script_id);
             return true;
         }
-        // npc shop from database.
-        if (TacosNpcShop.startDatabaseNpcShop(chr, npc_script_id)) {
-            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc_script_id);
-            return true;
-        }
         // npc from script.
         chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript());
         return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);

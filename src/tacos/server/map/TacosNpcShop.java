@@ -20,8 +20,6 @@ package tacos.server.map;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
-import java.util.HashMap;
-import java.util.Map;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShop;
 import tacos.debug.DebugShop;
@@ -55,28 +53,5 @@ public class TacosNpcShop {
     // create npc shop from script.
     public static MapleShop createScriptNpcShop(int npc_id) {
         return new MapleShop(npc_id, npc_id);
-    }
-
-    // create npc shop from database.
-    private static final Map<Integer, MapleShop> shops = new HashMap<>();
-
-    private static MapleShop getDatabaseNpcShop(int npc_id) {
-        if (shops.containsKey(npc_id)) {
-            return shops.get(npc_id);
-        }
-
-        MapleShop ret = MapleShop.createFromDB(npc_id);
-        shops.put(npc_id, ret);
-        return ret;
-    }
-
-    public static boolean startDatabaseNpcShop(TacosCharacter chr, int npc_id) {
-        MapleShop shop = getDatabaseNpcShop(npc_id);
-        if (shop == null) {
-            return false;
-        }
-
-        shop.sendShop(chr);
-        return true;
     }
 }

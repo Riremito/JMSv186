@@ -3,16 +3,11 @@ package odin.server;
 import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
-import tacos.database.query.DQ_Shopitems;
-import tacos.database.query.DQ_Shops;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
@@ -22,38 +17,9 @@ import tacos.wz.WzDataStorage;
 
 public class MapleShop {
 
-    private static final Set<Integer> rechargeableItems = new LinkedHashSet<>();
     private int id;
     private int npcId;
     private List<MapleShopItem> items;
-
-    static {
-        rechargeableItems.add(2070000);
-        rechargeableItems.add(2070001);
-        rechargeableItems.add(2070002);
-        rechargeableItems.add(2070003);
-        rechargeableItems.add(2070004);
-        rechargeableItems.add(2070005);
-        rechargeableItems.add(2070006);
-        rechargeableItems.add(2070007);
-        rechargeableItems.add(2070008);
-        rechargeableItems.add(2070009);
-        rechargeableItems.add(2070010);
-        rechargeableItems.add(2070011);
-        rechargeableItems.add(2070012);
-        rechargeableItems.add(2070013);
-        rechargeableItems.add(2070016);
-        rechargeableItems.add(2070019); // Magic Throwing Star
-        rechargeableItems.add(2330000);
-        rechargeableItems.add(2330001);
-        rechargeableItems.add(2330002);
-        rechargeableItems.add(2330003);
-        rechargeableItems.add(2330004);
-        rechargeableItems.add(2330005);
-        rechargeableItems.add(2330007);
-        rechargeableItems.add(2331000); // Capsules
-        rechargeableItems.add(2332000); // Capsules
-    }
 
     public MapleShop(int id, int npcId) {
         this.id = id;
@@ -206,30 +172,6 @@ public class MapleShop {
             }
         }
         return null;
-    }
-
-    public static MapleShop createFromDB(int npc_id) {
-        MapleShop ret = DQ_Shops.load(npc_id);
-        if (ret == null) {
-            return null;
-        }
-
-        List<Integer> recharges = new ArrayList<>(rechargeableItems);
-        for (DQ_Shopitems.Row row : DQ_Shopitems.loadByShopId(ret.getId())) {
-            if (GameConstants.isThrowingStar(row.itemId) || GameConstants.isBullet(row.itemId)) {
-                MapleShopItem starItem = new MapleShopItem((short) 1, row.itemId, row.price, row.reqItem, row.reqItemQ);
-                ret.addItem(starItem);
-                if (rechargeableItems.contains(starItem.getItemId())) {
-                    recharges.remove(Integer.valueOf(starItem.getItemId()));
-                }
-            } else {
-                ret.addItem(new MapleShopItem((short) 1000, row.itemId, row.price, row.reqItem, row.reqItemQ));
-            }
-        }
-        for (Integer recharge : recharges) {
-            ret.addItem(new MapleShopItem((short) 1000, recharge, 0, 0, 0));
-        }
-        return ret;
     }
 
     public int getNpcId() {
