@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsMovePathAttr {
+public enum OpsMovePathAttr implements IPacketOps {
     MPA_NORMAL(0),
     MPA_JUMP(1),
     MPA_IMPACT(2),
@@ -75,10 +75,12 @@ public enum OpsMovePathAttr {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

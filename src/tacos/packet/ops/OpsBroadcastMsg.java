@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsBroadcastMsg {
+public enum OpsBroadcastMsg implements IPacketOps {
     BM_NOTICE(0), // 青文字, [告知事項]
     BM_ALERT(1),
     BM_SPEAKERCHANNEL(2),
@@ -62,10 +62,12 @@ public enum OpsBroadcastMsg {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

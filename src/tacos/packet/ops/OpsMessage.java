@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsMessage {
+public enum OpsMessage implements IPacketOps {
     MS_DropPickUpMessage(0),
     MS_QuestRecordMessage(1),
     MS_CashItemExpireMessage(2),
@@ -140,12 +140,13 @@ public enum OpsMessage {
         this.value = -1;
     }
 
-    public boolean set(int value) {
-        this.value = value;
-        return true;
-    }
-
+    @Override
     public int get() {
         return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 }

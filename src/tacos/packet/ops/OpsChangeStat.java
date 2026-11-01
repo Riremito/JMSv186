@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsChangeStat {
+public enum OpsChangeStat implements IPacketOps {
     CS_SKIN(1), // 0x1
     CS_FACE(1 << 1), // 0x2
     CS_HAIR(1 << 2), // 0x4
@@ -60,10 +60,12 @@ public enum OpsChangeStat {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

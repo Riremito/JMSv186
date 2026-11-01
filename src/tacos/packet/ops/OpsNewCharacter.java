@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsNewCharacter {
+public enum OpsNewCharacter implements IPacketOps {
     Resistance(0), // レジスタンス
     Adventurers(1), // 冒険家
     KnightsOfCygnus(2),
@@ -54,10 +54,12 @@ public enum OpsNewCharacter {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

@@ -24,7 +24,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsBodyPart {
+public enum OpsBodyPart implements IPacketOps {
     BP_HAIR(0),
     BP_CAP(1),
     BP_FACEACC(2),
@@ -121,14 +121,16 @@ public enum OpsBodyPart {
         this.value = -1;
     }
 
-    public short get() {
-        return (short) this.value;
+    @Override
+    public int get() {
+        return this.value;
     }
 
     public short getSlot() {
         return (short) -this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

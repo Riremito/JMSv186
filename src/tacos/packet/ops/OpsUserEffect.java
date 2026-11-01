@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Bubbling
  */
-public enum OpsUserEffect {
+public enum OpsUserEffect implements IPacketOps {
     UserEffect_LevelUp(0),
     UserEffect_SkillUse(1),
     UserEffect_SkillAffected(2),
@@ -78,10 +78,12 @@ public enum OpsUserEffect {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }

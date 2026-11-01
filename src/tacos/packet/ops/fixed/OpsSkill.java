@@ -16,13 +16,13 @@
  *
  *
  */
-package tacos.packet.ops;
+package tacos.packet.ops.fixed;
 
 /**
  *
  * @author Riremito
  */
-public enum OpsSkill {
+public enum OpsSkill implements IOpsFixed {
     WARRIOR_IMPROVED_HP_RECOVERY(1000000), // リカバリー
     WARRIOR_IMPROVED_MAXHP_INCREASE(1000001), // バイタライズ
     WARRIOR_ENDURE(1000002), // レスト
@@ -873,6 +873,7 @@ public enum OpsSkill {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }

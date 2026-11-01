@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsQuestRecordMessage {
+public enum OpsQuestRecordMessage implements IPacketOps {
     QUEST_START(0),
     QUEST_UPDATE(1),
     QUEST_COMPLETE(2),
@@ -38,13 +38,14 @@ public enum OpsQuestRecordMessage {
         this.value = -1;
     }
 
-    public boolean set(int value) {
-        this.value = value;
-        return true;
-    }
-
+    @Override
     public int get() {
         return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 
     public static OpsQuestRecordMessage find(int value) {

@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsSkill_BB {
+public enum OpsSkill_BB implements IPacketOps {
     WARRIOR_MHP_INC(1000006), // HP増加
     WARRIOR_IRON_BODY(1001003), // アイアンボディ
     WARRIOR_POWER_STRIKE(1001004), // パワーストライク
@@ -975,7 +975,7 @@ public enum OpsSkill_BB {
     GUILD_REGULARSUPPORT(91000006),
     UNKNOWN;
 
-    private final int value;
+    private int value;
 
     private OpsSkill_BB(int value) {
         this.value = value;
@@ -985,8 +985,14 @@ public enum OpsSkill_BB {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 
     public static OpsSkill_BB find(int value) {
