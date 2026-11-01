@@ -112,8 +112,8 @@ public class ResCLogin {
                                 sp.Encode1(0);
                             } else {
                                 sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
-                                sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
-                                sp.Encode1(1); // should be 1 for KMS v2.114 to ignore personal number
+                                sp.Encode4(3); // should be 3 for KMS114 to ignore personal number
+                                sp.Encode1(1); // should be 1 for KMS114 to ignore personal number
                                 sp.Encode1(0); // m_nPurchaseExp
                                 sp.Encode1(0); // m_nChatBlockReason
                                 sp.Encode8(0); // m_dtChatUnblockDate

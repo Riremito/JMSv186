@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsScriptMan implements IPacketOps {
-    // GMS v95
     SM_SAY(0),
     SM_SAYIMAGE(1),
     SM_ASKYESNO(2),

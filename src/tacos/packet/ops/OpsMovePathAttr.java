@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMovePathAttr {
-    // GMS v95
     MPA_NORMAL(0),
     MPA_JUMP(1),
     MPA_IMPACT(2),

@@ -62,7 +62,7 @@ public class ServerImg {
         return ret;
     }
 
-    // only BMS v8 has the reactor drops, other regions use it when they do not have the data.
+    // only BMS8 has the reactor drops, other regions use it when they do not have the data.
     public static ArrayList<RewardData> getAutoReactorRewardData(int reactor_id) {
         ArrayList<RewardData> ret = null;
         if (Region.JMS.check()) {

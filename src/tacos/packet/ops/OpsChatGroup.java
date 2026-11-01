@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsChatGroup implements IPacketOps {
-    // GMS v95
     CG_Friend(0),
     CG_Party(1),
     CG_Guild(2),

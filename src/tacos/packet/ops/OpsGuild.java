@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsGuild implements IPacketOps {
-    // GMS v95
     GuildReq_LoadGuild(0),
     GuildReq_InputGuildName(1),
     GuildReq_CheckGuildName(2),
@@ -151,7 +150,7 @@ public enum OpsGuild implements IPacketOps {
         if (Config.PostBB() && !Config.Equal(Region.JMS, 187)) {
             return;
         }
-        // JMS v186 : no ShowGuildRanking/SetSkill requests and no SetMemberCommitment_Done.
+        // JMS186 : no ShowGuildRanking/SetSkill requests and no SetMemberCommitment_Done.
         if (Region.JMS.check()) {
             clear();
             GuildReq_LoadGuild.set(0);
@@ -232,7 +231,7 @@ public enum OpsGuild implements IPacketOps {
             GuildRes_GuildQuest_RegisterDisconnected.set(75);
             GuildRes_GuildQuest_NoticeOrder.set(76);
             GuildRes_Authkey_Update.set(77);
-            // JMS v187 : one more request than JMS v186, every result is one higher (LoadGuild_Done 27, CheckGuildName_AlreadyUsed 29 in the client).
+            // JMS187 : one more request than JMS186, every result is one higher (LoadGuild_Done 27, CheckGuildName_AlreadyUsed 29 in the client).
             if (Config.Equal(Region.JMS, 187)) {
                 for (OpsGuild ops : values()) {
                     if (ops.name().startsWith("GuildRes_") && ops.get() != UNKNOWN.get()) {

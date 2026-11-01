@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMREnterResult implements IPacketOps {
-    // GMS v95
     MREnterResult_Success(0),
     MREnterResult_NoRoom(1),
     MREnterResult_Full(2),

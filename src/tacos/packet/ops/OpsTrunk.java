@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTrunk implements IPacketOps {
-    // GMS v95
     TrunkReq_Load(0),
     TrunkReq_Save(1),
     TrunkReq_Close(2),

@@ -1031,7 +1031,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     // event script compatibility
-    public byte getQuestStatus(int id) {
+    public int getQuestStatus(int id) {
         return client.getPlayer().getQuestStatus(id);
     }
 

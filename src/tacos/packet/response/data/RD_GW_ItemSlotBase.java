@@ -156,7 +156,7 @@ public class RD_GW_ItemSlotBase {
                 // 耐久度
                 data.Encode4(equip.getDurability(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 84) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nDurability
                 // ビシャスのハンマー
-                data.Encode4(equip.getIUC(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()); // nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+                data.Encode4(equip.getIUC(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()); // nIUC, JMS302 MAX = 0xDF (15 / (13+2))
                 data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
                 if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
@@ -297,7 +297,7 @@ public class RD_GW_ItemSlotBase {
 
         return data.getBytes();
     }
-    // JMS v184, v185, KMS 95
+    // JMS184-185, KMS95
 
     public static byte[] EncodeEquip_JMS184(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
@@ -366,7 +366,7 @@ public class RD_GW_ItemSlotBase {
         data.Encode1(equip.getLevelLevel()); // item._ZtlSecureTear_nLevel
         data.Encode4(equip.getLevelEXP()); // item._ZtlSecureTear_nEXP
         data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
-        data.Encode4(equip.getIUC()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+        data.Encode4(equip.getIUC()); // item._ZtlSecureTear_nIUC, JMS302 MAX = 0xDF (15 / (13+2))
         data.Encode2(0);
         data.Encode1(equip.getOpsGrade().get()); // option._ZtlSecureTear_nGrade
         data.Encode1(equip.getCHUC()); // option._ZtlSecureTear_nCHUC

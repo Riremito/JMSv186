@@ -51,7 +51,7 @@ public class ResCUser_Dragon {
         return sp;
     }
 
-    // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
+    // not coded in GMS95, but KMST1029 removes dragon when you change other job.
     public static ServerPacket DragonLeaveField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonLeaveField);
 

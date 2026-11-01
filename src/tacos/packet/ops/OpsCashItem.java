@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsCashItem implements IPacketOps {
-    // GMS v95
     CashItemReq_WebShopOrderGetList(0),
     CashItemReq_LoadLocker(1),
     CashItemReq_LoadWish(2),
@@ -271,7 +270,7 @@ public enum OpsCashItem implements IPacketOps {
             initJMS164();
             return;
         }
-        // JMS v186 (CCashShop::OnCashItemResult), others are not used.
+        // JMS186 (CCashShop::OnCashItemResult), others are not used.
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);
         CashItemReq_SetWish.set(5);
@@ -362,7 +361,7 @@ public enum OpsCashItem implements IPacketOps {
         }
     }
 
-    // JMS v147 (CCashShop::OnCashItemResult), the requests are sent by CCashShop (CP_CashShopCashItemRequest).
+    // JMS147 (CCashShop::OnCashItemResult), the requests are sent by CCashShop (CP_CashShopCashItemRequest).
     private static void initJMS147() {
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);
@@ -418,7 +417,7 @@ public enum OpsCashItem implements IPacketOps {
         CashItemRes_FreeCashItem_Done.set(126);
     }
 
-    // JMS v164, not checked (the results from 0x4A to 0x6D of JMS v186 are 28 smaller).
+    // JMS164, not checked (the results from 0x4A to 0x6D of JMS186 are 28 smaller).
     private static void initJMS164() {
         CashItemReq_Buy.set(3);
         CashItemReq_Gift.set(4);

@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsBroadcastMsg {
-    // GMS v95
     BM_NOTICE(0), // 青文字, [告知事項]
     BM_ALERT(1),
     BM_SPEAKERCHANNEL(2),
@@ -48,10 +47,9 @@ public enum OpsBroadcastMsg {
     BM_CASHSHOPAD(18), // 体験用アバター獲得
     BM_HEARTSPEAKER(19),
     BM_SKULLSPEAKER(20),
-    // added for JMS
-    BM_JMS_UNKNOWN_0B, // JMS 11
-    BM_JMS_UNKNOWN_0F, // JMS 15, 青文字, 名前:アイテム名(xxxx個))
-    BM_JMS_UNKNOWN_11, // JMS 17, 青文字, アイテム表示
+    BM_JMS_UNKNOWN_0B,
+    BM_JMS_UNKNOWN_0F, // 青文字, 名前:アイテム名(xxxx個))
+    BM_JMS_UNKNOWN_11, // 青文字, アイテム表示
     UNKNOWN;
 
     private int value;

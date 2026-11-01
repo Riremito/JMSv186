@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsShop implements IPacketOps {
-    // GMS v95
     ShopReq_Buy(0),
     ShopReq_Sell(1),
     ShopReq_Recharge(2),

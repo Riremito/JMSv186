@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsChangeStat {
-    // JMS v186, GMS v95
     CS_SKIN(1), // 0x1
     CS_FACE(1 << 1), // 0x2
     CS_HAIR(1 << 2), // 0x4

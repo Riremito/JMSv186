@@ -2348,14 +2348,14 @@ public class TacosCharacter extends TacosPlayer {
 
     public MapleQuestStatus getQuest(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
-            return new MapleQuestStatus(quest, (byte) 0);
+            return new MapleQuestStatus(quest, 0, 0);
         }
         return quests.get(quest);
     }
 
     public void setQuestAdd(MapleQuest quest, byte status, String customData) {
         if (!quests.containsKey(quest)) {
-            MapleQuestStatus stat = new MapleQuestStatus(quest, status);
+            MapleQuestStatus stat = new MapleQuestStatus(quest, status, 0);
             stat.setCustomData(customData);
             quests.put(quest, stat);
         }
@@ -2363,7 +2363,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public MapleQuestStatus getQuestNAdd(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
-            MapleQuestStatus status = new MapleQuestStatus(quest, (byte) 0);
+            MapleQuestStatus status = new MapleQuestStatus(quest, 0, 0);
             quests.put(quest, status);
             return status;
         }
@@ -3409,7 +3409,7 @@ public class TacosCharacter extends TacosPlayer {
         boolean ret = false;
         if (!quests.containsKey(MapleQuest.getInstance(questid)) || !questinfo.containsKey(questid)) {
             MapleQuestStatus status = getQuestNAdd(MapleQuest.getInstance(questid));
-            status.setStatus((byte) 1);
+            status.setStatus(1);
             updateQuest(status);
             switch (questid) {
                 case 1300:
@@ -3632,7 +3632,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // パチンコ
-    // CMS v72から流用
+    // CMS72から流用
     public void gainTama(int s) {
         this.tama += s;
         SendPacket(ResCWvsContext.PachinkoResult(this));
@@ -3924,7 +3924,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // used by script
-    public byte getQuestStatus(int quest_id) {
+    public int getQuestStatus(int quest_id) {
         return getQuest(MapleQuest.getInstance(quest_id)).getStatus();
     }
 

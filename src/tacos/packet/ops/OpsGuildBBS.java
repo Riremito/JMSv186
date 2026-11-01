@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsGuildBBS implements IPacketOps {
-    // GMS v95
     GuildBBS_Register(0),
     GuildBBS_Delete(1),
     GuildBBS_LoadListRequest(2),

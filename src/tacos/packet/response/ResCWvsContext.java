@@ -929,7 +929,7 @@ public class ResCWvsContext {
                 sp.Encode2(x);
                 sp.Encode8(0, Config.GreaterOrEqual(Region.JMS, 302));
             }
-            // JMS v180-v186, v187以降消滅
+            // JMS180-186, JMS187以降消滅
             if (Config.Between(Region.JMS, 180, 186) || Config.GreaterOrEqual(Region.GMS, 91)) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());

@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsESWithdrawAll implements IPacketOps {
-    // GMS v95 and JMS v186, CEntrustedShopDlg::OnWithdrawAllResult
     ESWithdrawAll_Done(0), // アイテムとメルを全部取り出しました。
     ESWithdrawAll_OverPrice(1), // 商店にあるお金が多すぎでメルとアイテムを取り戻せませんでした。
     ESWithdrawAll_OnlyItem(2), // メルを取り戻しました。1個のみ持てないアイテムがあってアイテムは取り戻せませんでした。

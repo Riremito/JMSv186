@@ -25,7 +25,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsBodyPart {
-    // GMS v95
     BP_HAIR(0),
     BP_CAP(1),
     BP_FACEACC(2),

@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsPSBuy implements IPacketOps {
-    // GMS v95, CPersonalShopDlg::OnBuyResult
     PSBuy_Success(0),
     PSBuy_NoStock(1),
     PSBuy_NoMoney(2),

@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMiniRoomProtocol implements IPacketOps {
-    // GMS v95
     MRP_Create(0),
     MRP_CreateResult(1),
     MRP_Invite(2),
@@ -185,7 +184,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_DeleteBlackList.set(45);
             return;
         }
-        // JMS v186, JMS v187
+        // JMS186-187
         if (Config.GreaterOrEqual(Region.JMS, 186)) {
             clear();
             MRP_Create.set(0);

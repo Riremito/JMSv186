@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsMessage {
-    // GMS v95
     MS_DropPickUpMessage(0),
     MS_QuestRecordMessage(1),
     MS_CashItemExpireMessage(2),
@@ -108,7 +107,7 @@ public enum OpsMessage {
             OpsMessage.MS_JMS_Pachinko.set(16);
             return;
         }
-        // JMS v186
+        // JMS186
         if (Region.JMS.check()) {
             clear();
             OpsMessage.MS_DropPickUpMessage.set(0);

@@ -169,18 +169,18 @@ public class MapleQuest {
     }
 
     public void forfeit(TacosCharacter chr) {
-        if (chr.getQuest(this).getStatus() != (byte) 1) {
+        if (chr.getQuest(this).getStatus() != 1) {
             return;
         }
         MapleQuestStatus oldStatus = chr.getQuest(this);
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 0, 0);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
         chr.updateQuest(newStatus);
     }
 
     public void forceStart(TacosCharacter chr, int npc, String customData) {
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 1, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         newStatus.setCompletionTime(chr.getQuest(this).getCompletionTime());
         newStatus.setCustomData(customData);
@@ -188,7 +188,7 @@ public class MapleQuest {
     }
 
     public void forceComplete(TacosCharacter chr, int npc) {
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 2, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         chr.updateQuest(newStatus);
     }

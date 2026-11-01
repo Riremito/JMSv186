@@ -25,11 +25,9 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsFuncKeyMapped implements IPacketOps {
-    // GMS v95
     FuncKeyMapped_KeyModified(0),
     FuncKeyMapped_PetConsumeHPItemModified(1), // FuncKeyMapped_PetConsumeItemModified, HP
     FuncKeyMapped_PetConsumeMPItemModified(2), // MP
-    // added for JMS
     FuncKeyMapped_JMS_PetConsumeCureItemModified, // Cure
     UNKNOWN;
 

@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsEntrustedShop implements IPacketOps {
-    // GMS v95
     EntrustedShopReq_CheckOpenPossible(0),
     EntrustedShopReq_Create(1),
     EntrustedShopReq_Save(2),

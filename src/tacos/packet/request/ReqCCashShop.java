@@ -121,13 +121,11 @@ public class ReqCCashShop {
         OpsCashItem flag = OpsCashItem.find(type);
 
         switch (flag) {
-            // 0x03
             case CashItemReq_Buy: {
                 byte use_maple_point = cp.Decode1();
                 int item_SN = cp.Decode4();
                 return BuyCashItem(chr, use_maple_point, item_SN);
             }
-            // 0x06
             case CashItemReq_IncSlotCount: {
                 byte use_maple_point = cp.Decode1();
                 byte is_slot8 = cp.Decode1();
@@ -141,49 +139,41 @@ public class ReqCCashShop {
                 byte inv_type = cp.Decode1();
                 return IncSlotCount4(chr, use_maple_point, inv_type);
             }
-            // 0x07
             case CashItemReq_IncTrunkCount: {
                 byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
                 return IncTrunkCount4(chr, use_maple_point);
             }
-            // 0x0E
             case CashItemReq_MoveLtoS: {
                 long cash_item_SN = cp.Decode8();
                 byte inv_type = cp.Decode1();
                 short inv_slot = cp.Decode2();
                 return MoveLtoS(chr, cash_item_SN, inv_type, inv_slot);
             }
-            // 0x0F
             case CashItemReq_MoveStoL: {
                 long inv_item_SN = cp.Decode8();
                 byte inv_type = cp.Decode1();
                 return MoveStoL(chr, inv_item_SN, inv_type);
             }
-            // 0x1B
             case CashItemReq_Destroy: {
                 String nexon_id = cp.DecodeStr();
                 long item_unique_id = cp.Decode8(); // buffer8
                 return DestoryItem(chr, nexon_id, item_unique_id);
             }
-            // 0x05
             case CashItemReq_SetWish: {
                 // not coded
                 chr.SendPacket(ResCCashShop.CashItemResultFailed(OpsCashItem.CashItemRes_SetWish_Failed, OpsCashItemFailReason.CashItemFailReason_UnknownError));
                 return true;
             }
-            // 0x1F
             case CashItemReq_BuyPackage: {
-                // not coded, the result of BuyPackage is not known on JMS v186.
+                // not coded, the result of BuyPackage is not known on JMS186.
                 chr.SendPacket(ResCCashShop.CashItemResultFailed(OpsCashItem.CashItemRes_Buy_Failed, OpsCashItemFailReason.CashItemFailReason_UnknownError));
                 return true;
             }
-            // 0x21
             case CashItemReq_BuyNormal: {
                 int item_SN = cp.Decode4();
                 return BuyNormalItem(chr, item_SN);
             }
-            // 0x2A
             case CashItemReq_FreeCashItem: {
                 int item_SN = cp.Decode4();
                 return BuyFreeItem(chr, item_SN);
