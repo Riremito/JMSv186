@@ -26,6 +26,8 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.ops.OpsChatType;
+import tacos.packet.ops.OpsQuestGuide;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.data.RD_CUser;
@@ -507,7 +509,7 @@ public class ResCUserLocal {
         0x0015  ドクロ拡声器
         0x0016  ハートバルーン拡声器
          */
-        sp.Encode2(11); // chat type
+        sp.Encode2(OpsChatType.CHAT_TYPE_ADMINCHAT.get()); // chat type
         sp.EncodeStr(msg);
         return sp;
     }
@@ -600,10 +602,10 @@ public class ResCUserLocal {
     }
 
     // CUserLocal::OnQuestGuideResult, not tested.
-    public static ServerPacket QuestGuideResult(int mode, int usQuestID) {
+    public static ServerPacket QuestGuideResult(OpsQuestGuide mode, int usQuestID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestGuideResult);
 
-        sp.Encode1(mode);
+        sp.Encode1(mode.get());
         sp.Encode2(usQuestID); // usQuestID
         sp.Encode4(0); // count
         return sp;

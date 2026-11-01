@@ -78,6 +78,22 @@ import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
+import tacos.packet.ops.OpsAntiMacro;
+import tacos.packet.ops.OpsAntiMacroType;
+import tacos.packet.ops.OpsClaim;
+import tacos.packet.ops.OpsSueCharacter;
+import tacos.packet.ops.OpsCashPetFood;
+import tacos.packet.ops.OpsWeddingWishList;
+import tacos.packet.ops.OpsNewYearCard;
+import tacos.packet.ops.OpsRandomMorph;
+import tacos.packet.ops.OpsAccountMoreInfo;
+import tacos.packet.ops.OpsFindFriend;
+import tacos.packet.ops.OpsBridleFail;
+import tacos.packet.ops.OpsWebBoard;
+import tacos.packet.ops.OpsCakePieEvent;
+import tacos.packet.ops.OpsNotifyLevelUp;
+import tacos.packet.ops.OpsNotifyWedding;
+import tacos.packet.ops.OpsNotifyJobChange;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CStage;
 import tacos.wz.CharacterWz.EquipInfo;
@@ -640,19 +656,19 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnAntiMacroResult, not tested.
-    public static ServerPacket AntiMacroResult(int nMode, int nAntiMacroType) {
+    public static ServerPacket AntiMacroResult(OpsAntiMacro nMode, OpsAntiMacroType nAntiMacroType) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AntiMacroResult);
 
-        sp.Encode1(nMode);
-        sp.Encode1(nAntiMacroType);
+        sp.Encode1(nMode.get());
+        sp.Encode1(nAntiMacroType.get());
         return sp;
     }
 
     // CWvsContext::OnClaimResult, not tested.
-    public static ServerPacket ClaimResult(int nResult) {
+    public static ServerPacket ClaimResult(OpsClaim nResult) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClaimResult);
 
-        sp.Encode1(nResult);
+        sp.Encode1(nResult.get());
         return sp;
     }
 
@@ -777,10 +793,10 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnSueCharacterResult, not tested.
-    public static ServerPacket SueCharacterResult(int nResult) {
+    public static ServerPacket SueCharacterResult(OpsSueCharacter nResult) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SueCharacterResult);
 
-        sp.Encode1(nResult);
+        sp.Encode1(nResult.get());
         return sp;
     }
 
@@ -1633,10 +1649,10 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnWeddingGiftResult, not tested.
-    public static ServerPacket WeddingGiftResult(int nResult) {
+    public static ServerPacket WeddingGiftResult(OpsWeddingWishList nResult) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WeddingGiftResult);
 
-        sp.Encode1(nResult);
+        sp.Encode1(nResult.get());
         return sp;
     }
 
@@ -1650,10 +1666,10 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnCashPetFoodResult, not tested.
-    public static ServerPacket CashPetFoodResult(int nResult) {
+    public static ServerPacket CashPetFoodResult(OpsCashPetFood nResult) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashPetFoodResult);
 
-        sp.Encode1(nResult);
+        sp.Encode1(nResult.get());
         return sp;
     }
 
@@ -1675,10 +1691,10 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnBridleMobCatchFail, not tested.
-    public static ServerPacket BridleMobCatchFail(int bReason, int nItemID, int nMobID) {
+    public static ServerPacket BridleMobCatchFail(OpsBridleFail bReason, int nItemID, int nMobID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BridleMobCatchFail);
 
-        sp.Encode1(bReason); // bReason
+        sp.Encode1(bReason.get()); // bReason
         sp.Encode4(nItemID);
         sp.Encode4(nMobID);
         return sp;
@@ -1804,11 +1820,11 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnWebBoardAuthkeyUpdate, not tested.
-    public static ServerPacket WebBoardAuthkeyUpdate(int nResult, String str) {
+    public static ServerPacket WebBoardAuthkeyUpdate(OpsWebBoard nResult, String str) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WebBoardAuthkeyUpdate);
 
-        sp.Encode1(nResult);
-        sp.EncodeStr(str, nResult == 0); // str
+        sp.Encode1(nResult.get());
+        sp.EncodeStr(str, nResult == OpsWebBoard.WebBoard_WebEvent); // str
         return sp;
     }
 
@@ -1958,21 +1974,21 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnNewYearCardRes, not tested.
-    public static ServerPacket NewYearCardRes(int nMode, int nValue) {
+    public static ServerPacket NewYearCardRes(OpsNewYearCard nMode, int nValue) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NewYearCardRes);
 
-        sp.Encode1(nMode);
+        sp.Encode1(nMode.get());
         sp.Encode4(nValue);
         return sp;
     }
 
     // CWvsContext::OnRandomMorphRes, not tested.
-    public static ServerPacket RandomMorphRes(int nResult, int nReason, String sTarget) {
+    public static ServerPacket RandomMorphRes(OpsRandomMorph nResult, OpsRandomMorph nReason, String sTarget) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RandomMorphRes);
 
-        sp.Encode1(nResult);
-        sp.Encode1(nReason, nResult == 1);
-        sp.EncodeStr(sTarget, nResult == 1 && nReason == 2); // sTarget
+        sp.Encode1(nResult.get());
+        sp.Encode1(nReason.get(), nResult == OpsRandomMorph.RandomMorphRes_Failed);
+        sp.EncodeStr(sTarget, nResult == OpsRandomMorph.RandomMorphRes_Failed && nReason == OpsRandomMorph.RandomMorphFailReason_NoTarget); // sTarget
         return sp;
     }
 
@@ -2016,14 +2032,14 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnCakePieEventResult, not tested.
-    public static ServerPacket CakePieEventResult(int value1, int value2, int value3, int nEventStatus, int value4) {
+    public static ServerPacket CakePieEventResult(int value1, int value2, int value3, OpsCakePieEvent nEventStatus, int value4) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CakePieEventResult);
 
         sp.Encode1(1);
         sp.Encode4(value1);
         sp.Encode4(value2);
         sp.Encode1(value3);
-        sp.Encode1(nEventStatus); // nEventStatus
+        sp.Encode1(nEventStatus.get()); // nEventStatus
         sp.Encode1(value4);
         sp.Encode1(0);
         return sp;
@@ -2058,19 +2074,19 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnAccountMoreInfo, not tested.
-    public static ServerPacket AccountMoreInfo(int nMode) {
+    public static ServerPacket AccountMoreInfo(OpsAccountMoreInfo nMode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AccountMoreInfo);
 
-        sp.Encode1(nMode);
+        sp.Encode1(nMode.get());
         return sp;
     }
 
     // CWvsContext::OnFindFirend, not tested.
-    public static ServerPacket FindFirend(int nMode, int nValue) {
+    public static ServerPacket FindFirend(OpsFindFriend nMode, int nValue) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FindFirend);
 
-        sp.Encode1(nMode);
-        sp.Encode1(nValue, nMode == 9);
+        sp.Encode1(nMode.get());
+        sp.Encode1(nValue, nMode == OpsFindFriend.FindFriend_SearchResult_Error);
         return sp;
     }
 
@@ -2838,7 +2854,7 @@ public class ResCWvsContext {
     public static ServerPacket NotifyLevelUp(boolean family, int level, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyLevelUp);
 
-        sp.Encode1(family ? 1 : 2);
+        sp.Encode1((family ? OpsNotifyLevelUp.NotifyLevelUp_FamilyNonChild : OpsNotifyLevelUp.NotifyLevelUp_Guild).get());
         sp.Encode4(level);
         sp.EncodeStr(name);
         return sp;
@@ -2855,7 +2871,7 @@ public class ResCWvsContext {
     public static ServerPacket NotifyJobChange(boolean family, int jobid, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 
-        sp.Encode1(family ? 1 : 0);
+        sp.Encode1((family ? OpsNotifyJobChange.NotifyJobChange_Family : OpsNotifyJobChange.NotifyJobChange_Guild).get());
         sp.Encode4(jobid); //or is this a short
         sp.EncodeStr(name);
         return sp;
@@ -2865,7 +2881,7 @@ public class ResCWvsContext {
     public static ServerPacket NotifyWedding(boolean family, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyWedding);
 
-        sp.Encode1(family ? 1 : 0);
+        sp.Encode1((family ? OpsNotifyWedding.NotifyWedding_Family : OpsNotifyWedding.NotifyWedding_Guild).get());
         sp.EncodeStr(name);
         return sp;
     }

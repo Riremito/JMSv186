@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsBattlefieldTeam;
 
 /**
  *
@@ -38,11 +39,11 @@ public class ResCField_Battlefield {
     }
 
     // CField_Battlefield::OnTeamChanged, not tested.
-    public static ServerPacket BattlefieldTeamChanged(TacosCharacter chr, int nTeam) {
+    public static ServerPacket BattlefieldTeamChanged(TacosCharacter chr, OpsBattlefieldTeam nTeam) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BattlefieldTeamChanged);
 
         sp.Encode4(chr.getId());
-        sp.Encode1(nTeam);
+        sp.Encode1(nTeam.get());
         return sp;
     }
 }

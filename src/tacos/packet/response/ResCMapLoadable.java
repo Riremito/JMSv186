@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsBackEffect;
 
 /**
  *
@@ -28,10 +29,10 @@ import tacos.packet.ServerPacketHeader;
 public class ResCMapLoadable {
 
     // CMapLoadable::OnSetBackEffect, not tested.
-    public static ServerPacket SetBackgroundEffect(int nEffect, int nFieldID, int nPageID, int tDuration) {
+    public static ServerPacket SetBackgroundEffect(OpsBackEffect nEffect, int nFieldID, int nPageID, int tDuration) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetBackgroundEffect);
 
-        sp.Encode1(nEffect); // nEffect
+        sp.Encode1(nEffect.get()); // nEffect
         sp.Encode4(nFieldID); // nFieldID
         sp.Encode1(nPageID); // nPageID
         sp.Encode4(tDuration); // tDuration
