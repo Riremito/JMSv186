@@ -32,10 +32,26 @@ public class NpcMan {
     public static boolean start(TacosCharacter chr, NpcInfo npc_info, int npc_script_id, int npc_id) {
         DebugMan script;
         switch (npc_script_id) {
+            case 2110005 -> {
+                // JMS147
+                // ラクダ
+                script = new NpcCamel();
+                script.setNpcId(npc_script_id);
+                script.start((IDebugMan) script, chr);
+                return true;
+            }
             case 9110000, 9110008 -> {
                 // カニングシティ, ペリー
                 // キノコ神社, ペリー
                 script = new NpcPerry();
+                script.setNpcId(npc_script_id);
+                script.start((IDebugMan) script, chr);
+                return true;
+            }
+            case 9110107 -> {
+                // JMS131-151
+                // キノコ神社 & 楓城, 駕籠
+                script = new NpcPalakeen();
                 script.setNpcId(npc_script_id);
                 script.start((IDebugMan) script, chr);
                 return true;
