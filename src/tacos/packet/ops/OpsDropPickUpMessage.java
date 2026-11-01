@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsDropPickUpMessage {
+public enum OpsDropPickUpMessage implements IPacketOps {
     PICKUP_ITEM(0),
     PICKUP_MESO(1),
     PICKUP_MONSTER_CARD(2),
@@ -41,12 +41,13 @@ public enum OpsDropPickUpMessage {
         this.value = -1;
     }
 
-    public boolean set(int value) {
-        this.value = value;
-        return true;
-    }
-
+    @Override
     public int get() {
         return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 }
