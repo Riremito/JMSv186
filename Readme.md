@@ -1,16 +1,15 @@
-# JMS エミュ鯖
+# JMS Private Server
 ## Readme
-+ [日本語](./Readme.md)
-+ [English](./Readme_EN.md)
++ [日本語](./Readme_JP.md)
++ [English](./Readme.md)
 
-## 開発環境
+## Development Environment
 + OS
     + Windows
 + Java
     + [JDK 25 : jdk-25_windows-x64_bin.exe](https://www.oracle.com/jp/java/technologies/downloads/#jdk25-windows)
 + IDE
     + [NetBeans 29 : Apache-NetBeans-29.exe](https://netbeans.apache.org/front/main/download/nb29/)
-    + [日本語化 : org-apache-netbeans-localise-ja-0.0.4.nbm](https://github.com/junichi11/netbeans-translations-ja/releases)
 + Database
     + [Wampserver : wampserver3.4.0_x64.exe](https://wampserver.aviatechno.net/)
         + MySQL 8.4.7
@@ -18,7 +17,7 @@
         + PHP 8.3.28
         + phpMyAdmin 5.2.3
 
-## 実行環境
+## Execution Environment
 + OS
     + Windows or Linux
 + Java
@@ -26,44 +25,45 @@
 + Database
     + MySQL 8
 
-## ビルド準備
-## ソースコード
-+ このリポジトリをクローンする。
-    + developブランチを推奨します。
-+ `JMSv186` という名前のフォルダであるものとして以下の手順を進めていく。
+## Setup
+## Server source
++ clone this repo.
+    + develop branch is recommended to use.
++ do following steps, `JMSv186` is name of source code folder.
 ### wz_xml
-+ 利用するバージョンのXMLを https://github.com/Riremito/wz_xml から取得し、解凍を行う。
-    + もしくはHaRepacker等でエクスポートしても同じだが、JMSの特殊な暗号化に対応したものが存在しない注意
-+ JMS147の場合は `JMSv186/wz_xml/xml_JMS_v147/` に必要なファイルを設置する。
++ download and uncompress xml from this repo version you want to use. https://github.com/Riremito/wz_xml
++ in case of JMS147, you should put folder likes this. `JMSv186/wz_xml/xml_JMS_v147/`
 ### scripts
-+ Scriptを https://github.com/Riremito/jms_scripts から取得する。
-+ `JMSv186/scripts/scripts_jms/` に必要なファイルを設置する。
-### データベース
-+ サーバー実行時に自動生成されます。
-## ビルド
-+ NetBeansでプロジェクトを開く。
-+ プロパティを開き、ライブラリにClassPathに `JMSv186/lib` フォルダに存在する全ての.jarファイルを追加する。
-+ ビルドする。
++ download script from this repo. https://github.com/Riremito/jms_scripts
++ you should put folder likes this. `JMSv186/scripts/scripts_jms/`
+### Database
++ automatically generated.
 
-## サーバーの実行方法
+## Build.
++ open porject by NetBeans.
++ open property and add all .jar files in `JMSv186/lib` folder to library ClassPath.
++ build this project.
+
+## how to run server.
 ### Windows
-+ `run_JMS_v147.0.bat` 等実行したいバージョンの `.bat` ファイルを実行する。
-    + `run_any.bat JMS 147 0` など `run_any.bat` に引数を渡すことでも実行可能。
++ choose `.bat` you want to run.
+    + you can also run server by passing arguments to `run_any.bat` like this. `run_any.bat JMS 147 0`
 ### Linux
-+ `bash run_any.sh JMS 147 0` など `run_any.sh` に引数を渡すことで実行可能。
++ you can run server by passing arguments to `run_any.sh` like this. `bash run_any.sh JMS 147 0`
 
-## サーバー仕様
-### アカウント
-+ 自動登録
-+ 性別変更方法
-    + ログインする時に `MapleID` と`MapleID_` は同じ扱いとなります
-    + `MapleID` だと男キャラクターの作成が可能で、 `MapleID_` だと女キャラクターの作成が可能です。
-### コマンド
+## server info
+### account
++ auto register.
++ how to change account gender.
+    + some version of client cannot create other gender of character.
+    + `MapleID` and `MapleID_` are same account name in this server.
+    + `MapleID` is for male,  `MapleID_` is for female.
+### commands
 + TODO
 
-## クライアント
-+ ragezoneやweb archiveで拾ってくる
-### その他
-+ [バグ修正と起動高速化ツール](https://github.com/Riremito/iGPUplz)
-    + JMS187以下で画面が崩壊する場合は必須
-    + JMS188以上で起動速度を高速化したい場合もオススメ
+## client
++ you can easily find full clients in ragezone or web archive.
+### others
++ [crash bug fix tool](https://github.com/Riremito/iGPUplz)
+    + under JMS187 has to use this to bypass crash bugs.
+    + if you want to make client launching speed faster, this tool is also recommended to use.
