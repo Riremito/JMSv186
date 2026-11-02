@@ -28,19 +28,7 @@ import tacos.packet.response.builder.PB_Message;
  *
  * @author Riremito
  */
-public class NpcCorba extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcCorba extends NpcScriptMan {
 
     private final int item_mini_dragon = 2210016; // ミニドラゴン変身
     private final int map_dragon_flight = 200090500; // 飛行中 : 時間の神殿への道

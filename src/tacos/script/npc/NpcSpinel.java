@@ -25,19 +25,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcSpinel extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcSpinel extends NpcScriptMan {
 
     private final int[] map_ids = {
         740000000, // 台湾 : 台湾西門町

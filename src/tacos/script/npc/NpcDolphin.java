@@ -25,19 +25,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcDolphin extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcDolphin extends NpcScriptMan {
 
     private static final int MAP_AQUARIUM = 230000000; // アクアリウム : アクアリウム
     private static final int MAP_SHARP_CLIFF = 230030200; // アクアロード : 四角地帯

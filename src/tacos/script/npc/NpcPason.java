@@ -27,19 +27,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcPason extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcPason extends NpcScriptMan {
 
     private final int item_free_pass = 4031134; // フリーパスカード
     private final int map_florina_beach = 110000000; // フロリナ : ビーチ

@@ -18,17 +18,15 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.wz.WzDataStorage;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_WarpBoss extends NpcScriptMan implements INpcScriptMan {
+public class DebugMan_WarpBoss extends DebugNpcScriptMan {
 
     private class WarpBossData {
 
@@ -49,21 +47,6 @@ public class DebugMan_WarpBoss extends NpcScriptMan implements INpcScriptMan {
         wbd.mob_id = mob_id;
 
         this.warp_boss_data.add(wbd);
-        return true;
-    }
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        if (this.warp_boss_data.isEmpty()) {
-            return false;
-        }
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
         return true;
     }
 

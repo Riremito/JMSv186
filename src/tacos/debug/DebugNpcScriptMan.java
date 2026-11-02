@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,18 @@
  *
  *
  */
-package tacos.script.npc;
+package tacos.debug;
 
-import tacos.client.TacosCharacter;
+import tacos.constants.TacosConstants;
+import tacos.script.npc.NpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public interface INpcScriptMan {
+public abstract class DebugNpcScriptMan extends NpcScriptMan {
 
-    public boolean start(TacosCharacter chr);
-
-    public boolean end(TacosCharacter chr);
-
-    public boolean action(TacosCharacter chr, int status, int answer);
+    public DebugNpcScriptMan() {
+        super(TacosConstants.DEFAULT_NPC_ID);
+    }
 }

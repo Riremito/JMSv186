@@ -159,7 +159,7 @@ import tacos.shared.TacosSharedDate;
 import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
-import tacos.script.npc.INpcScriptMan;
+import tacos.script.npc.NpcScriptMan;
 
 /**
  *
@@ -2313,7 +2313,7 @@ public class TacosCharacter extends TacosPlayer {
     private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
     private TacosMerchant remoteStore = null;
-    private INpcScriptMan npc_script = null;
+    private NpcScriptMan npc_script = null;
     private NpcShopMan npc_shop = null;
 
     public int getPortalCount() {
@@ -3743,11 +3743,11 @@ public class TacosCharacter extends TacosPlayer {
         return ret;
     }
 
-    public INpcScriptMan getNpcScript() {
+    public NpcScriptMan getNpcScript() {
         return this.npc_script;
     }
 
-    public boolean setNpcScript(INpcScriptMan npc_script) {
+    public boolean setNpcScript(NpcScriptMan npc_script) {
         if (npc_script != null && this.npc_script != null) {
             return false;
         }

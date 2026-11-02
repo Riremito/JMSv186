@@ -18,29 +18,15 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import tacos.wz.ids.DWI_Random;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_NM extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class DebugMan_NM extends DebugNpcScriptMan {
 
     private int target_map_id = 910000000;
     private int maps[] = null;

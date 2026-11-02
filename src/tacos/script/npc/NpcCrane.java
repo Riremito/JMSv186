@@ -24,19 +24,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcCrane extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcCrane extends NpcScriptMan {
 
     private static final int MAP_ORBIS_TICKETING = 200000100; // オルビス : オルビスチケット売場
     private static final int MAP_ORBIS = 200000141; // オルビス : ステーション通路<武陵行き>

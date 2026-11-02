@@ -23,7 +23,6 @@ import tacos.client.TacosCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
-import java.util.List;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
@@ -44,29 +43,29 @@ public class NpcShopMan {
 
     private static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
     private final int npc_id;
-    private List<ShopStock> shopStocks = null;
+    private ArrayList<ShopStock> shopStocks;
 
     public NpcShopMan(int npc_id) {
         this.npc_id = npc_id;
-        shopStocks = new ArrayList<>();
+        this.shopStocks = new ArrayList<>();
     }
 
     public int getNpcId() {
         return this.npc_id;
     }
 
-    public List<ShopStock> getShopStocks() {
-        return shopStocks;
+    public ArrayList<ShopStock> getShopStocks() {
+        return this.shopStocks;
     }
 
     public boolean start(TacosCharacter chr) {
         chr.DebugMsg("NpcShopMan : started.");
         if (!this.shopStocks.isEmpty()) {
             if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
-                List<ShopStock> old_shopStocks = shopStocks;
-                shopStocks = new ArrayList<>();
+                ArrayList<ShopStock> old_shopStocks = this.shopStocks;
+                this.shopStocks = new ArrayList<>();
                 addItem(ITEM_ID_FOR_UNINITIALIZED_QUANTITY);
-                shopStocks.addAll(old_shopStocks);
+                this.shopStocks.addAll(old_shopStocks);
             }
         }
         chr.setNpcShop(this);
@@ -102,7 +101,7 @@ public class NpcShopMan {
         st.item_price = item_price;
         st.item_quantity = item_quantity;
         st.item_slot_max = item_slot_max;
-        shopStocks.add(st);
+        this.shopStocks.add(st);
         return true;
     }
 
@@ -123,7 +122,7 @@ public class NpcShopMan {
         st.item_price = item_price;
         st.item_quantity = item_quantity;
         st.item_slot_max = item_slot_max;
-        shopStocks.add(st);
+        this.shopStocks.add(st);
         return true;
     }
 
@@ -140,7 +139,7 @@ public class NpcShopMan {
         st.item_price = 0; // hide
         st.item_recharge_price = item_recharge_price;
         st.item_slot_max = item_slot_max;
-        shopStocks.add(st);
+        this.shopStocks.add(st);
         return true;
     }
 
@@ -159,7 +158,7 @@ public class NpcShopMan {
     }
 
     private ShopStock getStock(int item_id) {
-        for (ShopStock ss : shopStocks) {
+        for (ShopStock ss : this.shopStocks) {
             if (ss.item_price <= 0) {
                 continue;
             }
@@ -171,7 +170,7 @@ public class NpcShopMan {
     }
 
     private ShopStock getRecharge(int item_id) {
-        for (ShopStock ss : shopStocks) {
+        for (ShopStock ss : this.shopStocks) {
             if (ss.item_price != 0) {
                 continue;
             }

@@ -24,19 +24,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcVIPCab extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcVIPCab extends NpcScriptMan {
 
     private final int map_ant_tunnel_park = 105070001; // 中央ダンジョン : アリの巣-広場
 

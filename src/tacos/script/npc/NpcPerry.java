@@ -24,19 +24,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcPerry extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcPerry extends NpcScriptMan {
 
     private final int cost = 1500;
 

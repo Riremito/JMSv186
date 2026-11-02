@@ -25,19 +25,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcCrystal extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcCrystal extends NpcScriptMan {
 
     private final int item_toad_wallet = 5252002; // 質屋にあった大ガマガエルの財布
     private final int[] map_ids = {

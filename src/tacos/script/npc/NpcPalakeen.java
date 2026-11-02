@@ -25,19 +25,7 @@ import tacos.script.npc.NpcScriptMan.NpcTag;
  *
  * @author Riremito
  */
-public class NpcPalakeen extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcPalakeen extends NpcScriptMan {
 
     @Override
     public boolean action(TacosCharacter chr, int status, int answer) {

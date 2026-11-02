@@ -18,33 +18,20 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
 import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptMan.NpcTag;
 import tacos.wz.EtcWz.MakerItemInfo;
 import tacos.wz.EtcWz.MakerRecipe;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_Maker extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class DebugMan_Maker extends DebugNpcScriptMan {
 
     private enum MakerType {
         All(0),

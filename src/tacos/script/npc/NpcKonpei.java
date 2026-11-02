@@ -24,19 +24,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public class NpcKonpei extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcKonpei extends NpcScriptMan {
 
     private final int map_hideout = 801040000; // ジパング : アジト前
 

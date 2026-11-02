@@ -18,16 +18,14 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_Warp extends NpcScriptMan implements INpcScriptMan {
+public class DebugMan_Warp extends DebugNpcScriptMan {
 
     private NpcTag nt_first = new NpcTag();
     private final ArrayList<Integer> selection_list = new ArrayList<>();
@@ -44,18 +42,6 @@ public class DebugMan_Warp extends NpcScriptMan implements INpcScriptMan {
         for (int index = 0; index < this.selection_list.size(); index++) {
             this.nt_first.addMenu(index, this.selection_list.get(index) + " : #m" + this.selection_list.get(index) + "#");
         }
-    }
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
     }
 
     @Override

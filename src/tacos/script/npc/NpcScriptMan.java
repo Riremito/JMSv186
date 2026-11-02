@@ -20,6 +20,7 @@ package tacos.script.npc;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
@@ -28,15 +29,21 @@ import tacos.packet.response.ResCScriptMan;
  *
  * @author Riremito
  */
-public class NpcScriptMan {
+public abstract class NpcScriptMan {
 
-    protected static final int DEFAULT_NPC_ID = 1012003;
-    private int npc_script_id = 0;
+    private int npc_script_id;
+
+    public NpcScriptMan() {
+        this.npc_script_id = TacosConstants.DEFAULT_NPC_ID;
+    }
+
+    public NpcScriptMan(int npc_script_id) {
+        this.npc_script_id = npc_script_id;
+    }
+
+    public abstract boolean action(TacosCharacter chr, int status, int answer);
 
     public int getNpcId() {
-        if (this.npc_script_id == 0) {
-            return DEFAULT_NPC_ID;
-        }
         return this.npc_script_id;
     }
 
@@ -45,8 +52,8 @@ public class NpcScriptMan {
     }
 
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
-        INpcScriptMan dm = chr.getNpcScript();
-        ((NpcScriptMan) dm).updateStatus(action);
+        NpcScriptMan npc_script = chr.getNpcScript();
+        npc_script.updateStatus(action);
 
         switch (ops) {
             case SM_SAY:
@@ -54,13 +61,13 @@ public class NpcScriptMan {
             case SM_ASKMENU:
             case SM_ASKAVATAR: {
                 if (action != -1) {
-                    if (dm.action(chr, ((NpcScriptMan) dm).getStatus(), m_nSelect)) {
+                    if (npc_script.action(chr, npc_script.getStatus(), m_nSelect)) {
                         // continue
                         return true;
                     }
                 }
                 // end
-                dm.end(chr);
+                npc_script.end(chr);
                 return true;
             }
             default: {
@@ -68,7 +75,7 @@ public class NpcScriptMan {
             }
         }
 
-        dm.end(chr);
+        npc_script.end(chr);
         DebugLogger.ErrorLog("NpcScriptMan : not coded, nMsgType = " + nMsgType);
         return false;
     }
@@ -102,11 +109,11 @@ public class NpcScriptMan {
         return false;
     }
 
-    public boolean start(INpcScriptMan debugMan, TacosCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         this.status = 0;
         chr.DebugMsg("NpcScriptMan : started.");
-        chr.setNpcScript(debugMan);
-        debugMan.action(chr, this.status, 0);
+        chr.setNpcScript(this);
+        action(chr, this.status, 0);
         return true;
     }
 
@@ -148,7 +155,7 @@ public class NpcScriptMan {
 
     public class NpcTag {
 
-        protected String msg = "";
+        private String msg = "";
 
         public void add(String text) {
             this.add(text, true);

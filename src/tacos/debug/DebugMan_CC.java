@@ -18,29 +18,15 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.wz.WzDataStorage;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_CC extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class DebugMan_CC extends DebugNpcScriptMan {
 
     private enum AvatarType {
         SKIN,

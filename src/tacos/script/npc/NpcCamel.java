@@ -25,19 +25,7 @@ import tacos.script.npc.NpcScriptMan.NpcTag;
  *
  * @author Riremito
  */
-public class NpcCamel extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class NpcCamel extends NpcScriptMan {
 
     private final int cost = 1500;
 

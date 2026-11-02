@@ -18,28 +18,14 @@
  */
 package tacos.debug;
 
-import tacos.script.npc.NpcScriptMan;
 import tacos.client.TacosCharacter;
 import tacos.server.map.TacosMap;
-import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugManTest extends NpcScriptMan implements INpcScriptMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class DebugManTest extends DebugNpcScriptMan {
 
     private int target_map_id = 910000000;
 
