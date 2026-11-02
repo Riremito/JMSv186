@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.debug;
+package tacos.script.npc;
 
 import odin.client.inventory.Item;
 import tacos.client.TacosCharacter;
@@ -33,6 +33,7 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.config.Config;
+import tacos.debug.DebugLogger;
 import tacos.server.TacosWorld;
 import tacos.server.map.object.TacosPet;
 import tacos.wz.WzXML;
@@ -42,13 +43,13 @@ import tacos.wz.WzDataStorage;
  *
  * @author Riremito
  */
-public class DebugShop {
+public class NpcShopMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
     protected static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
 
     public static boolean OnUserShopRequestHook(TacosCharacter chr, ClientPacket cp) {
-        DebugShop ds = chr.getDebugShop();
+        NpcShopMan ds = chr.getDebugShop();
 
         byte shop_req = cp.Decode1();
 
@@ -92,11 +93,11 @@ public class DebugShop {
     private int npc_id = DEFAULT_NPC_ID;
     private List<ShopStock> shopStocks = null;
 
-    public DebugShop() {
+    public NpcShopMan() {
         shopStocks = new ArrayList<>();
     }
 
-    public DebugShop(int npc_id) {
+    public NpcShopMan(int npc_id) {
         this();
         this.npc_id = npc_id;
     }

@@ -151,8 +151,7 @@ import odin.server.maps.SavedLocationType;
 import odin.server.MapleCarnivalChallenge;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
-import tacos.debug.DebugShop;
-import tacos.debug.IDebugMan;
+import tacos.script.npc.NpcShopMan;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.js.TacosScriptNPC;
@@ -161,6 +160,7 @@ import tacos.shared.TacosSharedDate;
 import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
+import tacos.script.npc.INpcScriptMan;
 
 /**
  *
@@ -2315,8 +2315,8 @@ public class TacosCharacter extends TacosPlayer {
     private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
     private TacosMerchant remoteStore = null;
-    private IDebugMan debugMan = null;
-    private DebugShop debugShop = null;
+    private INpcScriptMan debugMan = null;
+    private NpcShopMan debugShop = null;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -3753,11 +3753,11 @@ public class TacosCharacter extends TacosPlayer {
         return ret;
     }
 
-    public IDebugMan getDebugMan() {
+    public INpcScriptMan getDebugMan() {
         return this.debugMan;
     }
 
-    public boolean setDebugMan(IDebugMan debugMan) {
+    public boolean setDebugMan(INpcScriptMan debugMan) {
         if (debugMan != null && this.debugMan != null) {
             return false;
         }
@@ -3765,11 +3765,11 @@ public class TacosCharacter extends TacosPlayer {
         return true;
     }
 
-    public DebugShop getDebugShop() {
+    public NpcShopMan getDebugShop() {
         return this.debugShop;
     }
 
-    public boolean setDebugShop(DebugShop debugShop) {
+    public boolean setDebugShop(NpcShopMan debugShop) {
         if (debugShop != null && this.debugShop != null) {
             return false;
         }

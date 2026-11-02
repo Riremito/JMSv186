@@ -20,14 +20,12 @@ package tacos.script.npc;
 
 import odin.server.MapleInventoryManipulator;
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.IDebugMan;
 
 /**
  *
  * @author Riremito
  */
-public class NpcCrystal extends DebugMan implements IDebugMan {
+public class NpcCrystal extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {

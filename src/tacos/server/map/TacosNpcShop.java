@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShop;
-import tacos.debug.DebugShop;
+import tacos.script.npc.NpcShopMan;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.NpcShopData;
 
@@ -40,7 +40,7 @@ public class TacosNpcShop {
             return false;
         }
         // open npc shop.
-        DebugShop ds = new DebugShop(npc_id);
+        NpcShopMan ds = new NpcShopMan(npc_id);
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
         for (NpcShopData item : items) {
             int item_slot_max = miip.getSlotMax(item.getItem());

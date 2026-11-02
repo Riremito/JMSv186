@@ -21,7 +21,7 @@ package tacos.packet.request;
 import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
-import tacos.debug.DebugMan;
+import tacos.script.npc.NpcScriptMan;
 import tacos.odin.OdinNPCConversationManager;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
@@ -69,7 +69,7 @@ public class ReqCScriptMan {
 
         // java coding.
         if (chr.getDebugMan() != null) {
-            return DebugMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
+            return NpcScriptMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
         }
 
         // js coding.

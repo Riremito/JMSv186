@@ -19,8 +19,6 @@
 package tacos.script.npc;
 
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.IDebugMan;
 import tacos.wz.NpcWz.NpcInfo;
 
 /**
@@ -30,7 +28,7 @@ import tacos.wz.NpcWz.NpcInfo;
 public class NpcMan {
 
     public static boolean start(TacosCharacter chr, NpcInfo npc_info, int npc_script_id, int npc_id) {
-        DebugMan script;
+        NpcScriptMan script;
         switch (npc_script_id) {
             case 1002002 -> {
                 // 1002002, ペィソン
@@ -124,7 +122,7 @@ public class NpcMan {
             }
         }
         script.setNpcId(npc_script_id);
-        script.start((IDebugMan) script, chr);
+        script.start((INpcScriptMan) script, chr);
         return true;
     }
 }

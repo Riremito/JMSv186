@@ -22,14 +22,12 @@ import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.maps.SavedLocationType;
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.IDebugMan;
 
 /**
  *
  * @author Riremito
  */
-public class NpcPason extends DebugMan implements IDebugMan {
+public class NpcPason extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {

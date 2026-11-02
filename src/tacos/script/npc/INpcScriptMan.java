@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.debug;
+package tacos.script.npc;
 
 import tacos.client.TacosCharacter;
 
@@ -24,7 +24,7 @@ import tacos.client.TacosCharacter;
  *
  * @author Riremito
  */
-public interface IDebugMan {
+public interface INpcScriptMan {
 
     public boolean start(TacosCharacter chr);
 

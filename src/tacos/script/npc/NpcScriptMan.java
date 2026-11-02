@@ -16,10 +16,11 @@
  *
  *
  */
-package tacos.debug;
+package tacos.script.npc;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
+import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
 
@@ -27,7 +28,7 @@ import tacos.packet.response.ResCScriptMan;
  *
  * @author Riremito
  */
-public class DebugMan {
+public class NpcScriptMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
     private int npc_script_id = 0;
@@ -44,8 +45,8 @@ public class DebugMan {
     }
 
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
-        IDebugMan dm = chr.getDebugMan();
-        ((DebugMan) dm).updateStatus(action);
+        INpcScriptMan dm = chr.getDebugMan();
+        ((NpcScriptMan) dm).updateStatus(action);
 
         switch (ops) {
             case SM_SAY:
@@ -53,7 +54,7 @@ public class DebugMan {
             case SM_ASKMENU:
             case SM_ASKAVATAR: {
                 if (action != -1) {
-                    if (dm.action(chr, ((DebugMan) dm).getStatus(), m_nSelect)) {
+                    if (dm.action(chr, ((NpcScriptMan) dm).getStatus(), m_nSelect)) {
                         // continue
                         return true;
                     }
@@ -101,7 +102,7 @@ public class DebugMan {
         return false;
     }
 
-    public boolean start(IDebugMan debugMan, TacosCharacter chr) {
+    public boolean start(INpcScriptMan debugMan, TacosCharacter chr) {
         this.status = 0;
         chr.DebugMsg("DebugMan : started.");
         chr.setDebugMan(debugMan);

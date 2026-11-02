@@ -41,7 +41,7 @@ import tacos.debug.DebugMan_Maker;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
-import tacos.debug.DebugShop;
+import tacos.script.npc.NpcShopMan;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
@@ -134,7 +134,7 @@ public class TacosCommandDebug {
             }
             // debug shop.
             case "/ds" -> {
-                DebugShop ds = new DebugShop();
+                NpcShopMan ds = new NpcShopMan();
 
                 if (!dcmd.check(1)) {
                     ds.setRandomItems(100);
@@ -153,7 +153,7 @@ public class TacosCommandDebug {
                 return true;
             }
             case "/ds2" -> {
-                DebugShop ds = new DebugShop();
+                NpcShopMan ds = new NpcShopMan();
 
                 if (!dcmd.check(1)) {
                     return true;

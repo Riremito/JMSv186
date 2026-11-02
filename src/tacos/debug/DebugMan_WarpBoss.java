@@ -18,15 +18,17 @@
  */
 package tacos.debug;
 
+import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.wz.WzDataStorage;
+import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
+public class DebugMan_WarpBoss extends NpcScriptMan implements INpcScriptMan {
 
     private class WarpBossData {
 

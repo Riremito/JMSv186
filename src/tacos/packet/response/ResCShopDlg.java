@@ -22,7 +22,7 @@ import tacos.client.TacosClient;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedDate;
-import tacos.debug.DebugShop;
+import tacos.script.npc.NpcShopMan;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsShop;
@@ -78,7 +78,7 @@ public class ResCShopDlg {
     }
 
     // CShopDlg::OnPacket
-    public static ServerPacket OpenShopDlg(DebugShop ds) {
+    public static ServerPacket OpenShopDlg(NpcShopMan ds) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
@@ -98,7 +98,7 @@ public class ResCShopDlg {
 
         sp.Encode2(ds.getShopStocks().size()); // nCount
 
-        for (DebugShop.ShopStock ss : ds.getShopStocks()) {
+        for (NpcShopMan.ShopStock ss : ds.getShopStocks()) {
             sp.Encode4(ss.item_id); // nItemID
             sp.Encode4(ss.item_price); // nPrice
             sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 91)); // nDiscountRate

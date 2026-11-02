@@ -75,7 +75,7 @@ import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
-import tacos.debug.DebugShop;
+import tacos.script.npc.NpcShopMan;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.client.TacosDoorSkill;
@@ -232,7 +232,7 @@ public class ReqCUser {
             }
             case CP_UserShopRequest: {
                 if (chr.getDebugShop() != null) {
-                    DebugShop.OnUserShopRequestHook(chr, cp);
+                    NpcShopMan.OnUserShopRequestHook(chr, cp);
                     return true;
                 }
                 ReqCShopDlg.OnPacket(chr, cp);

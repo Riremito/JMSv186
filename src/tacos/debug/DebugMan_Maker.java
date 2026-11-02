@@ -18,6 +18,7 @@
  */
 package tacos.debug;
 
+import tacos.script.npc.NpcScriptMan;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
 import tacos.client.TacosCharacter;
@@ -25,12 +26,13 @@ import tacos.wz.EtcWz.MakerItemInfo;
 import tacos.wz.EtcWz.MakerRecipe;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
+import tacos.script.npc.INpcScriptMan;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_Maker extends DebugMan implements IDebugMan {
+public class DebugMan_Maker extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {

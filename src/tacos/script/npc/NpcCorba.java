@@ -20,8 +20,6 @@ package tacos.script.npc;
 
 import odin.server.MapleItemInformationProvider;
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.IDebugMan;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_Message;
@@ -30,7 +28,7 @@ import tacos.packet.response.builder.PB_Message;
  *
  * @author Riremito
  */
-public class NpcCorba extends DebugMan implements IDebugMan {
+public class NpcCorba extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {

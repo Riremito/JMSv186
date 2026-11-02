@@ -20,14 +20,12 @@ package tacos.script.npc;
 
 import odin.server.maps.SavedLocationType;
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.IDebugMan;
 
 /**
  *
  * @author Riremito
  */
-public class NpcDolphin extends DebugMan implements IDebugMan {
+public class NpcDolphin extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {

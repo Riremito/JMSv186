@@ -19,15 +19,13 @@
 package tacos.script.npc;
 
 import tacos.client.TacosCharacter;
-import tacos.debug.DebugMan;
-import tacos.debug.DebugMan.NpcTag;
-import tacos.debug.IDebugMan;
+import tacos.script.npc.NpcScriptMan.NpcTag;
 
 /**
  *
  * @author Riremito
  */
-public class NpcCamel extends DebugMan implements IDebugMan {
+public class NpcCamel extends NpcScriptMan implements INpcScriptMan {
 
     @Override
     public boolean start(TacosCharacter chr) {
