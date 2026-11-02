@@ -183,8 +183,8 @@ public class TacosMapData {
         this.screen.height = this.wall.bottom - this.wall.top;
 
         // split.
-        this.split.col = (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
-        this.split.row = (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
+        this.split.col = Math.max(1, (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH);
+        this.split.row = Math.max(1, (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT);
         this.split.total = this.split.col * this.split.row;
         return true;
     }

@@ -1139,10 +1139,10 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
-            TacosNpc npc_sp = sp.getNPC();
+            TacosNpc npc_sp = sp.getNpc();
             if (npc_sp != null) {
                 if (npc_sp.getObjectId() == npc.getObjectId()) {
-                    sp.removeNPC();
+                    sp.removeNpc();
                     return true;
                 }
             }

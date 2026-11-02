@@ -36,34 +36,22 @@ public class NpcMan {
                 // 1002002, ペィソン
                 // 104000000, 港口
                 script = new NpcPason();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 1002004 -> {
                 // 1002004, リス港口高級タクシー
                 // 104000000, 港口
                 script = new NpcVIPCab();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 2060009 -> {
                 // 2060009, イルカ
                 // 230000000, アクアリウム
                 // 251000100, 海側波止場
                 script = new NpcDolphin();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 2082003 -> {
                 // 2082003, コルバ
                 // 240000110, ステーション<オルビス行き>
                 script = new NpcCorba();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 2090005 -> {
                 // 2090005, ツノーレ
@@ -71,18 +59,12 @@ public class NpcMan {
                 // 250000100, 武陵神社
                 // 251000000, 白草村
                 script = new NpcCrane();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 2110005 -> {
                 // 2110005, ラクダ
                 // 260020000, アリアント北門の外
                 // 260020700, サヘル地帯1
                 script = new NpcCamel();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9000020 -> {
                 // 9000020, スピネル
@@ -106,9 +88,6 @@ public class NpcMan {
                 // 800000000, キノコ神社
                 // 950000000, 여행을 끝내고
                 script = new NpcSpinel();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9110000, 9110008 -> {
                 // 9110000, ペリー
@@ -116,34 +95,22 @@ public class NpcMan {
                 // 9110008, ペリー
                 // 800000000, キノコ神社
                 script = new NpcPerry();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9110107 -> {
                 // 9110107, 駕籠
                 // 800000000, キノコ神社
                 // 800040000, 楓城 天下泰平
                 script = new NpcPalakeen();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9120003 -> {
                 // 9120003, ヒカリ
                 // 801000000, ショーワ町
                 script = new NpcHikari();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9120015 -> {
                 // 9120015, コンペイ
                 // 801000000, ショーワ町
                 script = new NpcKonpei();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             case 9120026 -> {
                 // 9120026, クリスタル
@@ -151,13 +118,13 @@ public class NpcMan {
                 // 802000101, カムナ
                 // 802000313, 公園 2095年
                 script = new NpcCrystal();
-                script.setNpcId(npc_script_id);
-                script.start((IDebugMan) script, chr);
-                return true;
             }
             default -> {
+                return false;
             }
         }
-        return false;
+        script.setNpcId(npc_script_id);
+        script.start((IDebugMan) script, chr);
+        return true;
     }
 }
