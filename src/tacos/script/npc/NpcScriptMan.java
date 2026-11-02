@@ -45,7 +45,7 @@ public class NpcScriptMan {
     }
 
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
-        INpcScriptMan dm = chr.getDebugMan();
+        INpcScriptMan dm = chr.getNpcScript();
         ((NpcScriptMan) dm).updateStatus(action);
 
         switch (ops) {
@@ -69,7 +69,7 @@ public class NpcScriptMan {
         }
 
         dm.end(chr);
-        DebugLogger.ErrorLog("IDebugMan : not coded, nMsgType = " + nMsgType);
+        DebugLogger.ErrorLog("NpcScriptMan : not coded, nMsgType = " + nMsgType);
         return false;
     }
 
@@ -104,16 +104,16 @@ public class NpcScriptMan {
 
     public boolean start(INpcScriptMan debugMan, TacosCharacter chr) {
         this.status = 0;
-        chr.DebugMsg("DebugMan : started.");
-        chr.setDebugMan(debugMan);
+        chr.DebugMsg("NpcScriptMan : started.");
+        chr.setNpcScript(debugMan);
         debugMan.action(chr, this.status, 0);
         return true;
     }
 
     public boolean end(TacosCharacter chr) {
         this.status = -1;
-        chr.DebugMsg("DebugMan : finished.");
-        chr.setDebugMan(null);
+        chr.DebugMsg("NpcScriptMan : finished.");
+        chr.setNpcScript(null);
         return true;
     }
 
@@ -127,7 +127,7 @@ public class NpcScriptMan {
 
     protected void say(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
-            DebugLogger.ErrorLog("DebugMan : say.");
+            DebugLogger.ErrorLog("NpcScriptMan : say.");
             askMenu(chr, nt, prev, next);
             return;
         }

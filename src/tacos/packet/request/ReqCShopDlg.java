@@ -19,13 +19,12 @@
 package tacos.packet.request;
 
 import tacos.client.TacosCharacter;
-import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
-import odin.server.MapleShop;
 import tacos.config.Config;
 import tacos.config.Region;
+import tacos.script.npc.NpcShopMan;
 
 /**
  *
@@ -35,54 +34,47 @@ public class ReqCShopDlg {
 
     // CShopDlg::OnPacket
     public static boolean OnPacket(TacosCharacter chr, ClientPacket cp) {
-        if (chr == null) {
+        NpcShopMan npc_shop = chr.getNpcShop();
+        if (npc_shop == null) {
+            DebugLogger.ErrorLog("ReqCShopDlg : no shop.");
             return false;
         }
 
-        MapleShop shop = chr.getShop();
+        byte shop_req = cp.Decode1();
 
-        if (shop == null) {
-            chr.setConversation(0);
-            return false;
-        }
-
-        byte flag = cp.Decode1();
-
-        switch (OpsShop.find(flag)) {
-            case ShopReq_Buy: {
+        switch (OpsShop.find(shop_req)) {
+            case ShopReq_Buy -> {
                 short unk1 = cp.Decode2();
-
-                byte unk2 = cp.Decode1(Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
-
-                int itemId = cp.Decode4();
+                byte unk2 = cp.Decode1(Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.Equal(Region.EMS, 76));
+                int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
-                shop.buy(chr, itemId, quantity);
-                break;
-            }
-            case ShopReq_Sell: {
-                byte slot = (byte) cp.Decode2();
-                int itemId = cp.Decode4();
-                short quantity = cp.Decode2();
-                shop.sell(chr, GameConstants.getInventoryType(itemId), slot, quantity);
-                break;
-            }
-            case ShopReq_Recharge: {
-                byte slot = (byte) cp.Decode2();
-                shop.recharge(chr, slot);
-                break;
-            }
-            case ShopReq_Close: {
-                chr.setConversation(0);
+
+                npc_shop.buy(chr, item_id, quantity);
                 return true;
             }
-            default: {
-                // not coded
-                chr.setConversation(0);
-                DebugLogger.DebugLog("ReqCShopDlg : not coded.");
-                break;
+            case ShopReq_Sell -> {
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                short quantity = cp.Decode2();
+
+                npc_shop.sell(chr, item_slot, item_id, quantity);
+                return true;
+            }
+            case ShopReq_Recharge -> {
+                short item_slot = cp.Decode2();
+
+                npc_shop.recharge(chr, item_slot);
+                return true;
+            }
+            case ShopReq_Close -> {
+                npc_shop.end(chr);
+                return true;
+            }
+            default -> {
             }
         }
 
+        DebugLogger.ErrorLog("ReqCShopDlg : not coded, " + shop_req);
         return false;
     }
 }

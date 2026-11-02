@@ -21,7 +21,6 @@ package tacos.server.map;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleShop;
 import tacos.script.npc.NpcShopMan;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.NpcShopData;
@@ -40,18 +39,13 @@ public class TacosNpcShop {
             return false;
         }
         // open npc shop.
-        NpcShopMan ds = new NpcShopMan(npc_id);
+        NpcShopMan npc_shop = new NpcShopMan(npc_id);
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
         for (NpcShopData item : items) {
             int item_slot_max = miip.getSlotMax(item.getItem());
-            ds.addItem(item.getItem(), item.getPrice(), 1, item_slot_max);
+            npc_shop.addItem(item.getItem(), item.getPrice(), 1, item_slot_max);
         }
-        ds.start(chr);
+        npc_shop.start(chr);
         return true;
-    }
-
-    // create npc shop from script.
-    public static MapleShop createScriptNpcShop(int npc_id) {
-        return new MapleShop(npc_id, npc_id);
     }
 }

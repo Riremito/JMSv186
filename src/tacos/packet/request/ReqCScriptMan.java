@@ -68,7 +68,7 @@ public class ReqCScriptMan {
         }
 
         // java coding.
-        if (chr.getDebugMan() != null) {
+        if (chr.getNpcScript() != null) {
             return NpcScriptMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
         }
 

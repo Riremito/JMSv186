@@ -143,7 +143,6 @@ import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
-import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.MapleCarnivalParty;
@@ -2308,15 +2307,14 @@ public class TacosCharacter extends TacosPlayer {
     private boolean hasTutorialSummon = false;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
-    private transient MapleShop shop;
     private transient MapleTrade trade;
     private transient IPlayerShop playerShop;
     // items and meso put in a trade or a personal shop
     private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
     private TacosMerchant remoteStore = null;
-    private INpcScriptMan debugMan = null;
-    private NpcShopMan debugShop = null;
+    private INpcScriptMan npc_script = null;
+    private NpcShopMan npc_shop = null;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -2668,14 +2666,6 @@ public class TacosCharacter extends TacosPlayer {
         if (party != null) {
             getWorld().getParty().updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
-    }
-
-    public MapleShop getShop() {
-        return shop;
-    }
-
-    public void setShop(MapleShop shop) {
-        this.shop = shop;
     }
 
     // 初期化用
@@ -3753,27 +3743,27 @@ public class TacosCharacter extends TacosPlayer {
         return ret;
     }
 
-    public INpcScriptMan getDebugMan() {
-        return this.debugMan;
+    public INpcScriptMan getNpcScript() {
+        return this.npc_script;
     }
 
-    public boolean setDebugMan(INpcScriptMan debugMan) {
-        if (debugMan != null && this.debugMan != null) {
+    public boolean setNpcScript(INpcScriptMan npc_script) {
+        if (npc_script != null && this.npc_script != null) {
             return false;
         }
-        this.debugMan = debugMan;
+        this.npc_script = npc_script;
         return true;
     }
 
-    public NpcShopMan getDebugShop() {
-        return this.debugShop;
+    public NpcShopMan getNpcShop() {
+        return this.npc_shop;
     }
 
-    public boolean setDebugShop(NpcShopMan debugShop) {
-        if (debugShop != null && this.debugShop != null) {
+    public boolean setNpcShop(NpcShopMan npc_shop) {
+        if (npc_shop != null && this.npc_shop != null) {
             return false;
         }
-        this.debugShop = debugShop;
+        this.npc_shop = npc_shop;
         return true;
     }
 

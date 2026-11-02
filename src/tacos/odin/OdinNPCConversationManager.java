@@ -60,7 +60,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
@@ -68,8 +67,8 @@ import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
 import tacos.script.js.TacosScriptNPC;
 import tacos.script.js.TacosScriptQuest;
+import tacos.script.npc.NpcShopMan;
 import tacos.server.TacosChannel;
-import tacos.server.map.TacosNpcShop;
 import tacos.wz.WzDataStorage;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
@@ -457,8 +456,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return 1;
     }
 
-    public MapleShop createScriptNpcShop(int npc_id) {
-        return TacosNpcShop.createScriptNpcShop(npc_id);
+    public NpcShopMan createNpcShop(int npc_id) {
+        return new NpcShopMan(npc_id);
     }
 
     public int gainGachaponItem(int id, int quantity) {

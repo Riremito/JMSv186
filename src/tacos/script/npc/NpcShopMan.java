@@ -21,18 +21,15 @@ package tacos.script.npc;
 import odin.client.inventory.Item;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.MapleInventoryType;
-import tacos.config.Region;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
-import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import tacos.config.Config;
 import tacos.debug.DebugLogger;
 import tacos.server.TacosWorld;
 import tacos.server.map.object.TacosPet;
@@ -47,49 +44,6 @@ public class NpcShopMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
     protected static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
-
-    public static boolean OnUserShopRequestHook(TacosCharacter chr, ClientPacket cp) {
-        NpcShopMan ds = chr.getDebugShop();
-
-        byte shop_req = cp.Decode1();
-
-        switch (OpsShop.find(shop_req)) {
-            case ShopReq_Buy: {
-                short unk1 = cp.Decode2();
-                byte unk2 = (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.Equal(Region.EMS, 76)) ? cp.Decode1() : 0;
-                int item_id = cp.Decode4();
-                short quantity = cp.Decode2();
-
-                ds.buy(chr, item_id, quantity);
-                return true;
-            }
-            case ShopReq_Sell: {
-                short item_slot = cp.Decode2();
-                int item_id = cp.Decode4();
-                short quantity = cp.Decode2();
-
-                ds.sell(chr, item_slot, item_id, quantity);
-                return true;
-            }
-            case ShopReq_Recharge: {
-                short item_slot = cp.Decode2();
-
-                ds.recharge(chr, item_slot);
-                return true;
-            }
-            case ShopReq_Close: {
-                ds.end(chr);
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-
-        DebugLogger.ErrorLog("OnUserShopRequestHook : not coded = " + shop_req);
-        return false;
-    }
-
     private int npc_id = DEFAULT_NPC_ID;
     private List<ShopStock> shopStocks = null;
 
@@ -111,7 +65,7 @@ public class NpcShopMan {
     }
 
     public boolean start(TacosCharacter chr) {
-        chr.DebugMsg("DebugShop : started.");
+        chr.DebugMsg("NpcShopMan : started.");
         if (!this.shopStocks.isEmpty()) {
             if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
                 List<ShopStock> old_shopStocks = shopStocks;
@@ -120,20 +74,20 @@ public class NpcShopMan {
                 shopStocks.addAll(old_shopStocks);
             }
         }
-        chr.setDebugShop(this);
+        chr.setNpcShop(this);
         chr.SendPacket(ResCShopDlg.OpenShopDlg(this));
         return true;
     }
 
     public boolean end(TacosCharacter chr) {
-        chr.DebugMsg("DebugShop : finished.");
-        chr.setDebugShop(null);
+        chr.DebugMsg("NpcShopMan : finished.");
+        chr.setNpcShop(null);
         return true;
     }
 
     public boolean addItem(int item_id) {
         if (!WzDataStorage.ITEM.check(item_id)) {
-            DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("NpcShopMan : addItem, invalid item id = " + item_id);
             return false;
         }
 
@@ -157,9 +111,15 @@ public class NpcShopMan {
         return true;
     }
 
+    public boolean addItem(int item_id, int item_price) {
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int item_slot_max = miip.getSlotMax(item_id);
+        return addItem(item_id, item_price, 1, item_slot_max);
+    }
+
     public boolean addItem(int item_id, int item_price, int item_quantity, int item_slot_max) {
         if (!WzDataStorage.ITEM.check(item_id)) {
-            DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("NpcShopMan : addItem, invalid item id = " + item_id);
             return false;
         }
 
@@ -174,7 +134,7 @@ public class NpcShopMan {
 
     public boolean addItemRecharge(int item_id, int item_recharge_price) {
         if (!WzDataStorage.ITEM.check(item_id)) {
-            DebugLogger.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("NpcShopMan : addItemRecharge, invalid item id = " + item_id);
             return false;
         }
 
@@ -269,7 +229,7 @@ public class NpcShopMan {
         }
         chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
-        chr.DebugMsg("DebugShop : buy " + item_id);
+        chr.DebugMsg("NpcShopMan : buy " + item_id);
         return true;
     }
 
