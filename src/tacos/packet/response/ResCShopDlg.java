@@ -34,46 +34,6 @@ import tacos.packet.ServerPacketHeader;
 public class ResCShopDlg {
 
     // CShopDlg::OnPacket
-    public static ServerPacket ShopResult(OpsShop ops, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
-
-        sp.Encode1(ops.get());
-
-        switch (ops) {
-            case ShopRes_SellSuccess: {
-                /*
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
-                    sp.Encode1(0);
-                    // CShopDlg::SetShopDlg
-                    sp.Encode4(0);
-                    sp.Encode4(9030000); // m_dwNpcTemplateID
-                    sp.Encode1(0); // 1 = 十字旅団
-                    //sp.Encode1(0);
-                    sp.Encode2(0);
-                }
-                 */
-                break;
-            }
-            case ShopRes_LimitLevel_Less:
-            case ShopRes_LimitLevel_More: {
-                sp.Encode4(level);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        return sp;
-    }
-
-    public static ServerPacket ShopResult(OpsShop ops) {
-        return ResCShopDlg.ShopResult(ops, 0);
-    }
-
-    // CShopDlg::OnPacket
     public static ServerPacket OpenShopDlg(NpcShopMan npc_shop) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
@@ -139,6 +99,46 @@ public class ResCShopDlg {
                 sp.EncodeZeroBytes(32);
             }
         }
+        return sp;
+    }
+
+    public static ServerPacket ShopResult(OpsShop ops) {
+        return ResCShopDlg.ShopResult(ops, 0);
+    }
+
+    // CShopDlg::OnPacket
+    public static ServerPacket ShopResult(OpsShop ops, int level) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
+
+        sp.Encode1(ops.get());
+
+        switch (ops) {
+            case ShopRes_SellSuccess: {
+                /*
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    sp.Encode1(0);
+                    // CShopDlg::SetShopDlg
+                    sp.Encode4(0);
+                    sp.Encode4(9030000); // m_dwNpcTemplateID
+                    sp.Encode1(0); // 1 = 十字旅団
+                    //sp.Encode1(0);
+                    sp.Encode2(0);
+                }
+                 */
+                break;
+            }
+            case ShopRes_LimitLevel_Less:
+            case ShopRes_LimitLevel_More: {
+                sp.Encode4(level);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
+        sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
         return sp;
     }
 }

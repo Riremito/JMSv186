@@ -42,18 +42,13 @@ import tacos.wz.WzDataStorage;
  */
 public class NpcShopMan {
 
-    protected static final int DEFAULT_NPC_ID = 1012003;
-    protected static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
-    private int npc_id = DEFAULT_NPC_ID;
+    private static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
+    private final int npc_id;
     private List<ShopStock> shopStocks = null;
 
-    public NpcShopMan() {
-        shopStocks = new ArrayList<>();
-    }
-
     public NpcShopMan(int npc_id) {
-        this();
         this.npc_id = npc_id;
+        shopStocks = new ArrayList<>();
     }
 
     public int getNpcId() {
@@ -159,24 +154,6 @@ public class NpcShopMan {
             for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
                 this.addItemRecharge(item_id, item_recharge_price);
             }
-        }
-        return true;
-    }
-
-    public boolean setItemTest(int item_sub_type) {
-        int item_count = 0;
-        for (int item_id : WzXML.ITEM.getItemIds(item_sub_type)) {
-            this.addItem(item_id);
-            item_count++;
-        }
-
-        DebugLogger.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");
-        return true;
-    }
-
-    public boolean setRandomItems(int count) {
-        for (int i = 0; i < count; i++) {
-            this.addItem(WzDataStorage.ITEM.getRandom());
         }
         return true;
     }
