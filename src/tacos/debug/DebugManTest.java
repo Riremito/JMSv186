@@ -19,6 +19,7 @@
 package tacos.debug;
 
 import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 import tacos.server.map.TacosMap;
 
 /**
@@ -33,7 +34,7 @@ public class DebugManTest extends DebugNpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("DebugManTest...");
                 nt.add("r : 赤 = #r赤#k");
                 nt.add("g : 緑 = #g緑#k");
@@ -62,7 +63,7 @@ public class DebugManTest extends DebugNpcScriptMan {
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (answer == 11) {
                     nt.add("go to #m100000000#.");
                     this.target_map_id = 100000000;

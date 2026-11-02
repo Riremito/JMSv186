@@ -20,6 +20,7 @@ package tacos.debug;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 
 /**
  *
@@ -27,7 +28,7 @@ import tacos.client.TacosCharacter;
  */
 public class DebugMan_Warp extends DebugNpcScriptMan {
 
-    private NpcTag nt_first = new NpcTag();
+    private NpcScriptTag nt_first = new NpcScriptTag();
     private final ArrayList<Integer> selection_list = new ArrayList<>();
     private int target_map_id = 910000000;
 
@@ -37,7 +38,7 @@ public class DebugMan_Warp extends DebugNpcScriptMan {
     }
 
     private void setFirstTalk() {
-        this.nt_first = new NpcTag();
+        this.nt_first = new NpcScriptTag();
 
         for (int index = 0; index < this.selection_list.size(); index++) {
             this.nt_first.addMenu(index, this.selection_list.get(index) + " : #m" + this.selection_list.get(index) + "#");
@@ -52,7 +53,7 @@ public class DebugMan_Warp extends DebugNpcScriptMan {
                 return true;
             }
             case 1: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (0 <= answer && answer < this.selection_list.size()) {
                     nt.add("go to " + this.selection_list.get(answer) + " : #m" + this.selection_list.get(answer) + "#");
                     this.target_map_id = this.selection_list.get(answer);

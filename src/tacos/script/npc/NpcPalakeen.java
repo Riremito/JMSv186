@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import tacos.client.TacosCharacter;
-import tacos.script.npc.NpcScriptMan.NpcTag;
 
 /**
  *
@@ -31,14 +30,14 @@ public class NpcPalakeen extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 // TODO : 文章
                 nt.add("");
                 super.askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (chr.getMapId() == 800000000) {
                     // キノコ神社 -> 楓城 天下泰平
                     chr.changeMapById(800040000); // TODO : portal name.

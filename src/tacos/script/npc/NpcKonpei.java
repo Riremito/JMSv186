@@ -32,7 +32,7 @@ public class NpcKonpei extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("用はなんだ。");
                 nt.addMenu(0, "アジトの説明を聞く。");
                 nt.addMenu(1, "アジトに連れて行ってくれ。");
@@ -41,7 +41,7 @@ public class NpcKonpei extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (answer == 0) {
                     nt.add("オイラはアジトまで案内してやることができるぜ。しかしアジトはガラの悪い連中がウヨウヨいるからよ、力つけて腹くくってから行くことにしなぁ。アジトにはこの近辺の親分たちを取り仕切っている大親分がいる。アジトにはまあ簡単に行けるんだが、アジトの最上階にある部屋には1日1回しか行けねーぞ。大親分の部屋は恐ろしいところだ。あんまり長居しない方が良いから、短時間でケリつけてくれよ！あの大親分もただもんじゃねーが、大親分に会うまでにも腕っぷしの強いやつらがいるから、やっかいだぜ～。");
                     super.say(chr, nt);

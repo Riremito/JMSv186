@@ -124,15 +124,15 @@ public abstract class NpcScriptMan {
         return true;
     }
 
-    protected void askMenu(TacosCharacter chr, NpcTag nt) {
+    protected void askMenu(TacosCharacter chr, NpcScriptTag nt) {
         askMenu(chr, nt, false, false);
     }
 
-    protected void say(TacosCharacter chr, NpcTag nt) {
+    protected void say(TacosCharacter chr, NpcScriptTag nt) {
         say(chr, nt, false, false);
     }
 
-    protected void say(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
+    protected void say(TacosCharacter chr, NpcScriptTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
             DebugLogger.ErrorLog("NpcScriptMan : say.");
             askMenu(chr, nt, prev, next);
@@ -141,43 +141,15 @@ public abstract class NpcScriptMan {
         chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
     }
 
-    protected void askYesNo(TacosCharacter chr, NpcTag nt) {
+    protected void askYesNo(TacosCharacter chr, NpcScriptTag nt) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
     }
 
-    protected void askMenu(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
+    protected void askMenu(TacosCharacter chr, NpcScriptTag nt, boolean prev, boolean next) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
     }
 
-    protected void askAvatar(TacosCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
+    protected void askAvatar(TacosCharacter chr, NpcScriptTag nt, ArrayList<Integer> ids) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
-    }
-
-    public class NpcTag {
-
-        private String msg = "";
-
-        public void add(String text) {
-            this.add(text, true);
-        }
-
-        public void add(String text, boolean crlf) {
-            this.msg += text;
-            if (crlf) {
-                this.msg += "\r\n";
-            }
-        }
-
-        public void addMenu(int num, String text) {
-            this.msg += "#L" + num + "##b" + text + "#k#l\r\n";
-        }
-
-        public void addMenuRed(int num, String text) {
-            this.msg += "#L" + num + "##r" + text + "#k#l\r\n";
-        }
-
-        public String get() {
-            return this.msg;
-        }
     }
 }

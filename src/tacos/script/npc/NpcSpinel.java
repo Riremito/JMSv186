@@ -49,7 +49,7 @@ public class NpcSpinel extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag menu = new NpcTag();
+                NpcScriptTag menu = new NpcScriptTag();
                 for (int i = 0; i < this.map_ids.length; i++) {
                     // 現在のマップはスキップ
                     if (chr.getMapId() == this.map_ids[i]) {
@@ -58,7 +58,7 @@ public class NpcSpinel extends NpcScriptMan {
                     }
                     menu.addMenu(i, this.map_names[i]);
                 }
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (this.traveling) {
                     // 旅行中
                     this.return_map_id = chr.getSavedLocation(SavedLocationType.WORLDTOUR);

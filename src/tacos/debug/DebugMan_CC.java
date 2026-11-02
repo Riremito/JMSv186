@@ -20,6 +20,7 @@ package tacos.debug;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -103,7 +104,7 @@ public class DebugMan_CC extends DebugNpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.addMenu(AvatarType.SKIN.ordinal(), "Skin");
                 nt.addMenu(AvatarType.FACE.ordinal(), "Face");
                 nt.addMenu(AvatarType.FACE_COLOR.ordinal(), "Face Color");
@@ -114,7 +115,7 @@ public class DebugMan_CC extends DebugNpcScriptMan {
             }
             case 1: {
                 avatar_type = answer;
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (answer == AvatarType.SKIN.ordinal()) {
                     nt.add("Skin test.");
                     ids_selection = getIdsTest(chr, answer);

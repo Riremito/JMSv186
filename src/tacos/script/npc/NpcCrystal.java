@@ -63,7 +63,7 @@ public class NpcCrystal extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("私はアーシア様の力を増幅させる者。タイムワープの許可がアーシア様より下りていれば、過去や未来のジパングに飛ばしてあげよう。");
                 for (int i = 0; i < this.map_ids.length; i++) {
                     nt.addMenu(i, this.map_names[i]);

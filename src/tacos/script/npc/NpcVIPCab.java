@@ -32,7 +32,7 @@ public class NpcVIPCab extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("初心者ではない方には決められた料金が請求されます。アリの巣広場はビクトリアアイランドの中央にあるダンジョンの奥の、24時間屋台が棲んでいるところです。#b10,000メル#kでアリの巣広場まで如何でしょうか？");
                 super.askYesNo(chr, nt);
                 return true;

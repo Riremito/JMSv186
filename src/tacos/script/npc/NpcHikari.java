@@ -36,13 +36,13 @@ public class NpcHikari extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("銭湯に入りたいですか？では、" + this.cost + "メルを払いなさい。");
                 super.askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (!payMoney(chr, this.cost)) {
                     nt.add("入場料" + this.cost + "メルを持っているか確認してください。");
                     super.say(chr, nt);
@@ -53,7 +53,7 @@ public class NpcHikari extends NpcScriptMan {
                 return false;
             }
             case -1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("今度利用してください。");
                 super.say(chr, nt);
                 return false;

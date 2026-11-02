@@ -40,7 +40,7 @@ public class NpcPason extends NpcScriptMan {
                 if (!chr.haveItem(this.item_free_pass)) {
                     MapleInventoryManipulator.addById(chr, this.item_free_pass, 1); // TODO : item effect.
                 }
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("港口から少し離れたところに#bビーチ#kという幻想的な海岸があると聞いたことはあるか？#b2000メル#kを払うか#bフリーパスカード#kを持っているなら、いつでも俺がそこに運んでやるぜ。");
                 nt.addMenu(0, "2000メル払う");
                 nt.addMenu(1, "フリーパスカードを持っている。");
@@ -53,7 +53,7 @@ public class NpcPason extends NpcScriptMan {
                 if (answer != 0) {
                     return false;
                 }
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 // 原文ママ
                 nt.add("#b2000メル#kを払ってビーチに行くんだな？でも、そこにもモンスターがいるらしいから油断するよ！では、早速出向準備をするが…今すぐビーチに行くのか？");
                 super.askYesNo(chr, nt);

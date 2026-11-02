@@ -37,7 +37,7 @@ public class NpcCorba extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("羽があればそこに行けるじゃろう。じゃが、それだけでは足りんのじゃ。剣より鋭い風の狭間を飛ぶためには、丈夫な鱗も必要なんじゃ。戻ってくる方法まで知っておる半獣族は、もうワシ一人しかおらん…もしあそこに行きたいんじゃったら、ワシが変身させてやろう。お前の今の姿が何であれ、今、この瞬間だけは　#bドラゴン#kになるのじゃ…。");
                 nt.addMenu(0, "ドラゴンに変身したいです。");
                 super.askMenu(chr, nt);

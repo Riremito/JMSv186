@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import tacos.client.TacosCharacter;
-import tacos.script.npc.NpcScriptMan.NpcTag;
 
 /**
  *
@@ -45,7 +44,7 @@ public class NpcCamel extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (chr.getMap().getId() == 260020000) {
                     nt.add("#b" + getNpcName(getNpcId()) + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 } else {
@@ -56,7 +55,7 @@ public class NpcCamel extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (!payMoney(chr, this.cost)) {
                     // not coded yet.
                     return false;

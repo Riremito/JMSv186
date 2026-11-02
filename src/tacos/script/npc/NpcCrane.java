@@ -39,7 +39,7 @@ public class NpcCrane extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 int map_id = chr.getMapId();
                 if (map_id == MAP_MU_LUNG_TEMPLE) {
                     // TODO : 文章

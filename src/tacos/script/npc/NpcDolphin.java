@@ -41,7 +41,7 @@ public class NpcDolphin extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.add("世の中の全ての海は繋がっています。歩くと遠い所でも海ならすぐですよ。どうですか？#bイルカタクシー#kに乗って移動しますか？");
                 if (chr.getMapId() == MAP_AQUARIUM) {
                     nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");

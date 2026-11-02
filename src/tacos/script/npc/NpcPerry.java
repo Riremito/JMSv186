@@ -36,14 +36,14 @@ public class NpcPerry extends NpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 // TODO : カニングシティ版の文章
                 nt.add("いらっしゃ～～いッ！オラはここジパングとビクトリアアイランドとを往復するペリカンさ、運賃さえ払ってくれればビクトリアアイランドまでひとっ飛びで行くよ。運賃（片道）" + this.cost + "メル払うかい？");
                 super.askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (!payMoney(chr, this.cost)) {
                     // not coded yet.
                     return false;

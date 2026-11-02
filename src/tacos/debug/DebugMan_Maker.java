@@ -21,7 +21,7 @@ package tacos.debug;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
 import tacos.client.TacosCharacter;
-import tacos.script.npc.NpcScriptMan.NpcTag;
+import tacos.script.npc.NpcScriptTag;
 import tacos.wz.EtcWz.MakerItemInfo;
 import tacos.wz.EtcWz.MakerRecipe;
 import tacos.wz.WzDataStorage;
@@ -68,7 +68,7 @@ public class DebugMan_Maker extends DebugNpcScriptMan {
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 for (MakerType mt : MakerType.values()) {
                     nt.addMenu(mt.ordinal(), mt.name());
                 }
@@ -85,7 +85,7 @@ public class DebugMan_Maker extends DebugNpcScriptMan {
                 if (maker_items.isEmpty()) {
                     return false;
                 }
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 int index = 0;
                 for (Integer item_id : this.maker_items) {
                     nt.addMenu(index++, String.format("%d : #z%d#", item_id, item_id));
