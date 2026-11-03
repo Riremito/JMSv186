@@ -55,6 +55,8 @@ public class NpcWarriorJobInstructor extends NpcScriptMan {
             case 2 -> {
                 // 原文ママ
                 NpcScriptTag nt = new NpcScriptTag();
+                // 魔法使いver
+                // その中でやつらを倒すと#b#z4031013##kというアイテムを得ることができる。それはやつらの醜くて汚い心が集まって作られた特別な玉だ。この玉を30個集めて中にいる私の仲間に声を掛ければ合格だ。
                 nt.add("そいつらを倒すと#b#z" + this.item_dark_marble + "##kというアイテムを得ることができる。それはやつらの醜くて汚い心が集まって作られた特別な玉だ。この玉を30個集めて中にいる私の仲間に声を掛ければ合格だ。");
                 say(nt, true, true);
                 return true;
