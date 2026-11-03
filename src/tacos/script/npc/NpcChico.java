@@ -76,7 +76,7 @@ public class NpcChico extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("こんにちは！俺はこの周辺のミニゲームを統括している#b#p" + getNpcId() + "##kだよ。君、ミニゲームに関心があるようだな。 助けてあげようか。じゃ、やりたいことは？"
 );
-                nt.addMenu(MENU_MAKE, "ミニゲームアイテム作成");
+                nt.addMenu(MENU_MAKE, "ミニゲームのアイテム作成");
                 nt.addMenu(MENU_ABOUT, "ミニゲームに対する説明を聞く");
                 askMenu(nt);
                 return true;

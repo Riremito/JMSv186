@@ -18,6 +18,9 @@
  */
 package tacos.script.npc;
 
+import odin.client.inventory.MapleInventoryType;
+import odin.server.MapleInventoryManipulator;
+
 /**
  *
  * @author Riremito
@@ -31,14 +34,24 @@ public class NpcOrbisMagicSpot extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
+                if (!checkItem(this.item_magic_stone)) {
+                    // 翻訳
+                    say("#b#p2012015##kのある場所へテレポートできる#b#p2012014##kがありますが、書がないと起動できません。");
+                    return false;
+                }
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("#b魔法石の書#kを使って#bオルビス魔法石#kを活性化できます。#bエルナス魔法石#kがあるところへ移動しますか？");
                 askYesNo(nt);
                 return true;
             }
             case 1 -> {
-                // TODO : 魔法石の書(item_magic_stone)の確認と消費
-                warp(this.map_tower); // TODO : portal name.
+                if (!checkItem(this.item_magic_stone)) {
+                    // 翻訳
+                    say("#b#t" + this.item_magic_stone + "##kを持っていないので、#b#p2012014##kを起動できません。");
+                    return false;
+                }
+                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_magic_stone, 1, true, false);
+                warp(this.map_tower, "sp");
                 return false;
             }
             default -> {

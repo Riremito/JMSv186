@@ -58,8 +58,8 @@ public class NpcPison extends NpcScriptMan {
                     return false;
                 }
                 this.asked = true;
-                // 翻訳
-                askYesNo("本当に#b#m" + map_id + "##kに戻るのかい？よし、急がないとな。今すぐ#m" + map_id + "#に戻るかい？");
+                // 原文ママ
+                askYesNo("#b#m" + map_id + "##kに戻りますか。");
                 return true;
             }
             case 2 -> {

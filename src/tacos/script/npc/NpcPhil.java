@@ -168,9 +168,8 @@ public class NpcPhil extends NpcScriptMan {
                         }
                         this.to_map_index = answer;
                         this.asked = true;
-                        int cost = beginner ? this.costs[this.to_map_index] / 10 : this.costs[this.to_map_index];
-                        // 翻訳
-                        askYesNo("ここにいる必要はなさそうですね。本当に#b" + getMapName(this.map_ids[this.to_map_index]) + "#kへ行きますか？料金は#b" + cost + "メル#kです。どうしますか？");
+                        // 原文ママ
+                        askYesNo("ここではもう用事がないようですね。本当に" + getMapName(this.map_ids[this.to_map_index]) + "へ移動しますか？");
                         return true;
                     }
                     default -> {

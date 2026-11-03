@@ -57,6 +57,11 @@ public class NpcShanks extends NpcScriptMan {
         // メイプルアイランドからビクトリアアイランドへ
         boolean has_letter = checkItem(this.item_recommendation_letter);
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("ふむ…まだここでやり残したことがあるんだな？");
+                return false;
+            }
             case 0 -> {
                 // 原文ママ
                 NpcScriptTag nt = new NpcScriptTag();
@@ -73,13 +78,13 @@ public class NpcShanks extends NpcScriptMan {
                     return true;
                 }
                 if (getPlayer().getMeso() < this.cost) {
-                    // TODO : 文章 (適当)
-                    say("メルが不足しています。");
+                    // 翻訳
+                    say("何だって？一文無しで旅に出たいってのか？変わった奴だな…");
                     return false;
                 }
-                // TODO : 文章 (適当)
                 NpcScriptTag nt = new NpcScriptTag();
-                nt.add(this.cost + "メル受け取りました。");
+                // 翻訳
+                nt.add("ここに飽きたのか？じゃあ…まずは#e" + this.cost + "メル#nをもらおうか…");
                 say(nt, false, true);
                 return true;
             }

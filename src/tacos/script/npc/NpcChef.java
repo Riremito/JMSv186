@@ -18,19 +18,62 @@
  */
 package tacos.script.npc;
 
+import odin.client.inventory.MapleInventoryType;
+import odin.server.MapleInventoryManipulator;
+
 /**
  *
  * @author Riremito
  */
 public class NpcChef extends NpcScriptMan {
 
+    private final int item_secret_book = 4031048; // 秘密の呪文書
+    // {アイテムID, 個数}
+    private final int[][] prizes = {
+        {2000004, 100}, // エリクサー
+        {4011006, 10}, // 金
+        {4011000, 10}, // 青銅
+        {4011005, 10}, // オリハルコン
+        {4021005, 10}, // サファイア
+        {4021001, 10}, // 紫水晶
+        {4021007, 10} // ダイヤモンド
+    };
+
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("いいとも…いつでもどうぞ。言っておくけど、そのアイテムを持っていても、インベントリの場所を取るだけだよ。だから、賞品と交換することをおすすめするね。");
+                return false;
+            }
             case 0 -> {
-                NpcScriptTag nt = new NpcScriptTag();
-                nt.add("何の用で俺のところに来たかい？もしかして、俺に一目ぼれ？");
-                say(nt);
+                if (!checkItem(this.item_secret_book)) {
+                    NpcScriptTag nt = new NpcScriptTag();
+                    nt.add("何の用で俺のところに来たかい？もしかして、俺に一目ぼれ？");
+                    say(nt);
+                    return false;
+                }
+                // 翻訳
+                askYesNo("おっと、おっと！#b#t" + this.item_secret_book + "##kを持っているのかい？よし…それをくれたら、いいアイテムと交換してあげよう。ただし、もらえるアイテムは「ランダム」で選ばれることはわかっておいてくれ。運次第ってことさ。どうだい？交換するかい？");
+                return true;
+            }
+            case 1 -> {
+                int[] prize = this.prizes[(int) (Math.random() * this.prizes.length)];
+                if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize[0], prize[1], "")) {
+                    // 翻訳
+                    say("おい、おい！報酬を受け取るには、消費インベントリとETCインベントリに少なくとも1つ空きスロットが必要だよ。空きを作ってから話しかけてくれ。");
+                    return false;
+                }
+                if (!checkItem(this.item_secret_book)) {
+                    // 翻訳
+                    say("#t" + this.item_secret_book + "#を持っているか、消費インベントリとETCインベントリに十分な空きがあるか確認してくれ。");
+                    return false;
+                }
+                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_secret_book, 1, true, false);
+                MapleInventoryManipulator.addById(getPlayer(), prize[0], (short) prize[1]);
+                // 翻訳
+                say("#b" + prize[1] + " #t" + prize[0] + "##kが手に入ったかい？どうだい？気に入ったかい？ははは…またね～");
                 return false;
             }
             default -> {

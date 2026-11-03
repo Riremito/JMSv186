@@ -140,6 +140,11 @@ public class NpcMan {
                 // 1012008, カイジ
                 npc_script = new NpcCasey();
             }
+            case 1012100 -> {
+                // 1012100, ヘレナ
+                // 100000201, 弓使い学院
+                npc_script = new NpcAthenaPierce();
+            }
             case 1013207 -> {
                 // 1013207, クン
                 // 200090080, 용이 잠든 섬으로
@@ -151,6 +156,11 @@ public class NpcMan {
                 // 1022000, コブシを開いて立て
                 // 102000003, 戦士の聖殿
                 npc_script = new NpcDancesWithBalrog();
+            }
+            case 1032001 -> {
+                // 1032001, ハインズ
+                // 101000003, 魔法図書館
+                npc_script = new NpcGrendelTheReallyOld();
             }
             case 1032003 -> {
                 // 1032003, シェイン
@@ -171,18 +181,57 @@ public class NpcMan {
                 // 101000300, エリニアステーション
                 npc_script = new NpcCherry();
             }
+            case 1032100 -> {
+                // 1032100, 妖精アルウェン
+                // 101000000, エリニア
+                npc_script = new NpcArwenTheFairy();
+            }
             case 1032102 -> {
                 // 1032102, 妖精マル
                 npc_script = new NpcMarTheFairy();
+            }
+            case 1040001 -> {
+                // 1040001, マイク
+                // 106000300, ダンジョンの入口
+                npc_script = new NpcMike();
+            }
+            case 1043000 -> {
+                // 1043000, 花の摘み
+                // 101000101, 忍耐の森-2段階
+                npc_script = new NpcPileOfFlowers();
+            }
+            case 1043001 -> {
+                // 1043001, 薬草の藪
+                // 101000104, 忍耐の森-5段階
+                npc_script = new NpcPileOfHerbs();
             }
             case 1052001 -> {
                 // 1052001, ダークロード
                 // 103000003, 盗賊のアジト
                 npc_script = new NpcDarkLord();
             }
+            case 1052006 -> {
+                // 1052006, ウンイ
+                // 103000100, 切符売り場
+                npc_script = new NpcSubwayTicketSeller();
+            }
             case 1052007 -> {
                 // 1052007, 改札口
                 npc_script = new NpcTheTicketGate();
+            }
+            case 1052008, 1052009, 1052010 -> {
+                // 1052008, 宝箱
+                // 103000902, B1<地下鉄基地>
+                // 1052009, 宝箱
+                // 103000905, B2<地下鉄基地>
+                // 1052010, 宝箱
+                // 103000909, B3<地下鉄基地>
+                npc_script = new NpcSubwayTreasureBox();
+            }
+            case 1052011 -> {
+                // 1052011, 出口
+                // 103000900, 103000901, 103000903, 103000904, 103000906, 103000907, 103000908
+                npc_script = new NpcSubwayExit();
             }
             case 1052012 -> {
                 // 1052012, モンロン
@@ -217,15 +266,58 @@ public class NpcMan {
                 // 1061007, 崩れている石像
                 npc_script = new NpcCrumblingStatue();
             }
+            case 1061009 -> {
+                // 1061009, 次元の扉
+                // 100040106, 隠れ道 : 邪気の森2
+                // 105040305, 中央ダンジョン : スリーピーダンジョン5
+                // 105070001, 中央ダンジョン : アリの巣-広場
+                // 105070200, 中央ダンジョン : エビルアイの巣２
+                // 107000402, 隠れ道 : ルーパン沼2
+                npc_script = new NpcDoorOfDimension();
+            }
+            case 1061010 -> {
+                // 1061010, 光る水晶
+                // 108010101, 隠れ道 : 次元の世界
+                // 108010201, 隠れ道 : 次元の世界
+                // 108010301, 隠れ道 : 次元の世界
+                // 108010401, 隠れ道 : 次元の世界
+                // 108010501, 隠れ道 : 次元の世界
+                // 804000710, 隠れ道 : 次元の世界
+                npc_script = new NpcGlimmeringCrystal();
+            }
             case 1061100 -> {
                 // 1061100, ホテルガイド
                 // 105040400, スリーピーホテルロビー
                 npc_script = new NpcHotelReceptionist();
             }
+            case 1063000, 1063001, 1063002 -> {
+                // 1063000, 桃色の花山
+                // 105040311, 忍耐の森「2段階」
+                // 1063001, 青色の花山
+                // 105040313, 忍耐の森「4段階」
+                // 1063002, 白色の花山
+                // 105040316, 忍耐の森「7段階」
+                npc_script = new NpcPileOfViolas();
+            }
             case 1072000 -> {
                 // 1072000, 戦士転職教官
                 // 102020300, 西の岩山4
                 npc_script = new NpcWarriorJobInstructor();
+            }
+            case 1072001 -> {
+                // 1072001, 魔法使い転職教官
+                // 101020000, 北の森
+                npc_script = new NpcMagicianJobInstructor();
+            }
+            case 1072002 -> {
+                // 1072002, 弓使い転職教官
+                // 106010000, ダンジョンへの道
+                npc_script = new NpcBowmanJobInstructor();
+            }
+            case 1072003 -> {
+                // 1072003, 盗賊転職教官
+                // 102040000, 工事現場-北
+                npc_script = new NpcThiefJobInstructor();
             }
             case 1072004 -> {
                 // 1072004, 戦士転職教官
@@ -233,6 +325,27 @@ public class NpcMan {
                 // 108000301, 戦士の岩山2
                 // 108000302, 戦士の岩山3
                 npc_script = new NpcWarriorJobInstructorTest();
+            }
+            case 1072005 -> {
+                // 1072005, 魔法使い転職教官
+                // 108000200, 木のダンジョン1
+                // 108000201, 木のダンジョン2
+                // 108000202, 木のダンジョン3
+                npc_script = new NpcMagicianJobInstructorTest();
+            }
+            case 1072006 -> {
+                // 1072006, 弓使い転職教官
+                // 108000100, アリの巣1
+                // 108000101, アリの巣2
+                // 108000102, アリの巣3
+                npc_script = new NpcBowmanJobInstructorTest();
+            }
+            case 1072007 -> {
+                // 1072007, 盗賊転職教官
+                // 108000400, 盗賊の工事現場1
+                // 108000401, 盗賊の工事現場2
+                // 108000402, 盗賊の工事現場3
+                npc_script = new NpcThiefJobInstructorTest();
             }
             case 1081001 -> {
                 // 1081001, パイソン
@@ -342,6 +455,11 @@ public class NpcMan {
                 // 200000301, ギルド本部<英雄の殿堂>
                 npc_script = new NpcHeracle();
             }
+            case 2010008 -> {
+                // 2010008, レア
+                // 200000301, ギルド本部<英雄の殿堂>
+                npc_script = new NpcLea();
+            }
             case 2010009 -> {
                 // 2010009, レナリウ
                 // 200000301, ギルド本部<英雄の殿堂>
@@ -445,6 +563,11 @@ public class NpcMan {
                 // 240000000, リプレ
                 npc_script = new NpcDangerZoneTaxi();
             }
+            case 2030000 -> {
+                // 2030000, ジェフ
+                // 211040200, 氷の谷2
+                npc_script = new NpcJeff();
+            }
             case 2030006 -> {
                 // 2030006, 聖なる岩
                 // 211040401, 雪原の聖地
@@ -454,6 +577,11 @@ public class NpcMan {
                 // 2030008, アドビス
                 // 211042300, ジャクムへの門
                 npc_script = new NpcAdobis();
+            }
+            case 2032001 -> {
+                // 2032001, スピルナ
+                // 200050001, 老婆の家
+                npc_script = new NpcSpiruna();
             }
             case 2040002 -> {
                 // 2040002, レフトくん
@@ -499,6 +627,11 @@ public class NpcMan {
                 // 220000000, ルディブリアム
                 // 240000000, リプレ
                 npc_script = new NpcEurekTheAlchemist();
+            }
+            case 2040052 -> {
+                // 2040052, 司書ウィズ
+                // 222020000, ヘリオス塔の図書館
+                npc_script = new NpcLibrarianWiz();
             }
             case 2041000 -> {
                 // 2041000, ティティアン

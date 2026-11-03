@@ -18,7 +18,9 @@
  */
 package tacos.script.npc;
 
+import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
+import odin.server.quest.MapleQuest;
 
 /**
  *
@@ -27,6 +29,8 @@ import odin.server.MapleInventoryManipulator;
 public class NpcHolyStone extends NpcScriptMan {
 
     private final int item_necklace_of_wisdom = 4031058; // 知恵のネックレス
+    private final int item_dark_crystal = 4005004; // 闇のクリスタル
+    private final int quest_job_3rd = 7500; // 3次転職
     private final int question_count = 5;
     private final String[] questions = {
         "次の中でメイプルストーリーを始めると一番最初に会えるNPCは誰なのか？",
@@ -140,24 +144,52 @@ public class NpcHolyStone extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        // TODO : 3次転職のクエストの確認
-        if (2 <= status && status <= this.question_count + 1) {
+        if (3 <= status && status <= this.question_count + 2) {
             if (answer != this.answer_index) {
                 say("間違い");
                 return false;
             }
         }
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("準備ができたら戻ってくるがよい。");
+                return false;
+            }
             case 0 -> {
+                if (!"end1".equals(getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData())) {
+                    return false;
+                }
+                // 翻訳
+                askYesNo("… … …\r\nそなたの知恵を試したければ、#b#t" + this.item_dark_crystal + "##kを捧げ物として供えなければならない…\r\n#t" + this.item_dark_crystal + "#を供えて、我の問いに答える準備はできているか？");
+                return true;
+            }
+            case 1 -> {
+                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_wisdom, 1, "")) {
+                    // 翻訳
+                    say("ETCインベントリがいっぱいだ…空きを作らなければ試験は受けられない。整理してから、もう一度挑むがよい…");
+                    return false;
+                }
+                if (checkItem(this.item_necklace_of_wisdom)) {
+                    // 翻訳
+                    say("そなたはすでに#b#t" + this.item_necklace_of_wisdom + "##kを持っている…\r\nそのネックレスを持って戻るがよい…");
+                    return false;
+                }
+                if (!checkItem(this.item_dark_crystal)) {
+                    // 翻訳
+                    say("そなたの知恵を試したければ、#b#t" + this.item_dark_crystal + "##kを捧げ物として供えなければならない。");
+                    return false;
+                }
+                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_dark_crystal, 1, true, false);
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("よかろう。これから汝の知恵をテストしよう。全ての質問に正しい答えを選ぶと合格だ。ただし途中で1つでも間違うと最初からやり直さねばならん。では始めるぞ。");
                 say(nt, false, true);
                 return true;
             }
-            case 1, 2, 3, 4, 5 -> {
+            case 2, 3, 4, 5, 6 -> {
                 int question_num = (int) (Math.random() * this.questions.length);
                 NpcScriptTag nt = new NpcScriptTag();
-                nt.add(status + "つ目の問題だ。" + this.questions[question_num]);
+                nt.add((status - 1) + "つ目の問題だ。" + this.questions[question_num]);
                 for (int i = 0; i < this.choices[question_num].length; i++) {
                     nt.addMenu(i, this.choices[question_num][i]);
                 }
@@ -165,12 +197,12 @@ public class NpcHolyStone extends NpcScriptMan {
                 askMenu(nt);
                 return true;
             }
-            case 6 -> {
+            case 7 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("汝の答えに嘘がないのを認めよう。");
                 nt.add("これで汝の知恵も証明された。");
                 nt.add("このネックレスを持って帰るがいい。");
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_wisdom, 1); // TODO : item effect.
+                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_wisdom, (short) 1); // TODO : item effect.
                 say(nt);
                 return false;
             }
