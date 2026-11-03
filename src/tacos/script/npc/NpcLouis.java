@@ -29,6 +29,11 @@ public class NpcLouis extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("全部最初からやり直さなきゃいけないなんて、ひどいだろう？挑戦し続けるんだな…探索すればするほど、ここのことがよくわかるようになる。そのうち目をつぶってでも歩けるようになるさ、へへ。");
+                return false;
+            }
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("外へ出たいのか？　辛いのか…このくらいであきらめるなよ。一度ここから出ると、初めからやり直しだということは覚悟しているな。どうだ、出るのか？");
@@ -36,7 +41,7 @@ public class NpcLouis extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                warp(this.map_ellinia); // TODO : portal name.
+                warp(this.map_ellinia);
                 return false;
             }
             default -> {

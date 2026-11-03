@@ -28,21 +28,33 @@ import odin.server.MapleInventoryManipulator;
 public class NpcThirdEosRock extends NpcScriptMan {
 
     private final int item_eos_rock = 4001020; // エオス石の書
+    private final int[] npc_ids = {
+        2040025,
+        2040027
+    };
     private final int[] map_ids = {
         221022900, // ルディブリアム : エオス塔71階
         221020000 // ルディブリアム : エオス塔1階
     };
-    // 元のスクリプトは階数が (100階), (41階) になっていた
+    private final int[] floors = {
+        71,
+        1
+    };
     private final String[] rock_names = {
         "二番目のエオス石(71階)",
         "四番目のエオス石(1階)"
     };
+    private int to_index = -1;
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : エオス石の書を持っていない場合の文章
+                if (!checkItem(this.item_eos_rock)) {
+                    // 翻訳
+                    say("#b#p" + this.npc_ids[0] + "#か#p" + this.npc_ids[1] + "##kへテレポートできる石がありますが、書がないと起動できません。");
+                    return false;
+                }
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("#bエオス石の書#kを使って#b三番目のエオス石#kを活性化できます。どの石へ移動しますか？");
                 for (int i = 0; i < this.map_ids.length; i++) {
@@ -55,11 +67,19 @@ public class NpcThirdEosRock extends NpcScriptMan {
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
+                this.to_index = answer;
+                // 翻訳
+                askYesNo("#b#t" + this.item_eos_rock + "##kを使って#b#p2040026##kを起動できます。#b#p" + this.npc_ids[this.to_index] + "##k（" + this.floors[this.to_index] + "階）へテレポートしますか？");
+                return true;
+            }
+            case 2 -> {
                 if (!checkItem(this.item_eos_rock)) {
+                    // 翻訳
+                    say("#b#t" + this.item_eos_rock + "##kがないと#b#p2040026##kを起動できません。");
                     return false;
                 }
                 MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_eos_rock, 1, true, false);
-                warp(this.map_ids[answer]); // TODO : portal 3 (エオス塔71階), portal 4 (エオス塔1階)
+                warp(this.map_ids[this.to_index], "go00");
                 return false;
             }
             default -> {

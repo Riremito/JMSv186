@@ -39,7 +39,7 @@ public class NpcMongFromKong extends NpcScriptMan {
             case 1 -> {
                 // TODO : ネットカフェから接続しているかの確認 (item_internet_cafe)
                 // あれ、君はネットカフェから接続してないみたいだね?もし、そうなら中には絶対入れないよ…。
-                warp(this.map_internet_cafe); // TODO : portal name.
+                warp(this.map_internet_cafe);
                 return false;
             }
             case -1 -> {

@@ -41,6 +41,8 @@ public class NpcSpinel extends NpcScriptMan {
         "宋山里(中国)"
     };
     private final int default_return_map_id = 100000000; // ヘネシス : ヘネシス
+    // 初心者は 1/10
+    private final int cost = 3000;
     private boolean traveling = false;
     private int return_map_id = 0;
 
@@ -75,6 +77,7 @@ public class NpcSpinel extends NpcScriptMan {
             }
             case 1 -> {
                 if (this.traveling && answer == this.map_ids.length) {
+                    getPlayer().clearSavedLocation(SavedLocationType.WORLDTOUR);
                     warp(this.return_map_id);
                     return false;
                 }
@@ -82,6 +85,11 @@ public class NpcSpinel extends NpcScriptMan {
                     return false;
                 }
                 if (!this.traveling) {
+                    if (!payMoney(getPlayer().getJob() == 0 ? this.cost / 10 : this.cost)) {
+                        // 翻訳
+                        say("旅費に十分なメルをお持ちか確認してください。");
+                        return false;
+                    }
                     getPlayer().saveLocation(SavedLocationType.WORLDTOUR);
                 }
                 warp(this.map_ids[answer]);

@@ -26,24 +26,49 @@ import odin.server.maps.SavedLocationType;
  */
 public class NpcPison extends NpcScriptMan {
 
+    private final int map_florina_beach = 110000000; // フロリナ : ビーチ
+    private final int map_lith_harbor = 104000000; // ビクトリアアイランド : 港口
+    private final int MENU_RETURN = 0;
+    private boolean asked = false;
+
     @Override
     public boolean action(int status, int answer) {
+        // 記録したマップがない場合は港口へ戻す
         int map_id = getPlayer().getSavedLocation(SavedLocationType.FLORINA);
         if (map_id < 0) {
-            // TODO : 記録したマップがない場合の処理
-            return false;
+            map_id = this.map_lith_harbor;
         }
         switch (status) {
             case 0 -> {
-                // TODO : 文章が不明 (元のスクリプトの仮の文章)
+                if (this.asked) {
+                    // 翻訳
+                    say("ここで何か用事があるんだろう。#m" + map_id + "#で少し休んでいくのも悪くないさ。俺なんか、ここが気に入りすぎて住み着いちまいそうだよ。ははは…まあとにかく、戻りたくなったら話しかけてくれ。");
+                    return false;
+                }
+                // 翻訳
                 NpcScriptTag nt = new NpcScriptTag();
-                nt.add("#b#m" + map_id + "##kに戻りますか。");
-                say(nt, false, true);
+                nt.add("#b#m" + this.map_florina_beach + "##kから出たいのかい？それなら、#b#m" + map_id + "##kまで送ってあげるよ。");
+                nt.add("");
+                nt.addMenu(MENU_RETURN, "今すぐ戻りたい。");
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
-                // TODO : 記録したマップの削除
-                warp(map_id); // TODO : portal name.
+                if (answer != MENU_RETURN) {
+                    return false;
+                }
+                this.asked = true;
+                // 翻訳
+                askYesNo("本当に#b#m" + map_id + "##kに戻るのかい？よし、急がないとな。今すぐ#m" + map_id + "#に戻るかい？");
+                return true;
+            }
+            case 2 -> {
+                getPlayer().clearSavedLocation(SavedLocationType.FLORINA);
+                if (map_id == this.map_lith_harbor) {
+                    warp(map_id, "set00");
+                    return false;
+                }
+                warp(map_id);
                 return false;
             }
             default -> {

@@ -142,6 +142,12 @@ public abstract class NpcScriptMan {
         say(nt);
     }
 
+    protected void say(String text, boolean prev, boolean next) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        say(nt, prev, next);
+    }
+
     protected void askYesNo(String text) {
         NpcScriptTag nt = new NpcScriptTag();
         nt.add(text);

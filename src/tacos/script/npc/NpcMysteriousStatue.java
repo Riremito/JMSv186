@@ -24,31 +24,52 @@ package tacos.script.npc;
  */
 public class NpcMysteriousStatue extends NpcScriptMan {
 
-    // 忍耐の森
-    private final int[] map_ids = {
-        105040310, // 隠れ道 : 忍耐の森「1段階」
-        105040311, // 隠れ道 : 忍耐の森「2段階」
-        105040312, // 隠れ道 : 忍耐の森「3段階」
-        105040313, // 隠れ道 : 忍耐の森「4段階」
-        105040314, // 隠れ道 : 忍耐の森「5段階」
-        105040315, // 隠れ道 : 忍耐の森「6段階」
-        105040316 // 隠れ道 : 忍耐の森「7段階」
+    // 後の段階のクエストから順に確認する
+    private final int[] quest_ids = {
+        2054, // 忍耐の森「5段階」, 「6段階」, 「7段階」
+        2053, // 忍耐の森「3段階」, 「4段階」
+        2052 // 忍耐の森「1段階」, 「2段階」
     };
+    private final int[] item_ids = {
+        4031028, // ホワイトビオラ
+        4031026, // ブルービオラ
+        4031025 // ピンクビオラ
+    };
+    private final int[] map_ids = {
+        105040314, // 隠れ道 : 忍耐の森「5段階」
+        105040312, // 隠れ道 : 忍耐の森「3段階」
+        105040310 // 隠れ道 : 忍耐の森「1段階」
+    };
+    private int to_map_id = -1;
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("像から手を離すと、何事もなかったかのように像は静かになった。");
+                return false;
+            }
             case 0 -> {
-                // TODO : クエスト (2052, 2053, 2054) の確認, 元のスクリプトはデバッグモードの選択肢で移動先を選択していた
-                // クエスト 2052 : 忍耐の森「1段階」, 「2段階」
-                // クエスト 2053 : 忍耐の森「3段階」, 「4段階」
-                // クエスト 2054 : 忍耐の森「5段階」, 「6段階」, 「7段階」
-                // クエスト中でない場合 : 石像に手を出してみても何も起こりませんでした。
-                askYesNo("石像に手を出してみると不思議な光に全身を包まれ、中に吸い込まれるような感覚に襲われました。このまま移動しますか？");
-                return true;
+                for (int i = 0; i < this.quest_ids.length; i++) {
+                    if (getPlayer().getQuestStatus(this.quest_ids[i]) == 0) {
+                        continue;
+                    }
+                    // 花を持っている場合は移動できない
+                    if (checkItem(this.item_ids[i])) {
+                        // 翻訳
+                        say("像に手を置いたが、何も起こらなかった。私が持っている#t" + this.item_ids[i] + "#のせいかもしれない。像の力を妨げているようだ。");
+                        return false;
+                    }
+                    this.to_map_id = this.map_ids[i];
+                    askYesNo("石像に手を出してみると不思議な光に全身を包まれ、中に吸い込まれるような感覚に襲われました。このまま移動しますか？");
+                    return true;
+                }
+                say("石像に手を出してみても何も起こりませんでした。");
+                return false;
             }
             case 1 -> {
-                warp(this.map_ids[0]); // TODO : portal name.
+                warp(this.to_map_id);
                 return false;
             }
             default -> {

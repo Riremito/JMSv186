@@ -29,12 +29,17 @@ public class NpcCrumblingStatue extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
+            case -1 -> {
+                // 翻訳
+                say("像から手を離すと、何事もなかったかのように像は静かになった。");
+                return false;
+            }
             case 0 -> {
                 askYesNo("石像に手を出してみると不思議な光に全身を包まれ、中に吸い込まれるような感覚に襲われました。このままスリーピーウッドに戻りますか？？");
                 return true;
             }
             case 1 -> {
-                warp(this.map_sleepywood); // TODO : portal name.
+                warp(this.map_sleepywood);
                 return false;
             }
             default -> {

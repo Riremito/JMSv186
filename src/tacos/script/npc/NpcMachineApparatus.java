@@ -36,7 +36,7 @@ public class NpcMachineApparatus extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                warp(this.map_clocktower); // TODO : portal name.
+                warp(this.map_clocktower, "st00");
                 return false;
             }
             default -> {

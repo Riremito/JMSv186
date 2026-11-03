@@ -18,6 +18,9 @@
  */
 package tacos.script.npc;
 
+import odin.client.inventory.MapleInventoryType;
+import odin.server.MapleInventoryManipulator;
+
 /**
  *
  * @author Riremito
@@ -29,6 +32,16 @@ public class NpcTheTicketGate extends NpcScriptMan {
     private static final int MENU_LINE_1 = 0;
     private static final int MENU_KERNING_SQUARE = 1;
     private static final int MENU_CONSTRUCTION_SITE = 2;
+    private final int[] item_tickets = {
+        4031036, // 工事場B1入場券
+        4031037, // 工事場B2入場券
+        4031038 // 工事場B3入場券
+    };
+    private final int[] map_construction_sites = {
+        103000900, // 3号線の工事場 : B1<1区域>
+        103000903, // 3号線の工事場 : B2<1区域>
+        103000906 // 3号線の工事場 : B3<1区域>
+    };
 
     @Override
     public boolean action(int status, int answer) {
@@ -52,11 +65,41 @@ public class NpcTheTicketGate extends NpcScriptMan {
                         warp(this.map_kerning_square, "out00");
                     }
                     case MENU_CONSTRUCTION_SITE -> {
-                        // TODO : 工事場 (103000900, 103000903, 103000906) への移動, 乗車券 (4031036, 4031037, 4031038) の確認と消費
+                        NpcScriptTag nt = new NpcScriptTag();
+                        boolean found = false;
+                        // 翻訳
+                        nt.add("これは改札機です。すぐに中へ入れます。どの切符を使いますか？");
+                        for (int i = 0; i < this.item_tickets.length; i++) {
+                            if (!checkItem(this.item_tickets[i])) {
+                                continue;
+                            }
+                            nt.addMenu(i, "#t" + this.item_tickets[i] + "#");
+                            found = true;
+                        }
+                        if (!found) {
+                            // 翻訳
+                            say("これは改札機です。切符がないと入場できません。");
+                            return false;
+                        }
+                        askMenu(nt);
+                        return true;
                     }
                     default -> {
                     }
                 }
+                return false;
+            }
+            case 2 -> {
+                if (answer < 0 || this.item_tickets.length <= answer) {
+                    return false;
+                }
+                if (!checkItem(this.item_tickets[answer])) {
+                    // 翻訳
+                    say("#b#t" + this.item_tickets[answer] + "##kを改札機に入れてください。");
+                    return false;
+                }
+                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_tickets[answer], 1, true, false);
+                warp(this.map_construction_sites[answer]);
                 return false;
             }
             default -> {

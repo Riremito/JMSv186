@@ -72,8 +72,12 @@ public class NpcHotelReceptionist extends NpcScriptMan {
                 return true;
             }
             case 3 -> {
-                // TODO : 料金の支払い (costs)
-                warp(this.map_ids[this.room_index]); // TODO : portal name.
+                if (!payMoney(this.costs[this.room_index])) {
+                    // 翻訳
+                    say("申し訳ありません。お金が足りないようです。当ホテルのご利用には最低" + this.costs[this.room_index] + "メルかかります。");
+                    return false;
+                }
+                warp(this.map_ids[this.room_index]);
                 return false;
             }
             default -> {

@@ -31,7 +31,7 @@ public class NpcKeroben extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : 変身状態の確認 (変身していなければ map_peak に追い出す), デバッグ用の選択肢の削除
+                // TODO : 変身状態の確認 (変身していれば変身を解除して map_cave_entrance に移動, 変身していなければHPを500減らして map_peak に追い出す), 変身状態を取得する処理がないためデバッグ用の選択肢を残している
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("人間じゃないか。俺がここを守っている限り、人間は一歩も入れないぞ。痛い目に会いたくなければ早く帰りな！");
                 nt.addMenuRed(0, getMapName(this.map_peak));
@@ -42,10 +42,10 @@ public class NpcKeroben extends NpcScriptMan {
             case 1 -> {
                 switch (answer) {
                     case 0 -> {
-                        warp(this.map_peak); // TODO : portal name. (st00?)
+                        warp(this.map_peak, "st00");
                     }
                     case 1 -> {
-                        warp(this.map_cave_entrance); // TODO : portal name.
+                        warp(this.map_cave_entrance, "st00");
                     }
                     default -> {
                     }

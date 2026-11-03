@@ -53,7 +53,7 @@ public class NpcKonpei extends NpcScriptMan {
                 return false;
             }
             case 2 -> {
-                warp(this.map_hideout); // TODO : portal name.
+                warp(this.map_hideout);
                 return false;
             }
             default -> {
