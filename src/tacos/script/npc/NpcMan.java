@@ -560,6 +560,11 @@ public class NpcMan {
                 // 200000201, オルビス : 整形外科
                 npc_script = new NpcRiza();
             }
+            case 2012012 -> {
+                // 2012012, リーサ
+                // 200000000, オルビス : オルビス
+                npc_script = new NpcLisa();
+            }
             case 2012013 -> {
                 // 2012013, スナ
                 // 200000121, ステーション<ルディブリアム行き>
@@ -740,6 +745,11 @@ public class NpcMan {
                 // 922000010, 人形の家
                 npc_script = new NpcMarkTheToySoldier();
             }
+            case 2040031 -> {
+                // 2040031, 文書束
+                // 220000304, ルディブリアム : クロイの家
+                npc_script = new NpcDocumentRoll();
+            }
             case 2040032 -> {
                 // 2040032, ウィーバー
                 // 220000006, ルディブリアム : ルディブリアムの散歩路
@@ -803,6 +813,36 @@ public class NpcMan {
                 // 220080001, 時計塔の深層部
                 npc_script = new NpcMachineApparatus();
             }
+            case 2050014 -> {
+                // 2050014, 隕石1
+                // 221040000, ルディブリアム : クーラン草原1
+                npc_script = new NpcMeteorite();
+            }
+            case 2050015 -> {
+                // 2050015, 隕石2
+                // 221040200, ルディブリアム : クーラン草原3
+                npc_script = new NpcMeteorite();
+            }
+            case 2050016 -> {
+                // 2050016, 隕石3
+                // 221040300, ルディブリアム : クーラン草原4
+                npc_script = new NpcMeteorite();
+            }
+            case 2050017 -> {
+                // 2050017, 隕石4
+                // 221040100, ルディブリアム : クーラン草原2
+                npc_script = new NpcMeteorite();
+            }
+            case 2050018 -> {
+                // 2050018, 隕石5
+                // 221040201, ルディブリアム : バーナードの草原
+                npc_script = new NpcMeteorite();
+            }
+            case 2050019 -> {
+                // 2050019, 隕石6
+                // 221040400, ルディブリアム : クーラン草原5
+                npc_script = new NpcMeteorite();
+            }
             case 2060005 -> {
                 // 2060005, ケンタ
                 npc_script = new NpcKenta();
@@ -857,6 +897,11 @@ public class NpcMan {
                 // 2082003, コルバ
                 // 240000110, ステーション<オルビス行き>
                 npc_script = new NpcCorba();
+            }
+            case 2083005 -> {
+                // 2083005, 生命の泉
+                // 240050400, リプレ : ホーンテイルの洞窟入口
+                npc_script = new NpcFountainOfLife();
             }
             case 2084000 -> {
                 // 2084000, ゴールドコンパス
@@ -1169,6 +1214,11 @@ public class NpcMan {
                 // 910340500, 첫번째동행<마지막관문>
                 // 910340501, 첫번째동행<마지막관문>
                 npc_script = new NpcCloto();
+            }
+            case 9060000 -> {
+                // 9060000, ケンタ
+                // 923010000, ケンタの飼育室
+                npc_script = new NpcKentaBreedingRoom();
             }
             case 9100100, 9100101, 9100102, 9100103, 9100104, 9100105, 9100106, 9100107, 9100108, 9100109, 9100110, 9100111, 9100113, 9100114, 9100115, 9100116, 9100117 -> {
                 // 9100100, ガシャポン
