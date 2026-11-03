@@ -468,7 +468,7 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+                setNpcOwner(npc);
             }
         }
         // hired merchant
@@ -547,6 +547,13 @@ public class TacosMap extends TacosMapData {
                 if (area_owner != null) {
                     area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
+            }
+        }
+        // npc
+        for (TacosNpc npc : this.npcs.values()) {
+            if (npc.getOwnerId() == chr.getId()) {
+                npc.setOwnerId(0);
+                setNpcOwner(npc);
             }
         }
 
@@ -628,10 +635,17 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+                setNpcOwner(npc);
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                // the client keeps a local npc until its control is released.
+                if (npc.getOwnerId() == chr.getId()) {
+                    removeNpcOwner(npc);
+                    chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                    setNpcOwner(npc);
+                } else {
+                    chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                }
             }
         }
         // hired merchant
@@ -1132,10 +1146,42 @@ public class TacosMap extends TacosMapData {
         }
         this.npcs.put(npc.getObjectId(), npc);
         broadcastPacket(ResCNpcPool.NpcEnterField(npc));
+        setNpcOwner(npc);
+    }
+
+    public boolean setNpcOwner(TacosNpc npc) {
+        if (npc.getOwnerId() != 0) {
+            return false;
+        }
+        int number = split.find(npc.getPosition());
+        if (split.getTotal() <= number) {
+            return false;
+        }
+        TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+        if (area_owner != null) {
+            npc.setOwnerId(area_owner.getId());
+            area_owner.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeNpcOwner(TacosNpc npc) {
+        if (npc.getOwnerId() == 0) {
+            return false;
+        }
+        TacosCharacter owner = getPlayerByOid(npc.getOwnerId());
+        npc.setOwnerId(0);
+        if (owner != null) {
+            owner.SendPacket(ResCNpcPool.NpcChangeController(npc, false));
+        }
+        return true;
     }
 
     public boolean removeNpc(TacosNpc npc) {
         this.npcs.remove(npc.getObjectId());
+        // the client does not remove a local npc by leave field only.
+        removeNpcOwner(npc);
         broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {

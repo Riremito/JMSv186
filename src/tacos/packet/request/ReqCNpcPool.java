@@ -54,6 +54,9 @@ public class ReqCNpcPool {
 
         switch (header) {
             case CP_NpcMove: {
+                if (npc.getOwnerId() != chr.getId()) {
+                    return true;
+                }
                 byte nChatIdx = cp.Decode1();
                 byte m_nOneTimeAction = cp.Decode1();
                 int unk = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
