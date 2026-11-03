@@ -145,6 +145,21 @@ public class NpcMan {
                 // 100000201, 弓使い学院
                 npc_script = new NpcAthenaPierce();
             }
+            case 1012103 -> {
+                // 1012103, ナタリー
+                // 100000104, ヘネシス : 美容院
+                npc_script = new NpcNatalie();
+            }
+            case 1012104 -> {
+                // 1012104, ブリトニー
+                // 100000104, ヘネシス : 美容院
+                npc_script = new NpcBrittany();
+            }
+            case 1012105 -> {
+                // 1012105, 私美女
+                // 100000105, ヘネシス : スキンケアーショップ
+                npc_script = new NpcMsTan();
+            }
             case 1013207 -> {
                 // 1013207, クン
                 // 200090080, 용이 잠든 섬으로
@@ -210,6 +225,16 @@ public class NpcMan {
                 // 103000003, 盗賊のアジト
                 npc_script = new NpcDarkLord();
             }
+            case 1052004 -> {
+                // 1052004, 院長デンマ
+                // 100000103, ヘネシス : 整形外科
+                npc_script = new NpcDenma();
+            }
+            case 1052005 -> {
+                // 1052005, 医者ヘッポコ
+                // 100000103, ヘネシス : 整形外科
+                npc_script = new NpcDrFeeble();
+            }
             case 1052006 -> {
                 // 1052006, ウンイ
                 // 103000100, 切符売り場
@@ -242,6 +267,16 @@ public class NpcMan {
                 // 1052013, パソコン
                 // 193000000, ネットカフェ
                 npc_script = new NpcComputer();
+            }
+            case 1052100 -> {
+                // 1052100, ドンジオバネ
+                // 103000005, カニングシティー : 美容院
+                npc_script = new NpcDonGiovanni();
+            }
+            case 1052101 -> {
+                // 1052101, アンドレア
+                // 103000005, カニングシティー : 美容院
+                npc_script = new NpcAndre();
             }
             case 1052115 -> {
                 // 1052115, 林次長
@@ -445,6 +480,16 @@ public class NpcMan {
                 // 200000000, オルビス
                 npc_script = new NpcStaffSergeantCharlie();
             }
+            case 2010001 -> {
+                // 2010001, ミノ
+                // 200000202, オルビス : オルビスヘアーショップ
+                npc_script = new NpcMino();
+            }
+            case 2010002 -> {
+                // 2010002, プランツ
+                // 200000201, オルビス : 整形外科
+                npc_script = new NpcFranz();
+            }
             case 2010005 -> {
                 // 2010005, ガイドシュリ
                 // 200000000, オルビス
@@ -479,6 +524,21 @@ public class NpcMan {
                 // 2012006, イス
                 // 200000100, オルビスチケット売場
                 npc_script = new NpcIsaTheStationGuide();
+            }
+            case 2012007 -> {
+                // 2012007, リンス
+                // 200000202, オルビス : オルビスヘアーショップ
+                npc_script = new NpcRinz();
+            }
+            case 2012008 -> {
+                // 2012008, ロミ
+                // 200000203, オルビス : オルビススキンケアショップ
+                npc_script = new NpcRomi();
+            }
+            case 2012009 -> {
+                // 2012009, 助手リーザ
+                // 200000201, オルビス : 整形外科
+                npc_script = new NpcRiza();
             }
             case 2012013 -> {
                 // 2012013, スナ
@@ -592,6 +652,11 @@ public class NpcMan {
                 // 2040014, チコ
                 npc_script = new NpcChico();
             }
+            case 2040019 -> {
+                // 2040019, エバー
+                // 220000003, ルディブリアム : 整形外科
+                npc_script = new NpcEverton();
+            }
             case 2040024 -> {
                 // 2040024, 一番目のエオス石
                 // 221024400, エオス塔100階
@@ -638,6 +703,26 @@ public class NpcMan {
                 // 220000110, ステーション<オルビス行き>
                 npc_script = new NpcTian();
             }
+            case 2041007 -> {
+                // 2041007, ミユ
+                // 220000004, ルディブリアム : 美容院
+                npc_script = new NpcMiyu();
+            }
+            case 2041009 -> {
+                // 2041009, ミニ
+                // 220000004, ルディブリアム : 美容院
+                npc_script = new NpcMini();
+            }
+            case 2041010 -> {
+                // 2041010, エル
+                // 220000003, ルディブリアム : 整形外科
+                npc_script = new NpcEllie();
+            }
+            case 2041013 -> {
+                // 2041013, ジナ
+                // 220000005, ルディブリアム : スキンケアーショップ
+                npc_script = new NpcGina();
+            }
             case 2041025 -> {
                 // 2041025, 機械装置
                 // 220080001, 時計塔の深層部
@@ -683,6 +768,31 @@ public class NpcMan {
                 // 250000100, 武陵神社
                 // 251000000, 白草村
                 npc_script = new NpcCrane();
+            }
+            case 2090100 -> {
+                // 2090100, ルオさん
+                // 250000003, 武陵 : 武陵美容室
+                npc_script = new NpcGrandpaLuo();
+            }
+            case 2090101 -> {
+                // 2090101, リシュ
+                // 250000003, 武陵 : 武陵美容室
+                npc_script = new NpcLilishu();
+            }
+            case 2090102 -> {
+                // 2090102, ナラン
+                // 250000000, 武陵 : 武陵
+                npc_script = new NpcNaran();
+            }
+            case 2090103 -> {
+                // 2090103, パター
+                // 250000000, 武陵 : 武陵
+                npc_script = new NpcPata();
+            }
+            case 2090104 -> {
+                // 2090104, ノマン
+                // 250000000, 武陵 : 武陵
+                npc_script = new NpcNoma();
             }
             case 2091005 -> {
                 // 2091005, 素公パンダ
@@ -1062,6 +1172,26 @@ public class NpcMan {
                 // 9120040, ポニチャル
                 npc_script = new NpcPonicharu();
             }
+            case 9120100 -> {
+                // 9120100, 美容師テッペイ
+                // 801000001, ジパング : 美容院
+                npc_script = new NpcTepei();
+            }
+            case 9120101 -> {
+                // 9120101, 助手みどり
+                // 801000001, ジパング : 美容院
+                npc_script = new NpcMidori();
+            }
+            case 9120102 -> {
+                // 9120102, ヒゲクロ先生
+                // 801000002, ジパング : 整形外科
+                npc_script = new NpcHikekuro();
+            }
+            case 9120103 -> {
+                // 9120103, 助手サエコ
+                // 801000002, ジパング : 整形外科
+                npc_script = new NpcSaeko();
+            }
             case 9120105 -> {
                 // 9120105, キャサリン
                 // 100000000, ヘネシス
@@ -1095,6 +1225,26 @@ public class NpcMan {
                 // 9120201, コンペイ
                 // 801040004, 武器庫
                 npc_script = new NpcKonpeiBodyguard();
+            }
+            case 9201015 -> {
+                // 9201015, ジュリアス
+                // 680000002, ウェディングタウン : 美容院
+                npc_script = new NpcJulius();
+            }
+            case 9201016 -> {
+                // 9201016, シェイマス
+                // 680000002, ウェディングタウン : 美容院
+                npc_script = new NpcSeamus();
+            }
+            case 9201018 -> {
+                // 9201018, アルバーツ
+                // 680000003, ウェディングタウン : 整形外科
+                npc_script = new NpcAlberts();
+            }
+            case 9201019 -> {
+                // 9201019, シャキ
+                // 680000003, ウェディングタウン : 整形外科
+                npc_script = new NpcShaki();
             }
             case 9201051 -> {
                 // 9201051, ジョン・バリケード
