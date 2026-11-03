@@ -160,7 +160,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                if (!OnUserMigrateToCashShopRequest(client, chr)) {
+                if (!OnUserMigrateToCashShopRequest(chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
                 }
                 return true;
@@ -827,7 +827,7 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(TacosClient client, TacosCharacter chr) {
+    public static boolean OnUserMigrateToCashShopRequest(TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;

@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import tacos.packet.request.ReqCUser;
+
 /**
  *
  * @author Riremito
@@ -34,7 +36,7 @@ public class NpcPachinkoBallExchanger extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                getPlayer().EnterPointShop();
+                ReqCUser.OnUserMigrateToCashShopRequest(getPlayer());
                 return false;
             }
             case -1 -> {

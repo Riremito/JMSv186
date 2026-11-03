@@ -30,6 +30,7 @@ public class NpcPracticeChart extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
+                // TODO : マクロ対策モンスターの弱体化 (デバフ付与)
                 // マクロ探知モンスター
                 getPlayer().getMap().killMonster(this.mob_macro_detector);
                 say("練習日誌を書く練習記録表である。真面目に練習日誌を書いた修練生のみ仙人人形の怒りを静めることができるという。");

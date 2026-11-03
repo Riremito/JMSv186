@@ -30,7 +30,7 @@ public class NpcCaptainAl extends NpcScriptMan {
             case 0 -> {
                 // TODO : ファミリーガイド, 文章
                 NpcScriptTag nt = new NpcScriptTag();
-                nt.add("テキスト不足");
+                nt.add("");
                 say(nt);
                 return false;
             }

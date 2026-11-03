@@ -87,7 +87,6 @@ import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsTransferField;
-import tacos.packet.request.ReqCUser;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
@@ -1782,12 +1781,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setConversation(int conv_state) {
         this.conv_state = conv_state;
-    }
-
-    // script.
-    public boolean EnterPointShop() {
-        ReqCUser.OnUserMigrateToCashShopRequest(client, (TacosCharacter) this);
-        return true;
     }
 
     // update task.

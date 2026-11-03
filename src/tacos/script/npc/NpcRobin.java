@@ -29,9 +29,8 @@ public class NpcRobin extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 // TODO : 当時の会話の文章が不明 (元のスクリプトの仮の文章)
-                // 原文ママ
                 NpcScriptTag nt = new NpcScriptTag();
-                nt.add("当時のNPC会話のメッセージ募集中");
+                nt.add("");
                 say(nt);
                 return false;
             }

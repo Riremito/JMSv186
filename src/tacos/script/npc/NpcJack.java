@@ -32,7 +32,6 @@ public class NpcJack extends NpcScriptMan {
     private static final int MENU_HARD = 1;
     private static final int MENU_SOLO = 2;
     private static final int MENU_GROUP = 3;
-    private static final int MENU_FREE_MARKET = 4;
 
     @Override
     public boolean action(int status, int answer) {
@@ -45,7 +44,6 @@ public class NpcJack extends NpcScriptMan {
                 nt.addMenu(MENU_HARD, "ダンジョン入場（難易度：ハード・遠征隊用）");
                 nt.addMenu(MENU_SOLO, "ボスモンスター対戦（ソロ）");
                 nt.addMenu(MENU_GROUP, "ボスモンスター対戦（グループ）");
-                nt.addMenu(MENU_FREE_MARKET, "フリマ入口へ");
                 askMenu(nt);
                 return true;
             }
@@ -56,10 +54,6 @@ public class NpcJack extends NpcScriptMan {
                         nt.add("クリムゾンウッドの聖地に眠る敵と一人で戦ってみるか？");
                         askYesNo(nt);
                         return true;
-                    }
-                    case MENU_FREE_MARKET -> {
-                        warp(this.map_free_market_entrance, "out00");
-                        return false;
                     }
                     default -> {
                         // TODO : ダンジョン入場 (ノーマル, ハード), ボスモンスター対戦 (グループ)

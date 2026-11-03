@@ -30,6 +30,7 @@ public class NpcIncompleteMagicSquare extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
+                // TODO : 弱体化
                 getPlayer().getMap().killMonster(this.mob_dito_and_roi);
                 say("幾何学な模様が描かれている魔方陣だ。完成には至っていないようだが…。");
                 return false;
