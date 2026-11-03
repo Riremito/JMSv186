@@ -28,30 +28,18 @@ public class NpcCamel extends NpcScriptMan {
 
     private final int cost = 1500;
 
-    private boolean payMoney(TacosCharacter chr, int cost) {
-        return chr.gainMeso(-cost, true, false, true);
-    }
-
-    private String getMapName(int map_id) {
-        return "#m" + map_id + "#";
-    }
-
-    private String getNpcName(int npc_id) {
-        return "#p" + npc_id + "#";
-    }
-
     @Override
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (chr.getMap().getId() == 260020000) {
-                    nt.add("#b" + getNpcName(getNpcId()) + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
+                    nt.add("#b" + getNpcName() + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 } else {
                     // TODO : 文章
-                    nt.add("#b" + getNpcName(getNpcId()) + "#kに乗って#b" + getMapName(260000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
+                    nt.add("#b" + getNpcName() + "#kに乗って#b" + getMapName(260000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 }
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
@@ -62,10 +50,10 @@ public class NpcCamel extends NpcScriptMan {
                 }
                 if (chr.getMapId() == 260020000) {
                     // 260020000 -> マガティア
-                    chr.changeMapById(261000000); // TODO : portal name.
+                    warp(chr, 261000000); // TODO : portal name.
                 } else {
                     // 260020700 -> アリアント
-                    chr.changeMapById(260000000); // TODO : portal name.
+                    warp(chr, 260000000); // TODO : portal name.
                 }
                 return false;
             }

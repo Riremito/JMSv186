@@ -33,17 +33,17 @@ public class NpcPalakeen extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 // TODO : 文章
                 nt.add("");
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (chr.getMapId() == 800000000) {
                     // キノコ神社 -> 楓城 天下泰平
-                    chr.changeMapById(800040000); // TODO : portal name.
+                    warp(chr, 800040000); // TODO : portal name.
                 } else {
                     // 楓城 天下泰平 -> キノコ神社
-                    chr.changeMapById(800000000); // TODO : portal name.
+                    warp(chr, 800000000); // TODO : portal name.
                 }
                 return false;
             }

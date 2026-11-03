@@ -68,7 +68,7 @@ public class NpcCrystal extends NpcScriptMan {
                 for (int i = 0; i < this.map_ids.length; i++) {
                     nt.addMenu(i, this.map_names[i]);
                 }
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
@@ -79,7 +79,7 @@ public class NpcCrystal extends NpcScriptMan {
                 if (!chr.haveItem(this.item_toad_wallet)) {
                     MapleInventoryManipulator.addById(chr, this.item_toad_wallet, 1); // TODO : item effect.
                 }
-                chr.changeMapById(this.map_ids[answer], this.portal_names[answer]);
+                warp(chr, this.map_ids[answer], this.portal_names[answer]);
                 return false;
             }
             default -> {

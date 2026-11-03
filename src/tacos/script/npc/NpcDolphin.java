@@ -47,13 +47,13 @@ public class NpcDolphin extends NpcScriptMan {
                     nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
                     nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                    super.askMenu(chr, nt);
+                    askMenu(chr, nt);
                     return true;
                 }
                 if (chr.getMapId() == MAP_HERB_TOWN_PIER) {
                     nt.addMenu(MENU_AQUARIUM, "#m" + MAP_AQUARIUM + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                    super.askMenu(chr, nt);
+                    askMenu(chr, nt);
                     return true;
                 }
                 // デバッグモード
@@ -61,23 +61,23 @@ public class NpcDolphin extends NpcScriptMan {
                 nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
                 nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
                 nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
                 switch (answer) {
                     case MENU_AQUARIUM -> {
-                        chr.changeMapById(MAP_AQUARIUM, "market00");
+                        warp(chr, MAP_AQUARIUM, "market00");
                     }
                     case MENU_SHARP_CLIFF -> {
-                        chr.changeMapById(MAP_SHARP_CLIFF, "east00");
+                        warp(chr, MAP_SHARP_CLIFF, "east00");
                     }
                     case MENU_HERB_TOWN -> {
-                        chr.changeMapById(MAP_HERB_TOWN_PIER, "out00");
+                        warp(chr, MAP_HERB_TOWN_PIER, "out00");
                     }
                     case MENU_FOGGY_SEA -> {
                         chr.saveLocation(SavedLocationType.MULUNG_TC);
-                        chr.changeMapById(MAP_FOGGY_SEA, "sp");
+                        warp(chr, MAP_FOGGY_SEA, "sp");
                     }
                     default -> {
                     }

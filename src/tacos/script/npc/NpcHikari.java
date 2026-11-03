@@ -28,34 +28,30 @@ public class NpcHikari extends NpcScriptMan {
 
     private final int cost = 300;
 
-    private boolean payMoney(TacosCharacter chr, int cost) {
-        return chr.gainMeso(-cost, true, false, true);
-    }
-
     @Override
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("銭湯に入りたいですか？では、" + this.cost + "メルを払いなさい。");
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (!payMoney(chr, this.cost)) {
                     nt.add("入場料" + this.cost + "メルを持っているか確認してください。");
-                    super.say(chr, nt);
+                    say(chr, nt);
                     return false;
                 }
                 int target_map_id = chr.getGender() == 0 ? 801000100 : 801000200;
-                chr.changeMapById(target_map_id);
+                warp(chr, target_map_id);
                 return false;
             }
             case -1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("今度利用してください。");
-                super.say(chr, nt);
+                say(chr, nt);
                 return false;
             }
             default -> {

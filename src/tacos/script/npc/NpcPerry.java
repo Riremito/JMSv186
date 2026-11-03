@@ -28,10 +28,6 @@ public class NpcPerry extends NpcScriptMan {
 
     private final int cost = 1500;
 
-    private boolean payMoney(TacosCharacter chr, int cost) {
-        return chr.gainMeso(-cost, true, false, true);
-    }
-
     @Override
     public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
@@ -39,7 +35,7 @@ public class NpcPerry extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 // TODO : カニングシティ版の文章
                 nt.add("いらっしゃ～～いッ！オラはここジパングとビクトリアアイランドとを往復するペリカンさ、運賃さえ払ってくれればビクトリアアイランドまでひとっ飛びで行くよ。運賃（片道）" + this.cost + "メル払うかい？");
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
@@ -50,10 +46,10 @@ public class NpcPerry extends NpcScriptMan {
                 }
                 if (chr.getMapId() == 800000000) {
                     // キノコ神社 -> カニングシティ
-                    chr.changeMapById(103000000, "gm02");
+                    warp(chr, 103000000, "gm02");
                 } else {
                     // カニングシティ -> キノコ神社
-                    chr.changeMapById(800000000, "st00");
+                    warp(chr, 800000000, "st00");
                 }
                 return false;
             }

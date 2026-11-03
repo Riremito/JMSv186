@@ -46,40 +46,40 @@ public class NpcCrane extends NpcScriptMan {
                     nt.add("メッセージ準備中");
                     nt.addMenu(MENU_ORBIS_TICKETING, "#m" + MAP_ORBIS_TICKETING + "#に行く。");
                     nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
-                    super.askMenu(chr, nt);
+                    askMenu(chr, nt);
                     return true;
                 }
                 if (map_id == MAP_HERB_TOWN) {
                     // TODO : Yes Noに修正, 500 メルの支払い
                     nt.add("良く来た！　我輩は#b#m" + MAP_MU_LUNG + "##kへ往復している孤高の鶴であーる！今#m" + MAP_MU_LUNG + "#に出発したいであーるか？#b500 メル#kでいいあーる。");
                     nt.addMenu(MENU_MU_LUNG_TEMPLE, "#m" + MAP_MU_LUNG_TEMPLE + "#に行く。");
-                    super.askMenu(chr, nt);
+                    askMenu(chr, nt);
                     return true;
                 }
                 if (map_id == MAP_ORBIS) {
                     // TODO : 1500 メルの支払い
                     nt.add("良く来た！　我輩は#b#m" + MAP_MU_LUNG + "##kへ往復している孤高の鶴であーる！今#m" + MAP_MU_LUNG + "#に出発したいであーるか？");
                     nt.addMenu(MENU_MU_LUNG_TEMPLE, "#m" + MAP_MU_LUNG + "#(1500 メル)");
-                    super.askMenu(chr, nt);
+                    askMenu(chr, nt);
                     return true;
                 }
                 // デバッグモード
                 nt.add("デバッグモード");
                 nt.addMenu(MENU_MU_LUNG_TEMPLE, "#m" + MAP_MU_LUNG + "#(1500 メル)");
                 nt.addMenu(MENU_MU_LUNG_TEMPLE, "#m" + MAP_MU_LUNG_TEMPLE + "#に行く。");
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
                 switch (answer) {
                     case MENU_ORBIS_TICKETING -> {
-                        chr.changeMapById(MAP_ORBIS_TICKETING); // TODO : portal name.
+                        warp(chr, MAP_ORBIS_TICKETING); // TODO : portal name.
                     }
                     case MENU_HERB_TOWN -> {
-                        chr.changeMapById(MAP_HERB_TOWN); // TODO : portal name.
+                        warp(chr, MAP_HERB_TOWN); // TODO : portal name.
                     }
                     case MENU_MU_LUNG_TEMPLE -> {
-                        chr.changeMapById(MAP_MU_LUNG_TEMPLE, "sp");
+                        warp(chr, MAP_MU_LUNG_TEMPLE, "sp");
                     }
                     default -> {
                     }

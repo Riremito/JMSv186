@@ -45,7 +45,7 @@ public class NpcPason extends NpcScriptMan {
                 nt.addMenu(0, "2000メル払う");
                 nt.addMenu(1, "フリーパスカードを持っている。");
                 nt.addMenu(2, "フリーパスカードとは？");
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
@@ -56,7 +56,7 @@ public class NpcPason extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 // 原文ママ
                 nt.add("#b2000メル#kを払ってビーチに行くんだな？でも、そこにもモンスターがいるらしいから油断するよ！では、早速出向準備をするが…今すぐビーチに行くのか？");
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 2 -> {
@@ -64,7 +64,7 @@ public class NpcPason extends NpcScriptMan {
                 if (chr.haveItem(this.item_free_pass)) {
                     MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, this.item_free_pass, 1, true, false); // TODO : item effect.
                     chr.saveLocation(SavedLocationType.FLORINA);
-                    chr.changeMapById(this.map_florina_beach); // TODO : portal name.
+                    warp(chr, this.map_florina_beach); // TODO : portal name.
                 }
                 return false;
             }

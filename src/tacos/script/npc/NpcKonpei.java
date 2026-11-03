@@ -37,25 +37,25 @@ public class NpcKonpei extends NpcScriptMan {
                 nt.addMenu(0, "アジトの説明を聞く。");
                 nt.addMenu(1, "アジトに連れて行ってくれ。");
                 nt.addMenu(2, "用はない。");
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (answer == 0) {
                     nt.add("オイラはアジトまで案内してやることができるぜ。しかしアジトはガラの悪い連中がウヨウヨいるからよ、力つけて腹くくってから行くことにしなぁ。アジトにはこの近辺の親分たちを取り仕切っている大親分がいる。アジトにはまあ簡単に行けるんだが、アジトの最上階にある部屋には1日1回しか行けねーぞ。大親分の部屋は恐ろしいところだ。あんまり長居しない方が良いから、短時間でケリつけてくれよ！あの大親分もただもんじゃねーが、大親分に会うまでにも腕っぷしの強いやつらがいるから、やっかいだぜ～。");
-                    super.say(chr, nt);
+                    say(chr, nt);
                     return false;
                 }
                 if (answer == 1) {
                     nt.add("おお、勇者よ待っていたぞ。このまま奴等を放置すれば取り返しがつかなくなる。その前にお前さんの力で、５階にいる大親分を懲らしめてくれ。くれぐれも油断はすんなよ。大親分は幾人もの猛者が敵わなかった兵だ。だが、お前さんの目を見ているとやってくれると確信が持てたぜ。さあ行くぞ。");
-                    super.say(chr, nt, false, true);
+                    say(chr, nt, false, true);
                     return true;
                 }
                 return false;
             }
             case 2 -> {
-                chr.changeMapById(this.map_hideout); // TODO : portal name.
+                warp(chr, this.map_hideout); // TODO : portal name.
                 return false;
             }
             default -> {

@@ -34,12 +34,12 @@ public class NpcVIPCab extends NpcScriptMan {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("初心者ではない方には決められた料金が請求されます。アリの巣広場はビクトリアアイランドの中央にあるダンジョンの奥の、24時間屋台が棲んでいるところです。#b10,000メル#kでアリの巣広場まで如何でしょうか？");
-                super.askYesNo(chr, nt);
+                askYesNo(chr, nt);
                 return true;
             }
             case 1 -> {
                 // TODO : 10000 メルの支払い
-                chr.changeMapById(this.map_ant_tunnel_park); // TODO : portal name.
+                warp(chr, this.map_ant_tunnel_park); // TODO : portal name.
                 return false;
             }
             default -> {

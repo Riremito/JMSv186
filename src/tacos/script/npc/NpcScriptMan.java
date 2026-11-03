@@ -152,4 +152,28 @@ public abstract class NpcScriptMan {
     protected void askAvatar(TacosCharacter chr, NpcScriptTag nt, ArrayList<Integer> ids) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
     }
+
+    protected String getMapName(int map_id) {
+        return "#m" + map_id + "#";
+    }
+
+    protected String getNpcName() {
+        return getNpcName(getNpcId());
+    }
+
+    protected String getNpcName(int npc_id) {
+        return "#p" + npc_id + "#";
+    }
+
+    protected boolean payMoney(TacosCharacter chr, int cost) {
+        return chr.gainMeso(-cost, true, false, true);
+    }
+
+    protected boolean warp(TacosCharacter chr, int map_id) {
+        return chr.changeMapById(map_id);
+    }
+
+    protected boolean warp(TacosCharacter chr, int map_id, String portal_name) {
+        return chr.changeMapById(map_id, portal_name);
+    }
 }

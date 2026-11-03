@@ -71,12 +71,12 @@ public class NpcSpinel extends NpcScriptMan {
                     nt.add("#b国内のキノコ神社を含め、中国の上海、台湾の西門町#kに続き、#bタイランドの水上市場#kへのコースが用意出来ています。各旅行地でも私が皆様の楽しい旅行のために頑張ります。では、どこから行ってみたいですか？");
                 }
                 nt.add(menu.get(), false);
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
                 if (this.traveling && answer == this.map_ids.length) {
-                    chr.changeMapById(this.return_map_id);
+                    warp(chr, this.return_map_id);
                     return false;
                 }
                 if (answer < 0 || this.map_ids.length <= answer) {
@@ -85,7 +85,7 @@ public class NpcSpinel extends NpcScriptMan {
                 if (!this.traveling) {
                     chr.saveLocation(SavedLocationType.WORLDTOUR);
                 }
-                chr.changeMapById(this.map_ids[answer]);
+                warp(chr, this.map_ids[answer]);
                 return false;
             }
             default -> {

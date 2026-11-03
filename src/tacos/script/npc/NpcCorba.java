@@ -40,7 +40,7 @@ public class NpcCorba extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("羽があればそこに行けるじゃろう。じゃが、それだけでは足りんのじゃ。剣より鋭い風の狭間を飛ぶためには、丈夫な鱗も必要なんじゃ。戻ってくる方法まで知っておる半獣族は、もうワシ一人しかおらん…もしあそこに行きたいんじゃったら、ワシが変身させてやろう。お前の今の姿が何であれ、今、この瞬間だけは　#bドラゴン#kになるのじゃ…。");
                 nt.addMenu(0, "ドラゴンに変身したいです。");
-                super.askMenu(chr, nt);
+                askMenu(chr, nt);
                 return true;
             }
             case 1 -> {
@@ -49,7 +49,7 @@ public class NpcCorba extends NpcScriptMan {
                 }
                 MapleItemInformationProvider.getInstance().getItemEffect(this.item_mini_dragon).applyTo(chr);
                 chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(this.item_mini_dragon).build()));
-                chr.changeMapById(this.map_dragon_flight); // TODO : portal name.
+                warp(chr, this.map_dragon_flight); // TODO : portal name.
                 return false;
             }
             default -> {
