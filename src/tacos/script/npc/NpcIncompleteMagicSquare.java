@@ -18,6 +18,11 @@
  */
 package tacos.script.npc;
 
+import odin.server.life.MobSkill;
+import tacos.packet.ops.OpsMobSkill;
+import tacos.server.map.object.TacosMonster;
+import tacos.wz.WzXML;
+
 /**
  *
  * @author Riremito
@@ -30,8 +35,12 @@ public class NpcIncompleteMagicSquare extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : 弱体化
-                getPlayer().getMap().killMonster(this.mob_dito_and_roi);
+                // マクロ対策モンスターの弱体化 (スキル封印)
+                TacosMonster mob = getPlayer().getMap().getMonsterById(this.mob_dito_and_roi);
+                MobSkill seal_skill = WzXML.SKILL.getMobSkillData(OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
+                if (mob != null && seal_skill != null) {
+                    seal_skill.applyEffect(null, mob, false);
+                }
                 say("幾何学な模様が描かれている魔方陣だ。完成には至っていないようだが…。");
                 return false;
             }
