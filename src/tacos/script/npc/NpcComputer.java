@@ -32,7 +32,8 @@ public class NpcComputer extends NpcScriptMan {
         197000000, // プラスストリート : 風テラス1
         196000000, // プラスストリート : 冷え冷えの坂
         880000000, // ワンワンマントル
-        881000000 // 死霊の集う海岸
+        881000000, // 死霊の集う海岸
+        260010100 // バーニングロード : サボテン砂漠1
     };
     private final String[] portal_names = {
         "out00",
@@ -42,7 +43,8 @@ public class NpcComputer extends NpcScriptMan {
         "west00",
         "out00",
         "out00",
-        "out00"
+        "out00",
+        "sp" // TODO : portal name. (out00 が存在しない)
     };
     private final String[] map_names = {
         "草原フィールド",
@@ -52,7 +54,8 @@ public class NpcComputer extends NpcScriptMan {
         "ルディブリアム",
         "エルナス",
         "ワンワンマントル",
-        "死霊の集う海岸"
+        "死霊の集う海岸",
+        "サボテンの砂漠"
     };
 
     @Override
@@ -64,7 +67,6 @@ public class NpcComputer extends NpcScriptMan {
                 for (int i = 0; i < this.map_ids.length; i++) {
                     nt.addMenu(i, this.map_names[i]);
                 }
-                // TODO : 260010100, サボテンの砂漠
                 askMenu(nt);
                 return true;
             }
