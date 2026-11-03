@@ -35,12 +35,18 @@ public class NpcDolphin extends NpcScriptMan {
     private static final int MENU_SHARP_CLIFF = 1;
     private static final int MENU_HERB_TOWN = 2;
     private static final int MENU_FOGGY_SEA = 3;
+    private final int cost = 10000;
+    private final int ticket = 4031242; // イルカタクシーチケット
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
+                // TODO :
+                // 世界の全ての海は繋がっています。歩いては遠いところでも海でいけば近くなるんです。#bイルカタクシー#kに乗って移動しますか。
+                // #bイルカタクシーチケット#kを使用して#m230030200#に移動する
+                // 10000 メルを払い、#m251000100#に移動する。
                 nt.add("世の中の全ての海は繋がっています。歩くと遠い所でも海ならすぐですよ。どうですか？#bイルカタクシー#kに乗って移動しますか？");
                 if (getMapId() == MAP_AQUARIUM) {
                     nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");

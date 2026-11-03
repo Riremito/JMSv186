@@ -28,6 +28,7 @@ public class NpcPason extends NpcScriptMan {
 
     private final int item_free_pass = 4031134; // フリーパスカード
     private final int map_florina_beach = 110000000; // フロリナ : ビーチ
+    private final int cost = 2000;
 
     @Override
     public boolean action(int status, int answer) {
@@ -42,22 +43,22 @@ public class NpcPason extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                // TODO : フリーパスカードを持っている, フリーパスカードとは？
                 if (answer != 0) {
+                    // not coded yet.
                     return false;
                 }
                 NpcScriptTag nt = new NpcScriptTag();
-                // 原文ママ
-                nt.add("#b2000メル#kを払ってビーチに行くんだな？でも、そこにもモンスターがいるらしいから油断するよ！では、早速出向準備をするが…今すぐビーチに行くのか？");
+                nt.add("#b" + this.cost + "メル#kを払ってビーチに行くんだな？でも、そこにもモンスターがいるらしいから油断するよ！では、早速出向準備をするが…今すぐビーチに行くのか？");
                 askYesNo(nt);
                 return true;
             }
             case 2 -> {
-                // TODO : 2000 メルの支払い
-                if (checkItem(this.item_free_pass)) {
-                    getPlayer().saveLocation(SavedLocationType.FLORINA);
-                    warp(this.map_florina_beach); // TODO : portal name.
+                if (!payMoney(this.cost)) {
+                    // not coded yet.
+                    return false;
                 }
+                getPlayer().saveLocation(SavedLocationType.FLORINA);
+                warp(this.map_florina_beach); // TODO : portal name.
                 return false;
             }
             default -> {
