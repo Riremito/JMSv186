@@ -57,7 +57,7 @@ public class PetNPC implements IPetEx {
         this.npc.setRx1(this.character.getPosition().x - 50);
         this.npc.setPosition(this.character.getPosition());
         this.npc.setFootholdId(this.character.getFootholdId());
-        this.character.getMap().addNPC(this.npc);
+        this.character.getMap().addNpc(this.npc);
         return true;
     }
 
@@ -67,7 +67,7 @@ public class PetNPC implements IPetEx {
             return false;
         }
 
-        this.character.getMap().removeNPC(this.npc);
+        this.character.getMap().removeNpc(this.npc);
         this.npc = null;
         return true;
     }

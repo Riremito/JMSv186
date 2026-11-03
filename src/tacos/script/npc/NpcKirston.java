@@ -32,16 +32,16 @@ public class NpcKirston extends NpcScriptMan {
         // ピンクビーン召喚
         switch (status) {
             case 0 -> {
-                // TODO : 本来は askAcceptDecline
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("女神の鏡さえあれば…もう一度暗黒の魔法使いを呼び出すことができる！　…");
                 nt.add("お、おかしい…どうして暗黒の魔法使いを呼び出さないんだ？　この気はなんだ？　暗黒の魔法使いとは全く違う…ウワアアアッ！");
                 nt.add("#b(キルストンの肩に手をかける)");
-                askYesNo(nt);
+                askAccept(nt);
                 return true;
             }
             case 1 -> {
-                // TODO : 神々の黄昏 (map_twilight) のキルストンの削除とリアクター (reactor_pink_bean) の起動
+                forceStartReactor(2709000);
+                removeNpc();
                 return false;
             }
             default -> {

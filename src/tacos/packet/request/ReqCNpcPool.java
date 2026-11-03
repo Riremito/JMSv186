@@ -47,7 +47,7 @@ public class ReqCNpcPool {
 
         int npc_oid = cp.Decode4();
 
-        TacosNpc npc = map.getNPCByOid(npc_oid);
+        TacosNpc npc = map.getNpcByOid(npc_oid);
         if (npc == null) {
             return false;
         }

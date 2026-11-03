@@ -132,7 +132,7 @@ public class TacosChannel extends TacosServer {
         for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
             TacosNpc npc = sp.regen(map);
             if (npc != null) {
-                map.addNPC(npc);
+                map.addNpc(npc);
             }
         }
         // reactor.

@@ -341,7 +341,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void removeNpc(int mapid, int npcId) {
-        getPlayer().findMap(mapid).removeNPCById(npcId);
+        getPlayer().findMap(mapid).removeNpcById(npcId);
     }
 
     public void forceStartReactor(int mapid, int id) {

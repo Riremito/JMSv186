@@ -32,16 +32,16 @@ public class NpcVonLeon extends NpcScriptMan {
         // ヴァンレオン召喚
         switch (status) {
             case 0 -> {
-                // TODO : 本来は askAcceptDecline
                 // 原文ママ (typo)
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("私を倒しに来た勇士たちか…暗黒の魔法使いたちを敵対する者か…どちらでも構わない。お互いの目的さえ明確であればこれ以上語る必要なないはずだ…");
                 nt.add("かかってこい。愚かな奴らよ…");
-                askYesNo(nt);
+                askAccept(nt);
                 return true;
             }
             case 1 -> {
-                // TODO : NPCの位置 (-183, -1) にヴァンレオン (mob_von_leon) を召喚, 謁見室 (map_audience_room) のNPCの削除
+                spawnBossMonster(8840010, 6, -183, -1);
+                removeNpc();
                 return false;
             }
             default -> {

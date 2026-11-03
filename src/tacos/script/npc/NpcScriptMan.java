@@ -18,12 +18,15 @@
  */
 package tacos.script.npc;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
+import tacos.server.map.object.TacosReactor;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -59,7 +62,9 @@ public abstract class NpcScriptMan {
             case SM_SAY:
             case SM_ASKYESNO:
             case SM_ASKMENU:
-            case SM_ASKAVATAR: {
+            case SM_ASKAVATAR:
+            case SM_ASKACCEPT:
+            case SM_ASKSLIDEMENU: {
                 if (action != -1) {
                     if (npc_script.action(npc_script.getStatus(), m_nSelect)) {
                         // continue
@@ -172,6 +177,14 @@ public abstract class NpcScriptMan {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
     }
 
+    protected void askAccept(NpcScriptTag nt) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKACCEPT, (byte) 0, nt.get(), false, false));
+    }
+
+    protected void askSlideMenu(NpcScriptTag nt) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, nt.get(), false, false));
+    }
+
     protected String getMapName(int map_id) {
         return "#m" + map_id + "#";
     }
@@ -194,6 +207,23 @@ public abstract class NpcScriptMan {
 
     protected boolean checkItem(int item_id) {
         return this.chr.haveItem(item_id);
+    }
+
+    protected boolean removeNpc() {
+        return this.chr.getMap().removeNpcById(getNpcId());
+    }
+
+    protected boolean forceStartReactor(int reactor_id) {
+        TacosReactor reactor = this.chr.getMap().getReactorById(reactor_id);
+        if (reactor == null) {
+            return false;
+        }
+        reactor.forceStartReactor(this.chr.getClient());
+        return true;
+    }
+
+    protected void spawnBossMonster(int id, int x, int y, int type) {
+        this.chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), new Point(x, y), type);
     }
 
     protected boolean warp(int map_id) {

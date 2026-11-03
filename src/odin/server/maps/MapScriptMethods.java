@@ -763,7 +763,7 @@ public class MapScriptMethods {
         TacosMap map = chr.getMap();
         map.resetFully();
 
-        if (!map.containsNPC(2141000)) {
+        if (!map.containsNpc(2141000)) {
             map.spawnNpc(2141000, new Point(-190, -42));
         }
     }

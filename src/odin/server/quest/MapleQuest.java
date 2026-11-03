@@ -204,7 +204,7 @@ public class MapleQuest {
     private boolean checkNPCOnMap(TacosCharacter player, int npcid) {
         //mir = 1013000
         TacosMap map = player.getMap();
-        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNPC(npcid));
+        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNpc(npcid));
     }
 
     public int getMedalItem() {

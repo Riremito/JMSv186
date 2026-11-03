@@ -1307,7 +1307,7 @@ public class ReqCUser {
 
         TacosClient client = chr.getClient();
         TacosMap map = chr.getMap();
-        TacosNpc npc = map.getNPCByOid(m_dwNpcId);
+        TacosNpc npc = map.getNpcByOid(m_dwNpcId);
         if (npc == null) {
             DebugLogger.ErrorLog("OnUserSelectNpc : npc");
             return false;

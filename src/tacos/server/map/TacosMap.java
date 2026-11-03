@@ -1126,7 +1126,7 @@ public class TacosMap extends TacosMapData {
     // npc.
     private LinkedHashMap<Integer, TacosNpc> npcs = new LinkedHashMap<>();
 
-    public void addNPC(TacosNpc npc) {
+    public void addNpc(TacosNpc npc) {
         if (npc.getObjectId() == 0) {
             npc.setObjectId();
         }
@@ -1134,7 +1134,7 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCNpcPool.NpcEnterField(npc));
     }
 
-    public boolean removeNPC(TacosNpc npc) {
+    public boolean removeNpc(TacosNpc npc) {
         this.npcs.remove(npc.getObjectId());
         broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
@@ -1151,7 +1151,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public List<TacosNpc> getAllNPCs() {
+    public List<TacosNpc> getAllNpcs() {
         ArrayList<TacosNpc> ret = new ArrayList<>();
         for (TacosNpc npc : this.npcs.values()) {
             ret.add(npc);
@@ -1159,7 +1159,7 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public boolean containsNPC(int npc_id) {
+    public boolean containsNpc(int npc_id) {
         for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return true;
@@ -1168,7 +1168,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public TacosNpc getNPCById(int npc_id) {
+    public TacosNpc getNpcById(int npc_id) {
         for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return npc;
@@ -1177,7 +1177,7 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public TacosNpc getNPCByOid(int object_id) {
+    public TacosNpc getNpcByOid(int object_id) {
         return this.npcs.get(object_id);
     }
 
@@ -1190,17 +1190,17 @@ public class TacosMap extends TacosMapData {
             npc.setRx0(pos.x + 50);
             npc.setRx1(pos.x - 50);
             npc.setFootholdId(findBelow(pos).getId());
-            addNPC(npc);
+            addNpc(npc);
         }
     }
 
-    public boolean removeNPCById(int npc_id) {
-        TacosNpc npc = getNPCById(npc_id);
+    public boolean removeNpcById(int npc_id) {
+        TacosNpc npc = getNpcById(npc_id);
         if (npc == null) {
             return false;
         }
 
-        removeNPC(npc);
+        removeNpc(npc);
         return true;
     }
 
@@ -1483,6 +1483,15 @@ public class TacosMap extends TacosMapData {
         return this.reactors.get(object_id);
     }
 
+    public TacosReactor getReactorById(int reactor_id) {
+        for (TacosReactor reactor : this.reactors.values()) {
+            if (reactor.getId() == reactor_id) {
+                return reactor;
+            }
+        }
+        return null;
+    }
+
     public TacosReactor getReactorByName(String name) {
         for (TacosReactor reactor : this.reactors.values()) {
             if (reactor.getName().equalsIgnoreCase(name)) {
@@ -1652,8 +1661,8 @@ public class TacosMap extends TacosMapData {
         for (TacosReactor reactor : getAllReactors()) {
             removeReactor(reactor);
         }
-        for (TacosNpc npc : getAllNPCs()) {
-            removeNPC(npc);
+        for (TacosNpc npc : getAllNpcs()) {
+            removeNpc(npc);
         }
         for (TacosDrop mmi : getAllDrops()) {
             removeDrop(mmi.getObjectId());

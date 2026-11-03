@@ -54,12 +54,11 @@ public class NpcDimensionalMirror extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : 本来は askMapSelection (#0#アリアント闘技場 の形式)
                 NpcScriptTag nt = new NpcScriptTag();
                 for (int i = 0; i < this.names.length; i++) {
-                    nt.addMenu(i, this.names[i]);
+                    nt.add("#" + i + "#" + this.names[i]);
                 }
-                askMenu(nt);
+                askSlideMenu(nt);
                 return true;
             }
             case 1 -> {

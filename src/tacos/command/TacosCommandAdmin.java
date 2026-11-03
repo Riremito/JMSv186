@@ -204,7 +204,7 @@ public class TacosCommandAdmin {
                     npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
                     npc.setFootholdId(chr.getFootholdId());
 
-                    map.addNPC(npc);
+                    map.addNpc(npc);
                     chr.DebugMsg("npc : " + npc_id);
                 }
                 return true;
@@ -218,7 +218,7 @@ public class TacosCommandAdmin {
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getMoveAction());
                 pnpc.setFootholdId(chr.getFootholdId());
 
-                map.addNPC(pnpc);
+                map.addNpc(pnpc);
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
                 return true;
