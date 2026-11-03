@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -74,10 +72,7 @@ public class NpcCrystal extends NpcScriptMan {
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
-                // debug
-                if (!getPlayer().haveItem(this.item_toad_wallet)) {
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_toad_wallet, 1); // TODO : item effect.
-                }
+                // TODO : クエストまたはアイテムの確認
                 warp(this.map_ids[answer], this.portal_names[answer]);
                 return false;
             }

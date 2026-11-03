@@ -38,7 +38,7 @@ public class NpcCrane extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                int map_id = getPlayer().getMapId();
+                int map_id = getMapId();
                 if (map_id == MAP_MU_LUNG_TEMPLE) {
                     // TODO : 文章
                     nt.add("メッセージ準備中");

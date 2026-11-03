@@ -131,8 +131,16 @@ public abstract class NpcScriptMan {
         return true;
     }
 
-    protected void askMenu(NpcScriptTag nt) {
-        askMenu(nt, false, false);
+    protected void say(String text) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        say(nt);
+    }
+
+    protected void askYesNo(String text) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        askYesNo(nt);
     }
 
     protected void say(NpcScriptTag nt) {
@@ -150,6 +158,10 @@ public abstract class NpcScriptMan {
 
     protected void askYesNo(NpcScriptTag nt) {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
+    }
+
+    protected void askMenu(NpcScriptTag nt) {
+        askMenu(nt, false, false);
     }
 
     protected void askMenu(NpcScriptTag nt, boolean prev, boolean next) {
@@ -174,6 +186,14 @@ public abstract class NpcScriptMan {
 
     protected boolean payMoney(int cost) {
         return this.chr.gainMeso(-cost, true, false, true);
+    }
+
+    protected int getMapId() {
+        return this.chr.getMap().getId();
+    }
+
+    protected boolean checkItem(int item_id) {
+        return this.chr.haveItem(item_id);
     }
 
     protected boolean warp(int map_id) {

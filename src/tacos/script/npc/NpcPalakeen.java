@@ -29,14 +29,12 @@ public class NpcPalakeen extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                // TODO : 文章
                 nt.add("");
                 askYesNo(nt);
                 return true;
             }
             case 1 -> {
-                NpcScriptTag nt = new NpcScriptTag();
-                if (getPlayer().getMapId() == 800000000) {
+                if (getMapId() == 800000000) {
                     // キノコ神社 -> 楓城 天下泰平
                     warp(800040000); // TODO : portal name.
                 } else {

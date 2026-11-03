@@ -42,25 +42,16 @@ public class NpcDolphin extends NpcScriptMan {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("世の中の全ての海は繋がっています。歩くと遠い所でも海ならすぐですよ。どうですか？#bイルカタクシー#kに乗って移動しますか？");
-                if (getPlayer().getMapId() == MAP_AQUARIUM) {
+                if (getMapId() == MAP_AQUARIUM) {
                     nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
                     nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
                     askMenu(nt);
-                    return true;
-                }
-                if (getPlayer().getMapId() == MAP_HERB_TOWN_PIER) {
+                } else {
                     nt.addMenu(MENU_AQUARIUM, "#m" + MAP_AQUARIUM + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
                     askMenu(nt);
-                    return true;
                 }
-                // デバッグモード
-                nt.addMenu(MENU_AQUARIUM, "#m" + MAP_AQUARIUM + "#に行く。");
-                nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
-                nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
-                nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                askMenu(nt);
                 return true;
             }
             case 1 -> {

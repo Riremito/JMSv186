@@ -51,7 +51,7 @@ public class NpcSpinel extends NpcScriptMan {
                 NpcScriptTag menu = new NpcScriptTag();
                 for (int i = 0; i < this.map_ids.length; i++) {
                     // 現在のマップはスキップ
-                    if (getPlayer().getMapId() == this.map_ids[i]) {
+                    if (getMapId() == this.map_ids[i]) {
                         this.traveling = true;
                         continue;
                     }

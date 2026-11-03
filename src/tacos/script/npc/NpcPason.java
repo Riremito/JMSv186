@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.maps.SavedLocationType;
 
 /**
@@ -35,10 +33,6 @@ public class NpcPason extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // デバッグモード
-                if (!getPlayer().haveItem(this.item_free_pass)) {
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_free_pass, 1); // TODO : item effect.
-                }
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("港口から少し離れたところに#bビーチ#kという幻想的な海岸があると聞いたことはあるか？#b2000メル#kを払うか#bフリーパスカード#kを持っているなら、いつでも俺がそこに運んでやるぜ。");
                 nt.addMenu(0, "2000メル払う");
@@ -60,8 +54,7 @@ public class NpcPason extends NpcScriptMan {
             }
             case 2 -> {
                 // TODO : 2000 メルの支払い
-                if (getPlayer().haveItem(this.item_free_pass)) {
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_free_pass, 1, true, false); // TODO : item effect.
+                if (checkItem(this.item_free_pass)) {
                     getPlayer().saveLocation(SavedLocationType.FLORINA);
                     warp(this.map_florina_beach); // TODO : portal name.
                 }

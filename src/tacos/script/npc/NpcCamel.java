@@ -31,7 +31,7 @@ public class NpcCamel extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (getPlayer().getMap().getId() == 260020000) {
+                if (getMapId() == 260020000) {
                     nt.add("#b" + getNpcName() + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 } else {
                     // TODO : 文章
@@ -41,17 +41,16 @@ public class NpcCamel extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                NpcScriptTag nt = new NpcScriptTag();
                 if (!payMoney(this.cost)) {
                     // not coded yet.
                     return false;
                 }
-                if (getPlayer().getMapId() == 260020000) {
+                if (getMapId() == 260020000) {
                     // 260020000 -> マガティア
-                    warp(261000000); // TODO : portal name.
+                    warp(261000000);
                 } else {
                     // 260020700 -> アリアント
-                    warp(260000000); // TODO : portal name.
+                    warp(260000000);
                 }
                 return false;
             }
