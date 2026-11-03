@@ -19,7 +19,6 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import tacos.client.TacosCharacter;
 import tacos.script.npc.NpcScriptTag;
 
 /**
@@ -46,10 +45,10 @@ public class DebugMan_Warp extends DebugNpcScriptMan {
     }
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
-                super.askMenu(chr, this.nt_first);
+                askMenu(this.nt_first);
                 return true;
             }
             case 1: {
@@ -57,13 +56,13 @@ public class DebugMan_Warp extends DebugNpcScriptMan {
                 if (0 <= answer && answer < this.selection_list.size()) {
                     nt.add("go to " + this.selection_list.get(answer) + " : #m" + this.selection_list.get(answer) + "#");
                     this.target_map_id = this.selection_list.get(answer);
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                chr.changeMapById(this.target_map_id);
+                getPlayer().changeMapById(this.target_map_id);
                 return false;
             }
             default: {

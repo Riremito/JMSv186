@@ -20,7 +20,6 @@ package tacos.debug;
 
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
-import tacos.client.TacosCharacter;
 import tacos.script.npc.NpcScriptTag;
 import tacos.wz.EtcWz.MakerItemInfo;
 import tacos.wz.EtcWz.MakerRecipe;
@@ -65,14 +64,14 @@ public class DebugMan_Maker extends DebugNpcScriptMan {
     private ArrayList<Integer> maker_items;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 for (MakerType mt : MakerType.values()) {
                     nt.addMenu(mt.ordinal(), mt.name());
                 }
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
@@ -90,7 +89,7 @@ public class DebugMan_Maker extends DebugNpcScriptMan {
                 for (Integer item_id : this.maker_items) {
                     nt.addMenu(index++, String.format("%d : #z%d#", item_id, item_id));
                 }
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 2 -> {
@@ -100,48 +99,48 @@ public class DebugMan_Maker extends DebugNpcScriptMan {
                 int maker_item_id = maker_items.get(answer);
                 MakerItemInfo mii = WzXML.ETC.getMakerItem(this.maker_type, maker_item_id);
                 if (mii == null) {
-                    chr.DebugMsg("Maker : broken.");
+                    getPlayer().DebugMsg("Maker : broken.");
                     return false;
                 }
-                chr.DebugMsgItem("Maker : target = " + maker_item_id, maker_item_id);
-                if (chr.getMeso() < mii.getMeso()) {
-                    chr.addMeso(mii.getMeso());
+                getPlayer().DebugMsgItem("Maker : target = " + maker_item_id, maker_item_id);
+                if (getPlayer().getMeso() < mii.getMeso()) {
+                    getPlayer().addMeso(mii.getMeso());
                 }
-                if (mii.getReqItem() != 0 && !chr.haveItem(mii.getReqItem())) {
+                if (mii.getReqItem() != 0 && !getPlayer().haveItem(mii.getReqItem())) {
                     if (WzDataStorage.ITEM.check(mii.getReqItem())) {
-                        MapleInventoryManipulator.addById(chr, mii.getReqItem(), (short) 1);
-                        chr.DebugMsgItem("Maker : reqItem = " + mii.getReqItem(), mii.getReqItem());
+                        MapleInventoryManipulator.addById(getPlayer(), mii.getReqItem(), (short) 1);
+                        getPlayer().DebugMsgItem("Maker : reqItem = " + mii.getReqItem(), mii.getReqItem());
                     } else {
-                        chr.DebugMsg("Maker : invalid reqItem.");
+                        getPlayer().DebugMsg("Maker : invalid reqItem.");
                     }
                 }
-                if (mii.getReqEquip() != 0 && !chr.haveItem(mii.getReqEquip())) {
+                if (mii.getReqEquip() != 0 && !getPlayer().haveItem(mii.getReqEquip())) {
                     if (WzDataStorage.ITEM.check(mii.getReqEquip())) {
-                        MapleInventoryManipulator.addById(chr, mii.getReqEquip(), (short) 1);
-                        chr.DebugMsgItem("Maker : reqEquip = " + mii.getReqEquip(), mii.getReqEquip());
+                        MapleInventoryManipulator.addById(getPlayer(), mii.getReqEquip(), (short) 1);
+                        getPlayer().DebugMsgItem("Maker : reqEquip = " + mii.getReqEquip(), mii.getReqEquip());
                     } else {
-                        chr.DebugMsg("Maker : invalid reqEquip.");
+                        getPlayer().DebugMsg("Maker : invalid reqEquip.");
                     }
                 }
                 for (MakerRecipe recipe : mii.getRecipe()) {
-                    if (!chr.haveItem(recipe.getItem(), recipe.getCount())) {
+                    if (!getPlayer().haveItem(recipe.getItem(), recipe.getCount())) {
                         if (WzDataStorage.ITEM.check(recipe.getItem())) {
-                            MapleInventoryManipulator.addById(chr, recipe.getItem(), (short) recipe.getCount());
-                            chr.DebugMsgItem("Maker : recipe = " + recipe.getItem() + " (" + recipe.getCount() + ")", recipe.getItem());
+                            MapleInventoryManipulator.addById(getPlayer(), recipe.getItem(), (short) recipe.getCount());
+                            getPlayer().DebugMsgItem("Maker : recipe = " + recipe.getItem() + " (" + recipe.getCount() + ")", recipe.getItem());
                         } else {
-                            chr.DebugMsg("Maker : recipe item.");
+                            getPlayer().DebugMsg("Maker : recipe item.");
                         }
                     }
                 }
-                if (mii.getCatalyst() != 0 && !chr.haveItem(mii.getCatalyst())) {
+                if (mii.getCatalyst() != 0 && !getPlayer().haveItem(mii.getCatalyst())) {
                     if (WzDataStorage.ITEM.check(mii.getCatalyst())) {
-                        MapleInventoryManipulator.addById(chr, mii.getCatalyst(), (short) 1);
-                        chr.DebugMsgItem("Maker : catalyst = " + mii.getCatalyst(), mii.getCatalyst());
+                        MapleInventoryManipulator.addById(getPlayer(), mii.getCatalyst(), (short) 1);
+                        getPlayer().DebugMsgItem("Maker : catalyst = " + mii.getCatalyst(), mii.getCatalyst());
                     } else {
-                        chr.DebugMsg("Maker : invalid catalyst.");
+                        getPlayer().DebugMsg("Maker : invalid catalyst.");
                     }
                 }
-                chr.sendStatChanged();
+                getPlayer().sendStatChanged();
                 return false;
             }
             default -> {

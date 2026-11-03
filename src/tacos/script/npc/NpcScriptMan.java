@@ -34,14 +34,14 @@ public abstract class NpcScriptMan {
     private int npc_script_id;
 
     public NpcScriptMan() {
-        this.npc_script_id = TacosConstants.DEFAULT_NPC_ID;
+        this(TacosConstants.DEFAULT_NPC_ID);
     }
 
     public NpcScriptMan(int npc_script_id) {
         this.npc_script_id = npc_script_id;
     }
 
-    public abstract boolean action(TacosCharacter chr, int status, int answer);
+    public abstract boolean action(int status, int answer);
 
     public int getNpcId() {
         return this.npc_script_id;
@@ -61,13 +61,13 @@ public abstract class NpcScriptMan {
             case SM_ASKMENU:
             case SM_ASKAVATAR: {
                 if (action != -1) {
-                    if (npc_script.action(chr, npc_script.getStatus(), m_nSelect)) {
+                    if (npc_script.action(npc_script.getStatus(), m_nSelect)) {
                         // continue
                         return true;
                     }
                 }
                 // end
-                npc_script.end(chr);
+                npc_script.end();
                 return true;
             }
             default: {
@@ -75,7 +75,7 @@ public abstract class NpcScriptMan {
             }
         }
 
-        npc_script.end(chr);
+        npc_script.end();
         DebugLogger.ErrorLog("NpcScriptMan : not coded, nMsgType = " + nMsgType);
         return false;
     }
@@ -109,48 +109,55 @@ public abstract class NpcScriptMan {
         return false;
     }
 
+    private TacosCharacter chr;
+
+    protected TacosCharacter getPlayer() {
+        return this.chr;
+    }
+
     public boolean start(TacosCharacter chr) {
         this.status = 0;
         chr.DebugMsg("NpcScriptMan : started.");
-        chr.setNpcScript(this);
-        action(chr, this.status, 0);
+        this.chr = chr;
+        this.chr.setNpcScript(this);
+        action(this.status, 0);
         return true;
     }
 
-    public boolean end(TacosCharacter chr) {
+    public boolean end() {
         this.status = -1;
-        chr.DebugMsg("NpcScriptMan : finished.");
-        chr.setNpcScript(null);
+        this.chr.DebugMsg("NpcScriptMan : finished.");
+        this.chr.setNpcScript(null);
         return true;
     }
 
-    protected void askMenu(TacosCharacter chr, NpcScriptTag nt) {
-        askMenu(chr, nt, false, false);
+    protected void askMenu(NpcScriptTag nt) {
+        askMenu(nt, false, false);
     }
 
-    protected void say(TacosCharacter chr, NpcScriptTag nt) {
-        say(chr, nt, false, false);
+    protected void say(NpcScriptTag nt) {
+        say(nt, false, false);
     }
 
-    protected void say(TacosCharacter chr, NpcScriptTag nt, boolean prev, boolean next) {
+    protected void say(NpcScriptTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
             DebugLogger.ErrorLog("NpcScriptMan : say.");
-            askMenu(chr, nt, prev, next);
+            askMenu(nt, prev, next);
             return;
         }
-        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
     }
 
-    protected void askYesNo(TacosCharacter chr, NpcScriptTag nt) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
+    protected void askYesNo(NpcScriptTag nt) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
     }
 
-    protected void askMenu(TacosCharacter chr, NpcScriptTag nt, boolean prev, boolean next) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
+    protected void askMenu(NpcScriptTag nt, boolean prev, boolean next) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
     }
 
-    protected void askAvatar(TacosCharacter chr, NpcScriptTag nt, ArrayList<Integer> ids) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
+    protected void askAvatar(NpcScriptTag nt, ArrayList<Integer> ids) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
     }
 
     protected String getMapName(int map_id) {
@@ -165,15 +172,15 @@ public abstract class NpcScriptMan {
         return "#p" + npc_id + "#";
     }
 
-    protected boolean payMoney(TacosCharacter chr, int cost) {
-        return chr.gainMeso(-cost, true, false, true);
+    protected boolean payMoney(int cost) {
+        return this.chr.gainMeso(-cost, true, false, true);
     }
 
-    protected boolean warp(TacosCharacter chr, int map_id) {
-        return chr.changeMapById(map_id);
+    protected boolean warp(int map_id) {
+        return this.chr.changeMapById(map_id);
     }
 
-    protected boolean warp(TacosCharacter chr, int map_id, String portal_name) {
-        return chr.changeMapById(map_id, portal_name);
+    protected boolean warp(int map_id, String portal_name) {
+        return this.chr.changeMapById(map_id, portal_name);
     }
 }

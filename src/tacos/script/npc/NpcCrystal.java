@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.server.MapleInventoryManipulator;
-import tacos.client.TacosCharacter;
 
 /**
  *
@@ -60,7 +59,7 @@ public class NpcCrystal extends NpcScriptMan {
     };
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
@@ -68,7 +67,7 @@ public class NpcCrystal extends NpcScriptMan {
                 for (int i = 0; i < this.map_ids.length; i++) {
                     nt.addMenu(i, this.map_names[i]);
                 }
-                askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
@@ -76,10 +75,10 @@ public class NpcCrystal extends NpcScriptMan {
                     return false;
                 }
                 // debug
-                if (!chr.haveItem(this.item_toad_wallet)) {
-                    MapleInventoryManipulator.addById(chr, this.item_toad_wallet, 1); // TODO : item effect.
+                if (!getPlayer().haveItem(this.item_toad_wallet)) {
+                    MapleInventoryManipulator.addById(getPlayer(), this.item_toad_wallet, 1); // TODO : item effect.
                 }
-                warp(chr, this.map_ids[answer], this.portal_names[answer]);
+                warp(this.map_ids[answer], this.portal_names[answer]);
                 return false;
             }
             default -> {

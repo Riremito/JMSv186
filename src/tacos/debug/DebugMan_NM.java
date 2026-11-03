@@ -20,7 +20,6 @@ package tacos.debug;
 
 import tacos.wz.ids.DWI_Random;
 import tacos.server.map.TacosMap;
-import tacos.client.TacosCharacter;
 import tacos.script.npc.NpcScriptTag;
 
 /**
@@ -34,11 +33,11 @@ public class DebugMan_NM extends DebugNpcScriptMan {
     private int number_of_maps = 10;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
                 NpcScriptTag nt = new NpcScriptTag();
-                int current_map_id = chr.getMap().getId();
+                int current_map_id = getPlayer().getMap().getId();
                 int map_index = DWI_Random.getMapIndex(current_map_id);
                 maps = new int[number_of_maps * 2 + 1];
 
@@ -53,7 +52,7 @@ public class DebugMan_NM extends DebugNpcScriptMan {
                         nt.addMenu(i, maps[i] + " : #m" + maps[i] + "#");
                     }
                 }
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1: {
@@ -61,14 +60,14 @@ public class DebugMan_NM extends DebugNpcScriptMan {
                 if (answer < number_of_maps * 2 + 1) {
                     nt.add("go to " + maps[answer] + " : #m" + maps[answer] + "#");
                     target_map_id = maps[answer];
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                TacosMap map = chr.findMap(target_map_id);
-                chr.changeMapPortal(map, map.getPortal(0));
+                TacosMap map = getPlayer().findMap(target_map_id);
+                getPlayer().changeMapPortal(map, map.getPortal(0));
                 return false;
             }
             default: {

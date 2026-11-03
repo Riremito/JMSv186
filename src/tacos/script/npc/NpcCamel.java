@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
@@ -29,31 +27,31 @@ public class NpcCamel extends NpcScriptMan {
     private final int cost = 1500;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (chr.getMap().getId() == 260020000) {
+                if (getPlayer().getMap().getId() == 260020000) {
                     nt.add("#b" + getNpcName() + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 } else {
                     // TODO : 文章
                     nt.add("#b" + getNpcName() + "#kに乗って#b" + getMapName(260000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 }
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (!payMoney(chr, this.cost)) {
+                if (!payMoney(this.cost)) {
                     // not coded yet.
                     return false;
                 }
-                if (chr.getMapId() == 260020000) {
+                if (getPlayer().getMapId() == 260020000) {
                     // 260020000 -> マガティア
-                    warp(chr, 261000000); // TODO : portal name.
+                    warp(261000000); // TODO : portal name.
                 } else {
                     // 260020700 -> アリアント
-                    warp(chr, 260000000); // TODO : portal name.
+                    warp(260000000); // TODO : portal name.
                 }
                 return false;
             }

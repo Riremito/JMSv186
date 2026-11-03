@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.server.maps.SavedLocationType;
-import tacos.client.TacosCharacter;
 
 /**
  *
@@ -38,22 +37,22 @@ public class NpcDolphin extends NpcScriptMan {
     private static final int MENU_FOGGY_SEA = 3;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("世の中の全ての海は繋がっています。歩くと遠い所でも海ならすぐですよ。どうですか？#bイルカタクシー#kに乗って移動しますか？");
-                if (chr.getMapId() == MAP_AQUARIUM) {
+                if (getPlayer().getMapId() == MAP_AQUARIUM) {
                     nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
                     nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                    askMenu(chr, nt);
+                    askMenu(nt);
                     return true;
                 }
-                if (chr.getMapId() == MAP_HERB_TOWN_PIER) {
+                if (getPlayer().getMapId() == MAP_HERB_TOWN_PIER) {
                     nt.addMenu(MENU_AQUARIUM, "#m" + MAP_AQUARIUM + "#に行く。");
                     nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                    askMenu(chr, nt);
+                    askMenu(nt);
                     return true;
                 }
                 // デバッグモード
@@ -61,23 +60,23 @@ public class NpcDolphin extends NpcScriptMan {
                 nt.addMenu(MENU_SHARP_CLIFF, "#m" + MAP_SHARP_CLIFF + "#に行く。");
                 nt.addMenu(MENU_HERB_TOWN, "#m" + MAP_HERB_TOWN + "#に行く。");
                 nt.addMenu(MENU_FOGGY_SEA, "霧の海に行く。");
-                askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
                 switch (answer) {
                     case MENU_AQUARIUM -> {
-                        warp(chr, MAP_AQUARIUM, "market00");
+                        warp(MAP_AQUARIUM, "market00");
                     }
                     case MENU_SHARP_CLIFF -> {
-                        warp(chr, MAP_SHARP_CLIFF, "east00");
+                        warp(MAP_SHARP_CLIFF, "east00");
                     }
                     case MENU_HERB_TOWN -> {
-                        warp(chr, MAP_HERB_TOWN_PIER, "out00");
+                        warp(MAP_HERB_TOWN_PIER, "out00");
                     }
                     case MENU_FOGGY_SEA -> {
-                        chr.saveLocation(SavedLocationType.MULUNG_TC);
-                        warp(chr, MAP_FOGGY_SEA, "sp");
+                        getPlayer().saveLocation(SavedLocationType.MULUNG_TC);
+                        warp(MAP_FOGGY_SEA, "sp");
                     }
                     default -> {
                     }

@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.server.MapleItemInformationProvider;
-import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_Message;
@@ -34,22 +33,22 @@ public class NpcCorba extends NpcScriptMan {
     private final int map_dragon_flight = 200090500; // 飛行中 : 時間の神殿への道
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("羽があればそこに行けるじゃろう。じゃが、それだけでは足りんのじゃ。剣より鋭い風の狭間を飛ぶためには、丈夫な鱗も必要なんじゃ。戻ってくる方法まで知っておる半獣族は、もうワシ一人しかおらん…もしあそこに行きたいんじゃったら、ワシが変身させてやろう。お前の今の姿が何であれ、今、この瞬間だけは　#bドラゴン#kになるのじゃ…。");
                 nt.addMenu(0, "ドラゴンに変身したいです。");
-                askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
                 if (answer != 0) {
                     return false;
                 }
-                MapleItemInformationProvider.getInstance().getItemEffect(this.item_mini_dragon).applyTo(chr);
-                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(this.item_mini_dragon).build()));
-                warp(chr, this.map_dragon_flight); // TODO : portal name.
+                MapleItemInformationProvider.getInstance().getItemEffect(this.item_mini_dragon).applyTo(getPlayer());
+                getPlayer().SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(this.item_mini_dragon).build()));
+                warp(this.map_dragon_flight); // TODO : portal name.
                 return false;
             }
             default -> {

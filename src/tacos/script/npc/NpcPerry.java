@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
@@ -29,27 +27,27 @@ public class NpcPerry extends NpcScriptMan {
     private final int cost = 1500;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 // TODO : カニングシティ版の文章
                 nt.add("いらっしゃ～～いッ！オラはここジパングとビクトリアアイランドとを往復するペリカンさ、運賃さえ払ってくれればビクトリアアイランドまでひとっ飛びで行くよ。運賃（片道）" + this.cost + "メル払うかい？");
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (!payMoney(chr, this.cost)) {
+                if (!payMoney(this.cost)) {
                     // not coded yet.
                     return false;
                 }
-                if (chr.getMapId() == 800000000) {
+                if (getPlayer().getMapId() == 800000000) {
                     // キノコ神社 -> カニングシティ
-                    warp(chr, 103000000, "gm02");
+                    warp(103000000, "gm02");
                 } else {
                     // カニングシティ -> キノコ神社
-                    warp(chr, 800000000, "st00");
+                    warp(800000000, "st00");
                 }
                 return false;
             }

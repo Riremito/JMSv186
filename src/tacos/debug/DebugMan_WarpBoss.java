@@ -19,7 +19,6 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import tacos.client.TacosCharacter;
 import tacos.script.npc.NpcScriptTag;
 import tacos.wz.WzDataStorage;
 
@@ -52,14 +51,14 @@ public class DebugMan_WarpBoss extends DebugNpcScriptMan {
     }
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
                 NpcScriptTag nt = new NpcScriptTag();
                 for (int index = 0; index < this.warp_boss_data.size(); index++) {
                     nt.addMenu(index, "#m" + this.warp_boss_data.get(index).map_id + "# (#o" + this.warp_boss_data.get(index).mob_id + "#)");
                 }
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1: {
@@ -67,13 +66,13 @@ public class DebugMan_WarpBoss extends DebugNpcScriptMan {
                 if (0 <= answer && answer < this.warp_boss_data.size()) {
                     nt.add("go to #m" + this.warp_boss_data.get(answer).map_id + "# (#o" + this.warp_boss_data.get(answer).mob_id + "#)");
                     this.target_map_id = this.warp_boss_data.get(answer).map_id;
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                chr.changeMapById(this.target_map_id);
+                getPlayer().changeMapById(this.target_map_id);
                 return false;
             }
             default: {

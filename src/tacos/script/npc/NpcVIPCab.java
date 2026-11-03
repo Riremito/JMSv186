@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
@@ -29,17 +27,17 @@ public class NpcVIPCab extends NpcScriptMan {
     private final int map_ant_tunnel_park = 105070001; // 中央ダンジョン : アリの巣-広場
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("初心者ではない方には決められた料金が請求されます。アリの巣広場はビクトリアアイランドの中央にあるダンジョンの奥の、24時間屋台が棲んでいるところです。#b10,000メル#kでアリの巣広場まで如何でしょうか？");
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 1 -> {
                 // TODO : 10000 メルの支払い
-                warp(chr, this.map_ant_tunnel_park); // TODO : portal name.
+                warp(this.map_ant_tunnel_park); // TODO : portal name.
                 return false;
             }
             default -> {

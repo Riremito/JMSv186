@@ -101,7 +101,7 @@ public class DebugMan_CC extends DebugNpcScriptMan {
     private int avatar_type = -1;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
                 NpcScriptTag nt = new NpcScriptTag();
@@ -110,7 +110,7 @@ public class DebugMan_CC extends DebugNpcScriptMan {
                 nt.addMenu(AvatarType.FACE_COLOR.ordinal(), "Face Color");
                 nt.addMenu(AvatarType.HAIR.ordinal(), "Hair");
                 nt.addMenu(AvatarType.HAIR_COLOR.ordinal(), "Hair Color");
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1: {
@@ -118,32 +118,32 @@ public class DebugMan_CC extends DebugNpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (answer == AvatarType.SKIN.ordinal()) {
                     nt.add("Skin test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.FACE.ordinal()) {
                     nt.add("Face test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.FACE_COLOR.ordinal()) {
                     nt.add("Face Color test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.HAIR.ordinal()) {
                     nt.add("Hair test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.HAIR_COLOR.ordinal()) {
                     nt.add("Hair Color test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 return false;
@@ -157,21 +157,21 @@ public class DebugMan_CC extends DebugNpcScriptMan {
                 }
                 int id = ids_selection.get(answer);
                 if (avatar_type == AvatarType.SKIN.ordinal()) {
-                    chr.DebugMsg("Skin : " + id);
-                    chr.setSkinColor((byte) id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Skin : " + id);
+                    getPlayer().setSkinColor((byte) id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.FACE.ordinal() || avatar_type == AvatarType.FACE_COLOR.ordinal()) {
-                    chr.DebugMsg("Face : " + id);
-                    chr.setFace(id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Face : " + id);
+                    getPlayer().setFace(id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.HAIR.ordinal() || avatar_type == AvatarType.HAIR_COLOR.ordinal()) {
-                    chr.DebugMsg("Hair : " + id);
-                    chr.setHair(id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Hair : " + id);
+                    getPlayer().setHair(id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 return false;

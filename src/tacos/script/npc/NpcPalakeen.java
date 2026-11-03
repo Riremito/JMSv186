@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
@@ -27,23 +25,23 @@ import tacos.client.TacosCharacter;
 public class NpcPalakeen extends NpcScriptMan {
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 // TODO : 文章
                 nt.add("");
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (chr.getMapId() == 800000000) {
+                if (getPlayer().getMapId() == 800000000) {
                     // キノコ神社 -> 楓城 天下泰平
-                    warp(chr, 800040000); // TODO : portal name.
+                    warp(800040000); // TODO : portal name.
                 } else {
                     // 楓城 天下泰平 -> キノコ神社
-                    warp(chr, 800000000); // TODO : portal name.
+                    warp(800000000); // TODO : portal name.
                 }
                 return false;
             }

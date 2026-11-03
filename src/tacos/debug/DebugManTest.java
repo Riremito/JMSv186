@@ -18,7 +18,6 @@
  */
 package tacos.debug;
 
-import tacos.client.TacosCharacter;
 import tacos.script.npc.NpcScriptTag;
 import tacos.server.map.TacosMap;
 
@@ -31,7 +30,7 @@ public class DebugManTest extends DebugNpcScriptMan {
     private int target_map_id = 910000000;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
@@ -59,7 +58,7 @@ public class DebugManTest extends DebugNpcScriptMan {
                 // #F#
                 nt.addMenu(11, "#m100000000#");
                 nt.addMenu(22, "#m200000000#");
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
@@ -67,20 +66,20 @@ public class DebugManTest extends DebugNpcScriptMan {
                 if (answer == 11) {
                     nt.add("go to #m100000000#.");
                     this.target_map_id = 100000000;
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 if (answer == 22) {
                     nt.add("go to #m200000000#.");
                     this.target_map_id = 200000000;
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2 -> {
-                TacosMap map = chr.findMap(this.target_map_id);
-                chr.changeMapPortal(map, map.getPortal(0));
+                TacosMap map = getPlayer().findMap(this.target_map_id);
+                getPlayer().changeMapPortal(map, map.getPortal(0));
                 return false;
             }
             default -> {

@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.server.maps.SavedLocationType;
-import tacos.client.TacosCharacter;
 
 /**
  *
@@ -46,13 +45,13 @@ public class NpcSpinel extends NpcScriptMan {
     private int return_map_id = 0;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag menu = new NpcScriptTag();
                 for (int i = 0; i < this.map_ids.length; i++) {
                     // 現在のマップはスキップ
-                    if (chr.getMapId() == this.map_ids[i]) {
+                    if (getPlayer().getMapId() == this.map_ids[i]) {
                         this.traveling = true;
                         continue;
                     }
@@ -61,7 +60,7 @@ public class NpcSpinel extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 if (this.traveling) {
                     // 旅行中
-                    this.return_map_id = chr.getSavedLocation(SavedLocationType.WORLDTOUR);
+                    this.return_map_id = getPlayer().getSavedLocation(SavedLocationType.WORLDTOUR);
                     if (this.return_map_id == -1) {
                         this.return_map_id = this.default_return_map_id;
                     }
@@ -71,21 +70,21 @@ public class NpcSpinel extends NpcScriptMan {
                     nt.add("#b国内のキノコ神社を含め、中国の上海、台湾の西門町#kに続き、#bタイランドの水上市場#kへのコースが用意出来ています。各旅行地でも私が皆様の楽しい旅行のために頑張ります。では、どこから行ってみたいですか？");
                 }
                 nt.add(menu.get(), false);
-                askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
                 if (this.traveling && answer == this.map_ids.length) {
-                    warp(chr, this.return_map_id);
+                    warp(this.return_map_id);
                     return false;
                 }
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
                 if (!this.traveling) {
-                    chr.saveLocation(SavedLocationType.WORLDTOUR);
+                    getPlayer().saveLocation(SavedLocationType.WORLDTOUR);
                 }
-                warp(chr, this.map_ids[answer]);
+                warp(this.map_ids[answer]);
                 return false;
             }
             default -> {

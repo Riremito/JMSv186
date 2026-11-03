@@ -21,7 +21,6 @@ package tacos.script.npc;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.maps.SavedLocationType;
-import tacos.client.TacosCharacter;
 
 /**
  *
@@ -33,19 +32,19 @@ public class NpcPason extends NpcScriptMan {
     private final int map_florina_beach = 110000000; // フロリナ : ビーチ
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 // デバッグモード
-                if (!chr.haveItem(this.item_free_pass)) {
-                    MapleInventoryManipulator.addById(chr, this.item_free_pass, 1); // TODO : item effect.
+                if (!getPlayer().haveItem(this.item_free_pass)) {
+                    MapleInventoryManipulator.addById(getPlayer(), this.item_free_pass, 1); // TODO : item effect.
                 }
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("港口から少し離れたところに#bビーチ#kという幻想的な海岸があると聞いたことはあるか？#b2000メル#kを払うか#bフリーパスカード#kを持っているなら、いつでも俺がそこに運んでやるぜ。");
                 nt.addMenu(0, "2000メル払う");
                 nt.addMenu(1, "フリーパスカードを持っている。");
                 nt.addMenu(2, "フリーパスカードとは？");
-                askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1 -> {
@@ -56,15 +55,15 @@ public class NpcPason extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 // 原文ママ
                 nt.add("#b2000メル#kを払ってビーチに行くんだな？でも、そこにもモンスターがいるらしいから油断するよ！では、早速出向準備をするが…今すぐビーチに行くのか？");
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 2 -> {
                 // TODO : 2000 メルの支払い
-                if (chr.haveItem(this.item_free_pass)) {
-                    MapleInventoryManipulator.removeById(chr, MapleInventoryType.ETC, this.item_free_pass, 1, true, false); // TODO : item effect.
-                    chr.saveLocation(SavedLocationType.FLORINA);
-                    warp(chr, this.map_florina_beach); // TODO : portal name.
+                if (getPlayer().haveItem(this.item_free_pass)) {
+                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_free_pass, 1, true, false); // TODO : item effect.
+                    getPlayer().saveLocation(SavedLocationType.FLORINA);
+                    warp(this.map_florina_beach); // TODO : portal name.
                 }
                 return false;
             }

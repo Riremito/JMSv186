@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
@@ -29,29 +27,29 @@ public class NpcHikari extends NpcScriptMan {
     private final int cost = 300;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("銭湯に入りたいですか？では、" + this.cost + "メルを払いなさい。");
-                askYesNo(chr, nt);
+                askYesNo(nt);
                 return true;
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (!payMoney(chr, this.cost)) {
+                if (!payMoney(this.cost)) {
                     nt.add("入場料" + this.cost + "メルを持っているか確認してください。");
-                    say(chr, nt);
+                    say(nt);
                     return false;
                 }
-                int target_map_id = chr.getGender() == 0 ? 801000100 : 801000200;
-                warp(chr, target_map_id);
+                int target_map_id = getPlayer().getGender() == 0 ? 801000100 : 801000200;
+                warp(target_map_id);
                 return false;
             }
             case -1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("今度利用してください。");
-                say(chr, nt);
+                say(nt);
                 return false;
             }
             default -> {
