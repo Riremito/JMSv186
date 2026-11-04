@@ -30,6 +30,11 @@ public class NpcMan {
     public static boolean start(TacosCharacter chr, NpcInfo npc_info, int npc_script_id, int npc_id) {
         NpcScriptMan npc_script;
         switch (npc_script_id) {
+            case 2002 -> {
+                // 2002, ピーター
+                // 40000, メイプルロード : 小さな森
+                npc_script = new NpcPeter();
+            }
             case 2003 -> {
                 // 2003, ロビン
                 npc_script = new NpcRobin();
@@ -38,6 +43,11 @@ public class NpcMan {
                 // 2007, イベントガイド
                 // 10000, メイプルロード : キノコの丘
                 npc_script = new NpcEventGuide();
+            }
+            case 2101 -> {
+                // 2101, ヒナ
+                // 10000, メイプルロード : キノコの丘
+                npc_script = new NpcHina();
             }
             case 10200 -> {
                 // 10200, ヘレナ
@@ -1189,6 +1199,10 @@ public class NpcMan {
                 // 230040001, アクアロード : カルタの洞窟
                 npc_script = new NpcCarta();
             }
+            case 2073000 -> {
+                // 2073000, 黒龍老師
+                npc_script = new NpcLuaEmpty();
+            }
             case 2080000 -> {
                 // 2080000, モス
                 // 240000000, リプレ : リプレ
@@ -1316,6 +1330,11 @@ public class NpcMan {
                 // 2090104, ノマン
                 // 250000000, 武陵 : 武陵
                 npc_script = new NpcNoma();
+            }
+            case 2091003 -> {
+                // 2091003, ノル
+                // 250010500, 武陵 : 天桃の果樹園1
+                npc_script = new NpcLuaEmpty();
             }
             case 2091005 -> {
                 // 2091005, 素公パンダ
@@ -1483,6 +1502,26 @@ public class NpcMan {
                 // 260010401, バーニングロード : 岩坂
                 npc_script = new NpcMysteriousVoice();
             }
+            case 2103009 -> {
+                // 2103009, 民家1収納場所(透明)
+                // 260000202, アリアント村 : 民家1
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2103010 -> {
+                // 2103010, 民家2収納場所(透明)
+                // 260000203, アリアント村 : 民家2
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2103011 -> {
+                // 2103011, 民家4収納場所(透明)
+                // 260000205, アリアント村 : 民家4
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2103012 -> {
+                // 2103012, 民家7収納場所(透明)
+                // 260000207, アリアント村 : 民家6
+                npc_script = new NpcLuaEmpty();
+            }
             case 2103013 -> {
                 // 2103013, デュアート
                 // 926010000, 隠れ道 : ピラミッドの丘
@@ -1550,6 +1589,71 @@ public class NpcMan {
                 // 261020401, アルカドノ研究所 : 関係者以外出入禁止区域
                 npc_script = new NpcParwen();
             }
+            case 2111010 -> {
+                // 2111010, アルカドノの本棚
+                // 926120000,  : 光が消えた研究室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111011 -> {
+                // 2111011, 失踪した錬金術師の家の壁(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111012 -> {
+                // 2111012, 失踪した錬金術師の家の本棚(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111013 -> {
+                // 2111013, 失踪した錬金術師の家の額縁(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111014 -> {
+                // 2111014, 失踪した錬金術師の家の机(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111015 -> {
+                // 2111015, ラセルロンの机(透明)
+                // 261020200, アルカドノ研究所 : 研究所B-1区域
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111017 -> {
+                // 2111017, 一番目のパイプ取っ手(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111018 -> {
+                // 2111018, 二番目のパイプ取っ手(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111019 -> {
+                // 2111019, 三番目のパイプ取っ手(透明)
+                // 261000001, マガティア : 失踪した錬金術師の家
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111020 -> {
+                // 2111020, 一番目の魔法陣(透明)
+                // 261040000, アルカドノ研究所 : 暗黒の魔法使いの研究室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111021 -> {
+                // 2111021, 二番目の魔法陣(透明)
+                // 261040000, アルカドノ研究所 : 暗黒の魔法使いの研究室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111022 -> {
+                // 2111022, 三番目の魔法陣(透明)
+                // 261040000, アルカドノ研究所 : 暗黒の魔法使いの研究室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2111023 -> {
+                // 2111023, 魔法陣中央(透明)
+                // 261040000, アルカドノ研究所 : 暗黒の魔法使いの研究室
+                npc_script = new NpcLuaEmpty();
+            }
             case 2111024 -> {
                 // 2111024, 秘密通路(透明)
                 // 261010000, ジェニミスト研究所 : 研究所1階廊下
@@ -1564,6 +1668,81 @@ public class NpcMan {
             case 2111026 -> {
                 // 2111026, 未完成魔法陣
                 npc_script = new NpcIncompleteMagicSquare();
+            }
+            case 2112000 -> {
+                // 2112000, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112001 -> {
+                // 2112001, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112002 -> {
+                // 2112002, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112003 -> {
+                // 2112003, ジュリエット
+                // 261000021, マガティア : アルカドノ秘密の部屋
+                // 926110000,  : 怪しい研究室
+                // 926110001,  : 暗い通路
+                // 926110100,  : 不快な実験室
+                // 926110300,  : ユレテの事務所
+                // 926110400,  : 中央研究室入口
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112004 -> {
+                // 2112004, ロミオ
+                // 261000011, マガティア : ジェニミスト秘密の部屋
+                // 926100000,  : 怪しい研究室
+                // 926100001,  : 暗い通路
+                // 926100100,  : 不快な実験室
+                // 926100300,  : ユレテの事務所
+                // 926100400,  : 中央研究室入口
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112005 -> {
+                // 2112005, ジュリエット(進行)
+                // 926110200,  : 特殊な実験室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112006 -> {
+                // 2112006, ロミオ(進行)
+                // 926100200,  : 特殊な実験室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112007 -> {
+                // 2112007, 調査結果
+                // 926100000,  : 怪しい研究室
+                // 926100203, 隠れ道 : ユレテの研究室
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112008 -> {
+                // 2112008, ジュリエット
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112009 -> {
+                // 2112009, ロミオ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112010 -> {
+                // 2112010, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112011 -> {
+                // 2112011, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112012 -> {
+                // 2112012, ユレテ
+                npc_script = new NpcLuaEmpty();
+            }
+            case 2112013 -> {
+                // 2112013, 調査結果
+                // 926110000,  : 怪しい研究室
+                // 926110001,  : 暗い通路
+                // 926110203, 隠れ道 : ユレテの研究室
+                npc_script = new NpcLuaEmpty();
             }
             case 2141000 -> {
                 // 2141000, キルストン
@@ -1924,6 +2103,10 @@ public class NpcMan {
                 // 9101001, ピーター
                 npc_script = new NpcPeterTraining();
             }
+            case 9101100 -> {
+                // 9101100, 初心者ガイドのモニカ
+                npc_script = new NpcRobin();
+            }
             case 9103001 -> {
                 // 9103001, ガイドモモ
                 // 220000000, ルディブリアム
@@ -2081,6 +2264,16 @@ public class NpcMan {
                 // 801040101, ジパング : アジト前(天晴れ)
                 npc_script = new NpcKonpeiHideout();
             }
+            case 9201004 -> {
+                // 9201004, 聖賢エームズ
+                // 680000000, ウェディングタウン : ウェディングタウン
+                npc_script = new NpcLuaEmpty();
+            }
+            case 9201014 -> {
+                // 9201014, ピーラ
+                // 680000000, ウェディングタウン : ウェディングタウン
+                npc_script = new NpcLuaEmpty();
+            }
             case 9201015 -> {
                 // 9201015, ジュリアス
                 // 680000002, ウェディングタウン : 美容院
@@ -2101,6 +2294,11 @@ public class NpcMan {
                 // 680000003, ウェディングタウン : 整形外科
                 npc_script = new NpcShaki();
             }
+            case 9201020 -> {
+                // 9201020, ビビアン
+                // 680000200, ウェディングタウン : ウェディングホール待機室(大聖堂)
+                npc_script = new NpcLuaEmpty();
+            }
             case 9201022 -> {
                 // 9201022, トーマス
                 // 680000500, ウェディングタウン : 出口
@@ -2110,6 +2308,16 @@ public class NpcMan {
                 // 9201023, ナナ
                 // 100000200, ヘネシス : 広場
                 npc_script = new NpcNana();
+            }
+            case 9201035 -> {
+                // 9201035, ジャコブ
+                // 680000000, ウェディングタウン : ウェディングタウン
+                npc_script = new NpcLuaEmpty();
+            }
+            case 9201037 -> {
+                // 9201037, ガリ&シャティマ
+                // 680000000, ウェディングタウン : ウェディングタウン
+                npc_script = new NpcLuaEmpty();
             }
             case 9201051 -> {
                 // 9201051, ジョン・バリケード
