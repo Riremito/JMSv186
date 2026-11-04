@@ -147,6 +147,7 @@ public abstract class NpcScriptMan {
     private int status = 0;
     private String answer_text = "";
     private long answer_pet_sn = 0;
+    private final ArrayList<String> pages = new ArrayList<>();
 
     private int getStatus() {
         return this.status;
@@ -183,6 +184,7 @@ public abstract class NpcScriptMan {
 
     public boolean start(TacosCharacter chr) {
         this.status = 0;
+        this.pages.clear();
         chr.DebugMsg("NpcScriptMan : started.");
         this.chr = chr;
         this.chr.setNpcScript(this);
@@ -778,5 +780,43 @@ public abstract class NpcScriptMan {
 
     protected void setDirectionMode(boolean enable) {
         this.chr.SendPacket(ResCUserLocal.SetDirectionMode(enable));
+    }
+
+    // lua の self.say が連続する会話, 最後のページ以外は次へボタンを表示する
+    // 続きがある場合は true を返すので action の戻り値として利用する, 次のページは action の先頭で nextPage を呼び出して表示する
+    protected boolean sayPages(String... texts) {
+        this.pages.clear();
+        Collections.addAll(this.pages, texts);
+        return nextPage();
+    }
+
+    // 表示していないページがあるか
+    protected boolean hasPages() {
+        return !this.pages.isEmpty();
+    }
+
+    // 次のページを表示する, 続きがある場合は true
+    protected boolean nextPage() {
+        if (this.pages.isEmpty()) {
+            return false;
+        }
+        String text = this.pages.remove(0);
+        boolean next = !this.pages.isEmpty();
+        say(text, false, next);
+        return next;
+    }
+
+    // lua の integer, 数値でない場合は 0
+    protected int integer(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    // ユーザーエフェクト (AvatarOriented) を自分だけに表示
+    protected void avatarOriented(String path) {
+        this.chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(path).build()));
     }
 }

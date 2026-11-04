@@ -18,32 +18,66 @@
  */
 package tacos.script.npc;
 
+import tacos.client.TacosCharacter;
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
  */
+// Npc.wz script : party1_enter (JMS131-302), 会話文は lua_script_jp (party1_enter) を利用
 public class Npc_Kerning_Lakelis extends NpcScriptMan {
+
+    private final String field_set_name = "Party1";
+    private final int item_coupon = 4001007; // クーポン
+    private final int item_pass = 4001008; // 通行券
+    private final int party_member = 4;
+    private final int level_min = 21;
+    private final int level_max = 30;
 
     @Override
     public boolean action(int status, int answer) {
-        switch (status) {
-            case 0 -> {
-                NpcScriptTag nt = new NpcScriptTag();
-                nt.add("#e<グループクエスト：一番目の同行>#n");
-                nt.add("グループメンバーたちと共に力を合わせてクエストを解決してみませんか？その中にはお互いに力を合わせないと解決できない障害物がたくさんありますので…挑戦を希望しましたら#bあなたが属しているグループのグループ長#kを通し、私に声をかけてください。");
-                nt.addMenu(0, "グループクエストがしたいです");
-                nt.addMenu(1, "共にするグループメンバーを探したいです");
-                nt.addMenu(2, "説明が聞きたいです");
-                askMenu(nt);
-                return true;
+        if (!isPartyBoss()) {
+            // 翻訳
+            say("パーティーと一緒にクエストに挑戦してみない？ここには、チームワークでしか解決できない障害や問題が待っているわ。挑戦したいなら、#bパーティーリーダー#kに私に話しかけるよう伝えてね。");
+            return false;
+        }
+        int res;
+        // lua では FieldSet の入場条件で判定しているが、FieldSet のデータに条件がないため NPC で判定する
+        if (TacosFieldSet.getPartyMembers(getPlayer()).size() != this.party_member) {
+            res = TacosFieldSet.ENTER_PARTY_MEMBER;
+        } else {
+            res = TacosFieldSet.ENTER_SUCCESS;
+            for (TacosCharacter member : TacosFieldSet.getPartyMembers(getPlayer())) {
+                if (member.getLevel() < this.level_min || this.level_max < member.getLevel()) {
+                    res = TacosFieldSet.ENTER_PARTY_LEVEL;
+                    break;
+                }
             }
-            case 1 -> {
-                // TODO : グループクエスト (KerningPQ) の開始 (グループ長, レベル21以上, 4人以上が同じマップにいる), 黒い玉 (4001007, 4001008) の回収
-                // TODO : 共にするグループメンバーを探したいです, 説明が聞きたいです
-                // 元のスクリプトはデバッグモードの選択肢で KerningPQ を開始していた
-                return false;
+            if (res == TacosFieldSet.ENTER_SUCCESS) {
+                res = enterFieldSetParty(this.field_set_name, 0);
+            }
+        }
+        // 翻訳
+        switch (res) {
+            case TacosFieldSet.ENTER_SUCCESS -> {
+                removeItemAll(this.item_coupon);
+                removeItemAll(this.item_pass);
+            }
+            case TacosFieldSet.ENTER_NO_PARTY -> {
+                say("パーティーに入っていないわね。このクエストはパーティーに入っているときだけ挑戦できるの。");
+            }
+            case TacosFieldSet.ENTER_PARTY_MEMBER -> {
+                say("パーティーが4人じゃないわ。4人そろったらまた来てね。");
+            }
+            case TacosFieldSet.ENTER_PARTY_LEVEL -> {
+                say("パーティーの中にレベル21～30ではない人がいるわ。もう一度確認してね。");
+            }
+            case TacosFieldSet.ENTER_USING -> {
+                say("すでに別のパーティーがクエストのクリアを目指して入っているわ。しばらくしてからもう一度試してね。");
             }
             default -> {
+                say("理由があって、あなたのパーティーを入れてあげられないの。しばらくしてからもう一度試してね。");
             }
         }
         return false;

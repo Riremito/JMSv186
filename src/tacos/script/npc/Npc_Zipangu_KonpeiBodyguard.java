@@ -71,7 +71,6 @@ public class Npc_Zipangu_KonpeiBodyguard extends NpcScriptMan {
                     }
                 }
                 TacosFieldSet field_set = getFieldSet("shouwaBoss");
-                // TODO : FieldSet の変数 shouwaBoss はリアクターのスクリプトで設定される (未実装)
                 if (field_set != null && "yes".equals(field_set.getVar("shouwaBoss"))) {
                     // 翻訳
                     say("悪いが、戦いはもう始まっている。安全のため、今は外で待っていてもらわないと。");

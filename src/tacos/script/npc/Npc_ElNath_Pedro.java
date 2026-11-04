@@ -28,6 +28,9 @@ public class Npc_ElNath_Pedro extends NpcScriptMan {
     private final int npc_job = 1072008; // カイリン
     private final int item_necklace_of_strength = 4031057; // 強靭のネックレス (or 4032785)
     private final int item_necklace_of_wisdom = 4031058; // 知恵のネックレス (or 4032789)
+    private final int[] job_from = {510, 520}; // インファイター, ガンスリンガー
+    private final int[] job_to = {511, 521}; // 3次転職後の職業
+    private final int required_level = 70;
     private static final int STEP_NONE = 0;
     private static final int STEP_STRENGTH = 1;
     private static final int STEP_WISDOM = 2;
@@ -80,12 +83,11 @@ public class Npc_ElNath_Pedro extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 switch (this.step) {
                     case STEP_WISDOM -> {
-                        // TODO : 知恵のネックレスの回収
                         nt.add("よし…これで君はもっと強い海賊になれるはずだ。だが、その前にSPを全て消費したかどうか、確認させて欲しい。レベル70までに得た SPを全て消費しないと、3次転職はできないからね。あぁ、それと、3次転職ではどの職業にするかは特に悩む必要はない。そのために、2次転職の時に数々悩んでもらったのだ。さて、今すぐ転職するかね？");
                         askYesNo(nt);
                     }
                     case STEP_STRENGTH -> {
-                        // TODO : 強靭のネックレスの回収
+                        removeItem(this.item_necklace_of_strength, 1);
                         nt.add("うむ…確かに。では、これで残りは知恵のテストのみだな。このテストをクリアできれば、君はより一層強い海賊になるだろう。2つ目のテストは、オシリアの雪原のどこかにある、モンスターの近寄れない小さな聖地で行われる。見た目は平凡な聖地だが、特別なアイテムを捧げると、その者の知恵を試す試練が訪れるだろう。");
                         say(nt, true, true);
                     }
@@ -101,7 +103,23 @@ public class Npc_ElNath_Pedro extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 switch (this.step) {
                     case STEP_WISDOM -> {
-                        // TODO : 3次転職 (510 → 511, 520 → 521), SPとAPの付与
+                        int job_index = -1;
+                        for (int i = 0; i < this.job_from.length; i++) {
+                            if (getJob() == this.job_from[i]) {
+                                job_index = i;
+                            }
+                        }
+                        if (job_index < 0 || !checkItem(this.item_necklace_of_wisdom)) {
+                            return false;
+                        }
+                        if (getRemainingSp() > (getLevel() - this.required_level) * 3) {
+                            // TODO : 文章 (適当)
+                            say("ふむ…#bSP#kが多すぎるようだ。そんなにSPを使わずに残したままでは3次転職できない。1次と2次のスキルにもっとSPを使ってから戻ってきてくれ。");
+                            return false;
+                        }
+                        removeItem(this.item_necklace_of_wisdom, 1);
+                        changeJob(this.job_to[job_index]);
+                        gainAp(5);
                         nt.add("おお…君はこの間、3次転職の難関をクリアした者だね。#bヴァイキング#kとしての生活はどうかね？　これから、更なる広い世界を旅しようと思っているなら、より一層強くならねばならないだろう。この大陸には、私も知らないような凶悪なモンスターがまだまだたくさんいるからな。何か気になることがあれば、いつでも訪ねてくるといい。頑張るのだぞ。");
                         say(nt, false, true);
                         return true;

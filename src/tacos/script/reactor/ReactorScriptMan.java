@@ -22,6 +22,7 @@ import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.odin.OdinReactorActionManager;
+import tacos.server.TacosFieldSet;
 import tacos.server.map.TacosMap;
 import tacos.server.map.object.TacosReactor;
 
@@ -55,6 +56,10 @@ public abstract class ReactorScriptMan {
 
     public TacosReactor getReactor() {
         return this.reactor;
+    }
+
+    public TacosFieldSet getFieldSet(String name) {
+        return TacosFieldSet.get(getPlayer(), name);
     }
 
     public TacosMap getMap() {

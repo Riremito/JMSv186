@@ -36,8 +36,8 @@ public class Npc_Victoria_Francis extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                // TODO : 文章 (適当), 話者をプレイヤーにする
-                say("#b(黒い翼？何だそれは？それに黒魔法師とどう関係があるんだろう？この情報はトゥルーに報告した方がよさそうだ。)#k", true, true);
+                // TODO : 文章 (適当)
+                sayUser("#b(黒い翼？何だそれは？それに黒魔法師とどう関係があるんだろう？この情報はトゥルーに報告した方がよさそうだ。)#k", true, true);
                 return true;
             }
             case 2 -> {

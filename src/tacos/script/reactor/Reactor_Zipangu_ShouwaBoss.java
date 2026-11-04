@@ -18,6 +18,8 @@
  */
 package tacos.script.reactor;
 
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
@@ -27,6 +29,11 @@ public class Reactor_Zipangu_ShouwaBoss extends ReactorScriptMan {
 
     @Override
     public void action() {
+        // FieldSet (shouwaBoss) の action (リアクターの状態が 1 になった時に変数 shouwaBoss を yes にする) が未実装のため、ここで設定する
+        TacosFieldSet field_set = getFieldSet("shouwaBoss");
+        if (field_set != null) {
+            field_set.setVar("shouwaBoss", "yes");
+        }
         changeMusic("Bgm06/FinalFight");
         summonMob(9400112, 830, 160);
         // TODO : 文章 (js の文章をそのまま利用)
