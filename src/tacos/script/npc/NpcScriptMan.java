@@ -20,11 +20,15 @@ package tacos.script.npc;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import odin.client.inventory.Item;
+import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
+import tacos.packet.response.builder.PB_ScriptMessage;
+import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosReactor;
 import tacos.wz.WzXML;
 
@@ -54,8 +58,32 @@ public abstract class NpcScriptMan {
         this.npc_script_id = npc_script_id;
     }
 
-    public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
+    public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result, long liCashItemSN) {
         NpcScriptMan npc_script = chr.getNpcScript();
+
+        switch (ops) {
+            case SM_ASKTEXT:
+            case SM_ASKNUMBER:
+            case SM_ASKPET: {
+                // 1 = ok, 0 = cancel, 2 = no pet (askPet only)
+                if (action == 1 || (ops == OpsScriptMan.SM_ASKPET && action == 2)) {
+                    npc_script.status++;
+                    npc_script.answer_text = (m_sInputStr_Result != null) ? m_sInputStr_Result : "";
+                    npc_script.answer_pet_sn = liCashItemSN;
+                    if (npc_script.action(npc_script.getStatus(), m_nSelect)) {
+                        // continue
+                        return true;
+                    }
+                }
+                // end
+                npc_script.end();
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
         npc_script.updateStatus(action);
 
         switch (ops) {
@@ -86,6 +114,8 @@ public abstract class NpcScriptMan {
     }
 
     private int status = 0;
+    private String answer_text = "";
+    private long answer_pet_sn = 0;
 
     private int getStatus() {
         return this.status;
@@ -164,11 +194,11 @@ public abstract class NpcScriptMan {
             askMenu(nt, prev, next);
             return;
         }
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).prev(prev).next(next).build()));
     }
 
     protected void askYesNo(NpcScriptTag nt) {
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKYESNO, (byte) 0, nt.get(), false, false));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKYESNO, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).build()));
     }
 
     protected void askMenu(NpcScriptTag nt) {
@@ -176,19 +206,80 @@ public abstract class NpcScriptMan {
     }
 
     protected void askMenu(NpcScriptTag nt, boolean prev, boolean next) {
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKMENU, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).prev(prev).next(next).build()));
     }
 
     protected void askAvatar(NpcScriptTag nt, ArrayList<Integer> ids) {
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKAVATAR, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).ids(ids).build()));
     }
 
     protected void askAccept(NpcScriptTag nt) {
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKACCEPT, (byte) 0, nt.get(), false, false));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKACCEPT, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).build()));
     }
 
     protected void askSlideMenu(NpcScriptTag nt) {
-        this.chr.SendPacket(ResCScriptMan.ScriptMessage(getNpcId(), OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, nt.get(), false, false));
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKSLIDEMENU, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).build()));
+    }
+
+    // 入力された文字列は getAnswerText で取得する
+    protected void askText(String text, String text_default, int length_min, int length_max) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        askText(nt, text_default, length_min, length_max);
+    }
+
+    protected void askText(NpcScriptTag nt, String text_default, int length_min, int length_max) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKTEXT, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).text_default(text_default).length_min(length_min).length_max(length_max).build()));
+    }
+
+    // 入力された数値は action の answer で取得する
+    protected void askNumber(String text, int number_default, int number_min, int number_max) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        askNumber(nt, number_default, number_min, number_max);
+    }
+
+    protected void askNumber(NpcScriptTag nt, int number_default, int number_min, int number_max) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKNUMBER, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).number_default(number_default).number_min(number_min).number_max(number_max).build()));
+    }
+
+    // 選択されたペットは getAnswerPet で取得する (ペットがいない場合や未選択の場合は null)
+    // text が空の場合はクライアントが先頭のペットを自動で選択する
+    protected void askPet(String text, ArrayList<TacosPet> pets) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        askPet(nt, pets);
+    }
+
+    protected void askPet(NpcScriptTag nt, ArrayList<TacosPet> pets) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKPET, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).pets(pets).build()));
+    }
+
+    protected String getAnswerText() {
+        return this.answer_text;
+    }
+
+    protected TacosPet getAnswerPet() {
+        if (this.answer_pet_sn == 0) {
+            return null;
+        }
+        for (Item item : this.chr.getInventory(MapleInventoryType.CASH).list()) {
+            if (item.getPet() != null && item.getPet().getUniqueId() == this.answer_pet_sn) {
+                return item.getPet();
+            }
+        }
+        return null;
+    }
+
+    // 所持しているすべてのペット
+    protected ArrayList<TacosPet> getPetsInInventory() {
+        ArrayList<TacosPet> pets = new ArrayList<>();
+        for (Item item : this.chr.getInventory(MapleInventoryType.CASH).list()) {
+            if (item.getPet() != null) {
+                pets.add(item.getPet());
+            }
+        }
+        return pets;
     }
 
     protected String getMapName(int map_id) {

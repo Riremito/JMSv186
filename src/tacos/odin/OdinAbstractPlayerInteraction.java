@@ -50,6 +50,7 @@ import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
+import tacos.packet.response.builder.PB_ScriptMessage;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -1027,7 +1028,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void sendNPCText(String text, int npc) {
-        getMap().broadcastPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
+        getMap().broadcastPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
     }
 
     // event script compatibility

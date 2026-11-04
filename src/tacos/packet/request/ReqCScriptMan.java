@@ -41,6 +41,7 @@ public class ReqCScriptMan {
 
         int m_nSelect = -1;
         String m_sInputStr_Result = null;
+        long liCashItemSN = 0;
 
         OpsScriptMan ops = OpsScriptMan.find(nMsgType);
         if (action != 0) { // JMS is always 1, CMS104 is not 1.
@@ -51,6 +52,17 @@ public class ReqCScriptMan {
                 }
                 case SM_ASKTEXT: {
                     m_sInputStr_Result = cp.DecodeStr(); // m_sInputStr_Result
+                    break;
+                }
+                case SM_ASKNUMBER: {
+                    m_nSelect = cp.Decode4(); // m_nInputNo_Result
+                    break;
+                }
+                case SM_ASKPET: {
+                    // 2 = no pet
+                    if (action == 1) {
+                        liCashItemSN = cp.Decode8(); // liCashItemSN
+                    }
                     break;
                 }
                 case SM_ASKAVATAR: {
@@ -69,7 +81,7 @@ public class ReqCScriptMan {
 
         // java coding.
         if (chr.getNpcScript() != null) {
-            return NpcScriptMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
+            return NpcScriptMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect, m_sInputStr_Result, liCashItemSN);
         }
 
         // js coding.

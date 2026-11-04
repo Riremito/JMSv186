@@ -1241,6 +1241,11 @@ public class NpcMan {
                 // 260000100, アリアント : アリアント乗降場
                 npc_script = new NpcShipTicketSeller();
             }
+            case 2103008 -> {
+                // 2103008, 奇妙な声
+                // 260010401, バーニングロード : 岩坂
+                npc_script = new NpcMysteriousVoice();
+            }
             case 2110005 -> {
                 // 2110005, ラクダ
                 // 260020000, アリアント北門の外

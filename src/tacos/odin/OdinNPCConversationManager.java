@@ -65,6 +65,7 @@ import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
+import tacos.packet.response.builder.PB_ScriptMessage;
 import tacos.script.js.TacosScriptNPC;
 import tacos.script.js.TacosScriptQuest;
 import tacos.script.npc.NpcShopMan;
@@ -152,7 +153,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, sel, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKSLIDEMENU, PB_ScriptMessage.builder().npc_id(npc).text(sel).build()));
         lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
@@ -164,7 +165,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, true));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).next(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -176,7 +177,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, type, text, false, true));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).param(type).text(text).next(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -188,7 +189,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, true, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).prev(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -200,7 +201,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) type, text, true, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).param((byte) type).text(text).prev(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -212,7 +213,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, true, true));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).prev(true).next(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -232,7 +233,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, type, text, true, true));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).param(type).text(text).prev(true).next(true).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -244,7 +245,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -256,7 +257,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -269,7 +270,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return;
         }
 
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKYESNO, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKYESNO, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -281,7 +282,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKYESNO, type, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKYESNO, PB_ScriptMessage.builder().npc_id(npc).param(type).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -302,7 +303,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return;
         }
 
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKACCEPT, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKACCEPT, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -314,7 +315,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKACCEPT, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKACCEPT, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -326,7 +327,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         for (int num : args) {
             ids.add(num);
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, text, false, false, ids));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKAVATAR, PB_ScriptMessage.builder().npc_id(npc).text(text).ids(ids).build()));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -339,7 +340,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return;
         }
 
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKMENU, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKMENU, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -352,7 +353,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return;
         }
 
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKMENU, (byte) type, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKMENU, PB_ScriptMessage.builder().npc_id(npc).param((byte) type).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -364,7 +365,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         for (int num : styles) {
             ids.add(num);
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, text, false, false, ids));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKAVATAR, PB_ScriptMessage.builder().npc_id(npc).text(text).ids(ids).build()));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -376,7 +377,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKNUMBER, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
@@ -388,7 +389,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKTEXT, (byte) 0, text, false, false));
+        client.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKTEXT, PB_ScriptMessage.builder().npc_id(npc).text(text).build()));
         lastMsg = OpsScriptMan.SM_ASKTEXT.get();
     }
 
