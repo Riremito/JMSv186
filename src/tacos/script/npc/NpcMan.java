@@ -1958,6 +1958,46 @@ public class NpcMan {
                 // 211070100, 謁見室
                 npc_script = new NpcVonLeon();
             }
+            case 9000000 -> {
+                // 9000000, ポル
+                // 261000000, サンセットロード : マガティア
+                npc_script = new NpcEventEntry();
+            }
+            case 9000001 -> {
+                // 9000001, ジャング
+                // 104000000, リス : 港口
+                npc_script = new NpcEventEntry();
+            }
+            case 9000002 -> {
+                // 9000002, ピエトロ
+                // 109050000, 隠れ道 : 商品交換所
+                npc_script = new NpcPietro();
+            }
+            case 9000003 -> {
+                // 9000003, バイカン
+                // 109010000, 隠れ道 : 宝を探せ！
+                npc_script = new NpcEventPirate();
+            }
+            case 9000004 -> {
+                // 9000004, バイコン
+                // 109010100, 隠れ道 : 東フィールド
+                npc_script = new NpcEventPirate();
+            }
+            case 9000005 -> {
+                // 9000005, バイケン
+                // 109010200, 隠れ道 : 南フィールド
+                npc_script = new NpcEventPirate();
+            }
+            case 9000006 -> {
+                // 9000006, バイクン
+                // 109050001, 隠れ道 : イベント出口
+                npc_script = new NpcEventPirate();
+            }
+            case 9000007 -> {
+                // 9000007, 天地
+                // 103010000, カニングシティー : 工事現場
+                npc_script = new NpcTenchi();
+            }
             case 9000008 -> {
                 // 9000008, 開け屋
                 // 103000000, カニングシティー
@@ -1967,6 +2007,29 @@ public class NpcMan {
                 // 9000009, バイキン
                 // 104000000, 港口
                 npc_script = new NpcVikin();
+            }
+            case 9000010 -> {
+                // 9000010, ピエトラ
+                // 109050001, 隠れ道 : イベント出口
+                npc_script = new NpcPietra();
+            }
+            case 9000011 -> {
+                // 9000011, マティン
+                // 200000000, オルビス : オルビス
+                npc_script = new NpcEventEntry();
+            }
+            case 9000012 -> {
+                // 9000012, ハーリー
+                // 109080000, 隠れ道 : ココナッツシーズン
+                // 109080001, 隠れ道 : ココナッツシーズン
+                // 109080002, 隠れ道 : ココナッツシーズン
+                // 109080003, 隠れ道 : G★ココナッツシーズン
+                npc_script = new NpcHarry();
+            }
+            case 9000013 -> {
+                // 9000013, トニ
+                // 220000000, ルディブリアム : ルディブリアム
+                npc_script = new NpcEventEntry();
             }
             case 9000018 -> {
                 // 9000018, マチルダ
@@ -2099,6 +2162,22 @@ public class NpcMan {
                 // 922230305, 煌く月花庭園
                 // 922230306, 煌く月花庭園
                 npc_script = new NpcGatekeeperMoonBunny();
+            }
+            case 9010001 -> {
+                // 9010001, ティア
+                npc_script = new NpcMobileMaple();
+            }
+            case 9010002 -> {
+                // 9010002, ピア
+                npc_script = new NpcMobileMaple();
+            }
+            case 9010003 -> {
+                // 9010003, リア
+                npc_script = new NpcMobileMaple();
+            }
+            case 9010004 -> {
+                // 9010004, ミア
+                npc_script = new NpcMia();
             }
             case 9010010 -> {
                 // 9010010, カサンドラ
