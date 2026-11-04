@@ -47,6 +47,7 @@ import tacos.script.js.TacosScriptNPC;
 import tacos.script.js.TacosScriptPortal;
 import tacos.script.js.TacosScriptQuest;
 import tacos.script.js.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
@@ -254,7 +255,7 @@ public class TacosCommandAdmin {
                 reactor.setPosition(pos);
                 reactor.setMap(map);
                 map.addReactor(reactor);
-                TacosScriptReactor.getInstance().act(client, reactor);
+                ReactorMan.act(client, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;
             }

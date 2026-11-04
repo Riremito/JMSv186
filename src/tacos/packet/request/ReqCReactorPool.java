@@ -25,7 +25,7 @@ import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
-import tacos.script.js.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 
 /**
  *
@@ -84,7 +84,7 @@ public class ReqCReactorPool {
         boolean is_in_rect = cp.Decode1() != 0;
 
         if (is_in_rect) {
-            TacosScriptReactor.getInstance().act(client, reactor);
+            ReactorMan.act(client, reactor);
         }
 
         return true;

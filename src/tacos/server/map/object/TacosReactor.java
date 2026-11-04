@@ -26,7 +26,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
-import tacos.script.js.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 import tacos.wz.WzXML;
 
 /**
@@ -116,19 +116,19 @@ public class TacosReactor extends TacosMapObject {
                         map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
                     // a reactor without a script drops the items of Reward.img.
-                    if (!TacosScriptReactor.getInstance().act(client, this) && client.getPlayer() != null) {
+                    if (!ReactorMan.act(client, this) && client.getPlayer() != null) {
                         TacosReward.getReactorReward(client.getPlayer(), this);
                     }
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
-                        TacosScriptReactor.getInstance().act(client, this);
+                        ReactorMan.act(client, this);
                         done = true;
                     }
                     if (stats.getTimeOut(state) > 0) {
                         if (!done) {
-                            TacosScriptReactor.getInstance().act(client, this);
+                            ReactorMan.act(client, this);
                         }
                         scheduleSetState(state, oldState, stats.getTimeOut(state));
                     }
@@ -176,7 +176,7 @@ public class TacosReactor extends TacosMapObject {
 
     // used by script
     public void forceStartReactor(TacosClient client) {
-        TacosScriptReactor.getInstance().act(client, this);
+        ReactorMan.act(client, this);
     }
 
     // used by script
