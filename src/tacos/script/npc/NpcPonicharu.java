@@ -18,57 +18,22 @@
  */
 package tacos.script.npc;
 
-import java.awt.Point;
-import tacos.server.map.TacosMap;
-import tacos.wz.WzXML;
-
 /**
  *
  * @author Riremito
  */
-public class NpcPonicharu extends NpcScriptMan {
+// Npc.wz script : Go_boss1 (JMS164-302), lua が存在しないため旧 js (scripts_msea102) を参考に実装
+public class NpcPonicharu extends NpcTokyoExpeditionMan {
 
-    private final int map_boss = 802000211; // ジパング : お台場 2100年
-    private final int map_exit = 802000210; // ジパング : お台場 2100年
-    private final int mob_bergamot = 9400263; // ベルガモット
-    private static final int MENU_ENTER = 1;
-    private static final int MENU_EXIT = 2;
+    private static final String EXPEDITION_NAME = "Vergamot";
+    private static final String BOSS_NAME = "ベルガモット";
+    private static final int MAP_WAIT = 802000210; // ジパング : お台場 2100年
+    private static final int MAP_BOSS = 802000211; // ジパング : お台場 2100年
+    private static final int MOB_BOSS = 9400263; // ベルガモット
+    private static final int MOB_X = 559;
+    private static final int MOB_Y = 545;
 
-    @Override
-    public boolean action(int status, int answer) {
-        // ベルガモット
-        switch (status) {
-            case 0 -> {
-                // TODO : 文章が不明 (元のスクリプトの仮の文章), 入場条件
-                NpcScriptTag nt = new NpcScriptTag();
-                nt.add("ベルガモットテスト");
-                nt.addMenu(MENU_ENTER, "入場");
-                nt.addMenu(MENU_EXIT, "退出");
-                askMenu(nt);
-                return true;
-            }
-            case 1 -> {
-                switch (answer) {
-                    case MENU_ENTER -> {
-                        TacosMap map = getPlayer().findMap(this.map_boss);
-                        boolean first_user = map != null && map.getCharactersSize() == 0;
-                        warp(this.map_boss);
-                        if (first_user) {
-                            map.resetFully();
-                            map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(this.mob_bergamot), new Point(559, 545));
-                        }
-                    }
-                    case MENU_EXIT -> {
-                        warp(this.map_exit);
-                    }
-                    default -> {
-                    }
-                }
-                return false;
-            }
-            default -> {
-            }
-        }
-        return false;
+    public NpcPonicharu() {
+        super(EXPEDITION_NAME, BOSS_NAME, MAP_WAIT, MAP_BOSS, MOB_BOSS, MOB_X, MOB_Y);
     }
 }

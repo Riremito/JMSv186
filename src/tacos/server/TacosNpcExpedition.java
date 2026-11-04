@@ -45,6 +45,10 @@ public class TacosNpcExpedition {
     private String last_master = "";
     private final String[] members = new String[MEMBER_MAX];
     private final String[] banned = new String[BANNED_MAX];
+    // フィールドセットが存在しない遠征隊用 (東京系ボス)
+    private long start_time = 0;
+    private boolean entered = false;
+    private String ban_pending = "";
 
     private TacosNpcExpedition() {
         clear();
@@ -70,6 +74,49 @@ public class TacosNpcExpedition {
         this.last_master = this.master;
         clear();
         field_set.setVar("reset", "1");
+    }
+
+    // フィールドセットが存在しない遠征隊の結成 (すでに遠征隊長がいる場合は false)
+    public synchronized boolean start(String name) {
+        if (!this.master.isEmpty()) {
+            return false;
+        }
+        clear();
+        this.master = name;
+        this.start_time = System.currentTimeMillis();
+        this.entered = false;
+        this.ban_pending = "";
+        return true;
+    }
+
+    // フィールドセットが存在しない遠征隊の初期化 (受付時間を過ぎた場合)
+    public synchronized void reset() {
+        if (this.start_time == 0 || System.currentTimeMillis() - this.start_time <= RESET_TIME * 1000L) {
+            return;
+        }
+        this.entered = false;
+        this.ban_pending = "";
+        this.last_master = this.master;
+        this.start_time = 0;
+        clear();
+    }
+
+    // 遠征隊長が入場済み (lua の FieldSet の変数 enter)
+    public synchronized boolean isEntered() {
+        return this.entered;
+    }
+
+    public synchronized void setEntered(boolean entered) {
+        this.entered = entered;
+    }
+
+    // 停止リストへの登録を検討中の遠征隊員 (lua の FieldSet の変数 dName)
+    public synchronized String getBanPending() {
+        return this.ban_pending;
+    }
+
+    public synchronized void setBanPending(String name) {
+        this.ban_pending = name;
     }
 
     public synchronized String getMaster() {
