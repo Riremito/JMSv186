@@ -470,6 +470,11 @@ public class NpcMan {
                 // 804000710, 隠れ道 : 次元の世界
                 npc_script = new NpcGlimmeringCrystal();
             }
+            case 1061012 -> {
+                // 1061012, 亡霊
+                // 105090200, 中央ダンジョン : 別世界への扉
+                npc_script = new NpcInsignificantBeing();
+            }
             case 1061100 -> {
                 // 1061100, ホテルガイド
                 // 105040400, スリーピーホテルロビー
@@ -958,6 +963,12 @@ public class NpcMan {
                 // 221024400, エオス塔100階
                 npc_script = new NpcOlsonTheToySoldier();
             }
+            case 2040003 -> {
+                // 2040003, ハカセくん
+                // 220020000, ルディブリアム : オモチャ工場-1工程<1区域>
+                // 922000000,  : オモチャ工場<4 区域>
+                npc_script = new NpcAssistantCheng();
+            }
             case 2040014 -> {
                 // 2040014, チコ
                 npc_script = new NpcChico();
@@ -1133,6 +1144,11 @@ public class NpcMan {
                 // 923020000, 霧の海 : 座礁された幽霊船
                 npc_script = new NpcFoggySeaDolphin();
             }
+            case 2060100 -> {
+                // 2060100, 海の魔女カルタ
+                // 230040001, アクアロード : カルタの洞窟
+                npc_script = new NpcCarta();
+            }
             case 2080000 -> {
                 // 2080000, モス
                 // 240000000, リプレ : リプレ
@@ -1157,6 +1173,13 @@ public class NpcMan {
                 // 2081009, ムス
                 // 240010400, リプレ : 森の分かれ道
                 npc_script = new NpcMoose();
+            }
+            case 2081010 -> {
+                // 2081010, ムス(FieldsetEnterance)
+                // 924000000,  : 修練場への道
+                // 924000001,  : ムスの修練場
+                // 924000002,  : 修練場出口
+                npc_script = new NpcMooseTraining();
             }
             case 2081100 -> {
                 // 2081100, ハルモニア

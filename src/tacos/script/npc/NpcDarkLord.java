@@ -21,6 +21,7 @@ package tacos.script.npc;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
+import tacos.server.TacosFieldSet;
 
 /**
  *
@@ -34,6 +35,7 @@ public class NpcDarkLord extends NpcScriptMan {
     private static final int MODE_2ND = 3;
     private static final int MODE_QUESTION = 4;
     private static final int MODE_SAYS = 5;
+    private static final int MODE_AMBUSH = 6;
     private static final int MENU_SELECT_JOB = 2;
     private final int job_1st_level = 10;
     private final int job_1st = 400; // 盗賊
@@ -59,6 +61,7 @@ public class NpcDarkLord extends NpcScriptMan {
     private final int item_black_charm = 4031059; // 黒い護符
     private final int item_necklace_of_strength = 4031057; // 強靭のネックレス
     private final int quest_job_3rd = 7500; // 3次転職
+    private final int quest_ambush = 6141; // 4次転職 (待ち伏せ)
     private final int npc_instructor = 1072003; // 盗賊転職教官
     private final int map_instructor = 102040000; // カニングシティー : 工事現場-北
     // 2次転職の職業の説明 (翻訳)
@@ -151,6 +154,13 @@ public class NpcDarkLord extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (this.mode == -1) {
+            // 4次転職
+            if (getPlayer().getQuestStatus(this.quest_ambush) == 1) {
+                this.mode = MODE_AMBUSH;
+                // 翻訳
+                askYesNo("さて、修行場へ行く準備はできたか？");
+                return true;
+            }
             int job = getPlayer().getJob();
             int level = getPlayer().getLevel();
             String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
@@ -242,6 +252,18 @@ public class NpcDarkLord extends NpcScriptMan {
             return next;
         }
         switch (this.mode) {
+            case MODE_AMBUSH -> {
+                if (status != 1) {
+                    // 翻訳
+                    say("まだ準備ができていないようだな。");
+                    return false;
+                }
+                if (enterFieldSet("S4ambush", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                    // 翻訳
+                    say("すでにほかの盗賊がミッション中だ。しばらくしてからもう一度試してくれ。");
+                }
+                return false;
+            }
             case MODE_1ST -> {
                 switch (status) {
                     case -1 -> {

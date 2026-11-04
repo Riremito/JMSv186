@@ -74,6 +74,21 @@ public class ServerImg {
         return ret;
     }
 
+    public static MapleData getAutoFieldSet(String name) {
+        ServerImg[] list = {JMS186, JMS147, BMS8};
+        for (ServerImg server_img : list) {
+            MapleData md_field_set_img = server_img.getFieldSet();
+            if (md_field_set_img == null) {
+                continue;
+            }
+            MapleData md_field_set = md_field_set_img.getChildByPath(name);
+            if (md_field_set != null) {
+                return md_field_set;
+            }
+        }
+        return null;
+    }
+
     private ServerImg(String path) {
         setWzRoot(path);
     }

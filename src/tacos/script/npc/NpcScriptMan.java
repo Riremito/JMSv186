@@ -33,6 +33,7 @@ import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.builder.PB_ScriptMessage;
 import tacos.packet.response.builder.PB_UserEffect;
+import tacos.server.TacosFieldSet;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosReactor;
 import tacos.wz.WzXML;
@@ -394,6 +395,28 @@ public abstract class NpcScriptMan {
 
     protected void spawnBossMonster(int id, int x, int y, int type) {
         this.chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), new Point(x, y), type);
+    }
+
+    protected TacosFieldSet getFieldSet(String name) {
+        return TacosFieldSet.get(this.chr, name);
+    }
+
+    // FieldSet に 1 人で入場する
+    protected int enterFieldSet(String name, int index) {
+        TacosFieldSet field_set = getFieldSet(name);
+        if (field_set == null) {
+            return TacosFieldSet.ENTER_ERROR;
+        }
+        return field_set.enter(this.chr, index);
+    }
+
+    // FieldSet にパーティーで入場する
+    protected int enterFieldSetParty(String name, int index) {
+        TacosFieldSet field_set = getFieldSet(name);
+        if (field_set == null) {
+            return TacosFieldSet.ENTER_ERROR;
+        }
+        return field_set.enterParty(this.chr, index);
     }
 
     protected boolean warp(int map_id) {

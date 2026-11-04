@@ -19,6 +19,7 @@
 package tacos.script.npc;
 
 import odin.server.quest.MapleQuest;
+import tacos.server.TacosFieldSet;
 
 /**
  *
@@ -33,12 +34,19 @@ public class NpcDoorOfDimension extends NpcScriptMan {
         105040305, // 中央ダンジョン : スリーピーダンジョン5
         107000402 // 隠れ道 : ルーパン沼2
     };
-    // 次元の世界
-    private final int[] to_map_ids = {
-        108010301, // 隠れ道 : 次元の世界
-        108010201, // 隠れ道 : 次元の世界
-        108010101, // 隠れ道 : 次元の世界
-        108010401 // 隠れ道 : 次元の世界
+    // 次元の世界 (FieldSet)
+    private final String[] field_sets = {
+        "ThirdJob1", // 隠れ道 : 次元の世界
+        "ThirdJob2", // 隠れ道 : 次元の世界
+        "ThirdJob3", // 隠れ道 : 次元の世界
+        "ThirdJob4" // 隠れ道 : 次元の世界
+    };
+    // 3次転職の教官
+    private final int[] instructors = {
+        1022000, // コブシを開いて立て
+        1032001, // ハインズ
+        1012100, // ヘレナ
+        1052001 // ダークロード
     };
     private final int[][] job_ids = {
         {110, 120, 130}, // ファイター, ページ, スピアマン
@@ -58,8 +66,10 @@ public class NpcDoorOfDimension extends NpcScriptMan {
             if ("p1".equals(quest_data)) {
                 for (int job_id : this.job_ids[i]) {
                     if (getPlayer().getJob() == job_id) {
-                        // TODO : FieldSet (ThirdJob1 ~ ThirdJob4) で入場する (1人ずつ, 制限時間20分), 他の人が入場中の場合は "すでに誰かが#b#p1022000##kの分身と戦っています。また後で来てください。" (翻訳)
-                        warp(this.to_map_ids[i]);
+                        if (enterFieldSet(this.field_sets[i], 0) != TacosFieldSet.ENTER_SUCCESS) {
+                            // 翻訳
+                            say("すでに誰かが#b#p" + this.instructors[i] + "##kの分身と戦っています。また後で来てください。");
+                        }
                         return false;
                     }
                 }

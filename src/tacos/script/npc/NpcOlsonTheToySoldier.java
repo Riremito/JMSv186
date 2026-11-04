@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
@@ -79,8 +81,14 @@ public class NpcOlsonTheToySoldier extends NpcScriptMan {
                 return true;
             }
             case 5 -> {
-                // TODO : FieldSet (Ludi023) で入場する (1人ずつ), 時計錘 (item_pendulum) を持っている場合は回収する
-                // 他の人が入場中の場合は "ほかの人が中でドールハウスを探しているようだ。残念ながら一度に1人しか入れられないから、順番を待ってくれ。" (翻訳)
+                int count_pendulum = getPlayer().getItemQuantity(this.item_pendulum, false);
+                if (0 < count_pendulum) {
+                    exchange(0, this.item_pendulum, -count_pendulum);
+                }
+                if (enterFieldSet("Ludi023", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                    // 翻訳
+                    say("ほかの人が中でドールハウスを探しているようだ。残念ながら一度に1人しか入れられないから、順番を待ってくれ。");
+                }
                 return false;
             }
             case -1 -> {

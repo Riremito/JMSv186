@@ -21,6 +21,8 @@ package tacos.script.npc;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
+import tacos.client.TacosCharacter;
+import tacos.server.TacosFieldSet;
 
 /**
  *
@@ -82,6 +84,8 @@ public class NpcTylus extends NpcScriptMan {
     private final int quest_job_3rd = 7500; // 3次転職
     private final int quest_zakum = 7000; // ジャクムダンジョン 1段階
     private final int quest_4th = 6192; // タイラスの護衛
+    private final int item_trust = 4031495; // タイラスの信頼
+    private final int level_4th = 120;
     private final int npc_job = 1022000; // コブシを開いて立て
     private final int item_necklace_of_strength = 4031057; // 強靭のネックレス
     private final int item_necklace_of_wisdom = 4031058; // 知恵のネックレス
@@ -132,7 +136,45 @@ public class NpcTylus extends NpcScriptMan {
                         return false;
                     }
                     case MENU_4TH -> {
-                        // TODO : FieldSet (S4common1) で入場する (パーティーのリーダーのみ, 4次転職した戦士のみ)
+                        // 翻訳
+                        if (getPlayer().getParty() == null || getPlayer().getParty().getLeader().getId() != getPlayer().getId()) {
+                            say("入場するタイミングを決められるのはパーティーリーダーだけだ。");
+                            return false;
+                        }
+                        int job = getPlayer().getJob();
+                        if (job != 112 && job != 122 && job != 132) {
+                            say("戦士がパーティーリーダーでなければならない。");
+                            return false;
+                        }
+                        if (checkItem(this.item_trust)) {
+                            say("君はもう私の信頼を勝ち得ている。もう一度私を守る必要はない。");
+                            return false;
+                        }
+                        for (TacosCharacter member : TacosFieldSet.getPartyMembers(getPlayer())) {
+                            int member_job = member.getJob();
+                            // TODO : lua では4次転職していない人がいる場合に表示される
+                            if (member_job % 10 != 2 || member_job < 100 || 500 <= member_job) {
+                                say("パーティーに4次転職した人がいると、続けることはできません。");
+                                return false;
+                            }
+                            if (member.getLevel() < this.level_4th) {
+                                say("パーティーの中にレベル" + this.level_4th + "未満の人がいます。");
+                                return false;
+                            }
+                        }
+                        switch (enterFieldSetParty("S4common1", 0)) {
+                            case TacosFieldSet.ENTER_SUCCESS -> {
+                            }
+                            case TacosFieldSet.ENTER_NO_PARTY -> {
+                                say("パーティーを組んでいません。友達とパーティーを組んでから始めてください。");
+                            }
+                            case TacosFieldSet.ENTER_USING -> {
+                                say("すでに別のパーティーがミッションを開始しています。少し待ってからもう一度お試しください。");
+                            }
+                            default -> {
+                                say("不明な理由により出発できません。しばらくしてからもう一度お試しください。");
+                            }
+                        }
                         return false;
                     }
                     case MENU_JOB_3RD -> {

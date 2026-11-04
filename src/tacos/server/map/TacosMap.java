@@ -18,6 +18,7 @@
  */
 package tacos.server.map;
 
+import tacos.server.TacosFieldSet;
 import tacos.server.map.object.TacosMapObject;
 import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.object.TacosMonster;
@@ -382,6 +383,7 @@ public class TacosMap extends TacosMapData {
         if (0 < getTimeLimit()) {
             chr.SendPacket(ResCField.Clock((int) getTimer(System.currentTimeMillis())));
         }
+        TacosFieldSet.sendClock(chr);
         sendExpedition(chr, null);
 
         splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId()); // including pet for remote user. (JMS186)

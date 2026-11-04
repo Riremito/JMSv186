@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
@@ -101,13 +103,20 @@ public class NpcCrane extends NpcScriptMan {
                 this.menu = answer;
                 switch (this.menu) {
                     case MENU_ORBIS_TICKETING -> {
-                        // TODO : FieldSet (Crane_SS) で移動する, 他の人が移動中の場合は "今ちょうど別の人がオルビスに向かっているところなんだ。少ししてからまた話しかけてくれ。" (翻訳)
-                        if (!payMoney(beginner ? this.cost_orbis / 10 : this.cost_orbis)) {
+                        int cost = beginner ? this.cost_orbis / 10 : this.cost_orbis;
+                        if (getPlayer().getMeso() < cost) {
                             // 翻訳
                             say("本当にメルは足りているかい？");
                             return false;
                         }
-                        warp(MAP_ORBIS_TICKETING);
+                        if (enterFieldSet("Crane_SS", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                            // 翻訳
+                            say("今ちょうど別の人がオルビスに向かっているところなんだ。少ししてからまた話しかけてくれ。");
+                            return false;
+                        }
+                        // lua では移動中のマップのスクリプトで移動する
+                        getFieldSet("Crane_SS").setTargetFieldID(200000141); // オルビス : ステーション通路<武陵行き>
+                        payMoney(cost);
                         return false;
                     }
                     case MENU_HERB_TOWN -> {
@@ -117,13 +126,19 @@ public class NpcCrane extends NpcScriptMan {
                         return true;
                     }
                     case MENU_MU_LUNG_TEMPLE -> {
-                        // TODO : FieldSet (Crane_MR) で移動する, 他の人が移動中の場合は "今ちょうど別の人が武陵に向かっているところなんだ。少ししてからまた話しかけてくれ。" (翻訳)
-                        if (!payMoney(this.cost_mu_lung)) {
+                        if (getPlayer().getMeso() < this.cost_mu_lung) {
                             // 翻訳
                             say("本当にメルは足りているかい？");
                             return false;
                         }
-                        warp(MAP_MU_LUNG_TEMPLE);
+                        if (enterFieldSet("Crane_MR", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                            // 翻訳
+                            say("今ちょうど別の人が武陵に向かっているところなんだ。少ししてからまた話しかけてくれ。");
+                            return false;
+                        }
+                        // lua では移動中のマップのスクリプトで移動する
+                        getFieldSet("Crane_MR").setTargetFieldID(MAP_MU_LUNG_TEMPLE);
+                        payMoney(this.cost_mu_lung);
                         return false;
                     }
                     default -> {

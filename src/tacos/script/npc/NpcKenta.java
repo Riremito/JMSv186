@@ -18,6 +18,9 @@
  */
 package tacos.script.npc;
 
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
@@ -50,7 +53,19 @@ public class NpcKenta extends NpcScriptMan {
                     say("ねえ～もう#b#t" + this.item_research_report + "##kと#b#t" + this.item_pheromone + "##kは十分持ってるじゃない。もう一度入る必要はないと思うよ～^^");
                     return false;
                 }
-                // TODO : FieldSet (TamePig) への入場, 所持している研究報告書とフェロモンの削除, 入場中の場合は "すでに誰かが見張りブタを守ろうとしているよ。しばらくしてからもう一度試してね。" (翻訳)
+                if (enterFieldSet("TamePig", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                    // 翻訳
+                    getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "すでに誰かが見張りブタを守ろうとしているよ。しばらくしてからもう一度試してね。");
+                    return false;
+                }
+                int count_research_report = getPlayer().getItemQuantity(this.item_research_report, false);
+                if (0 < count_research_report) {
+                    exchange(0, this.item_research_report, -count_research_report);
+                }
+                int count_pheromone = getPlayer().getItemQuantity(this.item_pheromone, false);
+                if (0 < count_pheromone) {
+                    exchange(0, this.item_pheromone, -count_pheromone);
+                }
                 return false;
             }
             default -> {

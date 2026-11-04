@@ -18,8 +18,14 @@
  */
 package tacos.script.npc;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
+import odin.server.quest.MapleQuest;
+import tacos.server.TacosFieldSet;
 import tacos.server.map.TacosMap;
 
 /**
@@ -32,6 +38,9 @@ public class NpcKonpeiBodyguard extends NpcScriptMan {
     private final int item_lantern = 4000141; // 大親分の提灯
     private final int map_boss = 801040100; // ジパング : 悪夢の果て
     private final int max_users = 20;
+    private final int quest_boss = 8001; // 大親分への挑戦 (前回の入場時刻)
+    private final int daily_minutes = 1440;
+    private final DateTimeFormatter time_format = DateTimeFormatter.ofPattern("yy/MM/dd/HH/mm");
 
     @Override
     public boolean action(int status, int answer) {
@@ -52,7 +61,25 @@ public class NpcKonpeiBodyguard extends NpcScriptMan {
                     say("ここまで来たか。悪くない。これからボスに挑んでもらう！お前の力で強大なボスに立ち向かえるのか心配だが…誤解しないでくれ、うちのボスも彼女には歯が立たなかったんだ。もしボスを倒して彼女の櫛を持ち帰ってくれたら、次のステージへ連れて行ってやる。");
                     return false;
                 }
-                // TODO : 1日1回の入場制限 (クエスト 8001), 戦闘中の場合は "悪いが、戦いはもう始まっている。安全のため、今は外で待っていてもらわないと。" (翻訳)
+                LocalDateTime time_now = LocalDateTime.now();
+                String time_last = getPlayer().getQuest(MapleQuest.getInstance(this.quest_boss)).getCustomData();
+                if (time_last != null && !time_last.isEmpty()) {
+                    try {
+                        if (Duration.between(LocalDateTime.parse(time_last, this.time_format), time_now).toMinutes() < this.daily_minutes) {
+                            // 翻訳
+                            say("敵が外にいる！ここで待とう！");
+                            return false;
+                        }
+                    } catch (DateTimeParseException e) {
+                    }
+                }
+                TacosFieldSet field_set = getFieldSet("shouwaBoss");
+                // TODO : FieldSet の変数 shouwaBoss はリアクターのスクリプトで設定される (未実装)
+                if (field_set != null && "yes".equals(field_set.getVar("shouwaBoss"))) {
+                    // 翻訳
+                    say("悪いが、戦いはもう始まっている。安全のため、今は外で待っていてもらわないと。");
+                    return false;
+                }
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("ややっ！お前さんが持っているのはここの姐御の櫛じゃないか！？やっぱりオイラが見込んだとおりだった！お前さんなら大親分のやつを倒せるかもしれねぇ。本丸に攻め込むのか？");
                 askYesNo(nt);
@@ -66,7 +93,9 @@ public class NpcKonpeiBodyguard extends NpcScriptMan {
             }
             case 2 -> {
                 TacosMap map = getPlayer().findMap(this.map_boss);
-                if (map != null && this.max_users <= map.getCharactersSize()) {
+                TacosFieldSet field_set = getFieldSet("shouwaBoss");
+                int users = field_set != null ? field_set.getUserCount() : (map != null ? map.getCharactersSize() : 0);
+                if (this.max_users <= users) {
                     // 翻訳
                     say("今、勇敢な戦士たちがたくさん中で、俺たちのボスに取りついた悪霊と戦っている。部屋には一度に" + this.max_users + "人しか入れないんだ。今は順番を待ってくれ。");
                     return false;
@@ -74,6 +103,7 @@ public class NpcKonpeiBodyguard extends NpcScriptMan {
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }
+                MapleQuest.getInstance(this.quest_boss).forceStart(getPlayer(), getNpcId(), LocalDateTime.now().format(this.time_format));
                 warp(this.map_boss);
                 return false;
             }

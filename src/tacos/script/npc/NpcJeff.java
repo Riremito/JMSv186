@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import tacos.server.TacosFieldSet;
+
 /**
  *
  * @author Riremito
@@ -26,10 +28,38 @@ public class NpcJeff extends NpcScriptMan {
 
     private final int required_level = 50;
     private final int map_dungeon = 211040300; // エルナス : 険しき絶壁1
+    private final int map_freeze = 921100100; // 氷の谷
+    private final int quest_job_4th = 6263; // 4次転職
+    private final int item_hammer = 4031450; // オリハルコンハンマー
     private boolean asked = false;
+    private boolean menu = false;
 
     @Override
     public boolean action(int status, int answer) {
+        if (status == 0 && !this.menu && !this.asked && getPlayer().getQuestStatus(this.quest_job_4th) == 2 && 0 < getPlayer().getItemQuantity(this.item_hammer, false)) {
+            this.menu = true;
+            // 翻訳
+            NpcScriptTag nt = new NpcScriptTag();
+            nt.add("お前…本当に#b#t" + this.item_hammer + "##kを作ったのか。ボーゲンほど品質を保証できる者はいない。よし、#m" + this.map_freeze + "#に入れてやろう。\r\n#b#L0# はい。#m" + this.map_freeze + "#に連れて行ってください。#l\r\n#L1# エルナス山に入りたいです。#l", false);
+            askMenu(nt);
+            return true;
+        }
+        if (this.menu) {
+            if (status == 1 && !this.asked) {
+                if (answer == 0) {
+                    if (enterFieldSet("S4freeze", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                        // 翻訳
+                        say("ほかのキャラクターがクエスト中だ。後で話しかけてくれ。");
+                    }
+                    return false;
+                }
+                if (answer != 1) {
+                    return false;
+                }
+            }
+            // メニューの分だけずらす
+            status--;
+        }
         // いいえを選択した
         if (status == 0 && this.asked) {
             // 翻訳
@@ -38,7 +68,6 @@ public class NpcJeff extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                // TODO : クエスト6263 (4次転職) 完了後、オリハルコンハンマー (4031450) を持っている場合は FieldSet (S4freeze) で氷の谷 (921100100) に入場するメニュー
                 // 翻訳
                 say("おい、ここからもっと遠くへ行きたいようだな。だが、向こうには凶暴で危険なモンスターがそこら中にいる。準備ができていると思っていても、気をつけるんだ。昔、この町の勇敢な男たちが町を脅かす者を倒しに向かったが、二度と戻ってこなかった…", false, true);
                 return true;

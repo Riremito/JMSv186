@@ -21,6 +21,7 @@ package tacos.script.npc;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
+import tacos.server.TacosFieldSet;
 
 /**
  *
@@ -149,7 +150,10 @@ public class NpcAdobis extends NpcScriptMan {
                             say("#b#t" + this.item_glass_bottle + "##kがなければ、溶岩の中心部に入ることはできない。");
                             return false;
                         }
-                        // TODO : FieldSet (S4frame) で入場する, 他の人が挑戦中の場合は "残念ながら、今はほかの誰かが中でクエストに挑んでいる。後でもう一度試してくれ。" (翻訳)
+                        if (enterFieldSet("S4frame", 0) != TacosFieldSet.ENTER_SUCCESS) {
+                            // 翻訳
+                            say("残念ながら、今はほかの誰かが中でクエストに挑んでいる。後でもう一度試してくれ。");
+                        }
                         return false;
                     }
                     default -> {
