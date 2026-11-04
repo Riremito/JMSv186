@@ -388,6 +388,11 @@ public class NpcMan {
                 // 193000000, ネットカフェ
                 npc_script = new NpcComputer();
             }
+            case 1052015 -> {
+                // 1052015, ビリ
+                // 193000000,  : ネットカフェ
+                npc_script = new NpcBilly();
+            }
             case 1052100 -> {
                 // 1052100, ドンジオバネ
                 // 103000005, カニングシティー : 美容院
@@ -1913,6 +1918,16 @@ public class NpcMan {
                 // 9201052, フォックスウィット
                 // 104000000, 港口
                 npc_script = new NpcProfessorFoxwit();
+            }
+            case 9201082 -> {
+                // 9201082, ペティト
+                // 801000000, ジパング : ショーワ町
+                npc_script = new NpcSpindle();
+            }
+            case 9201094 -> {
+                // 9201094, コリーン
+                // 240000000, リプレ : リプレ
+                npc_script = new NpcCorine();
             }
             case 9201112 -> {
                 // 9201112, ジャック
