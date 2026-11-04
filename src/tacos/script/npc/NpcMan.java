@@ -170,6 +170,16 @@ public class NpcMan {
                 // 100000105, ヘネシス : スキンケアーショップ
                 npc_script = new NpcMsTan();
             }
+            case 1012115 -> {
+                // 1012115, ヘネシス草むら
+                // 100020000, ヘネシス : 東の草むら
+                npc_script = new NpcHenesysForest();
+            }
+            case 1012116 -> {
+                // 1012116, ヘネシス草むら
+                // 100020000, ヘネシス : 東の草むら
+                npc_script = new NpcHenesysForest();
+            }
             case 1012119 -> {
                 // 1012119, ヘンケル
                 // 100010000, ヘネシス : 東の丘
@@ -457,6 +467,11 @@ public class NpcMan {
                 // 108000402, 盗賊の工事現場3
                 npc_script = new NpcThiefJobInstructorTest();
             }
+            case 1072008 -> {
+                // 1072008, カイリン
+                // 108000500, 隠れ道 : 海賊のテスト場
+                npc_script = new NpcKyrinTestRoom();
+            }
             case 1081001 -> {
                 // 1081001, パイソン
                 npc_script = new NpcPison();
@@ -614,6 +629,11 @@ public class NpcMan {
                 // 1204001, フランシス
                 // 910510200, 隠れ道 : 人形使いの洞窟
                 npc_script = new NpcFrancis();
+            }
+            case 1300014 -> {
+                // 1300014, セルフ
+                // 106020300, キノコ城 : 奥深きキノコの森
+                npc_script = new NpcSelf();
             }
             case 2010000 -> {
                 // 2010000, チャーリー軍曹
@@ -1142,6 +1162,11 @@ public class NpcMan {
                 // 925023800, 武陵道場 38階
                 npc_script = new NpcSoGong();
             }
+            case 2091006 -> {
+                // 2091006, 武陵道場掲示板
+                // 250000100, 武陵 : 武陵神社
+                npc_script = new NpcMuLungDojoBulletinBoard();
+            }
             case 2096000 -> {
                 // 2096000, 練習記録帳
                 npc_script = new NpcPracticeChart();
@@ -1156,10 +1181,20 @@ public class NpcMan {
                 // 260000200, アリアント村 : アリアント集落地
                 npc_script = new NpcJiyur();
             }
+            case 2101003 -> {
+                // 2101003, アディン
+                // 260000200, アリアント村 : アリアント集落地
+                npc_script = new NpcArdin();
+            }
             case 2101011 -> {
                 // 2101011, セザン
                 // 260000200, アリアント村 : アリアント集落地
                 npc_script = new NpcSejan();
+            }
+            case 2101013 -> {
+                // 2101013, カルタサ
+                // 260010600, バーニングロード : 流浪団のテント
+                npc_script = new NpcKarcasa();
             }
             case 2101014 -> {
                 // 2101014, セザール
@@ -1625,6 +1660,11 @@ public class NpcMan {
                 // 9201022, トーマス
                 // 680000500, ウェディングタウン : 出口
                 npc_script = new NpcThomasSwift();
+            }
+            case 9201023 -> {
+                // 9201023, ナナ
+                // 100000200, ヘネシス : 広場
+                npc_script = new NpcNana();
             }
             case 9201051 -> {
                 // 9201051, ジョン・バリケード
