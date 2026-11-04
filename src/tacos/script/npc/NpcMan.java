@@ -1068,6 +1068,11 @@ public class NpcMan {
                 // 240010501, リプレ : 師弟の森
                 npc_script = new NpcHellin();
             }
+            case 2081500 -> {
+                // 2081500, セミュオル
+                // 240010501, リプレ : 師弟の森
+                npc_script = new NpcSamuel();
+            }
             case 2082000 -> {
                 // 2082000, ミュ
                 // 240000100, リプレ : チケット売場
@@ -1554,6 +1559,11 @@ public class NpcMan {
                 // 9110010, キノコの像
                 // 800000000, キノコ神社
                 npc_script = new NpcGachaponStatue();
+            }
+            case 9110105 -> {
+                // 9110105, ナオスケ
+                // 800040211, ジパング : 楓城 百間廊下
+                npc_script = new NpcNaosuke();
             }
             case 9110107 -> {
                 // 9110107, 駕籠
