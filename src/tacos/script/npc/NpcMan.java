@@ -2445,6 +2445,10 @@ public class NpcMan {
                 // 809050017,  : イベント出口
                 npc_script = new NpcGuideRuru();
             }
+            case 9105000 -> {
+                // 9105000, 回転式福引器ポンポン
+                npc_script = new NpcPonPon();
+            }
             case 9105007 -> {
                 // 9105007, ゲンタ
                 npc_script = new NpcGenta();
@@ -2455,6 +2459,16 @@ public class NpcMan {
                 // 9110008, ペリー
                 // 800000000, キノコ神社
                 npc_script = new NpcPerry();
+            }
+            case 9110002 -> {
+                // 9110002, 木野子のこ
+                // 800000000, ジパング : キノコ神社
+                npc_script = new NpcKinoKonoko();
+            }
+            case 9110009 -> {
+                // 9110009, 賽銭箱
+                // 800000000, ジパング : キノコ神社
+                npc_script = new NpcSaisenBox();
             }
             case 9110010 -> {
                 // 9110010, キノコの像
@@ -2471,6 +2485,16 @@ public class NpcMan {
                 // 800000000, キノコ神社
                 // 800040000, 楓城 天下泰平
                 npc_script = new NpcPalakeen();
+            }
+            case 9110109 -> {
+                // 9110109, ペッタン
+                // 800040100, ジパング : 楓城 城門内
+                npc_script = new NpcPettan();
+            }
+            case 9110113 -> {
+                // 9110113, ビュンビュン
+                // 800040000, ジパング : 楓城 天下泰平
+                npc_script = new NpcBuunBuun();
             }
             case 9120003 -> {
                 // 9120003, ヒカリ
@@ -2932,15 +2956,75 @@ public class NpcMan {
                 // 701000200, 上海 : 豫園
                 npc_script = new NpcRuHua();
             }
+            case 9310031 -> {
+                // 9310031, シャオイェズ
+                // 702000000, 中国 : 宋山里
+                npc_script = new NpcXiaoYezi();
+            }
+            case 9310032 -> {
+                // 9310032, チゥブラン
+                // 702000000, 中国 : 宋山里
+                npc_script = new NpcChiuBuran();
+            }
+            case 9310034 -> {
+                // 9310034, タァパオ
+                // 702100000, 中国 : 大雄宝殿
+                npc_script = new NpcTaPao();
+            }
+            case 9310035 -> {
+                // 9310035, リャオパン
+                // 702100000, 中国 : 大雄宝殿
+                npc_script = new NpcLiaoPan();
+            }
+            case 9310036 -> {
+                // 9310036, ウォンピン
+                // 702000000, 中国 : 宋山里
+                npc_script = new NpcWonPin();
+            }
+            case 9310037 -> {
+                // 9310037, ルファ
+                // 702000000, 中国 : 宋山里
+                npc_script = new NpcRuFa();
+            }
             case 9310039 -> {
                 // 9310039, 掛け軸
                 // 702070400, 蔵経閣7階
                 npc_script = new NpcHangingScrollEnter();
             }
+            case 9310043 -> {
+                // 9310043, プゥズ
+                // 702000000, 中国 : 宋山里
+                npc_script = new NpcPuZu();
+            }
             case 9310044 -> {
                 // 9310044, 掛け軸
                 // 702060000, 修行の間
                 npc_script = new NpcHangingScrollExit();
+            }
+            case 9330021 -> {
+                // 9330021, ニキ
+                // 741000000, 台湾 : 夜市場
+                npc_script = new NpcNiki();
+            }
+            case 9330022 -> {
+                // 9330022, ジュリ
+                // 741000000, 台湾 : 夜市場
+                npc_script = new NpcJuli();
+            }
+            case 9330023 -> {
+                // 9330023, 院長ミワック
+                // 741000001, 台湾 : 夜市場病院内部
+                npc_script = new NpcMiwak();
+            }
+            case 9330024 -> {
+                // 9330024, 助手クワン
+                // 741000001, 台湾 : 夜市場病院内部
+                npc_script = new NpcKwan();
+            }
+            case 9330025 -> {
+                // 9330025, カララン
+                // 741000001, 台湾 : 夜市場病院内部
+                npc_script = new NpcKararan();
             }
             case 9330028 -> {
                 // 9330028, メロノン
@@ -2969,6 +3053,11 @@ public class NpcMan {
                 // 800000000, キノコ神社
                 // 801000000, ショーワ町
                 npc_script = new NpcKedrick();
+            }
+            case 9330073 -> {
+                // 9330073, 海産物店チョム
+                // 741000000, 台湾 : 夜市場
+                npc_script = new NpcChom();
             }
             default -> {
                 return false;
