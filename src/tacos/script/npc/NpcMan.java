@@ -2698,6 +2698,49 @@ public class NpcMan {
                 // 680000000, ウェディングタウン : ウェディングタウン
                 npc_script = new NpcLuaEmpty();
             }
+            case 9201043 -> {
+                // 9201043, Amos the Strong
+                // 670010000, Hidden Street : Amos' Training Ground
+                npc_script = new NpcAmosEnter();
+            }
+            case 9201044 -> {
+                // 9201044, Amos the Strong
+                // 670010200, Hidden Street : Stage 1 - Magik Mirror
+                // 670010300, Hidden Street : Stage 2 - Heart Strings
+                // 670010301, Hidden Street : Stage 2 - Heart Strings
+                // 670010302, Hidden Street : Stage 2 - Heart Strings
+                // 670010400, Hidden Street : Stage 3 - Twisted Switcher
+                npc_script = new NpcAmosStage();
+            }
+            case 9201045 -> {
+                // 9201045, Amos the Strong
+                // 670010500, Hidden Street : Stage 4 - Last Man Standing
+                // 670010600, Hidden Street : Stage 5 - Fluttering Hearts
+                // 670010700, Hidden Street : Stage 6 - Love Hurts
+                // 670010750, Hidden Street : Stage 7 - Amos' Vault for Couples
+                npc_script = new NpcAmosStage2();
+            }
+            case 9201046 -> {
+                // 9201046, Amos the Strong
+                // 670010800, Hidden Street : Stage 7 - Amos' Vault
+                npc_script = new NpcAmosVault();
+            }
+            case 9201047 -> {
+                // 9201047, The Glimmer Man
+                // 670010200, Hidden Street : Stage 1 - Magik Mirror
+                // 670011000, Hidden Street : Exit
+                npc_script = new NpcGlimmerMan();
+            }
+            case 9201048 -> {
+                // 9201048, Amos the Strong
+                // 670010100, Hidden Street : Entrance of Amorian Challenge
+                npc_script = new NpcAmosEntrance();
+            }
+            case 9201050 -> {
+                // 9201050, Icebyrd Slimm
+                // 600000000, New Leaf City : NLC Town Center
+                npc_script = new NpcIcebyrdSlimm();
+            }
             case 9201051 -> {
                 // 9201051, ジョン・バリケード
                 // 104000000, 港口
@@ -2707,6 +2750,31 @@ public class NpcMan {
                 // 9201052, フォックスウィット
                 // 104000000, 港口
                 npc_script = new NpcProfessorFoxwit();
+            }
+            case 9201057 -> {
+                // 9201057, Bell
+                // 103000100, Victoria Road : Subway Ticketing Booth
+                // 600010001, New Leaf City : NLC Subway Station
+                // 600010002, New Leaf City : Waiting Room(From NLC to KC)
+                // 600010004, Kerning City Town Street : Waiting Room(From KC to NLC)
+                npc_script = new NpcBell();
+            }
+            case 9201068 -> {
+                // 9201068, NLC Ticket Gate
+                // 600010001, New Leaf City : NLC Subway Station
+                npc_script = new NpcNlcTicketGate();
+            }
+            case 9201071 -> {
+                // 9201071, Sunstone Grave
+                npc_script = new NpcSunstoneGrave();
+            }
+            case 9201072 -> {
+                // 9201072, Moonstone Grave
+                npc_script = new NpcMoonstoneGrave();
+            }
+            case 9201073 -> {
+                // 9201073, Tombstone
+                npc_script = new NpcTombstone();
             }
             case 9201082 -> {
                 // 9201082, ペティト
