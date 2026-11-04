@@ -2851,6 +2851,35 @@ public class NpcMan {
                 // 502029000, 墜落した宇宙船入口
                 npc_script = new NpcOSSSResearcher();
             }
+            case 9270048 -> {
+                // 9270048, Raja
+                // 550000000, Malaysia : Trend Zone Metropolis
+                npc_script = new NpcRaja();
+            }
+            case 9270049 -> {
+                // 9270049, Najib
+                // 550000000, Malaysia : Trend Zone Metropolis
+                npc_script = new NpcNajib();
+            }
+            case 9270050 -> {
+                // 9270050, Rosana
+                // 550000000, Malaysia : Trend Zone Metropolis
+                npc_script = new NpcRosana();
+            }
+            case 9270051 -> {
+                // 9270051, Mei Mei
+                // 550000000, Malaysia : Trend Zone Metropolis
+                npc_script = new NpcMeiMei();
+            }
+            case 9270052 -> {
+                // 9270052, Nina
+                // 550000000, Malaysia : Trend Zone Metropolis
+                npc_script = new NpcNina();
+            }
+            case 9270053 -> {
+                // 9270053, Kok Soon
+                npc_script = new NpcKokSoon();
+            }
             case 9310004 -> {
                 // 9310004, 婦人警官ポリン
                 // 701010320, 中原山岳地帯2
@@ -2877,6 +2906,31 @@ public class NpcMan {
                 // 9310013, シャッペリー
                 // 701000100, 中国 : 上海飛行場
                 npc_script = new NpcYangThePilot();
+            }
+            case 9310014 -> {
+                // 9310014, 薘叔
+                // 701000200, 上海 : 豫園
+                npc_script = new NpcDaShu();
+            }
+            case 9310015 -> {
+                // 9310015, 阿莓
+                // 701000200, 上海 : 豫園
+                npc_script = new NpcAMei();
+            }
+            case 9310016 -> {
+                // 9310016, 青瑕
+                // 701000200, 上海 : 豫園
+                npc_script = new NpcQingXia();
+            }
+            case 9310017 -> {
+                // 9310017, 紫瑕
+                // 701000200, 上海 : 豫園
+                npc_script = new NpcZiXia();
+            }
+            case 9310018 -> {
+                // 9310018, 如花
+                // 701000200, 上海 : 豫園
+                npc_script = new NpcRuHua();
             }
             case 9310039 -> {
                 // 9310039, 掛け軸
