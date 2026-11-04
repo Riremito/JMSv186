@@ -1813,6 +1813,11 @@ public class NpcMan {
                 // 950000000, 여행을 끝내고
                 npc_script = new NpcSpinel();
             }
+            case 9000039 -> {
+                // 9000039, 要員W
+                // 922210300,  : スイカ畑出口
+                npc_script = new NpcLuaEmpty();
+            }
             case 9000040 -> {
                 // 9000040, ダリア
                 // 100000200, 広場
