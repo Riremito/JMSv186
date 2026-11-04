@@ -30,9 +30,15 @@ public class NpcGuildReturnStone extends NpcScriptMan {
 
     private final int map_return = 990001100; // 帰り道
     private final String field_set_name = "Guild1";
+    private int last_status = 0;
 
     @Override
     public boolean action(int status, int answer) {
+        // いいえ の場合は会話を終了する
+        if (status < this.last_status) {
+            return false;
+        }
+        this.last_status = status;
         switch (status) {
             case 0 -> {
                 // 翻訳

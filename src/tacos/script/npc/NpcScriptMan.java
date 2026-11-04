@@ -19,21 +19,41 @@
 package tacos.script.npc;
 
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
+import odin.handling.world.MapleParty;
 import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
+import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.builder.PB_ScriptMessage;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.TacosFieldSet;
+import tacos.server.map.TacosMap;
+import tacos.server.map.TacosPortal;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosReactor;
 import tacos.wz.WzXML;
@@ -44,6 +64,10 @@ import tacos.wz.WzXML;
  */
 public abstract class NpcScriptMan {
 
+    // lua の currentTime の形式
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yy/MM/dd/HH/mm");
+    // NPC の変数 (lua の self.getStrReg, self.setStrReg), チャンネル -> NPC ID -> 名前 -> 値
+    private static final HashMap<Integer, HashMap<Integer, HashMap<String, String>>> NPC_VARS = new HashMap<>();
     private int npc_script_id;
 
     public NpcScriptMan() {
@@ -425,5 +449,236 @@ public abstract class NpcScriptMan {
 
     protected boolean warp(int map_id, String portal_name) {
         return this.chr.changeMapById(map_id, portal_name);
+    }
+
+    // lua の target.isPartyBoss
+    protected boolean isPartyBoss() {
+        MapleParty party = this.chr.getParty();
+        return party != null && party.getLeader().getId() == this.chr.getId();
+    }
+
+    // lua の target.transferParty (同じマップにいるパーティーメンバーを移動させる)
+    protected void transferParty(int map_id, String portal_name) {
+        for (TacosCharacter member : TacosFieldSet.getPartyMembers(this.chr)) {
+            member.changeMapById(map_id, portal_name);
+        }
+    }
+
+    // lua の inventory.itemCount
+    protected int getItemCount(int item_id) {
+        return this.chr.getItemQuantity(item_id, false);
+    }
+
+    // 所持しているアイテムをすべて消費する
+    protected boolean removeItemAll(int item_id) {
+        int count = getItemCount(item_id);
+        if (count <= 0) {
+            return true;
+        }
+        return exchange(0, item_id, -count);
+    }
+
+    // lua の inventory.slotCount( type ) > inventory.holdCount( type )
+    protected boolean hasEmptySlot(MapleInventoryType type) {
+        return !this.chr.getInventory(type).isFull();
+    }
+
+    // lua の random( min, max ), min 以上 max 以下
+    protected int random(int min, int max) {
+        return Randomizer.rand(min, max);
+    }
+
+    // lua の shuffle( 1, text ), 文字の並びをランダムに入れ替える
+    protected String shuffle(String text) {
+        ArrayList<Character> chars = new ArrayList<>();
+        for (char c : text.toCharArray()) {
+            chars.add(c);
+        }
+        Collections.shuffle(chars);
+        StringBuilder sb = new StringBuilder();
+        for (char c : chars) {
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    // lua の qr.get
+    protected String getQuestData(int quest_id) {
+        String data = this.chr.getQuest(MapleQuest.getInstance(quest_id)).getCustomData();
+        return data == null ? "" : data;
+    }
+
+    // lua の qr.set
+    protected void setQuestData(int quest_id, String data) {
+        MapleQuest.getInstance(quest_id).forceStart(this.chr, getNpcId(), data);
+    }
+
+    // lua の qr.remove
+    protected void removeQuestData(int quest_id) {
+        MapleQuest.getInstance(quest_id).forfeit(this.chr);
+    }
+
+    // lua の currentTime
+    protected String currentTime() {
+        return LocalDateTime.now().format(TIME_FORMAT);
+    }
+
+    // lua の compareTime( time1, time2 ), time1 - time2 (分), 不正な値の場合は time2 を十分に古い時刻として扱う
+    protected long compareTime(String time1, String time2) {
+        try {
+            return ChronoUnit.MINUTES.between(LocalDateTime.parse(time2, TIME_FORMAT), LocalDateTime.parse(time1, TIME_FORMAT));
+        } catch (DateTimeParseException e) {
+            return Long.MAX_VALUE;
+        }
+    }
+
+    // lua の field.effectScreen
+    protected void effectScreen(String path) {
+        this.chr.getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(path).build()));
+    }
+
+    // lua の field.effectSound
+    protected void effectSound(String path) {
+        this.chr.getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(path).build()));
+    }
+
+    // lua の field.effectObject
+    protected void effectObject(String path) {
+        this.chr.getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(path).build()));
+    }
+
+    // lua の field.enablePortal
+    protected boolean enablePortal(String portal_name, boolean enable) {
+        TacosPortal portal = this.chr.getMap().getPortal(portal_name);
+        if (portal == null) {
+            return false;
+        }
+        portal.setPortalState(enable);
+        return true;
+    }
+
+    // lua の field.notice
+    protected void fieldNotice(OpsBroadcastMsg type, String text) {
+        this.chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(type, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    // lua の target.message
+    protected void message(String text) {
+        this.chr.dropMessage(OpsBroadcastMsg.BM_EVENT.get(), text);
+    }
+
+    // lua の self.sendMessage, 同じチャンネルにいるキャラクターにメッセージを送る
+    protected boolean sendMessage(String character_name, String text) {
+        TacosCharacter target = this.chr.getChannelServer().getOnlinePlayers().findByName(character_name);
+        if (target == null) {
+            return false;
+        }
+        // TODO : lua の sendMessage の表示方法は不明
+        target.dropMessage(OpsBroadcastMsg.BM_EVENT.get(), text);
+        return true;
+    }
+
+    // lua の field.getUserCount
+    protected int getUserCount() {
+        return this.chr.getMap().getCharactersSize();
+    }
+
+    // lua の field.transferFieldAll (同じマップにいるユーザーを全員移動させる)
+    protected void transferFieldAll(int map_id, String portal_name) {
+        for (TacosCharacter user : this.chr.getMap().getAllPlayers()) {
+            user.changeMapById(map_id, portal_name);
+        }
+    }
+
+    // lua の Field( map_id ).getUserCount
+    protected int getUserCount(int map_id) {
+        TacosMap map = this.chr.getChannelServer().findMap(map_id);
+        if (map == null) {
+            return 0;
+        }
+        return map.getCharactersSize();
+    }
+
+    // lua の field.countUserInArea
+    protected int countUserInArea(int index) {
+        List<Rectangle> areas = this.chr.getMap().getNodeInfo().getAreas();
+        if (index < 0 || areas.size() <= index) {
+            return 0;
+        }
+        int count = 0;
+        for (TacosCharacter user : this.chr.getMap().getAllPlayers()) {
+            if (areas.get(index).contains(user.getPosition())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // lua の Field( map_id ).getMobCount( mob_id )
+    protected int getMobCount(int map_id, int mob_id) {
+        TacosMap map = this.chr.getChannelServer().findMap(map_id);
+        if (map == null) {
+            return 0;
+        }
+        int count = 0;
+        for (TacosMonster monster : map.getAllMonsters()) {
+            if (monster.getId() == mob_id) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // lua の field.setMobGen
+    // TODO : 特定のモンスターの出現の切り替えは未実装
+    protected void setMobGen(int map_id, boolean enable, int mob_id) {
+        DebugLogger.ErrorLog("NpcScriptMan : setMobGen is not implemented. map = " + map_id + ", enable = " + enable + ", mob = " + mob_id);
+    }
+
+    // lua の field.removeAllMob
+    protected void removeAllMob(int map_id) {
+        TacosMap map = this.chr.getChannelServer().findMap(map_id);
+        if (map == null) {
+            return;
+        }
+        map.killAllMonsters(false);
+    }
+
+    // lua の target.isWear
+    protected boolean isWear(int item_id) {
+        return this.chr.getInventory(MapleInventoryType.EQUIPPED).findById(item_id) != null;
+    }
+
+    // lua の field.summonMob
+    protected void summonMob(int x, int y, int mob_id) {
+        this.chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mob_id), new Point(x, y));
+    }
+
+    // lua の self.getStrReg
+    protected String getNpcVar(String key) {
+        return getNpcVar(getNpcId(), key);
+    }
+
+    // lua の self.setStrReg
+    protected void setNpcVar(String key, String value) {
+        setNpcVar(getNpcId(), key, value);
+    }
+
+    // lua の field.getNpcStrVar
+    protected String getNpcVar(int npc_id, String key) {
+        synchronized (NPC_VARS) {
+            HashMap<Integer, HashMap<String, String>> channel_vars = NPC_VARS.get(this.chr.getChannelId());
+            if (channel_vars == null || channel_vars.get(npc_id) == null) {
+                return "";
+            }
+            return channel_vars.get(npc_id).getOrDefault(key, "");
+        }
+    }
+
+    // lua の field.setNpcVar
+    protected void setNpcVar(int npc_id, String key, String value) {
+        synchronized (NPC_VARS) {
+            NPC_VARS.computeIfAbsent(this.chr.getChannelId(), k -> new HashMap<>()).computeIfAbsent(npc_id, k -> new HashMap<>()).put(key, value);
+        }
     }
 }
