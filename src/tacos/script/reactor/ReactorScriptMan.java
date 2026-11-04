@@ -143,6 +143,36 @@ public abstract class ReactorScriptMan {
         this.rm.warp(map_id, portal);
     }
 
+    public void warpS(int map_id, int portal) {
+        this.rm.warpS(map_id, portal);
+    }
+
+    // マップにいる全てのキャラクターを移動
+    public void warpMapAll(int map_id, int portal) {
+        this.rm.warpMap(map_id, portal);
+    }
+
+    // 同じチャンネルのマップ
+    public TacosMap getMapById(int map_id) {
+        return this.rm.getMap(map_id);
+    }
+
+    public void killAllMob() {
+        this.rm.killAllMob();
+    }
+
+    public void spawnZakum() {
+        this.rm.spawnZakum();
+    }
+
+    public void gainGP(int gp) {
+        this.rm.gainGP(gp);
+    }
+
+    public void givePartyNX(int amount) {
+        this.rm.givePartyNX(amount);
+    }
+
     // 移動先の候補からランダムに選んで移動 (ReactorAction.img の type 0)
     public void warpRandom(int[] map_ids, String[] portals) {
         int index = Randomizer.nextInt(map_ids.length);

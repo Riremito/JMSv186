@@ -64,6 +64,21 @@ public class ReactorMan {
                 // 101020000, エリニア : 北の森
                 reactor_script = new Reactor_Ellinia_VFlowerItem0();
             }
+            case 1020000 -> {
+                // 1020000, s4hitmanMap0
+                // 910200000,  : 未公開の遺跡１
+                reactor_script = new Reactor_Victoria_S4hitmanMap0();
+            }
+            case 1020001 -> {
+                // 1020001, s4hitmanMap1
+                // 910200000,  : 未公開の遺跡１
+                reactor_script = new Reactor_Victoria_S4hitmanMap0();
+            }
+            case 1020002 -> {
+                // 1020002, s4hitmanMap2
+                // 910200000,  : 未公開の遺跡１
+                reactor_script = new Reactor_Victoria_S4hitmanMap0();
+            }
             case 1020003 -> {
                 // 1020003, s4hitmanMap3
                 // 910200001,  : 未公開の遺跡２
@@ -287,6 +302,11 @@ public class ReactorMan {
                 // 200000200, オルビス : オルビス公園
                 reactor_script = new Reactor_Orbis_OBoxItem0();
             }
+            case 2002001 -> {
+                // 2002001, fgodItem0
+                // 920010000, 女神の塔 : 入口
+                reactor_script = new Reactor_Orbis_FgodItem0();
+            }
             case 2002002 -> {
                 // 2002002, fgodItem1
                 // 920010604, 女神の塔 : 客室304号
@@ -347,6 +367,11 @@ public class ReactorMan {
                 // 920010700, 女神の塔 : 登り道
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 2002014 -> {
+                // 2002014, fgodItem13
+                // 920011100, 女神の塔 : 宝物倉庫
+                reactor_script = new Reactor_Orbis_FgodItem13();
+            }
             case 2002015 -> {
                 // 2002015, fgodItem14
                 reactor_script = new Reactor_Common_DropItems();
@@ -355,6 +380,68 @@ public class ReactorMan {
                 // 2002016, fgodItem15
                 // 926000010, アリアント : 王妃の宝物庫
                 reactor_script = new Reactor_Common_DropItems();
+            }
+            case 2002017 -> {
+                // 2002017, fgodItem16
+                // 920010911, 女神の塔 : 監獄倉庫1
+                // 920010912, 女神の塔 : 監獄倉庫1
+                // 920010921, 女神の塔 : 監獄倉庫2
+                // 920010922, 女神の塔 : 監獄倉庫2
+                // 920010931, 女神の塔 : 監獄倉庫3
+                // 920010932, 女神の塔 : 監獄倉庫3
+                reactor_script = new Reactor_Orbis_FgodItem16();
+            }
+            case 2002018 -> {
+                // 2002018, fgodItem17
+                // 920010912, 女神の塔 : 監獄倉庫1
+                // 920010922, 女神の塔 : 監獄倉庫2
+                // 920010932, 女神の塔 : 監獄倉庫3
+                reactor_script = new Reactor_Orbis_FgodItem16();
+            }
+            case 2006000 -> {
+                // 2006000, fgodNPC0
+                // 920010000, 女神の塔 : 入口
+                reactor_script = new Reactor_Orbis_FgodNPC0();
+            }
+            case 2006001 -> {
+                // 2006001, fgodNPC1
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_FgodNPC0();
+            }
+            case 2008000 -> {
+                // 2008000, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008001 -> {
+                // 2008001, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008002 -> {
+                // 2008002, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008003 -> {
+                // 2008003, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008004 -> {
+                // 2008004, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008005 -> {
+                // 2008005, (action ãªã)
+                // 920010100, 女神の塔 : 中央塔
+                reactor_script = new Reactor_Orbis_2008000();
+            }
+            case 2008006 -> {
+                // 2008006, (action ãªã)
+                // 920010400, 女神の塔 : 休憩室
+                reactor_script = new Reactor_Orbis_2008000();
             }
             case 2092000 -> {
                 // 2092000, snowdrop
@@ -400,6 +487,15 @@ public class ReactorMan {
                 // 280011005, 閉鉱 : 16区域5
                 // 280011006, 閉鉱 : 16区域6
                 reactor_script = new Reactor_ElNath_BoxMob0();
+            }
+            case 2111001 -> {
+                // 2111001, boss
+                // 280030000, ジャクムダンジョン : ジャクムの祭壇
+                reactor_script = new Reactor_ElNath_Boss();
+            }
+            case 2111101 -> {
+                // 2111101, chaosboss
+                reactor_script = new Reactor_ElNath_Boss();
             }
             case 2112000 -> {
                 // 2112000, boxItem0
@@ -545,6 +641,10 @@ public class ReactorMan {
                 // 921100210,  : フリズベルクの巣
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 2118003 -> {
+                // 2118003, (action ãªã)
+                reactor_script = new Reactor_ElNath_2118003();
+            }
             case 2119000 -> {
                 // 2119000, scaScript1
                 // 211041100, エルナス : 死んだ木の森1
@@ -585,6 +685,18 @@ public class ReactorMan {
                 // 922000010,  : 人形の家
                 reactor_script = new Reactor_Ludibrium_Go221024400();
             }
+            case 2200001 -> {
+                // 2200001, ludiPotal0
+                // 220030200, ルディブリアム : オモチャ工場-メイン工程2
+                // 220030300, ルディブリアム : オモチャ工場-2工程&lt;3 区域&gt;
+                // 220030400, ルディブリアム : オモチャ工場-2工程&lt;4 区域&gt;
+                reactor_script = new Reactor_Ludibrium_LudiPotal0();
+            }
+            case 2200002 -> {
+                // 2200002, go922010201
+                // 922010200, ルディブリアム : 放置された塔&lt;2段階&gt;
+                reactor_script = new Reactor_Ludibrium_Go922010201();
+            }
             case 2201000 -> {
                 // 2201000, ludiMob0
                 // 922000020, ルディブリアム : 秘密工程１
@@ -604,6 +716,11 @@ public class ReactorMan {
                 // 2201003, ludiBoss0
                 // 922010900, ルディブリアム : 時空の亀裂
                 reactor_script = new Reactor_Ludibrium_LudiBoss0();
+            }
+            case 2201004 -> {
+                // 2201004, boss2
+                // 220080001, ルディブリアム : 時計塔の深層部
+                reactor_script = new Reactor_Ludibrium_Boss2();
             }
             case 2202000 -> {
                 // 2202000, ludiquest0
@@ -643,6 +760,11 @@ public class ReactorMan {
                 // 922010505, ルディブリアム : 塔の迷路５
                 // 922010506, ルディブリアム : 塔の迷路６
                 reactor_script = new Reactor_Common_DropItems();
+            }
+            case 2202004 -> {
+                // 2202004, ludiquest4
+                // 922011000, ルディブリアム : 放置された塔&lt;ボーナス&gt;
+                reactor_script = new Reactor_Ludibrium_Ludiquest4();
             }
             case 2212000 -> {
                 // 2212000, osquest0
@@ -770,6 +892,11 @@ public class ReactorMan {
                 // 923010000,  : ケンタの飼育室
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 2309000 -> {
+                // 2309000, (action ãªã)
+                // 923020114, 霧の海 : 第5作戦室
+                reactor_script = new Reactor_Aquarium_2309000();
+            }
             case 2401000 -> {
                 // 2401000, hontaleBoss
                 // 240060200, リプレ : ホーンテイルの洞窟
@@ -896,6 +1023,12 @@ public class ReactorMan {
                 // 925100300,  : 甲板突破2
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 2512001 -> {
+                // 2512001, davyItem1
+                // 925100201,  : 100年生キキョウの領域1
+                // 925100301,  : 100年生キキョウの領域2
+                reactor_script = new Reactor_HerbTown_DavyItem1();
+            }
             case 2516000 -> {
                 // 2516000, davyNPC0
                 // 925100500,  : 海賊船長の威厳
@@ -909,6 +1042,26 @@ public class ReactorMan {
                 // 926100202,  : 暗い研究室2
                 // 926110202,  : 暗い研究室2
                 reactor_script = new Reactor_Common_2518000();
+            }
+            case 2519000 -> {
+                // 2519000, davyScript0
+                // 925100400,  : 海賊退治!
+                reactor_script = new Reactor_HerbTown_DavyItem1();
+            }
+            case 2519001 -> {
+                // 2519001, davyScript1
+                // 925100400,  : 海賊退治!
+                reactor_script = new Reactor_HerbTown_DavyItem1();
+            }
+            case 2519002 -> {
+                // 2519002, davyScript2
+                // 925100400,  : 海賊退治!
+                reactor_script = new Reactor_HerbTown_DavyItem1();
+            }
+            case 2519003 -> {
+                // 2519003, davyScript3
+                // 925100400,  : 海賊退治!
+                reactor_script = new Reactor_HerbTown_DavyItem1();
             }
             case 2602000 -> {
                 // 2602000, ariantItem0
@@ -945,6 +1098,18 @@ public class ReactorMan {
                 // 261000010, マガティア : ジェニミスト協会
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 2618001 -> {
+                // 2618001, (action ãªã)
+                // 926100200,  : 特殊な実験室
+                // 926110200,  : 特殊な実験室
+                reactor_script = new Reactor_Magatia_2618001();
+            }
+            case 2618002 -> {
+                // 2618002, (action ãªã)
+                // 926100200,  : 特殊な実験室
+                // 926110200,  : 特殊な実験室
+                reactor_script = new Reactor_Magatia_2618001();
+            }
             case 2619003 -> {
                 // 2619003, magascaScript0
                 // 261020200, アルカドノ研究所 : 研究所B-1区域
@@ -959,6 +1124,11 @@ public class ReactorMan {
                 // 2619005, magascaScript2
                 // 261020600, アルカドノ研究所 : 研究所B-3区域
                 reactor_script = new Reactor_Magatia_MagascaScript();
+            }
+            case 2709000 -> {
+                // 2709000, PinkBeenScript0
+                // 270050100, 神殿の奥 : 神々の黄昏
+                reactor_script = new Reactor_TimeTemple_PinkBeenScript0();
             }
             case 3001000 -> {
                 // 3001000, pFBoss
@@ -999,6 +1169,25 @@ public class ReactorMan {
                 // 803011300, 
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 6109013 -> {
+                // 6109013, glpqstrge
+                // 803001000, 
+                reactor_script = new Reactor_Zipangu_Glpqstrge();
+            }
+            case 6802000 -> {
+                // 6802000, weddingItem0
+                // 680000401, ウェディングタウン : ウェディング披露宴会場
+                // 680000600, 
+                // 889300500, ウェディングタウン : ウェディング披露宴会場(ハウスウェディング)
+                reactor_script = new Reactor_Amoria_WeddingItem0();
+            }
+            case 6802001 -> {
+                // 6802001, weddingItem1
+                // 680000401, ウェディングタウン : ウェディング披露宴会場
+                // 680000600, 
+                // 889300500, ウェディングタウン : ウェディング披露宴会場(ハウスウェディング)
+                reactor_script = new Reactor_Amoria_WeddingItem0();
+            }
             case 8001000 -> {
                 // 8001000, shouwaBoss
                 // 801040100, ジパング : 悪夢の果て
@@ -1023,6 +1212,56 @@ public class ReactorMan {
                 // 8021001, Tok_BossMob2
                 // 802000311, ジパング : 公園 2095年
                 reactor_script = new Reactor_Zipangu_Tok_BossMob2();
+            }
+            case 8091000 -> {
+                // 8091000, JPludiMob0
+                // 809050000,  : 迷路
+                // 809050010,  : 迷路
+                reactor_script = new Reactor_Zipangu_JPludiMob();
+            }
+            case 8091001 -> {
+                // 8091001, JPludiMob1
+                // 809050001,  : 迷路
+                // 809050009,  : 迷路
+                reactor_script = new Reactor_Zipangu_JPludiMob();
+            }
+            case 8091002 -> {
+                // 8091002, JPludiMob2
+                // 809050002,  : 迷路
+                // 809050003,  : 迷路
+                // 809050008,  : 迷路
+                reactor_script = new Reactor_Zipangu_JPludiMob();
+            }
+            case 8091003 -> {
+                // 8091003, JPludiMob3
+                // 809050004,  : 迷路
+                // 809050007,  : 迷路
+                reactor_script = new Reactor_Zipangu_JPludiMob();
+            }
+            case 8091004 -> {
+                // 8091004, JPludiMob4
+                // 809050005,  : 迷路
+                // 809050006,  : 迷路
+                reactor_script = new Reactor_Zipangu_JPludiMob();
+            }
+            case 8098000 -> {
+                // 8098000, (action ãªã)
+                // 809050000,  : 迷路
+                // 809050001,  : 迷路
+                // 809050002,  : 迷路
+                // 809050003,  : 迷路
+                // 809050004,  : 迷路
+                // 809050005,  : 迷路
+                // 809050006,  : 迷路
+                // 809050007,  : 迷路
+                // 809050008,  : 迷路
+                // 809050009,  : 迷路
+                // 809050010,  : 迷路
+                // 809050011,  : 迷路
+                // 809050012,  : 迷路
+                // 809050013,  : 迷路
+                // 809050014,  : 迷路
+                reactor_script = new Reactor_Zipangu_8098000();
             }
             case 8802001 -> {
                 // 8802001, mBoxItem0
@@ -1153,6 +1392,36 @@ public class ReactorMan {
                 // 910010000,  : 月見草の坂
                 reactor_script = new Reactor_Common_DropItems();
             }
+            case 9108000 -> {
+                // 9108000, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
+            case 9108001 -> {
+                // 9108001, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
+            case 9108002 -> {
+                // 9108002, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
+            case 9108003 -> {
+                // 9108003, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
+            case 9108004 -> {
+                // 9108004, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
+            case 9108005 -> {
+                // 9108005, (action ãªã)
+                // 910010000,  : 月見草の坂
+                reactor_script = new Reactor_Henesys_9108000();
+            }
             case 9201000 -> {
                 // 9201000, syarenMob0
                 // 990000630,  : 水路の迷路3
@@ -1236,6 +1505,41 @@ public class ReactorMan {
                 // 990001000,  : シャレン3世の部屋
                 // 990001101,  : ギルド協会キャンプ
                 reactor_script = new Reactor_GuildQuest_SyarenItem12();
+            }
+            case 9208000 -> {
+                // 9208000, (action ãªã)
+                // 910210000,  : シャレニアン城門
+                // 990000300,  : シャレニアン城門
+                reactor_script = new Reactor_GuildQuest_9208000();
+            }
+            case 9208001 -> {
+                // 9208001, (action ãªã)
+                // 910210000,  : シャレニアン城門
+                // 990000300,  : シャレニアン城門
+                reactor_script = new Reactor_GuildQuest_9208000();
+            }
+            case 9208002 -> {
+                // 9208002, (action ãªã)
+                // 990000300,  : シャレニアン城門
+                reactor_script = new Reactor_GuildQuest_9208000();
+            }
+            case 9208004 -> {
+                // 9208004, (action ãªã)
+                // 990000400,  : 騎士のホール
+                reactor_script = new Reactor_GuildQuest_9208000();
+            }
+            case 9208007 -> {
+                // 9208007, (action ãªã)
+                // 990000440,  : 正義の部屋
+                reactor_script = new Reactor_GuildQuest_9208000();
+            }
+            case 9980000 -> {
+                // 9980000, mcGuardian0
+                reactor_script = new Reactor_MonsterCarnival_McGuardian0();
+            }
+            case 9980001 -> {
+                // 9980001, mcGuardian0
+                reactor_script = new Reactor_MonsterCarnival_McGuardian0();
             }
             default -> {
                 return false;
