@@ -185,6 +185,26 @@ public class NpcMan {
                 // 100010000, ヘネシス : 東の丘
                 npc_script = new NpcHenkel();
             }
+            case 1013001 -> {
+                // 1013001, ドラゴン
+                // 900010200, 夢の中 : 夢見る森
+                npc_script = new NpcDragon();
+            }
+            case 1013002 -> {
+                // 1013002, ドラゴンの巣
+                // 900020220, 隠された通り : 忘れてしまった森
+                npc_script = new NpcDragonNest();
+            }
+            case 1013104 -> {
+                // 1013104, 卵の箱
+                // 100030102, 一軒家 : 前庭
+                npc_script = new NpcHen();
+            }
+            case 1013200 -> {
+                // 1013200, 赤ちゃんオオカミ
+                // 900020100, 隠された通り : 鬱蒼とした森
+                npc_script = new NpcPiglet();
+            }
             case 1013207 -> {
                 // 1013207, クン
                 // 200090080, 용이 잠든 섬으로
@@ -1341,10 +1361,20 @@ public class NpcMan {
                 // 980041200, 魔女の塔 : 魔女の塔最上階
                 npc_script = new NpcGingerman();
             }
+            case 9000075 -> {
+                // 9000075, チャン
+                // 809060000, 隠れ道 : 金箔寺
+                npc_script = new NpcChan();
+            }
             case 9000078 -> {
                 // 9000078, ユース
                 // 809060000, 隠れ道 : 金箔寺
                 npc_script = new NpcMrYoo();
+            }
+            case 9000080 -> {
+                // 9000080, ダオ
+                // 809060000, 隠れ道 : 金箔寺
+                npc_script = new NpcDao();
             }
             case 9000082 -> {
                 // 9000082, ポン
