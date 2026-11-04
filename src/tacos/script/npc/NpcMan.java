@@ -447,6 +447,11 @@ public class NpcMan {
                 // 912010200, カイリンの訓練場
                 npc_script = new NpcKyrin();
             }
+            case 1092000 -> {
+                // 1092000, タンユン
+                // 120000103, ノーチラス : 食堂
+                npc_script = new NpcTangyoon();
+            }
             case 1092007 -> {
                 // 1092007, ムラト
                 // 120000100, 上階廊下
@@ -456,6 +461,11 @@ public class NpcMan {
                 // 1092008, シュリンツ
                 // 120000104, 訓練場
                 npc_script = new NpcShulynch();
+            }
+            case 1092010 -> {
+                // 1092010, ジャック
+                // 120000100, ノーチラス : 上階廊下
+                npc_script = new NpcJackNautilus();
             }
             case 1092014 -> {
                 // 1092014, ノーチラス大型タクシー
@@ -943,6 +953,11 @@ public class NpcMan {
                 // 923020000, 霧の海 : 座礁された幽霊船
                 npc_script = new NpcFoggySeaDolphin();
             }
+            case 2081004 -> {
+                // 2081004, ファム
+                // 240000006, リプレ : ファムの家
+                npc_script = new NpcPam();
+            }
             case 2081005 -> {
                 // 2081005, ケロベン
                 // 240040700, 生命の洞窟入口
@@ -1086,6 +1101,11 @@ public class NpcMan {
                 // 260000000, アリアント
                 npc_script = new NpcMazra();
             }
+            case 2101001 -> {
+                // 2101001, ジユル
+                // 260000200, アリアント村 : アリアント集落地
+                npc_script = new NpcJiyur();
+            }
             case 2101014 -> {
                 // 2101014, セザール
                 // 980010000, 闘技場の控え室
@@ -1120,6 +1140,11 @@ public class NpcMan {
                 // 2111003, ヒュモノイドA
                 // 261000000, マガティア
                 npc_script = new NpcHumanoidA();
+            }
+            case 2111006 -> {
+                // 2111006, ファウェン
+                // 261020401, アルカドノ研究所 : 関係者以外出入禁止区域
+                npc_script = new NpcParwen();
             }
             case 2111025 -> {
                 // 2111025, 制御装置

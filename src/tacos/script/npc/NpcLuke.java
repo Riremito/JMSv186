@@ -28,8 +28,9 @@ public class NpcLuke extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : 文章 (適当)
-                say("ここを抜けると、ビクトリアアイランドの中央ダンジョンがあります。気をつけてくださいね…");
+                // Npc.wz script : summonMobInLuke (GMS92, CMS86-88, EMS76, MSEA102, TWMS122-125), JMS には設定なし
+                // 原文ママ (JMS186 String.wz の d0)
+                say("うん？誰かと思えばひよっこじゃないか。人が寝ているのに何だ!?ここで何してるんだって？見れば分かるだろう、ダンジョンの警備だ！この中に入るとビクトリアアイランドの#b中央ダンジョン#kだぜ。気をつけろ！");
                 return false;
             }
             default -> {
