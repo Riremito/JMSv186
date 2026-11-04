@@ -28,8 +28,11 @@ import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsScriptMan;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCScriptMan;
+import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.builder.PB_ScriptMessage;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosReactor;
 import tacos.wz.WzXML;
@@ -197,6 +200,29 @@ public abstract class NpcScriptMan {
             return;
         }
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).prev(prev).next(next).build()));
+    }
+
+    // プレイヤーの台詞
+    protected void sayUser(String text, boolean prev, boolean next) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).param((byte) 2).text(text).prev(prev).next(next).build()));
+    }
+
+    // チュートリアルのガイドの表示
+    protected void hireTutor(boolean summon) {
+        this.chr.setTutorialSummon(summon);
+        this.chr.SendPacket(ResCUserLocal.UserHireTutor(summon));
+    }
+
+    // チュートリアルのガイドのメッセージ
+    protected void tutorMsg(int index) {
+        if (!this.chr.hasTutorialSummon()) {
+            hireTutor(true);
+        }
+        this.chr.SendPacket(ResCUserLocal.UserTutorMsg(index));
+    }
+
+    protected void showReservedEffect(String path) {
+        this.chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(path).build()));
     }
 
     protected void askYesNo(NpcScriptTag nt) {
