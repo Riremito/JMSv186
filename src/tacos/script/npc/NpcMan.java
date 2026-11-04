@@ -34,6 +34,11 @@ public class NpcMan {
                 // 2003, ロビン
                 npc_script = new NpcRobin();
             }
+            case 2007 -> {
+                // 2007, イベントガイド
+                // 10000, メイプルロード : キノコの丘
+                npc_script = new NpcEventGuide();
+            }
             case 10200 -> {
                 // 10200, ヘレナ
                 npc_script = new NpcAthenaPierceTutorial();
@@ -165,6 +170,11 @@ public class NpcMan {
                 // 100000105, ヘネシス : スキンケアーショップ
                 npc_script = new NpcMsTan();
             }
+            case 1012119 -> {
+                // 1012119, ヘンケル
+                // 100010000, ヘネシス : 東の丘
+                npc_script = new NpcHenkel();
+            }
             case 1013207 -> {
                 // 1013207, クン
                 // 200090080, 용이 잠든 섬으로
@@ -176,6 +186,11 @@ public class NpcMan {
                 // 1022000, コブシを開いて立て
                 // 102000003, 戦士の聖殿
                 npc_script = new NpcDancesWithBalrog();
+            }
+            case 1022105 -> {
+                // 1022105, ヘンケル
+                // 101040000, ぺリオン : 分かれ道-東
+                npc_script = new NpcHenkel();
             }
             case 1032001 -> {
                 // 1032001, ハインズ
@@ -219,6 +234,21 @@ public class NpcMan {
             case 1032102 -> {
                 // 1032102, 妖精マル
                 npc_script = new NpcMarTheFairy();
+            }
+            case 1032113 -> {
+                // 1032113, ヘンケル
+                // 910120000, ビクトリアロード : 魔法使い修行場
+                npc_script = new NpcHenkel();
+            }
+            case 1032114 -> {
+                // 1032114, ヘンケル
+                // 100050000, エリニア : 南フィールド
+                npc_script = new NpcHenkel();
+            }
+            case 1040000 -> {
+                // 1040000, ルーク
+                // 106010100, へネシス : ダンジョンの入口
+                npc_script = new NpcLuke();
             }
             case 1040001 -> {
                 // 1040001, マイク
@@ -292,6 +322,16 @@ public class NpcMan {
                 // 1052101, アンドレア
                 // 103000005, カニングシティー : 美容院
                 npc_script = new NpcAndre();
+            }
+            case 1052113 -> {
+                // 1052113, ヘンケル
+                // 910310000, ビクトリアロード : 盗賊修行場
+                npc_script = new NpcHenkel();
+            }
+            case 1052114 -> {
+                // 1052114, ヘンケル
+                // 103010000, カニングシティー : 工事現場
+                npc_script = new NpcHenkel();
             }
             case 1052115 -> {
                 // 1052115, 林次長
@@ -427,10 +467,50 @@ public class NpcMan {
                 // 120000301, 動力室
                 npc_script = new NpcShinyStone();
             }
+            case 1092018 -> {
+                // 1092018, ゴミ箱
+                // 120000100, ノーチラス : 上階廊下
+                npc_script = new NpcNautilusTrashCan();
+            }
             case 1092019 -> {
                 // 1092019, ジョナサン
                 // 120000102, ジョナサンの部屋
                 npc_script = new NpcLordJonathan();
+            }
+            case 1094002 -> {
+                // 1094002, 草原
+                // 120000000, ノーチラス船着場 : ノーチラス
+                npc_script = new NpcNautilusBush();
+            }
+            case 1094003 -> {
+                // 1094003, 草原
+                // 120000000, ノーチラス船着場 : ノーチラス
+                npc_script = new NpcNautilusBush();
+            }
+            case 1094004 -> {
+                // 1094004, 草原
+                // 120000000, ノーチラス船着場 : ノーチラス
+                npc_script = new NpcNautilusBush();
+            }
+            case 1094005 -> {
+                // 1094005, 草原
+                // 120000000, ノーチラス船着場 : ノーチラス
+                npc_script = new NpcNautilusBush();
+            }
+            case 1094006 -> {
+                // 1094006, 草原
+                // 120000000, ノーチラス船着場 : ノーチラス
+                npc_script = new NpcNautilusBush();
+            }
+            case 1095001 -> {
+                // 1095001, ヘンケル
+                // 912030000, ビクトリアロード : 海賊修行場
+                npc_script = new NpcHenkel();
+            }
+            case 1095002 -> {
+                // 1095002, ヘンケル
+                // 120010000, ビクトリアロード : 船着場への道
+                npc_script = new NpcHenkel();
             }
             case 1100003 -> {
                 // 1100003, キリル
@@ -467,6 +547,11 @@ public class NpcMan {
                 // 130000100, 騎士の殿堂
                 // 130000101, 騎士の殿堂
                 npc_script = new NpcKidan();
+            }
+            case 1103005 -> {
+                // 1103005, ナインハート
+                // 913040006, オープニング : シグナス騎士団
+                npc_script = new NpcNineheartIntro();
             }
             case 1200003 -> {
                 // 1200003, プロ
@@ -853,6 +938,11 @@ public class NpcMan {
                 // 251000100, 海側波止場
                 npc_script = new NpcDolphin();
             }
+            case 2060010 -> {
+                // 2060010, イルカ
+                // 923020000, 霧の海 : 座礁された幽霊船
+                npc_script = new NpcFoggySeaDolphin();
+            }
             case 2081005 -> {
                 // 2081005, ケロベン
                 // 240040700, 生命の洞窟入口
@@ -1031,6 +1121,11 @@ public class NpcMan {
                 // 261000000, マガティア
                 npc_script = new NpcHumanoidA();
             }
+            case 2111025 -> {
+                // 2111025, 制御装置
+                // 261020401, アルカドノ研究所 : 関係者以外出入禁止区域
+                npc_script = new NpcSecurityControl();
+            }
             case 2111026 -> {
                 // 2111026, 未完成魔法陣
                 npc_script = new NpcIncompleteMagicSquare();
@@ -1120,6 +1215,16 @@ public class NpcMan {
                 // 105040300, スリーピーウッド
                 // 120000000, ノーチラス
                 npc_script = new NpcDonationBox();
+            }
+            case 9000059 -> {
+                // 9000059, ジンジャーマン
+                // 980044200, 魔女の塔 : 魔女の塔最上階
+                npc_script = new NpcGingerman();
+            }
+            case 9000060 -> {
+                // 9000060, ジンジャーマン
+                // 980041200, 魔女の塔 : 魔女の塔最上階
+                npc_script = new NpcGingerman();
             }
             case 9001107 -> {
                 // 9001107, 案内うさぎ
