@@ -967,10 +967,36 @@ public class NpcMan {
                 // 211000001, 長老の官邸
                 npc_script = new NpcPedro();
             }
+            case 2022003 -> {
+                // 2022003, シャモス
+                // 211000001, エルナス : 長老の官邸
+                // 211000002
+                npc_script = new NpcShammosOriginal();
+            }
             case 2022004 -> {
                 // 2022004, タイラス
                 // 921100301, タイラス護衛完遂
                 npc_script = new NpcTylusEscort();
+            }
+            case 2022005 -> {
+                // 2022005, シャモス
+                // 921120000, 氷の峡谷 : 氷の峡谷入口
+                npc_script = new NpcShammos();
+            }
+            case 2022006 -> {
+                // 2022006, 샤모스의 전갈
+                // 921120500, 氷の峡谷 : 万年氷河洞窟
+                npc_script = new NpcShammosLetter();
+            }
+            case 2022007 -> {
+                // 2022007, 氷河水
+                // 921120700, 氷の峡谷 : 氷の絶壁
+                npc_script = new NpcGlacialWater();
+            }
+            case 2022008 -> {
+                // 2022008, 렉스
+                // 921121200, 氷の峡谷 : 万年氷河洞窟
+                npc_script = new NpcRexSealed();
             }
             case 2023000 -> {
                 // 2023000, 危険地域弾丸タクシー

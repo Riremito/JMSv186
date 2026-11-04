@@ -676,7 +676,7 @@ public class TacosMonster extends TacosMapObject {
     }
 
     public void switchShammosController(TacosCharacter newController, boolean immediateAggro) {
-        if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+        if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
                 resetShammos(newController.getClient());
             } else {
@@ -704,7 +704,7 @@ public class TacosMonster extends TacosMapObject {
         }
         if (lastNode >= 0) {
             client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(this, map));
-            if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+            if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
                 if (lastNodeController != -1) { //new controller, please re update. sendSpawn only comes when you get too far then come back anyway
                     resetShammos(client);
                 } else {
@@ -718,7 +718,7 @@ public class TacosMonster extends TacosMapObject {
         if (lastNode == -1) {
             client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }
-        if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+        if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             resetShammos(client);
         }
     }

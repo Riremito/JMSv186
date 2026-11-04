@@ -388,7 +388,7 @@ public class MapScriptMethods {
                 break;
             }
             case shammos_Fenter: {
-                if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
+                if (chr.getMapId() >= 921120005 && chr.getMapId() < 921120500) {
                     TacosMonster shammos = WzXML.MOB.createMob(9300275);
                     map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
