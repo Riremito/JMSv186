@@ -2572,6 +2572,10 @@ public class NpcMan {
                 // 803100000, 支配者の秘密の間-孤高の戦場-
                 npc_script = new NpcBattleStatue();
             }
+            case 9220005 -> {
+                // 9220005, ルドルフ
+                npc_script = new NpcRudolph();
+            }
             case 9250121 -> {
                 // 9250121, ごみ箱おじさん
                 // 100000000, ヘネシス
