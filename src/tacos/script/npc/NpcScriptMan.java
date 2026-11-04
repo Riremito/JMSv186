@@ -22,6 +22,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
+import odin.server.MapleInventoryManipulator;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -304,6 +306,51 @@ public abstract class NpcScriptMan {
 
     protected boolean checkItem(int item_id) {
         return this.chr.haveItem(item_id);
+    }
+
+    protected boolean checkItem(int item_id, int count) {
+        return this.chr.haveItem(item_id, count, false, true);
+    }
+
+    // lua の inventory.exchange 相当
+    // meso : 所持金の増減, items : アイテムIDと増減数の組 (負の値は消費, 正の値は入手)
+    // 所持金・アイテムの不足またはインベントリに空きがない場合は何もせずに false を返す
+    protected boolean exchange(int meso, int... items) {
+        if (items.length % 2 != 0) {
+            DebugLogger.ErrorLog("NpcScriptMan : exchange invalid items.");
+            return false;
+        }
+        if (meso < 0 && this.chr.getMeso() < -meso) {
+            return false;
+        }
+        for (int i = 0; i < items.length; i += 2) {
+            int item_id = items[i];
+            int count = items[i + 1];
+            if (count < 0 && !checkItem(item_id, -count)) {
+                return false;
+            }
+            if (count > 0 && !MapleInventoryManipulator.checkSpace(this.chr, item_id, count, "")) {
+                return false;
+            }
+        }
+        if (meso != 0) {
+            this.chr.gainMeso(meso, true, false, true);
+        }
+        for (int i = 0; i < items.length; i += 2) {
+            int item_id = items[i];
+            int count = items[i + 1];
+            if (count < 0) {
+                MapleInventoryManipulator.removeById(this.chr, GameConstants.getInventoryType(item_id), item_id, -count, true, false);
+            }
+        }
+        for (int i = 0; i < items.length; i += 2) {
+            int item_id = items[i];
+            int count = items[i + 1];
+            if (count > 0) {
+                MapleInventoryManipulator.addById(this.chr, item_id, count);
+            }
+        }
+        return true;
     }
 
     protected boolean removeNpc() {

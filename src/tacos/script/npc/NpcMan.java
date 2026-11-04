@@ -136,10 +136,20 @@ public class NpcMan {
                 // 103000000, カニングシティー
                 npc_script = new NpcRegularCab();
             }
+            case 1012002 -> {
+                // 1012002, ビシャス
+                // 100000100, ヘネシス : 市場
+                npc_script = new NpcVicious();
+            }
             case 1012005 -> {
                 // 1012005, クロイ
                 // 100000200, 広場
                 npc_script = new NpcCloy();
+            }
+            case 1012006 -> {
+                // 1012006, バルトス
+                // 100000202, ヘネシス : ペットの散歩路
+                npc_script = new NpcTrainerBartos();
             }
             case 1012007 -> {
                 // 1012007, プロド
@@ -217,6 +227,16 @@ public class NpcMan {
                 // 102000003, 戦士の聖殿
                 npc_script = new NpcDancesWithBalrog();
             }
+            case 1022003 -> {
+                // 1022003, サンダー
+                // 102000000, ぺリオン : ぺリオン
+                npc_script = new NpcMrThunder();
+            }
+            case 1022004 -> {
+                // 1022004, スミス
+                // 102000000, ぺリオン : ぺリオン
+                npc_script = new NpcMrSmith();
+            }
             case 1022105 -> {
                 // 1022105, ヘンケル
                 // 101040000, ぺリオン : 分かれ道-東
@@ -231,6 +251,11 @@ public class NpcMan {
                 // 1032001, ハインズ
                 // 101000003, 魔法図書館
                 npc_script = new NpcGrendelTheReallyOld();
+            }
+            case 1032002 -> {
+                // 1032002, エトラン
+                // 101000000, エリニア : エリニア
+                npc_script = new NpcFrancois();
             }
             case 1032003 -> {
                 // 1032003, シェイン
@@ -309,6 +334,16 @@ public class NpcMan {
                 // 1052001, ダークロード
                 // 103000003, 盗賊のアジト
                 npc_script = new NpcDarkLord();
+            }
+            case 1052002 -> {
+                // 1052002, 裏通りのゼイエム
+                // 103000000, カニングシティー : カニングシティー
+                npc_script = new NpcJMFromThaStreetz();
+            }
+            case 1052003 -> {
+                // 1052003, クリス
+                // 103000006, カニングシティー : 修理屋
+                npc_script = new NpcChris();
             }
             case 1052004 -> {
                 // 1052004, 院長デンマ
@@ -396,6 +431,11 @@ public class NpcMan {
                 // 1057002, 睦実
                 // 103050100, 秘桜蔭 2階
                 npc_script = new NpcYun();
+            }
+            case 1061000 -> {
+                // 1061000, クリシュラマ
+                // 105040300, 中央ダンジョン : スリーピーウッド
+                npc_script = new NpcChrishrama();
             }
             case 1061006 -> {
                 // 1061006, 変な形の石像
@@ -501,6 +541,11 @@ public class NpcMan {
                 // 120000101, 航海室
                 // 912010200, カイリンの訓練場
                 npc_script = new NpcKyrin();
+            }
+            case 1091003 -> {
+                // 1091003, セリル
+                // 120000200, ノーチラス : 中央廊下
+                npc_script = new NpcSerryl();
             }
             case 1092000 -> {
                 // 1092000, タンユン
@@ -670,6 +715,11 @@ public class NpcMan {
                 // 200000201, オルビス : 整形外科
                 npc_script = new NpcFranz();
             }
+            case 2010003 -> {
+                // 2010003, ネーブ
+                // 200000200, オルビス : オルビス公園
+                npc_script = new NpcNeve();
+            }
             case 2010005 -> {
                 // 2010005, ガイドシュリ
                 // 200000000, オルビス
@@ -791,6 +841,16 @@ public class NpcMan {
                 // 920011200, 出口
                 npc_script = new NpcChamberlainEak();
             }
+            case 2020000 -> {
+                // 2020000, ボゲン
+                // 211000100, エルナス : 市場
+                npc_script = new NpcVogen();
+            }
+            case 2020002 -> {
+                // 2020002, ゴードン
+                // 211000100, エルナス : 市場
+                npc_script = new NpcGordon();
+            }
             case 2020005 -> {
                 // 2020005, アルケスタ
                 // 211000100, 市場
@@ -887,10 +947,30 @@ public class NpcMan {
                 // 2040014, チコ
                 npc_script = new NpcChico();
             }
+            case 2040016 -> {
+                // 2040016, パイ
+                // 220000300, ルディブリアム : ルディブリアム住宅街
+                npc_script = new NpcPi();
+            }
             case 2040019 -> {
                 // 2040019, エバー
                 // 220000003, ルディブリアム : 整形外科
                 npc_script = new NpcEverton();
+            }
+            case 2040020 -> {
+                // 2040020, ジロクン
+                // 220000303, ルディブリアム : ジロクンとペイの家
+                npc_script = new NpcSarah();
+            }
+            case 2040021 -> {
+                // 2040021, ペイ
+                // 220000303, ルディブリアム : ジロクンとペイの家
+                npc_script = new NpcTara();
+            }
+            case 2040022 -> {
+                // 2040022, ライドル
+                // 220020600, ルディブリアム : オモチャ工場-機械室
+                npc_script = new NpcRydole();
             }
             case 2040024 -> {
                 // 2040024, 一番目のエオス石
@@ -914,6 +994,11 @@ public class NpcMan {
                 // 2040028, マークくん
                 // 922000010, 人形の家
                 npc_script = new NpcMarkTheToySoldier();
+            }
+            case 2040030 -> {
+                // 2040030, ウィスブ
+                // 220000400, ルディブリアム : エオス塔入口
+                npc_script = new NpcWisp();
             }
             case 2040031 -> {
                 // 2040031, 文書束
@@ -1032,6 +1117,16 @@ public class NpcMan {
                 // 2060010, イルカ
                 // 923020000, 霧の海 : 座礁された幽霊船
                 npc_script = new NpcFoggySeaDolphin();
+            }
+            case 2080000 -> {
+                // 2080000, モス
+                // 240000000, リプレ : リプレ
+                npc_script = new NpcMos();
+            }
+            case 2081000 -> {
+                // 2081000, 村長タタモ
+                // 240000000, リプレ : リプレ
+                npc_script = new NpcChiefTatamo();
             }
             case 2081004 -> {
                 // 2081004, ファム
@@ -1196,6 +1291,11 @@ public class NpcMan {
                 // 2096000, 練習記録帳
                 npc_script = new NpcPracticeChart();
             }
+            case 2100001 -> {
+                // 2100001, ムハマード
+                // 260000200, アリアント村 : アリアント集落地
+                npc_script = new NpcMuhamad();
+            }
             case 2100006 -> {
                 // 2100006, マズラ
                 // 260000000, アリアント
@@ -1265,6 +1365,12 @@ public class NpcMan {
                 // 2111006, ファウェン
                 // 261020401, アルカドノ研究所 : 関係者以外出入禁止区域
                 npc_script = new NpcParwen();
+            }
+            case 2111024 -> {
+                // 2111024, 秘密通路(透明)
+                // 261010000, ジェニミスト研究所 : 研究所1階廊下
+                // 261020200, アルカドノ研究所 : 研究所B-1区域
+                npc_script = new NpcSecretPassage();
             }
             case 2111025 -> {
                 // 2111025, 制御装置
@@ -1607,6 +1713,11 @@ public class NpcMan {
                 // 802000101, カムナ
                 // 802000313, 公園 2095年
                 npc_script = new NpcCrystal();
+            }
+            case 9120034 -> {
+                // 9120034, ノラン
+                // 802000500, ジパング : 秋葉原司令室 2102年
+                npc_script = new NpcNoran();
             }
             case 9120040 -> {
                 // 9120040, ポニチャル
