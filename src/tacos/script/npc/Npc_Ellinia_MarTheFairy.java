@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 import tacos.server.map.object.TacosPet;
 
@@ -89,7 +87,7 @@ public class Npc_Ellinia_MarTheFairy extends NpcScriptMan {
                     say("でも、確かに#p" + this.npc_kroi + "#が作ったものに似ているわね。ああ…まあ、いいわ。私は何年も#p" + this.npc_kroi + "#を見てきたけど、彼が人形に命を与える魔法に成功できるはずがないと思っているの。さて、それじゃあ…");
                     return false;
                 }
-                this.quest_state = getPlayer().getQuestStatus(this.quest_water_of_life);
+                this.quest_state = getQuestStatus(this.quest_water_of_life);
                 if (getAnswerPet() == null) {
                     if (this.quest_state == 2) {
                         // 翻訳
@@ -134,8 +132,8 @@ public class Npc_Ellinia_MarTheFairy extends NpcScriptMan {
                         say("何かがおかしいわ…本当に#b#t" + this.item_water_of_life + "##kと#b#t" + this.item_scroll_of_life + "##kを持っている？その2つがないと、人形をペットに戻すことはできないのよ。");
                         return false;
                     }
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.CASH, this.item_water_of_life, 1, true, false);
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_scroll_of_life, 1, true, false);
+                    removeItem(this.item_water_of_life, 1);
+                    removeItem(this.item_scroll_of_life, 1);
                     // TODO : ペットの命の期限を延長する (setPetLife)
                     MapleQuest.getInstance(this.quest_water_of_life).forceComplete(getPlayer(), getNpcId());
                     // 翻訳
@@ -166,7 +164,7 @@ public class Npc_Ellinia_MarTheFairy extends NpcScriptMan {
                 return true;
             }
             case 7 -> {
-                MapleQuest.getInstance(this.quest_water_of_life).forceStart(getPlayer(), getNpcId(), "");
+                setQuestData(this.quest_water_of_life, "");
                 // 翻訳
                 say("わかったわ。もう一度言うけど、私に必要なのは#b#t" + this.item_water_of_life + "##kと#b#t" + this.item_scroll_of_life + "##kが1つずつよ。それを手に入れてくれたら、人形を生き返らせてあげられるわ。#b#t" + this.item_scroll_of_life + "##kが一番手に入りにくいの…#bヘネシス#kの#b#p" + this.npc_bartos + "##kを訪ねてみたらどう？その人がヒントをくれるかもしれないわ…");
                 return false;

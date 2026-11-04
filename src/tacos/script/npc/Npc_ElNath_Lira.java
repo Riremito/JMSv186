@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -42,15 +39,15 @@ public class Npc_ElNath_Lira extends NpcScriptMan {
             }
             case 1 -> {
                 // TODO : 入場から2分以内にクリアした場合は報酬なし (quest 7005)
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_breath_of_lava, 1, "")) {
+                if (!canHold(this.item_breath_of_lava, 1)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいのようです。アイテムを受け取るために空きを作ってください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_breath_of_lava, (short) 1);
+                gainItem(this.item_breath_of_lava, 1);
                 // TODO : 1日3回まで (quest 7007)
-                getPlayer().gainExp(this.reward_exp, true, true, true);
-                MapleQuest.getInstance(this.quest_stage2).forceStart(getPlayer(), getNpcId(), "end");
+                gainExp(this.reward_exp);
+                setQuestData(this.quest_stage2, "end");
                 warp(this.map_door_to_zakum);
                 return false;
             }

@@ -50,7 +50,7 @@ public class Npc_Victoria_KyrinTestRoom extends NpcScriptMan {
                         continue;
                     }
                     int item_id = this.item_crystals[i];
-                    if (getPlayer().getItemQuantity(item_id, false) < this.item_crystal_count) {
+                    if (getItemCount(item_id) < this.item_crystal_count) {
                         // TODO : 文章 (適当)
                         say("#b#t" + item_id + "##kを" + this.item_crystal_count + "個集めてきなさい。");
                         return false;

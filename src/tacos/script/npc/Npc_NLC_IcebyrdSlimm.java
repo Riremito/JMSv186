@@ -61,12 +61,12 @@ public class Npc_NLC_IcebyrdSlimm extends NpcScriptMan {
         if (answer != 10) {
             return false;
         }
-        if (getPlayer().getLevel() < this.level_min) {
+        if (getLevel() < this.level_min) {
             // 翻訳
             say("悪いが、このクイズはレベル15以上でないと受けられないんだ。受ける準備ができたら、また来てくれ。", false, true);
             return true;
         }
-        if (getPlayer().getQuestStatus(this.quest_quiz) == 2) {
+        if (getQuestStatus(this.quest_quiz) == 2) {
             // 翻訳
             say("君はもう俺の問題を解いたよ。NLCでの旅を楽しんでくれ！！！", false, true);
             return true;

@@ -18,10 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -170,9 +166,9 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (this.mode == -1) {
-            int job = getPlayer().getJob();
-            int level = getPlayer().getLevel();
-            String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+            int job = getJob();
+            int level = getLevel();
+            String quest_data = getQuestData(this.quest_job_3rd);
             boolean job_2nd_now = false;
             for (int job_id : this.job_2nd) {
                 if (job == job_id) {
@@ -183,7 +179,7 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
             this.mode = MODE_NONE;
             if ("s".equals(quest_data) && job_2nd_now) {
                 // 3次転職 力の試験の開始
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p1");
+                setQuestData(this.quest_job_3rd, "p1");
                 this.mode = MODE_SAYS;
                 this.says = this.says_3rd_start;
             } else if ("p1".equals(quest_data)) {
@@ -192,14 +188,14 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                     say("アリの巣の近くに秘密の通路がある。そこを通れるのは君だけだ。中に入ると、もう一人の私に会うだろう。そいつを倒して、#b#t" + this.item_black_charm + "##kを持ってきてくれ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…おかしいな。本当に#b#t" + this.item_black_charm + "##kを持っているかい？持っているなら、アイテムタブに空きスロットがあるか確認してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_black_charm, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p2");
+                removeItem(this.item_black_charm, 1);
+                gainItem(this.item_necklace_of_strength, 1);
+                setQuestData(this.quest_job_3rd, "p2");
                 // 翻訳
                 say("おお…もう一人の私を倒して、#b#t" + this.item_black_charm + "##kを持ってきてくれたんだな。素晴らしい！これで君の力は確かに証明された。力の面では、もう3次転職に進んでも大丈夫だ。約束どおり、#b#t" + this.item_necklace_of_strength + "##kを渡そう。このネックレスをオシリアの#bタイラス#kに渡せば、3次転職のための2つ目の試験を受けられる。幸運を祈る～。");
                 return false;
@@ -209,12 +205,12 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                     say("このネックレスをオシリアの#bタイラス#kに渡せば、3次転職のための2つ目の試験を受けられる。幸運を祈る～！");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…おかしいな。アイテムタブに空きスロットがあるか確認してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
+                gainItem(this.item_necklace_of_strength, 1);
                 // 翻訳
                 say("ああ！#b#t" + this.item_necklace_of_strength + "##kをなくしたのか？気をつけろと言っただろう…まったく、もう一つやるよ…「また」な。今度は気をつけてくれ。これがないと3次転職の試験を受けられないぞ。");
                 return false;
@@ -269,7 +265,7 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                         return true;
                     }
                     case 1 -> {
-                        if (getPlayer().getLevel() < this.job_1st_level || getPlayer().getStat().getStr() < this.job_1st_str) {
+                        if (getLevel() < this.job_1st_level || getPlayer().getStat().getStr() < this.job_1st_str) {
                             // 翻訳
                             say("まだ君に戦士の素質があるとは思えない。戦士になるにはたくさん修行しなければならないし、そうでなければ務まらないだろう。もっとずっと強くなってから、私を訪ねてくれ。");
                             return false;
@@ -280,7 +276,7 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                         return true;
                     }
                     case 2 -> {
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_weapon, 1, "")) {
+                        if (!canHold(this.item_weapon, 1)) {
                             // 翻訳
                             say("ふむ…装備ウィンドウに空きスロットがあるか確認してくれ。君の活躍へのご褒美として武器を渡したいんだ。");
                             return false;
@@ -290,17 +286,17 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                         return true;
                     }
                     case 3 -> {
-                        if (getPlayer().getJob() != 0 || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_weapon, 1, "")) {
+                        if (getJob() != 0 || !canHold(this.item_weapon, 1)) {
                             // 翻訳
                             say("ふむ。装備ウィンドウに少なくとも1つ空きスロットがあるか確認してくれ。1次転職のご褒美として武器を渡したいんだ。");
                             return false;
                         }
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_weapon, (short) 1);
-                        getPlayer().changeJob(this.job_1st);
-                        getPlayer().expandInventory((byte) 1, 4);
-                        getPlayer().expandInventory((byte) 2, 4);
-                        getPlayer().expandInventory((byte) 3, 4);
-                        getPlayer().expandInventory((byte) 4, 4);
+                        gainItem(this.item_weapon, 1);
+                        changeJob(this.job_1st);
+                        expandInventory(1, 4);
+                        expandInventory(2, 4);
+                        expandInventory(3, 4);
+                        expandInventory(4, 4);
                         this.says = this.says_1st;
                         this.says_status = status;
                         say(this.says[0], false, true);
@@ -330,12 +326,12 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                     }
                     case 2 -> {
                         if (!checkItem(this.item_letter)) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_letter, 1, "")) {
+                            if (!canHold(this.item_letter, 1)) {
                                 // 翻訳
                                 say("ふむ…ETCインベントリに十分な空きがないから、手紙を渡せない。インベントリに1つか2つ空きを作ってから戻ってきてくれ。手紙がないと試験を受けられないからな。");
                                 return false;
                             }
-                            MapleInventoryManipulator.addById(getPlayer(), this.item_letter, (short) 1);
+                            gainItem(this.item_letter, 1);
                         }
                         // 原文ママ
                         say("この手紙をペリオン辺り#b#m" + this.map_instructor + "##kのどこかにいる#b#p" + this.npc_instructor + "##kに伝えるように。忙しい私の代わりに教官の仕事をしてくれる有り難い人だ。手紙を伝えてくれれば君をワシの代わりにテストしてくれる。詳しいことは彼に直接聞けばわかる。それじゃ無事に帰って来てほしい。");
@@ -400,20 +396,20 @@ public class Npc_Perion_DancesWithBalrog extends NpcScriptMan {
                         return true;
                     }
                     case 4 -> {
-                        if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.job_2nd_level) * 3) {
+                        if (getRemainingSp() > (getLevel() - this.job_2nd_level) * 3) {
                             // 翻訳
                             say("ふむ…#bSP#kが多すぎる…そんなにSPを残したままでは2次転職できない。1次スキルにもっとSPを使ってから、また来てくれ。");
                             return false;
                         }
-                        if (getPlayer().getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
+                        if (getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
                             // 翻訳
                             say("ふむ…本当に#p" + this.npc_instructor + "#からもらった#b#t" + this.item_proof_of_hero + "##kを持っているか？それがないと転職させられないぞ。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_proof_of_hero, 1, true, false);
-                        getPlayer().changeJob(this.job_2nd[this.job_index]);
-                        getPlayer().expandInventory((byte) 2, 4);
-                        getPlayer().expandInventory((byte) 4, 4);
+                        removeItem(this.item_proof_of_hero, 1);
+                        changeJob(this.job_2nd[this.job_index]);
+                        expandInventory(2, 4);
+                        expandInventory(4, 4);
                         this.says = this.says_2nd[this.job_index];
                         this.says_status = status;
                         say(this.says[0], false, true);

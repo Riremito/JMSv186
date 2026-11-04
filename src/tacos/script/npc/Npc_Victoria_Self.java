@@ -36,12 +36,12 @@ public class Npc_Victoria_Self extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 // TODO : 話者をプレイヤーにする
-                if (getPlayer().getQuestStatus(this.quest_mushroom_forest) == 1) {
+                if (getQuestStatus(this.quest_mushroom_forest) == 1) {
                     // TODO : 文章 (適当)
                     say("これは…#bキノコの胞子#kを強力な魔法に変えた、強力な魔法の結界だ。力ずくでは突破できない。#b内務大臣#kに報告した方がよさそうだ。", false, true);
                     return true;
                 }
-                if (getPlayer().getQuestStatus(this.quest_castle_wall) == 1) {
+                if (getQuestStatus(this.quest_castle_wall) == 1) {
                     // TODO : 文章 (適当)
                     say("巨大な城壁の表面に、とげのあるツルが絡みついている。いったいどうやって城に入ればいいのだろう？とりあえず#b#p" + this.npc_report + "##kに報告しよう。");
                     return false;
@@ -51,7 +51,7 @@ public class Npc_Victoria_Self extends NpcScriptMan {
                 return false;
             }
             case 1 -> {
-                if (getPlayer().getQuestStatus(this.quest_mushroom_forest) != 1) {
+                if (getQuestStatus(this.quest_mushroom_forest) != 1) {
                     return false;
                 }
                 // TODO : エフェクト表示 (Effect/OnUserEff.img/normalEffect/mushroomcastle/chatBalloon1)

@@ -41,8 +41,8 @@ public class Npc_Orbis_Heracle extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        boolean in_guild = 0 < getPlayer().getGuildId();
-        boolean guild_master = in_guild && getPlayer().getGuildRank() == this.guild_master_rank;
+        boolean in_guild = 0 < getGuildId();
+        boolean guild_master = in_guild && getGuildRank() == this.guild_master_rank;
         // いいえを選択した
         if (status == this.no_status) {
             switch (this.selected) {
@@ -100,7 +100,7 @@ public class Npc_Orbis_Heracle extends NpcScriptMan {
                             say("おい、キミはギルドマスターじゃないだろう！これはギルドマスターにしか決められないんだ。");
                             return false;
                         }
-                        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getPlayer().getGuildId());
+                        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getGuildId());
                         if (guild == null) {
                             return false;
                         }
@@ -124,11 +124,11 @@ public class Npc_Orbis_Heracle extends NpcScriptMan {
                         if (!guild_master) {
                             return false;
                         }
-                        getPlayer().getWorld().getGuild().disbandGuild(getPlayer().getGuildId());
+                        getPlayer().getWorld().getGuild().disbandGuild(getGuildId());
                         return false;
                     }
                     case MENU_INCREASE -> {
-                        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getPlayer().getGuildId());
+                        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getGuildId());
                         if (guild == null) {
                             return false;
                         }
@@ -147,7 +147,7 @@ public class Npc_Orbis_Heracle extends NpcScriptMan {
                     return false;
                 }
                 Guild world_guild = getPlayer().getWorld().getGuild();
-                int guild_id = getPlayer().getGuildId();
+                int guild_id = getGuildId();
                 if (world_guild.getGP(guild_id) < this.increase_gp) {
                     // 原文ママ
                     say("手数料が負担になっているのか？時間が経てばGPくらいはすぐに貯まるから、そんなに心配することはない。それでは、また来てくれ。");

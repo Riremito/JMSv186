@@ -35,7 +35,7 @@ public class Npc_Nautilus_LordJonathan extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 // TODO : 本来はクエストで習得する
-                if (getPlayer().getJob() == this.job_captain && 120 <= getPlayer().getLevel()) {
+                if (getJob() == this.job_captain && 120 <= getLevel()) {
                     Skill skill = WzXML.SKILL.getSkill().get(this.skill_air_strike);
                     if (skill != null && getPlayer().getMasterLevel(skill) == 0) {
                         getPlayer().changeSkillLevel(skill, (byte) 0, (byte) 10);

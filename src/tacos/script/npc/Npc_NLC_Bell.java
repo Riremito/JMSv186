@@ -71,7 +71,7 @@ public class Npc_NLC_Bell extends NpcScriptMan {
         if (map_id != this.map_nlc_station && map_id != this.map_kc_station) {
             return false;
         }
-        boolean basic = getPlayer().getLevel() <= this.level_basic;
+        boolean basic = getLevel() <= this.level_basic;
         if (!ok) {
             // 翻訳
             say("ここに何か用事があるんですよね？");

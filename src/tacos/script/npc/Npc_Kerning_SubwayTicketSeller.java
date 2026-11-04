@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -67,7 +65,7 @@ public class Npc_Kerning_SubwayTicketSeller extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     // 翻訳
                     say("切符を買えば入れますが、あなたにはまだ無理そうですね。地下には奇妙な装置があって、あなたが相手にするのはとても大変でしょうから、修行して準備を整えてから来てくださいね。");
                     return false;
@@ -76,7 +74,7 @@ public class Npc_Kerning_SubwayTicketSeller extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("入るには切符を買う必要があります。切符を買ったら、右側の" + getNpcName(this.npc_gate) + "から入れます。どれを買いますか？");
                 for (int i = 0; i < this.ticket_ids.length; i++) {
-                    if (this.ticket_levels[i] <= getPlayer().getLevel()) {
+                    if (this.ticket_levels[i] <= getLevel()) {
                         nt.addMenu(i, this.ticket_names[i]);
                     }
                 }
@@ -84,7 +82,7 @@ public class Npc_Kerning_SubwayTicketSeller extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (answer < 0 || this.ticket_ids.length <= answer || getPlayer().getLevel() < this.ticket_levels[answer]) {
+                if (answer < 0 || this.ticket_ids.length <= answer || getLevel() < this.ticket_levels[answer]) {
                     return false;
                 }
                 this.selected = answer;
@@ -95,13 +93,13 @@ public class Npc_Kerning_SubwayTicketSeller extends NpcScriptMan {
             }
             case 2 -> {
                 int ticket_id = this.ticket_ids[this.selected];
-                if (getPlayer().getMeso() < this.ticket_costs[this.selected] || !MapleInventoryManipulator.checkSpace(getPlayer(), ticket_id, 1, "")) {
+                if (getMeso() < this.ticket_costs[this.selected] || !canHold(ticket_id, 1)) {
                     // 翻訳
                     say("お金が足りませんか？ETCインベントリに空きスロットがあるかどうかも確認してください。");
                     return false;
                 }
                 payMoney(this.ticket_costs[this.selected]);
-                MapleInventoryManipulator.addById(getPlayer(), ticket_id, (short) 1);
+                gainItem(ticket_id, 1);
                 say(this.bought_texts[this.selected]);
                 return false;
             }

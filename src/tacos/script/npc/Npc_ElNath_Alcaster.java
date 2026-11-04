@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -55,8 +53,8 @@ public class Npc_ElNath_Alcaster extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_old_book) != 2) {
-                    if (54 < getPlayer().getLevel()) {
+                if (getQuestStatus(this.quest_old_book) != 2) {
+                    if (54 < getLevel()) {
                         // 翻訳
                         say("私を手伝ってくれると決めてくれたら、お礼にアイテムを売ってあげよう。");
                         return false;
@@ -105,14 +103,14 @@ public class Npc_ElNath_Alcaster extends NpcScriptMan {
             case 3 -> {
                 int item_id = this.item_ids[this.item_index];
                 int price = this.costs[this.item_index] * this.buy_count;
-                if (getPlayer().getMeso() < price || (0 < this.buy_count && !MapleInventoryManipulator.checkSpace(getPlayer(), item_id, this.buy_count, ""))) {
+                if (getMeso() < price || (0 < this.buy_count && !canHold(item_id, this.buy_count))) {
                     // 翻訳
                     say("本当にメルは足りているかい？消費インベントリかETCインベントリがいっぱいでないか、少なくとも#r" + price + "#kメル持っているか確認してくれ。");
                     return false;
                 }
                 if (0 < this.buy_count) {
                     payMoney(price);
-                    MapleInventoryManipulator.addById(getPlayer(), item_id, (short) this.buy_count);
+                    gainItem(item_id, this.buy_count);
                 }
                 // 翻訳
                 say("ありがとう。またいつかアイテムが必要になったら寄ってくれ。年を取ったとはいえ、魔法のアイテムならまだ簡単に作れるからね。");

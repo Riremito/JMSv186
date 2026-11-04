@@ -223,7 +223,7 @@ public class Npc_MonsterCarnival_SpiegelmannMove extends NpcScriptMan {
                 MapleQuest.getInstance(this.quest_cp_enemy).forceComplete(getPlayer(), getNpcId());
                 MapleQuest.getInstance(this.quest_time).forceComplete(getPlayer(), getNpcId());
                 if (exp != 0) {
-                    getPlayer().gainExp(exp, true, true, true);
+                    gainExp(exp);
                 }
                 this.node = NODE_RESULT;
                 return true;
@@ -235,7 +235,7 @@ public class Npc_MonsterCarnival_SpiegelmannMove extends NpcScriptMan {
             case NODE_MENU -> {
                 switch (answer) {
                     case 0 -> {
-                        int level = getPlayer().getLevel();
+                        int level = getLevel();
                         if (level < 30 || 50 < level) {
                             // 翻訳
                             say("悪いが、モンスターカーニバルに参加できるのはレベル30～50のユーザーだけだ。");

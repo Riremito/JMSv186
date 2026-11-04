@@ -52,7 +52,7 @@ public class Npc_Sleepywood_MysteriousStatue extends NpcScriptMan {
             }
             case 0 -> {
                 for (int i = 0; i < this.quest_ids.length; i++) {
-                    if (getPlayer().getQuestStatus(this.quest_ids[i]) == 0) {
+                    if (getQuestStatus(this.quest_ids[i]) == 0) {
                         continue;
                     }
                     // 花を持っている場合は移動できない

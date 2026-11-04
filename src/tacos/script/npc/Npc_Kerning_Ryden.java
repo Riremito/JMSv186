@@ -31,7 +31,7 @@ public class Npc_Kerning_Ryden extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     if (getPlayer().getSubcategory() != this.subcategory_dual_blade) {
                         // TODO : 文章 (適当)
                         say("私と話すには、キャラクター作成時にデュアルブレイドを選択している必要がある。");

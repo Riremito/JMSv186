@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -73,7 +70,7 @@ public class Npc_GuildQuest_Nuris extends NpcScriptMan {
         for (int item_id : this.item_guild_quest) {
             removeItemAll(item_id);
         }
-        if (MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.EQUIPPED, this.item_guard_stone, 1, true, false)) {
+        if (removeEquippedItem(this.item_guard_stone, 1)) {
             // 翻訳
             message("装備していた守護石が削除されました。");
         }

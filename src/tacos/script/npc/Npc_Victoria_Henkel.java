@@ -72,7 +72,7 @@ public class Npc_Victoria_Henkel extends NpcScriptMan {
                 }
                 if (getNpcId() == this.npc_henkel_archer) {
                     for (int quest_id : this.quest_spores) {
-                        if (getPlayer().getQuestStatus(quest_id) == 1) {
+                        if (getQuestStatus(quest_id) == 1) {
                             this.spore = true;
                         }
                     }
@@ -86,7 +86,7 @@ public class Npc_Victoria_Henkel extends NpcScriptMan {
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("修行場に入りますか？");
                 for (int i = 0; i < this.room_count; i++) {
-                    nt.addMenu(i, "修行場" + (i + 1) + " (" + getPlayer().findMap(this.map_base + i).getCharactersSize() + "/" + this.max_players + ")");
+                    nt.addMenu(i, "修行場" + (i + 1) + " (" + findMap(this.map_base + i).getCharactersSize() + "/" + this.max_players + ")");
                 }
                 askMenu(nt);
                 return true;
@@ -99,7 +99,7 @@ public class Npc_Victoria_Henkel extends NpcScriptMan {
                 if (answer < 0 || this.room_count <= answer) {
                     return false;
                 }
-                if (this.max_players <= getPlayer().findMap(this.map_base + answer).getCharactersSize()) {
+                if (this.max_players <= findMap(this.map_base + answer).getCharactersSize()) {
                     // TODO : 文章 (適当)
                     say("この修行場は満員です。");
                     return false;

@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -50,7 +47,7 @@ public class Npc_Orbis_ElNathMagicSpot extends NpcScriptMan {
                     say("#b#t" + this.item_magic_stone + "##kを持っていないので、#b#p2012015##kを起動できません。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_magic_stone, 1, true, false);
+                removeItem(this.item_magic_stone, 1);
                 warp(this.map_tower, "sp");
                 return false;
             }

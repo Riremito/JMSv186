@@ -73,7 +73,7 @@ public class Npc_MuLung_MuLungDojoBulletinBoard extends NpcScriptMan {
                     say("追伸 : 一人で来ても構わないが、もしお前が私の思う通りの臆病者なら、仲間と一緒に来てもいいぞ。", true, false);
                     return false;
                 }
-                getPlayer().saveLocation(SavedLocationType.MULUNG_TC);
+                saveLocation(SavedLocationType.MULUNG_TC);
                 warp(this.map_dojo);
                 return false;
             }

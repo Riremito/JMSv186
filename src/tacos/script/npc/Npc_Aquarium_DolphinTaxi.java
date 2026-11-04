@@ -31,7 +31,7 @@ public class Npc_Aquarium_DolphinTaxi extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        boolean beginner = getPlayer().getJob() == 0;
+        boolean beginner = getJob() == 0;
         int cost_now = beginner ? this.cost_beginner : this.cost;
         switch (status) {
             case 0 -> {

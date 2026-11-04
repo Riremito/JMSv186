@@ -18,7 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -53,25 +53,25 @@ public class Npc_Ellinia_PileOfFlowers extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     // 翻訳
                     say("これらの花の中に、神秘的なオーラに包まれたものがいくつかある。周りを包むオーラのせいで、摘むことができない。");
                     return false;
                 }
-                switch (getPlayer().getQuestStatus(this.quest_id)) {
+                switch (getQuestStatus(this.quest_id)) {
                     case 1 -> {
                         // 翻訳
                         askYesNo("本当に#b#t" + this.item_flower + "##kを持っていきますか？");
                         return true;
                     }
                     case 2 -> {
-                        int prize_id = this.prize_ids[(int) (Math.random() * this.prize_ids.length)];
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize_id, this.prize_count, "")) {
+                        int prize_id = this.prize_ids[Randomizer.nextInt(this.prize_ids.length)];
+                        if (!canHold(prize_id, this.prize_count)) {
                             // 翻訳
                             say("花の中で見つけたアイテムをしまうには、ETCインベントリに空きスロットが少なくとも1つ必要です。空きを作ってからもう一度試してください。");
                             return false;
                         }
-                        MapleInventoryManipulator.addById(getPlayer(), prize_id, (short) this.prize_count);
+                        gainItem(prize_id, this.prize_count);
                         warp(this.map_exit);
                         return false;
                     }
@@ -83,15 +83,15 @@ public class Npc_Ellinia_PileOfFlowers extends NpcScriptMan {
                 }
             }
             case 1 -> {
-                if (getPlayer().getQuestStatus(this.quest_id) != 1) {
+                if (getQuestStatus(this.quest_id) != 1) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_flower, 1, "")) {
+                if (!canHold(this.item_flower, 1)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいのようです。アイテムを拾えるように空きを作ってください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_flower, (short) 1);
+                gainItem(this.item_flower, 1);
                 warp(this.map_exit);
                 return false;
             }

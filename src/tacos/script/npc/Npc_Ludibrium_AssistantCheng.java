@@ -18,7 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
 import odin.server.quest.MapleQuest;
 import tacos.server.TacosFieldSet;
@@ -60,7 +59,7 @@ public class Npc_Ludibrium_AssistantCheng extends NpcScriptMan {
             return false;
         }
         if (status == 0) {
-            int state = getPlayer().getQuestStatus(this.quest_parts);
+            int state = getQuestStatus(this.quest_parts);
             if (state == 2) {
                 // 翻訳
                 say("あなたのおかげで、おもちゃ工場はまた完璧に動いています。手伝いに来てくれて本当にうれしいです。予備の部品はちゃんと管理しているので、心配いりません。さて、それでは！仕事に戻らないと！");
@@ -80,7 +79,7 @@ public class Npc_Ludibrium_AssistantCheng extends NpcScriptMan {
             if (getMapId() != this.map_inside) {
                 return false;
             }
-            int count = getPlayer().getItemQuantity(this.item_parts, false);
+            int count = getItemCount(this.item_parts);
             if (this.required_parts <= count) {
                 this.mode = MODE_REWARD;
                 // 翻訳
@@ -101,7 +100,7 @@ public class Npc_Ludibrium_AssistantCheng extends NpcScriptMan {
         }
         switch (this.mode) {
             case MODE_ENTER -> {
-                int count = getPlayer().getItemQuantity(this.item_parts, false);
+                int count = getItemCount(this.item_parts);
                 if (0 < count) {
                     exchange(0, this.item_parts, -count);
                 }
@@ -134,18 +133,18 @@ public class Npc_Ludibrium_AssistantCheng extends NpcScriptMan {
             case MODE_REWARD -> {
                 // TODO : lua では 4 番目のアイテムが選ばれない (選ばれた場合は交換に失敗する)
                 int reward = this.rewards[Randomizer.rand(0, this.rewards.length - 1)];
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), reward, 1, "")) {
+                if (!canHold(reward, 1)) {
                     // 翻訳
                     say("うーん…今は消費インベントリがいっぱいのようですね。これではお礼を受け取れません。インベントリに空きを作ってから、もう一度話しかけてください。");
                     return false;
                 }
-                int count = getPlayer().getItemQuantity(this.item_parts, false);
+                int count = getItemCount(this.item_parts);
                 if (!exchange(0, this.item_parts, -count, reward, 1)) {
                     // 翻訳
                     say("本当に#b#t" + this.item_parts + "#を" + this.required_parts + "個#k持っていますか？確かなら、消費インベントリに空きがあるか確認してください。");
                     return false;
                 }
-                getPlayer().gainExp(2700, true, true, true);
+                gainExp(2700);
                 MapleQuest.getInstance(this.quest_parts).forceComplete(getPlayer(), getNpcId());
                 this.mode = MODE_WARP;
                 // 翻訳

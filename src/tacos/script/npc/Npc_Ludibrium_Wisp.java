@@ -205,7 +205,7 @@ public class Npc_Ludibrium_Wisp extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                this.quest_state = getPlayer().getQuestStatus(this.quest_scroll_of_life);
+                this.quest_state = getQuestStatus(this.quest_scroll_of_life);
                 if (getAnswerPet() == null) {
                     if (this.quest_state == 2) {
                         // 翻訳
@@ -273,7 +273,7 @@ public class Npc_Ludibrium_Wisp extends NpcScriptMan {
                 return true;
             }
             case 6 -> {
-                MapleQuest.getInstance(this.quest_scroll_of_life).forceStart(getPlayer(), getNpcId(), "");
+                setQuestData(this.quest_scroll_of_life, "");
                 // 翻訳
                 say("よし。もう一度言うけど、必要なのは#b#t" + this.item_water_of_life + "##kと#b#t" + this.item_scroll_of_life + "##kなんだ。この2つを持ってきてくれたら、人形を生き返らせてあげられるよ。#b#t" + this.item_scroll_of_life + "##kは見つけるのが難しいんだ…ルディブリアムのどこかに#b#p" + this.npc_cloy + "##kの家があるよ。今は空き家だけど、探してみたら見つかるかもしれない。");
                 return false;

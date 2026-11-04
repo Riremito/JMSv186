@@ -18,6 +18,8 @@
  */
 package tacos.script.reactor;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -28,7 +30,7 @@ public class Reactor_Orbis_FgodItem13 extends ReactorScriptMan {
     @Override
     public void action() {
         // 1 - 3 回
-        int count = Math.max(1, (int) (Math.random() * 4));
+        int count = Math.max(1, Randomizer.nextInt(4));
         for (int i = 0; i < count; i++) {
             dropItems(true, 1, 30, 60, 15);
         }

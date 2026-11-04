@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.constants.GameConstants;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -272,15 +271,15 @@ public class Npc_Common_Gachapon extends NpcScriptMan {
                 if (!checkItem(ticket)) {
                     return false;
                 }
-                int reward = rewards[(int) (Math.random() * rewards.length)];
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), reward, 1, "")) {
+                int reward = rewards[Randomizer.nextInt(rewards.length)];
+                if (!canHold(reward, 1)) {
                     // TODO : 文章
                     say("[test]アイテム欄が不足しています");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(ticket), ticket, 1, true, false);
+                removeItem(ticket, 1);
                 // TODO : ランダムステータス, ガシャポンの告知 (BM_GACHAPONANNOUNCE, ヘネシスとキノコ神社以外)
-                MapleInventoryManipulator.addById(getPlayer(), reward, 1); // TODO : item effect.
+                gainItem(reward, 1); // TODO : item effect.
                 say("#b#t" + reward + "##k１個を獲得しました！");
                 return false;
             }

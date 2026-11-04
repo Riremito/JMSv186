@@ -87,7 +87,7 @@ public class Npc_LithHarbor_ProfessorFoxwit extends NpcScriptMan {
         boolean[] has = new boolean[this.items_artifact.length];
         boolean has_any = false;
         for (int i = 0; i < this.items_artifact.length; i++) {
-            has[i] = 0 < getPlayer().getItemQuantity(this.items_artifact[i], false);
+            has[i] = 0 < getItemCount(this.items_artifact[i]);
             has_any |= has[i];
         }
         // 作れるアイテム
@@ -115,7 +115,7 @@ public class Npc_LithHarbor_ProfessorFoxwit extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                if (getPlayer().getQuestStatus(this.quest_artifact) == 2) {
+                if (getQuestStatus(this.quest_artifact) == 2) {
                     this.node = NODE_ARTIFACT_MENU;
                     break;
                 }
@@ -220,7 +220,7 @@ public class Npc_LithHarbor_ProfessorFoxwit extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                MapleQuest.getInstance(this.quest_artifact).forceStart(getPlayer(), getNpcId(), "1");
+                setQuestData(this.quest_artifact, "1");
                 MapleQuest.getInstance(this.quest_artifact).forceComplete(getPlayer(), getNpcId());
                 return false;
             }

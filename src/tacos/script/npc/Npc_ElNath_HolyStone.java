@@ -18,9 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
+import odin.server.Randomizer;
 
 /**
  *
@@ -157,7 +155,7 @@ public class Npc_ElNath_HolyStone extends NpcScriptMan {
                 return false;
             }
             case 0 -> {
-                if (!"end1".equals(getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData())) {
+                if (!"end1".equals(getQuestData(this.quest_job_3rd))) {
                     return false;
                 }
                 // 翻訳
@@ -165,7 +163,7 @@ public class Npc_ElNath_HolyStone extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_wisdom, 1, "")) {
+                if (!canHold(this.item_necklace_of_wisdom, 1)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいだ…空きを作らなければ試験は受けられない。整理してから、もう一度挑むがよい…");
                     return false;
@@ -180,14 +178,14 @@ public class Npc_ElNath_HolyStone extends NpcScriptMan {
                     say("そなたの知恵を試したければ、#b#t" + this.item_dark_crystal + "##kを捧げ物として供えなければならない。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_dark_crystal, 1, true, false);
+                removeItem(this.item_dark_crystal, 1);
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add("よかろう。これから汝の知恵をテストしよう。全ての質問に正しい答えを選ぶと合格だ。ただし途中で1つでも間違うと最初からやり直さねばならん。では始めるぞ。");
                 say(nt, false, true);
                 return true;
             }
             case 2, 3, 4, 5, 6 -> {
-                int question_num = (int) (Math.random() * this.questions.length);
+                int question_num = Randomizer.nextInt(this.questions.length);
                 NpcScriptTag nt = new NpcScriptTag();
                 nt.add((status - 1) + "つ目の問題だ。" + this.questions[question_num]);
                 for (int i = 0; i < this.choices[question_num].length; i++) {
@@ -202,7 +200,7 @@ public class Npc_ElNath_HolyStone extends NpcScriptMan {
                 nt.add("汝の答えに嘘がないのを認めよう。");
                 nt.add("これで汝の知恵も証明された。");
                 nt.add("このネックレスを持って帰るがいい。");
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_wisdom, (short) 1); // TODO : item effect.
+                gainItem(this.item_necklace_of_wisdom, 1); // TODO : item effect.
                 say(nt);
                 return false;
             }

@@ -91,7 +91,7 @@ public abstract class NpcTokyoExpeditionMan extends NpcScriptMan {
         boolean ok = this.last_status <= status;
         this.last_status = status;
         TacosNpcExpedition expedition = TacosNpcExpedition.get(getPlayer(), this.expedition_name);
-        String name = getPlayer().getName();
+        String name = getCharacterName();
         // 受付時間を過ぎた場合は遠征隊の情報を初期化する
         expedition.reset();
         // 遠征隊長の権限の確認

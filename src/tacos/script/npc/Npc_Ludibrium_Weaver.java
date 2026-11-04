@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -52,12 +50,12 @@ public class Npc_Ludibrium_Weaver extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_weaver_letter, 1, "")) {
+                if (!canHold(this.item_weaver_letter, 1)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいだよ！インベントリに空きがないと手紙を渡せないんだ。インベントリに空きを作ってから、もう一度話しかけてくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_weaver_letter, (short) 1);
+                gainItem(this.item_weaver_letter, 1);
                 // 翻訳
                 say("よし、これが手紙だ。手紙なしで行かせたら、弟は君が誰だかわからないからね。ペットと一緒に障害物を越えて頂上まで行ったら、" + getNpcName(this.npc_neru) + "に話しかけて手紙を渡してくれ。障害物を越えるときにペットに気を配っていれば、難しくはないよ。頑張って！");
                 return false;

@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.server.quest.MapleQuest;
-import tacos.packet.ops.OpsBroadcastMsg;
 
 /**
  *
@@ -41,11 +40,11 @@ public class Npc_Magatia_SecretPassage extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                int quest_state = getPlayer().getQuestStatus(this.quest_password);
+                int quest_state = getQuestStatus(this.quest_password);
                 if (quest_state == 2) {
                     // TODO : メッセージの種類
                     // TODO : 文章 (適当)
-                    getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "名簿に名前が載っている。秘密通路へ移動します。");
+                    message("名簿に名前が載っている。秘密通路へ移動します。");
                     if (getMapId() == this.map_zenumist_hallway) {
                         warp(this.map_secret_tunnel, this.portal_zenumist);
                         return false;
@@ -62,7 +61,7 @@ public class Npc_Magatia_SecretPassage extends NpcScriptMan {
             }
             case 1 -> {
                 // TODO : 暗証番号はクエスト開始時にクエストのデータとして設定される想定 (設定する処理がない)
-                String password = getPlayer().getQuest(MapleQuest.getInstance(this.quest_password)).getCustomData();
+                String password = getQuestData(this.quest_password);
                 if (password.isEmpty() || !password.equals(getAnswerText())) {
                     // TODO : 文章 (適当)
                     say("暗証番号が違います。");
@@ -71,7 +70,7 @@ public class Npc_Magatia_SecretPassage extends NpcScriptMan {
                 MapleQuest.getInstance(this.quest_password).forceComplete(getPlayer(), getNpcId());
                 // TODO : メッセージの種類
                 // TODO : 文章 (適当)
-                getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "セキュリティ装置が解除された。");
+                message("セキュリティ装置が解除された。");
                 return false;
             }
             default -> {

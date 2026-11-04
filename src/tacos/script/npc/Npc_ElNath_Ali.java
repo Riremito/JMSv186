@@ -18,10 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -42,7 +38,7 @@ public class Npc_ElNath_Ali extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                String val = getPlayer().getQuest(MapleQuest.getInstance(this.quest_stage1)).getCustomData();
+                String val = getQuestData(this.quest_stage1);
                 if ("end".equals(val)) {
                     // 翻訳
                     say("レベル1のクリア、よくやったな！よし…#b" + getNpcName(this.npc_adobis) + "#kのところへ送ってやろう。その前に！！ここで手に入れたいろいろな特別なアイテムは、ここから持ち出せないことを覚えておいてくれ。アイテムインベントリからそれらのアイテムを回収するから、忘れないようにな。じゃあな！", false, true);
@@ -54,9 +50,9 @@ public class Npc_ElNath_Ali extends NpcScriptMan {
             }
             case 1 -> {
                 for (int item_id : this.item_quest_items) {
-                    int count = getPlayer().getItemQuantity(item_id, false);
+                    int count = getItemCount(item_id);
                     if (count > 0) {
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, item_id, count, true, false);
+                        removeItem(item_id, count);
                     }
                 }
                 warp(this.map_door_to_zakum);

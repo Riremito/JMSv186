@@ -22,9 +22,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
 import tacos.server.TacosFieldSet;
 import tacos.server.map.TacosMap;
 
@@ -52,9 +49,9 @@ public class Npc_Zipangu_KonpeiBodyguard extends NpcScriptMan {
                     return false;
                 }
                 // 大親分の提灯の回収
-                int lantern = getPlayer().getItemQuantity(this.item_lantern, false);
+                int lantern = getItemCount(this.item_lantern);
                 if (0 < lantern) {
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_lantern, lantern, true, false);
+                    removeItem(this.item_lantern, lantern);
                 }
                 if (!checkItem(this.item_comb)) {
                     // 翻訳
@@ -62,8 +59,8 @@ public class Npc_Zipangu_KonpeiBodyguard extends NpcScriptMan {
                     return false;
                 }
                 LocalDateTime time_now = LocalDateTime.now();
-                String time_last = getPlayer().getQuest(MapleQuest.getInstance(this.quest_boss)).getCustomData();
-                if (time_last != null && !time_last.isEmpty()) {
+                String time_last = getQuestData(this.quest_boss);
+                if (!time_last.isEmpty()) {
                     try {
                         if (Duration.between(LocalDateTime.parse(time_last, this.time_format), time_now).toMinutes() < this.daily_minutes) {
                             // 翻訳
@@ -92,7 +89,7 @@ public class Npc_Zipangu_KonpeiBodyguard extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                TacosMap map = getPlayer().findMap(this.map_boss);
+                TacosMap map = findMap(this.map_boss);
                 TacosFieldSet field_set = getFieldSet("shouwaBoss");
                 int users = field_set != null ? field_set.getUserCount() : (map != null ? map.getCharactersSize() : 0);
                 if (this.max_users <= users) {
@@ -103,7 +100,7 @@ public class Npc_Zipangu_KonpeiBodyguard extends NpcScriptMan {
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }
-                MapleQuest.getInstance(this.quest_boss).forceStart(getPlayer(), getNpcId(), LocalDateTime.now().format(this.time_format));
+                setQuestData(this.quest_boss, LocalDateTime.now().format(this.time_format));
                 warp(this.map_boss);
                 return false;
             }

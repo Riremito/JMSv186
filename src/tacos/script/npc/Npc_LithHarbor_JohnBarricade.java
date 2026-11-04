@@ -131,15 +131,15 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
         boolean[] has_armor = new boolean[this.items_armor.length];
         boolean has_armor_any = false;
         for (int i = 0; i < this.items_armor.length; i++) {
-            has_armor[i] = 0 < getPlayer().getItemQuantity(this.items_armor[i], false);
+            has_armor[i] = 0 < getItemCount(this.items_armor[i]);
             has_armor_any |= has_armor[i];
         }
-        boolean has_book = 0 < getPlayer().getItemQuantity(this.item_book, false);
+        boolean has_book = 0 < getItemCount(this.item_book);
         // 所持しているアーティファクト
         boolean[] has = new boolean[this.items_artifact.length];
         boolean has_any = false;
         for (int i = 0; i < this.items_artifact.length; i++) {
-            has[i] = 0 < getPlayer().getItemQuantity(this.items_artifact[i], false);
+            has[i] = 0 < getItemCount(this.items_artifact[i]);
             has_any |= has[i];
         }
         // 作れるアイテム
@@ -160,7 +160,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
         for (boolean b : can_make) {
             can_make_any |= b;
         }
-        String val = getPlayer().getQuest(MapleQuest.getInstance(this.quest_armor)).getCustomData();
+        String val = getQuestData(this.quest_armor);
         // 前の会話の応答の処理
         switch (this.node) {
             case NODE_START -> {
@@ -184,8 +184,8 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     }
                     if (has_armor_any) {
                         if (has_book) {
-                            MapleQuest.getInstance(this.quest_armor).forceStart(getPlayer(), getNpcId(), "2");
-                            getPlayer().gainExp(500, true, true, true);
+                            setQuestData(this.quest_armor, "2");
+                            gainExp(500);
                             // 翻訳
                             this.text = "よう…本を見つけたのか？  すごいじゃないか！  ちょっと目を通させてくれ…ふむ…実に興味深い内容だ。  ああ、ここだ…鎧の付与魔法と伝説の鎧についての項だ。  君が持っている古代の防具を見せてくれ。  うん、間違いない！  この内容を理解するのに少し時間をくれ…戻ってきたら全部説明してやれるはずだ！";
                             this.node = NODE_SAY_END;
@@ -202,7 +202,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     break;
                 }
                 if (this.menu == MENU_ARTIFACT && has_any) {
-                    if (getPlayer().getQuestStatus(this.quest_artifact) == 2) {
+                    if (getQuestStatus(this.quest_artifact) == 2) {
                         this.node = NODE_ARTIFACT_MENU;
                         break;
                     }
@@ -292,7 +292,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                 boolean ready = true;
                 for (int i = 0; i < this.armor_exchanges[answer].length; i += 2) {
                     if (this.armor_exchanges[answer][i + 1] < 0) {
-                        ready &= 0 < getPlayer().getItemQuantity(this.armor_exchanges[answer][i], false);
+                        ready &= 0 < getItemCount(this.armor_exchanges[answer][i]);
                     }
                 }
                 if (!ready) {
@@ -311,8 +311,8 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                getPlayer().gainExp(1000000, true, true, true);
-                MapleQuest.getInstance(this.quest_armor).forceStart(getPlayer(), getNpcId(), "0");
+                gainExp(1000000);
+                setQuestData(this.quest_armor, "0");
                 // 翻訳
                 this.text = "すごい、うまくいった！  なんてこった！  本のせいで指先と眉毛が焦げたみたいだが、復元されたボスハンターの鎧の一部が手に入ったぞ！  この防具を元の状態に復元したんだから、正式にとは言わないまでも、心意気の上では君もボスハンターだろう。これを作るためにくぐり抜けてきた戦いを思えば、その資格は十分にある！  ブラボー、ハンター！";
                 this.node = NODE_SAY_END;
@@ -377,7 +377,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
             case NODE_ARMOR_STORY_MENU5 -> {
                 switch (answer) {
                     case 0 -> {
-                        MapleQuest.getInstance(this.quest_armor).forceStart(getPlayer(), getNpcId(), "1");
+                        setQuestData(this.quest_armor, "1");
                         // 翻訳
                         this.text = " その意気だ、相棒！  リドリーの本を見つけたら、できるだけ早く戻ってきて俺を探してくれ！  待ちきれないよ…価値ある宝探しは大好きなんだ！";
                     }
@@ -496,7 +496,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                getPlayer().gainExp(40000, true, true, true);
+                gainExp(40000);
                 // 翻訳
                 String[] texts = {
                     "「そのアーティファクトを見せてくれ…」\r\nバリケードはあなたからアーティファクトを受け取った。ジョンは興奮しながらアーティファクトを調べていじり回し、素早く計算をして、杖を作るための大まかなマニュアルを書き上げた。\r\n「ほら…この#b#t4031822##kを持っていくんだ！オメガセクターのスピンドルのところへ持っていってくれ。このアイテムを作るにはまだほかの材料も必要で、何が必要かはスピンドルが説明してくれる。あいつなら俺の設計図を読み解いて、全部組み立ててくれるはずさ。」",
@@ -523,7 +523,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                getPlayer().gainExp(40000, true, true, true);
+                gainExp(40000);
                 // 翻訳
                 String[] texts = {
                     "「そのアーティファクトを見せてくれ…」\r\nバリケードはあなたからアーティファクトを受け取った。ジョンは興奮しながらアーティファクトを調べていじり回し、素早く計算をして、杖を作るための大まかなマニュアルを書き上げた。\r\n「ほら…この#b#t4031822##kを持っていくんだ！オメガセクターのスピンドルのところへ持っていってくれ。このアイテムを作るにはまだほかの材料も必要で、何が必要かはスピンドルが説明してくれる。あいつなら俺の設計図を読み解いて、全部組み立ててくれるはずさ。」",
@@ -568,7 +568,7 @@ public class Npc_LithHarbor_JohnBarricade extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                MapleQuest.getInstance(this.quest_artifact).forceStart(getPlayer(), getNpcId(), "1");
+                setQuestData(this.quest_artifact, "1");
                 MapleQuest.getInstance(this.quest_artifact).forceComplete(getPlayer(), getNpcId());
                 return false;
             }

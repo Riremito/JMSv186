@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -93,7 +91,7 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
         // 次へ・はい・選択 の場合は status が増える
         boolean ok = this.last_status < status;
         this.last_status = status;
-        int pre_val = getPlayer().getQuestStatus(this.quest_spirit);
+        int pre_val = getQuestStatus(this.quest_spirit);
         // lua の Item01 ~ Item23 の所持数 (番号 = lua の Item の番号 = 選択肢の番号)
         int[] item_ids = new int[24];
         for (int i = 0; i < this.weapons.length; i++) {
@@ -108,7 +106,7 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
         item_ids[23] = this.item_totem;
         int[] counts = new int[24];
         for (int i = 1; i < item_ids.length; i++) {
-            counts[i] = getPlayer().getItemQuantity(item_ids[i], false);
+            counts[i] = getItemCount(item_ids[i]);
         }
         boolean has_base = false;
         boolean has_suma = false;
@@ -343,8 +341,8 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
                 if (texts == null) {
                     break;
                 }
-                MapleQuest.getInstance(this.quest_spirit).forceStart(getPlayer(), getNpcId(), "");
-                getPlayer().gainExp(this.exp_item, true, true, true);
+                setQuestData(this.quest_spirit, "");
+                gainExp(this.exp_item);
                 this.says = texts;
                 this.says_index = 0;
                 this.says_after = NODE_SAY_END;
@@ -360,8 +358,8 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
                 if (answer != 2) {
                     return false;
                 }
-                MapleQuest.getInstance(this.quest_spirit).forceStart(getPlayer(), getNpcId(), "");
-                getPlayer().gainExp(this.exp_item, true, true, true);
+                setQuestData(this.quest_spirit, "");
+                gainExp(this.exp_item);
                 // 翻訳
                 this.text = " あなたがどうにかしてそれを見つけたということは、過去の、あるいはこれから成し遂げる勇敢な功績のために、あなたが選ばれているとしか思えないわ。この珍しくて貴重なしるしを大切に持っていて。いつかあなたも精霊クエストに挑む日が来るかもしれない。時が来て、ちゃんとしたタルの武器を手にしたら、私に聞いて。道を示してあげるわ。それまで、オハナ・タルテハ、友よ。";
                 this.node = NODE_SAY_END;
@@ -431,7 +429,7 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                getPlayer().gainExp(this.exp_suma, true, true, true);
+                gainExp(this.exp_suma);
                 // 翻訳
                 this.text = "若き勇者よ、あなたとペットとの深まる絆を映して、あなたの武器は強くなったわ。これからも賢く使えば、ジャングルの精霊が報いてくれるでしょう";
                 this.node = NODE_SAY_END;
@@ -473,8 +471,8 @@ public class Npc_Leafre_Corine extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                MapleQuest.getInstance(this.quest_spirit).forceStart(getPlayer(), getNpcId(), "");
-                getPlayer().gainExp(this.exp_magna, true, true, true);
+                setQuestData(this.quest_spirit, "");
+                gainExp(this.exp_magna);
                 // 翻訳
                 this.text = "儀式は完了したわ、若き勇者よ。あなたの武器はさらに強くなった！あなたはジャングルの精霊に祝福されたの。精霊は、あなたがペットの相棒と築いた友情をとても温かく見守っているわ。この先にも精霊クエストの段階があるのかって？伝説ではそれをほのめかしているけど、確かなことはわからないの。私自身はマグナの段階までしか到達していないし、精霊クエストについての知識もそこまでなの。もしかすると、あなたか私がその先の道を見つけるかもしれないわね！それまで、ジャングルの精霊があなたに力を与え、あなたとペットの相棒を見守ってくれますように。";
                 this.node = NODE_SAY_END;

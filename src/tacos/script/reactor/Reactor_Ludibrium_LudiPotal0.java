@@ -18,6 +18,8 @@
  */
 package tacos.script.reactor;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -32,6 +34,6 @@ public class Reactor_Ludibrium_LudiPotal0 extends ReactorScriptMan {
     public void action() {
         // TODO : 文章 (js の英文を翻訳, 原文 : You have found a secret factory!)
         playerMessage(5, "秘密の工場を見つけました！");
-        warp(Math.random() < 0.5 ? this.map_factory1 : this.map_factory2);
+        warp(Randomizer.nextInt(2) == 0 ? this.map_factory1 : this.map_factory2);
     }
 }

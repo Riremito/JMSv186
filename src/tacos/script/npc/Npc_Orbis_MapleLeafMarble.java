@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -35,16 +32,16 @@ public class Npc_Orbis_MapleLeafMarble extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_maple_leaf_marble) != 1 || checkItem(this.item_maple_leaf_marble) || !checkItem(this.item_glass_marble)) {
+                if (getQuestStatus(this.quest_maple_leaf_marble) != 1 || checkItem(this.item_maple_leaf_marble) || !checkItem(this.item_glass_marble)) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_maple_leaf_marble, 1, "")) {
+                if (!canHold(this.item_maple_leaf_marble, 1)) {
                     // 翻訳
                     say("ETCウィンドウに空きがないので、メイプルマーブルを受け取れません。空きを作ってからもう一度お試しください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_glass_marble, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_maple_leaf_marble, (short) 1);
+                removeItem(this.item_glass_marble, 1);
+                gainItem(this.item_maple_leaf_marble, 1);
                 // 翻訳
                 say("カエデの葉がきらめくガラス玉に吸い込まれました。");
                 return false;

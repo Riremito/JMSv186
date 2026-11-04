@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.constants.GameConstants;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -92,7 +89,7 @@ public class Npc_Ellinia_ArwenTheFairy extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                if (getPlayer().getJob() == 0 || getPlayer().getLevel() < this.required_level) {
+                if (getJob() == 0 || getLevel() < this.required_level) {
                     // 翻訳
                     say("貴重で珍しいアイテムを作っているけど、残念ながら、あなたのようなよそ者には作ってあげられないわ。");
                     return false;
@@ -122,7 +119,7 @@ public class Npc_Ellinia_ArwenTheFairy extends NpcScriptMan {
             }
             case 3 -> {
                 int item_id = this.item_ids[this.selected];
-                boolean ok = this.costs[this.selected] <= getPlayer().getMeso() && MapleInventoryManipulator.checkSpace(getPlayer(), item_id, 1, "");
+                boolean ok = this.costs[this.selected] <= getMeso() && canHold(item_id, 1);
                 for (int material : this.materials[this.selected]) {
                     if (!checkItem(material)) {
                         ok = false;
@@ -133,10 +130,10 @@ public class Npc_Ellinia_ArwenTheFairy extends NpcScriptMan {
                     return false;
                 }
                 for (int material : this.materials[this.selected]) {
-                    MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(material), material, 1, true, false);
+                    removeItem(material, 1);
                 }
                 payMoney(this.costs[this.selected]);
-                MapleInventoryManipulator.addById(getPlayer(), item_id, (short) 1);
+                gainItem(item_id, 1);
                 // 翻訳
                 say("はい、どうぞ。#t" + item_id + "#よ。とてもよくできているでしょう。良い材料を使うことが大事なの。いつか私の助けが必要になったら、頼ってちょうだいね。");
                 return false;

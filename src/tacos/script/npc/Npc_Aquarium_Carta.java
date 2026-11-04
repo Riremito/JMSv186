@@ -38,15 +38,15 @@ public class Npc_Aquarium_Carta extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         // 翻訳
-        if (getPlayer().getQuestStatus(this.quest_cracked_dimension) != 1) {
+        if (getQuestStatus(this.quest_cracked_dimension) != 1) {
             say("ひび割れた次元？どこでその話を聞いたのですか？");
             return false;
         }
-        if (getPlayer().getParty() == null || getPlayer().getParty().getLeader().getId() != getPlayer().getId()) {
+        if (!isPartyBoss()) {
             say("入場を申請できるのはパーティーリーダーのみです。代表者が私に話しかけてください。");
             return false;
         }
-        if (this.required_piece <= getPlayer().getItemQuantity(this.item_piece, false)) {
+        if (this.required_piece <= getItemCount(this.item_piece)) {
             say("#b#t" + this.item_piece + "##kを" + this.required_piece + "個持っているなら、これ以上は必要ありません。");
             return false;
         }

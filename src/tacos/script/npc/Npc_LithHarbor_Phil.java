@@ -93,7 +93,7 @@ public class Npc_LithHarbor_Phil extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        boolean beginner = getPlayer().getJob() == 0;
+        boolean beginner = getJob() == 0;
         switch (status) {
             case 0 -> {
                 // 翻訳

@@ -77,7 +77,7 @@ public class Npc_MapleIsland_Shanks extends NpcScriptMan {
                     say(nt, false, true);
                     return true;
                 }
-                if (getPlayer().getMeso() < this.cost) {
+                if (getMeso() < this.cost) {
                     // 翻訳
                     say("何だって？一文無しで旅に出たいってのか？変わった奴だな…");
                     return false;

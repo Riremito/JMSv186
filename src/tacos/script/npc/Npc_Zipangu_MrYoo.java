@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -56,18 +54,18 @@ public class Npc_Zipangu_MrYoo extends NpcScriptMan {
                 }
                 int item_id = this.item_tickets[answer];
                 int cost = this.costs[answer];
-                if (getPlayer().getMeso() < cost) {
+                if (getMeso() < cost) {
                     // TODO : 文章 (適当)
                     say("メルが足りません。");
                     return false;
                 }
-                if (checkItem(item_id) || !MapleInventoryManipulator.checkSpace(getPlayer(), item_id, 1, "")) {
+                if (checkItem(item_id) || !canHold(item_id, 1)) {
                     // TODO : 文章 (適当)
                     say("すでにお持ちか、持ち物に空きがありません。");
                     return false;
                 }
                 payMoney(cost);
-                MapleInventoryManipulator.addById(getPlayer(), item_id, (short) 1);
+                gainItem(item_id, 1);
                 // TODO : 文章 (適当)
                 say("ありがとうございます。");
                 return false;

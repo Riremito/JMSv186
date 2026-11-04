@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -49,7 +46,7 @@ public class Npc_Orbis_Ramini extends NpcScriptMan {
             case 1 -> {
                 // レベル30未満は子供用のチケットでも搭乗できる
                 int ticket = this.item_ticket;
-                if (getPlayer().getLevel() < 30 && !checkItem(this.item_ticket)) {
+                if (getLevel() < 30 && !checkItem(this.item_ticket)) {
                     ticket = this.item_ticket_child;
                 }
                 if (!checkItem(ticket)) {
@@ -57,7 +54,7 @@ public class Npc_Orbis_Ramini extends NpcScriptMan {
                     say("あら…チケットをお持ちでないようですね。チケットがないと搭乗できません。チケット売り場でチケットをお買い求めください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, ticket, 1, true, false);
+                removeItem(ticket, 1);
                 warp(this.map_ticket_office);
                 return false;
             }

@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -49,7 +51,7 @@ public class Npc_Ludibrium_GatekeeperMoonBunny extends NpcScriptMan {
             case 1 -> {
                 if (enter) {
                     // TODO : 3個のマップへランダム入場らしい?
-                    int index = (int) (Math.random() * this.map_ids.length);
+                    int index = Randomizer.nextInt(this.map_ids.length);
                     warp(this.map_ids[index], "sp");
                 } else {
                     warp(this.map_moon, "sp");

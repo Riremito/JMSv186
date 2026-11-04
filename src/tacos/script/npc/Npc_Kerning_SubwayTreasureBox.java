@@ -18,7 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -110,13 +110,13 @@ public class Npc_Kerning_SubwayTreasureBox extends NpcScriptMan {
             say(this.have_texts[index], false, true);
             return true;
         }
-        int quest_status = getPlayer().getQuestStatus(this.quest_ids[index]);
+        int quest_status = getQuestStatus(this.quest_ids[index]);
         if (quest_status == 1) {
-            if (!MapleInventoryManipulator.checkSpace(getPlayer(), item_id, 1, "")) {
+            if (!canHold(item_id, 1)) {
                 say(this.full_texts[index]);
                 return false;
             }
-            MapleInventoryManipulator.addById(getPlayer(), item_id, (short) 1);
+            gainItem(item_id, 1);
             this.found = true;
             say(this.found_texts[index], false, true);
             return true;
@@ -124,13 +124,13 @@ public class Npc_Kerning_SubwayTreasureBox extends NpcScriptMan {
         // クエストを完了している場合は2個
         int prize_count = quest_status == 2 ? 2 : 1;
         int[] prizes = this.prize_ids[index];
-        int prize_id = prizes[(int) (Math.random() * prizes.length)];
-        if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize_id, prize_count, "")) {
+        int prize_id = prizes[Randomizer.nextInt(prizes.length)];
+        if (!canHold(prize_id, prize_count)) {
             // 翻訳
             say("ETCインベントリがいっぱいなので、見つけたアイテムを持つことができない。アイテムのための空きを作ってから、また来よう。");
             return false;
         }
-        MapleInventoryManipulator.addById(getPlayer(), prize_id, (short) prize_count);
+        gainItem(prize_id, prize_count);
         warp(this.map_exit);
         return false;
     }

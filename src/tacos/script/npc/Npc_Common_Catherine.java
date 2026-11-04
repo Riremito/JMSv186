@@ -39,7 +39,7 @@ public class Npc_Common_Catherine extends NpcScriptMan {
             }
             case 1 -> {
                 // TODO : パチンコ屋用の SavedLocationType
-                getPlayer().saveLocation(SavedLocationType.MULUNG_TC);
+                saveLocation(SavedLocationType.MULUNG_TC);
                 warp(this.map_pachinko_parlor, "out00");
                 return false;
             }

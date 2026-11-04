@@ -36,13 +36,13 @@ public class Npc_Ludibrium_Anderson extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (getMapId() == this.map_exit) {
-            int count = getPlayer().getItemQuantity(this.item_pass, false);
+            int count = getItemCount(this.item_pass);
             if (0 < count && !exchange(0, this.item_pass, -count)) {
                 // 翻訳
                 say("#t" + this.item_pass + "#の枚数は本当に正しい？もう一度確認してね。");
                 return false;
             }
-            count = getPlayer().getItemQuantity(this.item_key, false);
+            count = getItemCount(this.item_key);
             if (0 < count && !exchange(0, this.item_key, -count)) {
                 // 翻訳
                 say("#t" + this.item_key + "#の数は本当に正しい？もう一度確認してね。");

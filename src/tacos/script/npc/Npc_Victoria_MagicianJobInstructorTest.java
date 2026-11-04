@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -46,12 +43,12 @@ public class Npc_Victoria_MagicianJobInstructorTest extends NpcScriptMan {
                 return false;
             }
             case 0 -> {
-                if (getPlayer().getJob() != this.job_1st || getPlayer().getLevel() < this.job_2nd_level) {
+                if (getJob() != this.job_1st || getLevel() < this.job_2nd_level) {
                     // 翻訳
                     say("何だ？どうやってここに来たんだ？…おかしいな…まあいい、出してやろう。ここはとても危険な場所だ。出ていかないと、もっと危ない目に遭うぞ。", false, true);
                     return true;
                 }
-                if (!getPlayer().haveItem(this.item_dark_marble, this.required_quantity)) {
+                if (!haveItem(this.item_dark_marble, this.required_quantity)) {
                     // 翻訳
                     askYesNo("ふむ…どうしましたか？まだ#b#t" + this.item_dark_marble + "##kを" + this.required_quantity + "個集めていないようですね…手こずっているなら、今出ていって後でまた挑戦してもいいですよ。それで…諦めてここから出ますか？");
                     return true;
@@ -61,24 +58,24 @@ public class Npc_Victoria_MagicianJobInstructorTest extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (getPlayer().getJob() != this.job_1st || getPlayer().getLevel() < this.job_2nd_level) {
+                if (getJob() != this.job_1st || getLevel() < this.job_2nd_level) {
                     warp(this.map_exit);
                     return false;
                 }
-                if (!getPlayer().haveItem(this.item_dark_marble, this.required_quantity)) {
+                if (!haveItem(this.item_dark_marble, this.required_quantity)) {
                     // 翻訳
                     say("本当か…？わかった、出してやろう。だが諦めるなよ。いつでもまた挑戦できるんだから、諦めるな。それまで、さらばだ…", false, true);
                     return true;
                 }
-                if (!checkItem(this.item_letter) || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_proof_of_hero, 1, "")) {
+                if (!checkItem(this.item_letter) || !canHold(this.item_proof_of_hero, 1)) {
                     // 翻訳
                     say("ふむ…#t" + this.item_dark_marble + "#が" + this.required_quantity + "個あるか、#b" + getNpcName(this.npc_job) + "#kの手紙があるか、ETCインベントリに空きスロットがあるか確認してください。");
                     return false;
                 }
-                int quantity = getPlayer().getItemQuantity(this.item_dark_marble, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_dark_marble, quantity, true, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_letter, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_proof_of_hero, (short) 1); // TODO : item effect.
+                int quantity = getItemCount(this.item_dark_marble);
+                removeItem(this.item_dark_marble, quantity);
+                removeItem(this.item_letter, 1);
+                gainItem(this.item_proof_of_hero, 1); // TODO : item effect.
                 warp(this.map_exit);
                 return false;
             }

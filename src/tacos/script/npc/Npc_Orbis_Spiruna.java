@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -47,7 +44,7 @@ public class Npc_Orbis_Spiruna extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_id) != 2) {
+                if (getQuestStatus(this.quest_id) != 2) {
                     // 翻訳
                     say("大事な呪文を研究しているところだから、邪魔しないですぐに出て行って。よそ者が家の周りをうろうろしていると集中できないの。お願いだから帰って…");
                     return false;
@@ -72,14 +69,14 @@ public class Npc_Orbis_Spiruna extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                if (getPlayer().getMeso() < this.cost || !getPlayer().haveItem(this.item_dark_ore, this.required_ore) || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_dark_crystal, 1, "")) {
+                if (getMeso() < this.cost || !haveItem(this.item_dark_ore, this.required_ore) || !canHold(this.item_dark_crystal, 1)) {
                     // 翻訳
                     say("メルが足りないの？#b#t" + this.item_dark_ore + "#" + this.required_ore + "個#kと" + this.cost + "メルを持っているか、ETCインベントリに空きがあるか確認してね。");
                     return false;
                 }
                 payMoney(this.cost);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_dark_ore, this.required_ore, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_dark_crystal, (short) 1);
+                removeItem(this.item_dark_ore, this.required_ore);
+                gainItem(this.item_dark_crystal, 1);
                 // 翻訳
                 say("はい、#b#t" + this.item_dark_crystal + "#1個#kよ。最後に作ったのはずいぶん前だから、うまくできているといいんだけど…それにしても、どうやってクリスタルの原石を手に入れたの？あなた、本当に特別な人なのね。とにかく、すごいアイテムよ。大切に使ってね。");
                 return false;

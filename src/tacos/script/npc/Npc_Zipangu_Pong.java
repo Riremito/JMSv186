@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -52,12 +49,12 @@ public class Npc_Zipangu_Pong extends NpcScriptMan {
             case 0 -> {
                 for (int i = 0; i < this.map_exits.length; i++) {
                     if (getMapId() == this.map_exits[i]) {
-                        int count = getPlayer().getItemQuantity(this.item_sun_flame, false);
+                        int count = getItemCount(this.item_sun_flame);
                         if (this.item_sun_flame_count < count) {
                             count = this.item_sun_flame_count;
                         }
                         if (0 < count) {
-                            MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_sun_flame, count, true, false);
+                            removeItem(this.item_sun_flame, count);
                         }
                         warp(this.map_golden_temples[i]);
                         return false;

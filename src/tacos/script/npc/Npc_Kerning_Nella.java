@@ -35,13 +35,13 @@ public class Npc_Kerning_Nella extends NpcScriptMan {
     public boolean action(int status, int answer) {
         int map_id = getMapId();
         if (map_id == this.map_exit) {
-            int count = getPlayer().getItemQuantity(this.item_coupon, false);
+            int count = getItemCount(this.item_coupon);
             if (0 < count && !exchange(0, this.item_coupon, -count)) {
                 // 翻訳
                 say("クーポンの枚数は本当に正しい？もう一度確認してね。");
                 return false;
             }
-            count = getPlayer().getItemQuantity(this.item_pass, false);
+            count = getItemCount(this.item_pass);
             if (0 < count && !exchange(0, this.item_pass, -count)) {
                 // 翻訳
                 say("通行証の枚数は本当に正しい？もう一度確認してね。");

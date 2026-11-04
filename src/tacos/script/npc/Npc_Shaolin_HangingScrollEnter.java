@@ -39,7 +39,7 @@ public class Npc_Shaolin_HangingScrollEnter extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                TacosMap map = getPlayer().findMap(this.map_boss);
+                TacosMap map = findMap(this.map_boss);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

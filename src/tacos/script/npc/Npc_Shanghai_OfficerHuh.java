@@ -40,7 +40,7 @@ public class Npc_Shanghai_OfficerHuh extends NpcScriptMan {
             }
             case 1 -> {
                 // TODO : 10分の制限時間, 大王ムカデの召喚
-                TacosMap map = getPlayer().findMap(this.map_boss);
+                TacosMap map = findMap(this.map_boss);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

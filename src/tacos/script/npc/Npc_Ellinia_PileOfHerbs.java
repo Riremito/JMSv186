@@ -18,7 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -44,19 +44,19 @@ public class Npc_Ellinia_PileOfHerbs extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     // 翻訳
                     say("薬草の茂みの中に神秘的なエネルギーを持つ根があるが、周りの奇妙なオーラのせいで採ることができない。");
                     return false;
                 }
-                switch (getPlayer().getQuestStatus(this.quest_id)) {
+                switch (getQuestStatus(this.quest_id)) {
                     case 1 -> {
                         // 翻訳
                         askYesNo("本当に#b#t" + this.item_herb + "##kを持っていきますか？");
                         return true;
                     }
                     case 2 -> {
-                        int rand = (int) (Math.random() * this.prize_total);
+                        int rand = Randomizer.nextInt(this.prize_total);
                         int[] prize = this.prizes[this.prizes.length - 1];
                         for (int[] p : this.prizes) {
                             if (rand < p[0]) {
@@ -65,12 +65,12 @@ public class Npc_Ellinia_PileOfHerbs extends NpcScriptMan {
                             }
                             rand -= p[0];
                         }
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize[1], prize[2], "")) {
+                        if (!canHold(prize[1], prize[2])) {
                             // 翻訳
                             say("薬草の茂みで見つけたアイテムを入れられるように、装備インベントリとETCインベントリに空きを作る必要があります。整理してからもう一度確認してください。");
                             return false;
                         }
-                        MapleInventoryManipulator.addById(getPlayer(), prize[1], (short) prize[2]);
+                        gainItem(prize[1], prize[2]);
                         warp(this.map_exit);
                         return false;
                     }
@@ -82,15 +82,15 @@ public class Npc_Ellinia_PileOfHerbs extends NpcScriptMan {
                 }
             }
             case 1 -> {
-                if (getPlayer().getQuestStatus(this.quest_id) != 1) {
+                if (getQuestStatus(this.quest_id) != 1) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_herb, 1, "")) {
+                if (!canHold(this.item_herb, 1)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいのようです。アイテムを拾えるように空きを作ってください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_herb, (short) 1);
+                gainItem(this.item_herb, 1);
                 warp(this.map_exit);
                 return false;
             }

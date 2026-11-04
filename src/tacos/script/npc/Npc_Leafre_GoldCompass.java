@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -90,11 +88,11 @@ public class Npc_Leafre_GoldCompass extends NpcScriptMan {
                 if (answer < 0 || this.item_ids.length <= answer) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_ids[answer], this.item_counts[answer], "") || !payMoney(this.item_prices[answer])) {
+                if (!canHold(this.item_ids[answer], this.item_counts[answer]) || !payMoney(this.item_prices[answer])) {
                     say("You arn't gonna fool me are you?");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_ids[answer], (short) this.item_counts[answer]); // TODO : item effect.
+                gainItem(this.item_ids[answer], this.item_counts[answer]); // TODO : item effect.
                 return false;
             }
             default -> {

@@ -53,7 +53,7 @@ public class Npc_LithHarbor_MrGoldstein extends NpcScriptMan {
             }
             case 2 -> {
                 int capacity = getPlayer().getBuddyCapacity();
-                if (this.max_capacity < capacity + this.add_capacity || getPlayer().getMeso() < this.cost) {
+                if (this.max_capacity < capacity + this.add_capacity || getMeso() < this.cost) {
                     NpcScriptTag nt = new NpcScriptTag();
                     nt.add("そうか… 君はワシが思ったほど友達がいないようじゃの。それとも#b" + this.cost + "メル#kを持っていないのか？とにかく気が向いたら又来てくれよ。メルがあればな… ヒョホホ…");
                     say(nt);

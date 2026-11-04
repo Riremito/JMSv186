@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-import odin.constants.GameConstants;
+import odin.server.Randomizer;
 
 /**
  *
@@ -157,12 +156,12 @@ public class Npc_Zipangu_Faito extends NpcScriptMan {
                     return false;
                 }
                 int item_id = this.item_ids[answer];
-                if (!getPlayer().haveItem(item_id, this.required_quantity)) {
+                if (!haveItem(item_id, this.required_quantity)) {
                     say("おいおい、ふざけちゃいけねーな。違いのわかる男に嘘は通用しないぜ。");
                     return false;
                 }
                 int[][] table = this.prizes[this.prize_table_index[answer]];
-                int rnum = (int) (Math.random() * 10000) + 1;
+                int rnum = Randomizer.nextInt(10000) + 1;
                 int[] prize = table[table.length - 1];
                 for (int[] row : table) {
                     if (rnum <= row[0]) {
@@ -170,13 +169,13 @@ public class Npc_Zipangu_Faito extends NpcScriptMan {
                         break;
                     }
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize[1], prize[2], "")) {
+                if (!canHold(prize[1], prize[2])) {
                     // 翻訳
                     say("何だって？装備、消費、ETCインベントリのどれかがいっぱいだと報酬をあげられないんだ。インベントリに空きを作ってくれたら、喜んで望みのものをあげよう。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(item_id), item_id, this.required_quantity, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), prize[1], (short) prize[2]); // TODO : item effect.
+                removeItem(item_id, this.required_quantity);
+                gainItem(prize[1], prize[2]); // TODO : item effect.
                 say(String.format(this.grade_texts[prize[3]], prize[1]));
                 return false;
             }

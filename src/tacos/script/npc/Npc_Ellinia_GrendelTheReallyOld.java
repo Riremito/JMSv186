@@ -18,10 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -177,9 +173,9 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (this.mode == -1) {
-            int job = getPlayer().getJob();
-            int level = getPlayer().getLevel();
-            String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+            int job = getJob();
+            int level = getLevel();
+            String quest_data = getQuestData(this.quest_job_3rd);
             boolean job_2nd_now = false;
             for (int job_id : this.job_2nd) {
                 if (job == job_id) {
@@ -190,7 +186,7 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
             this.mode = MODE_NONE;
             if ("s".equals(quest_data) && job_2nd_now) {
                 // 3次転職 力の試験の開始
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p1");
+                setQuestData(this.quest_job_3rd, "p1");
                 this.mode = MODE_SAYS;
                 this.says = this.says_3rd_start;
             } else if ("p1".equals(quest_data)) {
@@ -199,14 +195,14 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                     say("エリニアの森の近くに秘密の通路があります。そこを通れるのはあなただけです。中に入ると、もう一人の私に会うでしょう。それを倒して、#b#t" + this.item_black_charm + "##kを持ってきてください。もう一人の私はかなり強いですよ。特殊なスキルをたくさん使うので、接近戦で戦わなければなりません。ただし、秘密の通路には長くいられません。できるだけ早く倒すことが肝心です。さて…幸運を祈ります！#b#t" + this.item_black_charm + "##kを持ってきてくれるのを待っていますよ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…おかしいな。本当に#b#t" + this.item_black_charm + "##kを持っているかい？持っているなら、アイテムタブに空きスロットがあるか確認してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_black_charm, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p2");
+                removeItem(this.item_black_charm, 1);
+                gainItem(this.item_necklace_of_strength, 1);
+                setQuestData(this.quest_job_3rd, "p2");
                 // 翻訳
                 say("おお…もう一人の私を倒して、#b#t" + this.item_black_charm + "##kを持ってきてくれたのですね。素晴らしい！これであなたの力は確かに証明されました。力の面では、3次転職の準備ができています。約束どおり、#b#t" + this.item_necklace_of_strength + "##kを渡しましょう。このネックレスをオシリアの#bロベイラ#kに渡せば、3次転職のための2つ目の試験を受けられます。幸運を祈ります～。");
                 return false;
@@ -216,12 +212,12 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                     say("このネックレスをオシリアの#bロベイラ#kに渡せば、3次転職のための2つ目の試験を受けられます。幸運を祈ります～！");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…おかしいな。アイテムタブに空きスロットがあるか確認してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
+                gainItem(this.item_necklace_of_strength, 1);
                 // 翻訳
                 say("ああ…#b#t" + this.item_necklace_of_strength + "##kをなくしたのですか？気をつけるように言ったでしょう…まったく、もう一つあげます…「また」ね。今度は気をつけてください。これがないと3次転職の試験を受けられませんよ。");
                 return false;
@@ -276,7 +272,7 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                         return true;
                     }
                     case 1 -> {
-                        if (getPlayer().getLevel() < this.job_1st_level || getPlayer().getStat().getInt() < this.job_1st_int) {
+                        if (getLevel() < this.job_1st_level || getPlayer().getStat().getInt() < this.job_1st_int) {
                             // 翻訳
                             say("魔法使いになるには、もっと修行が必要です。今より強くなれるよう努力してください。もっと強くなったら戻ってきてください。");
                             return false;
@@ -287,7 +283,7 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                         return true;
                     }
                     case 2 -> {
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_weapon, 1, "")) {
+                        if (!canHold(this.item_weapon, 1)) {
                             // 翻訳
                             say("ふむ…装備インベントリに空きスロットがあるか確認してください。1次転職のご褒美として、修行用の武器を渡したいのです。");
                             return false;
@@ -297,13 +293,13 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                         return true;
                     }
                     case 3 -> {
-                        if (getPlayer().getJob() != 0 || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_weapon, 1, "")) {
+                        if (getJob() != 0 || !canHold(this.item_weapon, 1)) {
                             // 翻訳
                             say("ふむ…装備ウィンドウに空きスロットがあるか確認してください。1次転職のご褒美として、修行用の武器を渡したいのです。");
                             return false;
                         }
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_weapon, (short) 1);
-                        getPlayer().changeJob(this.job_1st);
+                        gainItem(this.item_weapon, 1);
+                        changeJob(this.job_1st);
                         this.says = this.says_1st;
                         this.says_status = status;
                         say(this.says[0], false, true);
@@ -333,12 +329,12 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                     }
                     case 2 -> {
                         if (!checkItem(this.item_letter)) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_letter, 1, "")) {
+                            if (!canHold(this.item_letter, 1)) {
                                 // 翻訳
                                 say("インベントリに私の手紙を受け取る空きがないようですね。ETCインベントリに空きを作ってから、もう一度話しかけてください。手紙がなければ試験は受けられませんから。");
                                 return false;
                             }
-                            MapleInventoryManipulator.addById(getPlayer(), this.item_letter, (short) 1);
+                            gainItem(this.item_letter, 1);
                         }
                         // 翻訳
                         say("この手紙を、#m" + this.map_town + "#の近く、#b#m" + this.map_instructor + "##kのあたりにいる#b#p" + this.npc_instructor + "##kに届けてください。彼が私の代わりに教官を務めています…手紙を渡せば、私の代わりに試験をしてくれます。必要な情報はすべて彼が教えてくれるでしょう。幸運を祈ります…");
@@ -401,19 +397,19 @@ public class Npc_Ellinia_GrendelTheReallyOld extends NpcScriptMan {
                         return true;
                     }
                     case 4 -> {
-                        if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.job_2nd_level) * 3) {
+                        if (getRemainingSp() > (getLevel() - this.job_2nd_level) * 3) {
                             // 翻訳
                             say("ふむ…#bSP#kが多すぎますね…そんなにSPを残したままでは2次転職できません。1次スキルにもっとSPを使ってから、また来てください…");
                             return false;
                         }
-                        if (getPlayer().getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
+                        if (getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
                             // 翻訳
                             say("ふむ…本当に#p" + this.npc_instructor + "#からもらった#b#t" + this.item_proof_of_hero + "##kを持っていますか？よく確認してください…それがないと2次転職できませんから…");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_proof_of_hero, 1, true, false);
-                        getPlayer().changeJob(this.job_2nd[this.job_index]);
-                        getPlayer().expandInventory((byte) 4, 4);
+                        removeItem(this.item_proof_of_hero, 1);
+                        changeJob(this.job_2nd[this.job_index]);
+                        expandInventory(4, 4);
                         this.says = this.says_2nd[this.job_index];
                         this.says_status = status;
                         say(this.says[0], false, true);

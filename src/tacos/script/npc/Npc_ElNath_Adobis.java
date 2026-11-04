@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
 import tacos.server.TacosFieldSet;
 
 /**
@@ -62,9 +59,9 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        String val1 = getPlayer().getQuest(MapleQuest.getInstance(this.quest_stage1)).getCustomData();
-        String val2 = getPlayer().getQuest(MapleQuest.getInstance(this.quest_stage2)).getCustomData();
-        String val3 = getPlayer().getQuest(MapleQuest.getInstance(this.quest_stage3)).getCustomData();
+        String val1 = getQuestData(this.quest_stage1);
+        String val2 = getQuestData(this.quest_stage2);
+        String val3 = getQuestData(this.quest_stage3);
         switch (status) {
             case 0 -> {
                 // 確認でいいえを選択した
@@ -85,7 +82,7 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
                 nt.addMenu(MENU_STAGE2, "ジャクムダンジョンを探査する。(2段階)");
                 nt.addMenu(MENU_STAGE3, "製錬を要請する。(3段階)");
                 nt.addMenu(MENU_ABOUT, "クエストに対する説明を聞く。");
-                if (getPlayer().getQuestStatus(this.quest_lava) == 2) {
+                if (getQuestStatus(this.quest_lava) == 2) {
                     nt.addMenu(MENU_LAVA, "溶岩の中心部に入る。");
                 }
                 askMenu(nt);
@@ -125,7 +122,7 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
                             return false;
                         }
                         if ("s".equals(val3) || "s2".equals(val3)) {
-                            if (getPlayer().getItemQuantity(this.item_gold_tooth, false) < this.gold_tooth_count) {
+                            if (getItemCount(this.item_gold_tooth) < this.gold_tooth_count) {
                                 say("まだ#bゾンビの失われた金歯を" + this.gold_tooth_count + "個#k持っていないようだな。全部集めてくれば、それを精錬して特別なアイテムを作ってやれるかもしれん…");
                                 return false;
                             }
@@ -136,13 +133,13 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
                             askYesNo("うーむ…お前は以前#b#t" + this.item_eye_of_fire + "##kを精錬した者ではないか？では、何の用だ？また#b#t" + this.item_fire_ore + "##kと#b#t" + this.item_breath_of_lava + "##kを混ぜて#b#t" + this.item_eye_of_fire + "##kを作りたいのか？");
                             return true;
                         }
-                        MapleQuest.getInstance(this.quest_stage3).forceStart(getPlayer(), getNpcId(), "s");
+                        setQuestData(this.quest_stage3, "s");
                         say("うーむ、#b#t" + this.item_fire_ore + "##kと#b#t" + this.item_breath_of_lava + "##kを混ぜれば、ボスを召喚する生贄として使うアイテム、#b#t" + this.item_eye_of_fire + "##kを作ることができる。問題は…（ゴホゴホ）見てのとおり、最近はひどく体調が悪くてな、動き回ってアイテムを集めるのが難しいんだ。それで…私のために#bゾンビの失われた金歯を" + this.gold_tooth_count + "個#k集めてきてもらえないか？何に使うのかは聞かないでくれよ…");
                         return false;
                     }
                     case MENU_LAVA -> {
                         // 翻訳
-                        if (getPlayer().getQuestStatus(this.quest_lava) != 2) {
+                        if (getQuestStatus(this.quest_lava) != 2) {
                             say("お前がそこへ行く理由はなさそうだな。");
                             return false;
                         }
@@ -180,7 +177,7 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
                     case MENU_STAGE2 -> {
                         // TODO : 1日3回まで (quest 7007)
                         if (!"end".equals(val2)) {
-                            MapleQuest.getInstance(this.quest_stage2).forceStart(getPlayer(), getNpcId(), "s");
+                            setQuestData(this.quest_stage2, "s");
                         }
                         // 翻訳
                         say("よし！ここからは、障害物がたくさんあるマップへ移動してもらう。マップの一番奥に一人の女性が立っているから、彼女に話しかければ、ジャクムダンジョンのボスを召喚するアイテムの材料となるアイテムが見つかるだろう。そのアイテムを持ってきてくれ。幸運を祈る！", false, true);
@@ -188,21 +185,21 @@ public class Npc_ElNath_Adobis extends NpcScriptMan {
                     }
                     case MENU_STAGE3 -> {
                         if ("end".equals(val3)) {
-                            MapleQuest.getInstance(this.quest_stage3).forceStart(getPlayer(), getNpcId(), "s2");
+                            setQuestData(this.quest_stage3, "s2");
                             // 翻訳
                             say("うーむ、#b#t" + this.item_fire_ore + "##kと#b#t" + this.item_breath_of_lava + "##kを混ぜれば、ボスを召喚する生贄として使うアイテム、#b#t" + this.item_eye_of_fire + "##kを作ることができる。問題は…（ゴホゴホ）見てのとおり、最近はひどく体調が悪くてな、動き回ってアイテムを集めるのが難しいんだ。それで…私のために#bゾンビの失われた金歯を" + this.gold_tooth_count + "個#k集めてきてもらえないか？何に使うのかは聞かないでくれよ…");
                             return false;
                         }
-                        if (getPlayer().getItemQuantity(this.item_gold_tooth, false) < this.gold_tooth_count || !checkItem(this.item_fire_ore) || !checkItem(this.item_breath_of_lava) || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_eye_of_fire, this.eye_of_fire_count, "")) {
+                        if (getItemCount(this.item_gold_tooth) < this.gold_tooth_count || !checkItem(this.item_fire_ore) || !checkItem(this.item_breath_of_lava) || !canHold(this.item_eye_of_fire, this.eye_of_fire_count)) {
                             // 翻訳
                             say("うーむ…#r火の目#kを作るのに必要なアイテムを本当に全部持っているか？持っているなら、ETCインベントリがいっぱいでないか確認してくれ。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_gold_tooth, this.gold_tooth_count, true, false);
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_fire_ore, 1, true, false);
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_breath_of_lava, 1, true, false);
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_eye_of_fire, (short) this.eye_of_fire_count);
-                        MapleQuest.getInstance(this.quest_stage3).forceStart(getPlayer(), getNpcId(), "end");
+                        removeItem(this.item_gold_tooth, this.gold_tooth_count);
+                        removeItem(this.item_fire_ore, 1);
+                        removeItem(this.item_breath_of_lava, 1);
+                        gainItem(this.item_eye_of_fire, this.eye_of_fire_count);
+                        setQuestData(this.quest_stage3, "end");
                         // 翻訳
                         say("これだ。これで左側の扉が開いているときに、ジャクムダンジョンの祭壇に入れるようになる。扉を通ってステージに入るには、#b#t" + this.item_eye_of_fire + "##kを持っている必要がある。さて、何人がここに入れるかな…？");
                         return false;

@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -38,9 +35,9 @@ public class Npc_Ludibrium_Meteorite extends NpcScriptMan {
             case 0 -> {
                 // 隕石1 ~ 隕石6
                 int index = getNpcId() - this.npc_meteorite_1;
-                int quest_status = getPlayer().getQuestStatus(this.quest_meteorite_sample);
-                String info = getPlayer().getQuest(MapleQuest.getInstance(this.quest_meteorite_sample)).getCustomData();
-                if (info == null || info.length() != this.all_collected.length()) {
+                int quest_status = getQuestStatus(this.quest_meteorite_sample);
+                String info = getQuestData(this.quest_meteorite_sample);
+                if (info.length() != this.all_collected.length()) {
                     info = "000000";
                 }
                 if (quest_status != 1 || info.equals(this.all_collected) || index < 0 || this.all_collected.length() <= index) {
@@ -53,13 +50,13 @@ public class Npc_Ludibrium_Meteorite extends NpcScriptMan {
                     say("宇宙から落ちてきた隕石のようですが、すでにサンプルが採取されています。別の隕石のサンプルを探してください。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_meteorite_sample, 1, "")) {
+                if (!canHold(this.item_meteorite_sample, 1)) {
                     // 翻訳
                     say("宇宙から落ちてきた隕石のようです。さらに調べたところ、状態の良いサンプルが採取できましたが、ETCインベントリがいっぱいのためアイテムを入れられませんでした。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_meteorite_sample, (short) 1);
-                MapleQuest.getInstance(this.quest_meteorite_sample).forceStart(getPlayer(), getNpcId(), info.substring(0, index) + "1" + info.substring(index + 1));
+                gainItem(this.item_meteorite_sample, 1);
+                setQuestData(this.quest_meteorite_sample, info.substring(0, index) + "1" + info.substring(index + 1));
                 // 翻訳
                 say("宇宙から落ちてきた隕石のようです。さらに調べたところ、状態の良いサンプルが採取できました..");
                 return false;

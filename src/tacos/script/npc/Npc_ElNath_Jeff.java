@@ -36,7 +36,7 @@ public class Npc_ElNath_Jeff extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        if (status == 0 && !this.menu && !this.asked && getPlayer().getQuestStatus(this.quest_job_4th) == 2 && 0 < getPlayer().getItemQuantity(this.item_hammer, false)) {
+        if (status == 0 && !this.menu && !this.asked && getQuestStatus(this.quest_job_4th) == 2 && 0 < getItemCount(this.item_hammer)) {
             this.menu = true;
             // 翻訳
             NpcScriptTag nt = new NpcScriptTag();
@@ -73,7 +73,7 @@ public class Npc_ElNath_Jeff extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     // 翻訳
                     say("入ろうと考えているなら、考え直すことをすすめる。だが、本当に入りたいなら…中で生き延びられるほど強い者だけが許される。もう誰かが死ぬのは見たくないんだ。どれどれ…ふむ…お前はまだレベル" + this.required_level + "に達していない。入れるわけにはいかない、あきらめろ。");
                     return false;

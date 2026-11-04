@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
 import tacos.server.TacosFieldSet;
 
 /**
@@ -155,15 +152,15 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
     public boolean action(int status, int answer) {
         if (this.mode == -1) {
             // 4次転職
-            if (getPlayer().getQuestStatus(this.quest_ambush) == 1) {
+            if (getQuestStatus(this.quest_ambush) == 1) {
                 this.mode = MODE_AMBUSH;
                 // 翻訳
                 askYesNo("さて、修行場へ行く準備はできたか？");
                 return true;
             }
-            int job = getPlayer().getJob();
-            int level = getPlayer().getLevel();
-            String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+            int job = getJob();
+            int level = getLevel();
+            String quest_data = getQuestData(this.quest_job_3rd);
             boolean job_2nd_now = false;
             for (int job_id : this.job_2nd) {
                 if (job == job_id) {
@@ -174,7 +171,7 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
             this.mode = MODE_NONE;
             if ("s".equals(quest_data) && job_2nd_now) {
                 // 3次転職 力の試験の開始
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p1");
+                setQuestData(this.quest_job_3rd, "p1");
                 this.mode = MODE_SAYS;
                 this.says = this.says_3rd_start;
             } else if ("p1".equals(quest_data)) {
@@ -183,14 +180,14 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
                     say("ビクトリアアイランドの深い沼の真ん中に、秘密の通路へと続く裂け目がある。その中で、俺の分身と戦ってもらう。お前の任務は、それを倒して#b#t" + this.item_black_charm + "##kを持ち帰ることだ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("本当に#b#t" + this.item_black_charm + "##kを持っていますか？確かなら、ETCインベントリに空きがあるか確認してください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_black_charm, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p2");
+                removeItem(this.item_black_charm, 1);
+                gainItem(this.item_necklace_of_strength, 1);
+                setQuestData(this.quest_job_3rd, "p2");
                 // 翻訳
                 say("よくやった。俺の分身を倒して、#b#t" + this.item_black_charm + "##kを無事に持ち帰ったな。その身体能力で、3次転職にふさわしいことを証明した。さあ、試験の後半を受けるため、このネックレスをオシリアの#bアレク#kに渡せ。幸運を祈る！必要になるだろうからな。");
                 return false;
@@ -200,12 +197,12 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
                     say("#b#t" + this.item_necklace_of_strength + "##kを持って、オシリアの#bアレク#kに会いに行け。3次転職の試験の一つに合格した証だ。もう一つの試験にもきっと楽に合格できるさ。幸運を祈る…");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…何かおかしいな。アイテムインベントリがいっぱいなのか？ETCインベントリに十分な空きがあるか確認しろ。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
+                gainItem(this.item_necklace_of_strength, 1);
                 // 翻訳
                 say("どうやら#b#t" + this.item_necklace_of_strength + "##kをなくしたようだな。次からは気をつけろ。ほら、もう一つだ。これがないと3次転職の試験を受けられないぞ");
                 return false;
@@ -277,22 +274,22 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
                     case 1 -> {
                         boolean space = true;
                         for (int[] item : this.items_1st) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), item[0], item[1], "")) {
+                            if (!canHold(item[0], item[1])) {
                                 space = false;
                             }
                         }
-                        if (getPlayer().getJob() != 0 || !space) {
+                        if (getJob() != 0 || !space) {
                             // 翻訳
                             say("装備インベントリと消費インベントリを確認しろ。1次転職のご褒美として、修行用の武器を渡したいんだ。");
                             return false;
                         }
                         for (int[] item : this.items_1st) {
-                            MapleInventoryManipulator.addById(getPlayer(), item[0], (short) item[1]);
+                            gainItem(item[0], item[1]);
                         }
                         getPlayer().resetStats(4, 25, 4, 4);
-                        getPlayer().changeJob(this.job_1st);
-                        getPlayer().expandInventory((byte) 1, 4);
-                        getPlayer().expandInventory((byte) 4, 4);
+                        changeJob(this.job_1st);
+                        expandInventory(1, 4);
+                        expandInventory(4, 4);
                         NpcScriptTag nt = new NpcScriptTag();
                         nt.add("これで君は盗賊になった。盗賊のスキルが使用できるようになったからスキルウィンドウを開いてみてくれ。レベルを上げるとより多くのスキルを覚えることができるんだ。");
                         say(nt, false, true);
@@ -340,12 +337,12 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
                     }
                     case 2 -> {
                         if (!checkItem(this.item_letter)) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_letter, 1, "")) {
+                            if (!canHold(this.item_letter, 1)) {
                                 // 翻訳
                                 say("うーん…この手紙を入れる空きがないようだな。ETCインベントリに空きを作ってから話しかけてこい。手紙がなければ試験は受けられない。");
                                 return false;
                             }
-                            MapleInventoryManipulator.addById(getPlayer(), this.item_letter, (short) 1);
+                            gainItem(this.item_letter, 1);
                         }
                         // 翻訳
                         say("この手紙を、#m103000000#の近く、#b#m" + this.map_instructor + "##kのあたりにいる#b#p" + this.npc_instructor + "##kに届けろ。あいつが俺の代わりに教官を務めている。手紙を渡せば、俺の代わりに試験をしてくれる。詳しいことはあいつに直接聞け。幸運を祈る。");
@@ -409,19 +406,19 @@ public class Npc_Kerning_DarkLord extends NpcScriptMan {
                         return true;
                     }
                     case 4 -> {
-                        if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.job_2nd_level) * 3) {
+                        if (getRemainingSp() > (getLevel() - this.job_2nd_level) * 3) {
                             // 翻訳
                             say("ふむ…#bSP#kが多すぎますね…そんなにSPを残したままでは2次転職できません。1次スキルにもっとSPを使ってから、また来てください。");
                             return false;
                         }
-                        if (getPlayer().getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
+                        if (getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
                             // 翻訳
                             say("ふむ…本当に#p" + this.npc_instructor + "#からもらった#b#t" + this.item_proof_of_hero + "##kを持っているか？よく確認しろ。それがないと転職させられない。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_proof_of_hero, 1, true, false);
-                        getPlayer().changeJob(this.job_2nd[this.job_index]);
-                        getPlayer().expandInventory((byte) 2, 4);
+                        removeItem(this.item_proof_of_hero, 1);
+                        changeJob(this.job_2nd[this.job_index]);
+                        expandInventory(2, 4);
                         this.says = this.says_2nd[this.job_index];
                         this.says_status = status;
                         say(this.says[0], false, true);

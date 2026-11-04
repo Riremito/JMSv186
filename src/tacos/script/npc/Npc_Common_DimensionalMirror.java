@@ -65,7 +65,7 @@ public class Npc_Common_DimensionalMirror extends NpcScriptMan {
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
-                getPlayer().saveLocation(SavedLocationType.MULUNG_TC);
+                saveLocation(SavedLocationType.MULUNG_TC);
                 warp(this.map_ids[answer]); // TODO : portal name.
                 return false;
             }

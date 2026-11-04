@@ -42,7 +42,7 @@ public class Npc_Aquarium_KentaBreedingRoom extends NpcScriptMan {
                 return false;
             }
             case 0 -> {
-                if (getPlayer().getItemQuantity(this.item_research_report, false) >= this.required_count && getPlayer().getItemQuantity(this.item_pheromone, false) >= this.required_count) {
+                if (getItemCount(this.item_research_report) >= this.required_count && getItemCount(this.item_pheromone) >= this.required_count) {
                     // 翻訳
                     say("うわあ～#b#t" + this.item_research_report + "##kと#b#t" + this.item_pheromone + "##kを5個ずつ集めたんだね！  じゃあ、#m" + this.map_zoo + "#に送ってあげるよ。着いたらもう一度話しかけてね。");
                     warp(this.map_zoo);

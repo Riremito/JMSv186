@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -42,10 +40,10 @@ public class Npc_Nautilus_NautilusTrashCan extends NpcScriptMan {
                     say("もう拾ってある。もう1枚拾う必要はなさそうだ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_crumpled_letter, 1, "")) {
+                if (!canHold(this.item_crumpled_letter, 1)) {
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_crumpled_letter, (short) 1);
+                gainItem(this.item_crumpled_letter, 1);
                 // TODO : 文章 (適当)
                 say("かろうじて読める…「キリン」と書いてあるようだ。");
                 return false;

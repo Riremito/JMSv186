@@ -44,7 +44,7 @@ public class Npc_GuildQuest_ChimeraStatue extends NpcScriptMan {
         // 翻訳
         if (status == 0) {
             // TODO : lua の isGuildQuestRegistered はギルドクエストの登録者の確認だが、ギルドマスターと副マスターの確認で代用
-            if (getPlayer().getGuildId() <= 0 || this.guild_rank_sub_master < getPlayer().getGuildRank()) {
+            if (getGuildId() <= 0 || this.guild_rank_sub_master < getGuildRank()) {
                 say("#t" + this.item_ruby + "#を持っているリーダーが私に話しかけてください。");
                 return false;
             }
@@ -85,7 +85,7 @@ public class Npc_GuildQuest_ChimeraStatue extends NpcScriptMan {
         }
         if (!field_set.getVar("isIncGuildPointState08").equals("1")) {
             Guild world_guild = getPlayer().getWorld().getGuild();
-            world_guild.gainGP(getPlayer().getGuildId(), point);
+            world_guild.gainGP(getGuildId(), point);
             field_set.setVar("isIncGuildPointState08", "1");
         }
         // 翻訳

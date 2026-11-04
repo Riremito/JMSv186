@@ -30,7 +30,7 @@ public class Npc_MapleIsland_Peter extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        if (getPlayer().getJob() != 0) {
+        if (getJob() != 0) {
             if (status == 0) {
                 // 翻訳
                 say("ここは見習いのためのクエストエリアだよ。君は見習いじゃないよね？", false, true);
@@ -51,7 +51,7 @@ public class Npc_MapleIsland_Peter extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                getPlayer().gainExp(3, true, true, true);
+                gainExp(3);
                 warp(this.map_small_forest);
                 return false;
             }

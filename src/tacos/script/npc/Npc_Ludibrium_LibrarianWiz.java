@@ -45,11 +45,11 @@ public class Npc_Ludibrium_LibrarianWiz extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        String name = getPlayer().getName();
+        String name = getCharacterName();
         int count = 0;
         StringBuilder books = new StringBuilder();
         for (int i = 0; i < this.quest_ids.length; i++) {
-            if (getPlayer().getQuestStatus(this.quest_ids[i]) == 2) {
+            if (getQuestStatus(this.quest_ids[i]) == 2) {
                 count++;
                 books.append("#b#v").append(this.item_ids[i]).append("##t").append(this.item_ids[i]).append("##k\r\n");
             }

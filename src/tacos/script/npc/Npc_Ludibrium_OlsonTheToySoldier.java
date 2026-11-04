@@ -36,7 +36,7 @@ public class Npc_Ludibrium_OlsonTheToySoldier extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        int quest_status = getPlayer().getQuestStatus(this.quest_dollhouse);
+        int quest_status = getQuestStatus(this.quest_dollhouse);
         if (quest_status == 2) {
             // 翻訳
             say("#h #のおかげで、#b#t" + this.item_pendulum + "##kを取り戻し、別の次元のモンスターを倒すことができた。ありがたいことに、それ以来あんなモンスターは見つかっていない。手伝ってくれて、どうお礼を言えばいいかわからないよ。" + getMapName(this.map_ludibrium) + "での滞在を楽しんでくれ！");
@@ -81,7 +81,7 @@ public class Npc_Ludibrium_OlsonTheToySoldier extends NpcScriptMan {
                 return true;
             }
             case 5 -> {
-                int count_pendulum = getPlayer().getItemQuantity(this.item_pendulum, false);
+                int count_pendulum = getItemCount(this.item_pendulum);
                 if (0 < count_pendulum) {
                     exchange(0, this.item_pendulum, -count_pendulum);
                 }

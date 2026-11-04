@@ -19,8 +19,6 @@
 package tacos.script.npc;
 
 import java.util.ArrayList;
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 
 /**
  *
@@ -95,7 +93,7 @@ public class Npc_Ariant_Mazra extends NpcScriptMan {
                     say("I thought I told you, you need the coupon in order for me to work magic on your hair check again.");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.CASH, coupon, 1, true, false);
+                removeItem(coupon, 1);
                 getPlayer().setHair(this.styles.get(answer));
                 getPlayer().sendStatChanged();
                 say((this.selected == MENU_HAIR) ? "Enjoy your new and improved hairstyle!" : "Enjoy your new and improved haircolor!");

@@ -47,7 +47,7 @@ public class Npc_Kerning_June extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                TacosMap map = getPlayer().findMap(this.map_jealousy_locker);
+                TacosMap map = findMap(this.map_jealousy_locker);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

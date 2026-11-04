@@ -103,7 +103,7 @@ public class Npc_Event_Genta extends NpcScriptMan {
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
-                TacosMap map = getPlayer().findMap(this.map_ids[answer]);
+                TacosMap map = findMap(this.map_ids[answer]);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

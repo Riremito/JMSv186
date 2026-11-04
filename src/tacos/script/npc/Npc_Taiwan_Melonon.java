@@ -41,7 +41,7 @@ public class Npc_Taiwan_Melonon extends NpcScriptMan {
             }
             case 1 -> {
                 // TODO : 移動先のマップ (741020101 ランダム?)
-                TacosMap map = getPlayer().findMap(this.map_boss);
+                TacosMap map = findMap(this.map_boss);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

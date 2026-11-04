@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -35,7 +32,7 @@ public class Npc_Leafre_FountainOfLife extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_holy_sword) != 1 || !checkItem(this.item_holy_grail)) {
+                if (getQuestStatus(this.quest_holy_sword) != 1 || !checkItem(this.item_holy_grail)) {
                     return false;
                 }
                 if (checkItem(this.item_holy_water)) {
@@ -43,13 +40,13 @@ public class Npc_Leafre_FountainOfLife extends NpcScriptMan {
                     say("すでに#b#t" + this.item_holy_water + "##kを持っています。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_holy_water, 1, "")) {
+                if (!canHold(this.item_holy_water, 1)) {
                     // 翻訳
                     say("ETCウィンドウに空きがないので、聖水を受け取れません。空きを作ってからもう一度お試しください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_holy_grail, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_holy_water, (short) 1);
+                removeItem(this.item_holy_grail, 1);
+                gainItem(this.item_holy_water, 1);
                 // 翻訳
                 say("泉から聖水を汲みました。");
                 return false;

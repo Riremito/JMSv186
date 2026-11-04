@@ -63,7 +63,7 @@ public class Npc_Zipangu_Jack extends NpcScriptMan {
                 }
             }
             case 2 -> {
-                TacosMap map = getPlayer().findMap(this.map_boss);
+                TacosMap map = findMap(this.map_boss);
                 if (map != null && map.getCharactersSize() == 0) {
                     map.resetFully();
                 }

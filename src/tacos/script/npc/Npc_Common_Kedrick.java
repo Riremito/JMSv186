@@ -18,7 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
 import odin.server.maps.SavedLocationType;
 
 /**
@@ -66,21 +65,21 @@ public class Npc_Common_Kedrick extends NpcScriptMan {
                             say("[test]餌ががありません");
                             return false;
                         }
-                        getPlayer().saveLocation(SavedLocationType.FISHING);
+                        saveLocation(SavedLocationType.FISHING);
                         warp(this.map_fishing_lagoon, "out00");
                         return false;
                     }
                     case 1 -> {
-                        if (getPlayer().getMeso() < this.bait_cost) {
+                        if (getMeso() < this.bait_cost) {
                             say("[test]メルが足りません");
                             return false;
                         }
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_bait, this.bait_quantity, "")) {
+                        if (!canHold(this.item_bait, this.bait_quantity)) {
                             say("[test]アイテム欄が不足しています");
                             return false;
                         }
                         payMoney(this.bait_cost);
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_bait, this.bait_quantity); // TODO : item effect.
+                        gainItem(this.item_bait, this.bait_quantity); // TODO : item effect.
                         return false;
                     }
                     case 2 -> {
@@ -88,16 +87,16 @@ public class Npc_Common_Kedrick extends NpcScriptMan {
                             say("[test]既に持っています");
                             return false;
                         }
-                        if (getPlayer().getMeso() < this.chair_cost) {
+                        if (getMeso() < this.chair_cost) {
                             say("[test]メルが足りません");
                             return false;
                         }
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_fishing_chair, 1, "")) {
+                        if (!canHold(this.item_fishing_chair, 1)) {
                             say("[test]アイテム欄が不足しています");
                             return false;
                         }
                         payMoney(this.chair_cost);
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_fishing_chair, 1); // TODO : item effect.
+                        gainItem(this.item_fishing_chair, 1); // TODO : item effect.
                         return false;
                     }
                     case 3 -> {

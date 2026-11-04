@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -116,16 +113,16 @@ public class Npc_Common_EurekTheAlchemist extends NpcScriptMan {
             case 4 -> {
                 int item_id = this.item_ids[this.selected_item];
                 int[] recipe = this.recipes[this.selected_item][this.selected_recipe];
-                if (getPlayer().getMeso() < this.cost || getPlayer().getItemQuantity(recipe[0], false) < recipe[1] || getPlayer().getItemQuantity(recipe[2], false) < recipe[3] || !checkItem(recipe[4]) || !MapleInventoryManipulator.checkSpace(getPlayer(), item_id, this.make_count, "")) {
+                if (getMeso() < this.cost || getItemCount(recipe[0]) < recipe[1] || getItemCount(recipe[2]) < recipe[3] || !checkItem(recipe[4]) || !canHold(item_id, this.make_count)) {
                     // 翻訳
                     say("必要なアイテムがすべてそろっているか、ETCインベントリがいっぱいでないか確認してくれ。");
                     return false;
                 }
                 payMoney(this.cost);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, recipe[0], recipe[1], true, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, recipe[2], recipe[3], true, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, recipe[4], 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), item_id, (short) this.make_count);
+                removeItem(recipe[0], recipe[1]);
+                removeItem(recipe[2], recipe[3]);
+                removeItem(recipe[4], 1);
+                gainItem(item_id, this.make_count);
                 // 翻訳
                 say("ほら、#b#t" + item_id + "##kを" + this.make_count + "個どうぞ。我ながら芸術作品だと認めざるを得ないね。さて、また手伝いが必要になったら、ここに来て話しかけてくれ！");
                 return false;

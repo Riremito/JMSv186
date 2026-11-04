@@ -18,6 +18,8 @@
  */
 package tacos.script.portal;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -27,7 +29,7 @@ public class Portal_Ellinia_Party6_stage501 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        if (Math.random() < 0.1) {
+        if (Randomizer.nextInt(10) == 0) {
             return warp(930000300, "16st");
         } else {
             return warp(930000300, "02st");

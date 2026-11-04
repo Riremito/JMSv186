@@ -33,7 +33,7 @@ public class Npc_ElNath_RexSealed extends NpcScriptMan {
             return false;
         }
         // 封印の確認
-        if (getPlayer().getQuestStatus(this.quest_seal) == 1) {
+        if (getQuestStatus(this.quest_seal) == 1) {
             setQuestData(this.quest_seal, "1");
         }
         // TODO : 文章 (適当)

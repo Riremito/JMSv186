@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -33,7 +31,7 @@ public class Npc_MapleIsland_PeterTraining extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        if (getPlayer().getJob() != 0) {
+        if (getJob() != 0) {
             if (status == 0) {
                 // 翻訳
                 say("ここは見習いのためのクエストエリアです。あなたがいるべき場所ではありませんよね？", false, true);
@@ -42,7 +40,7 @@ public class Npc_MapleIsland_PeterTraining extends NpcScriptMan {
             warp(this.map_lith_harbor);
             return false;
         }
-        String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_training)).getCustomData();
+        String quest_data = getQuestData(this.quest_training);
         if (!"enter".equals(quest_data)) {
             return false;
         }
@@ -58,7 +56,7 @@ public class Npc_MapleIsland_PeterTraining extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                getPlayer().gainExp(3, true, true, true);
+                gainExp(3);
                 warp(this.map_small_forest);
                 return false;
             }

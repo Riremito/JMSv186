@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -95,12 +94,12 @@ public class Npc_Zipangu_BossKitty extends NpcScriptMan {
                 return false;
             }
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_boss_cat) == 2 || checkItem(this.item_marble)) {
+                if (getQuestStatus(this.quest_boss_cat) == 2 || checkItem(this.item_marble)) {
                     // 翻訳
                     say("Meeeoooowww! ");
                     return false;
                 }
-                if (getPlayer().getQuestStatus(this.quest_boss_cat) != 1) {
+                if (getQuestStatus(this.quest_boss_cat) != 1) {
                     NpcScriptTag nt = new NpcScriptTag();
                     nt.add("ふふ･･･私が出す問題に挑戦したいのか。でも、誰でもただで挑戦出来るもんじゃない。");
                     say(nt);
@@ -111,13 +110,13 @@ public class Npc_Zipangu_BossKitty extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (getPlayer().getItemQuantity(this.item_chicken, false) < this.chicken_count) {
+                if (getItemCount(this.item_chicken) < this.chicken_count) {
                     // 翻訳
                     say("おい、本当に頼んだフライドチキン" + this.chicken_count + "個を持ってきたのか？足りているかもう一度確認しな。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.USE, this.item_chicken, this.chicken_count, true, false);
-                this.question_set = (int) (Math.random() * this.questions.length);
+                removeItem(this.item_chicken, this.chicken_count);
+                this.question_set = Randomizer.nextInt(this.questions.length);
                 // 翻訳
                 say("よくやった！じゃあちょっと待て…おい見ろよ！食い物があるぞ！遠慮なく食え。よし、それじゃあ質問の時間だ。わかっているとは思うが、覚えておけよ、間違えたらそこで終わりだ。オール・オア・ナッシングだぜ！", false, true);
                 return true;
@@ -139,12 +138,12 @@ public class Npc_Zipangu_BossKitty extends NpcScriptMan {
             return true;
         }
         // 全問正解
-        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_marble, 1, "")) {
+        if (!canHold(this.item_marble, 1)) {
             // 翻訳
             say("ETCインベントリがいっぱいだと！？！オレンジマーブルがほしいなら、空きを作りな。");
             return false;
         }
-        MapleInventoryManipulator.addById(getPlayer(), this.item_marble, (short) 1);
+        gainItem(this.item_marble, 1);
         // 翻訳
         say("ちくしょう、全問正解か！人間は好きじゃないが、約束を破るのはもっと嫌いなんでな。約束どおり、オレンジマーブルだ。お前の手柄だよ！");
         return false;

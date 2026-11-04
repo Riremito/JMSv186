@@ -18,7 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -35,20 +35,20 @@ public class Npc_Nautilus_NautilusBush extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_find_glasses) != 1) {
+                if (getQuestStatus(this.quest_find_glasses) != 1) {
                     return false;
                 }
-                int rand = (int) (Math.random() * 2);
+                int rand = Randomizer.nextInt(2);
                 int item_id = this.item_someone_glasses2;
                 if (rand == 0 && !checkItem(this.item_abel_glasses)) {
                     item_id = this.item_abel_glasses;
                 } else if (rand == 1) {
                     item_id = this.item_someone_glasses1;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), item_id, 1, "")) {
+                if (!canHold(item_id, 1)) {
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), item_id, (short) 1);
+                gainItem(item_id, 1);
                 if (item_id == this.item_abel_glasses) {
                     // TODO : 文章 (適当)
                     say("#b#t" + this.item_abel_glasses + "##kを見つけた。");

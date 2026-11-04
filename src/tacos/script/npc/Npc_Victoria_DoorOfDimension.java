@@ -18,7 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
 import tacos.server.TacosFieldSet;
 
 /**
@@ -58,14 +57,14 @@ public class Npc_Victoria_DoorOfDimension extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+        String quest_data = getQuestData(this.quest_job_3rd);
         for (int i = 0; i < this.map_ids.length; i++) {
             if (getMapId() != this.map_ids[i]) {
                 continue;
             }
             if ("p1".equals(quest_data)) {
                 for (int job_id : this.job_ids[i]) {
-                    if (getPlayer().getJob() == job_id) {
+                    if (getJob() == job_id) {
                         if (enterFieldSet(this.field_sets[i], 0) != TacosFieldSet.ENTER_SUCCESS) {
                             // 翻訳
                             say("すでに誰かが#b#p" + this.instructors[i] + "##kの分身と戦っています。また後で来てください。");

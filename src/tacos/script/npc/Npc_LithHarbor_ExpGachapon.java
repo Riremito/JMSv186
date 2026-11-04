@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.constants.GameConstants;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -76,12 +75,12 @@ public class Npc_LithHarbor_ExpGachapon extends NpcScriptMan {
                         if (!checkItem(this.item_ticket)) {
                             return false;
                         }
-                        int reward = this.rewards[(int) (Math.random() * this.rewards.length)];
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), reward, 1, "")) {
+                        int reward = this.rewards[Randomizer.nextInt(this.rewards.length)];
+                        if (!canHold(reward, 1)) {
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(this.item_ticket), this.item_ticket, 1, true, false);
-                        MapleInventoryManipulator.addById(getPlayer(), reward, (short) 1); // TODO : item effect.
+                        removeItem(this.item_ticket, 1);
+                        gainItem(reward, 1); // TODO : item effect.
                     }
                     case MENU_ABOUT -> {
                         // TODO : 文章の続き (元のスクリプトの文章が途切れている)

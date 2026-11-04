@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -59,8 +58,8 @@ public class Npc_LithHarbor_Chef extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                int[] prize = this.prizes[(int) (Math.random() * this.prizes.length)];
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize[0], prize[1], "")) {
+                int[] prize = this.prizes[Randomizer.nextInt(this.prizes.length)];
+                if (!canHold(prize[0], prize[1])) {
                     // 翻訳
                     say("おい、おい！報酬を受け取るには、消費インベントリとETCインベントリに少なくとも1つ空きスロットが必要だよ。空きを作ってから話しかけてくれ。");
                     return false;
@@ -70,8 +69,8 @@ public class Npc_LithHarbor_Chef extends NpcScriptMan {
                     say("#t" + this.item_secret_book + "#を持っているか、消費インベントリとETCインベントリに十分な空きがあるか確認してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_secret_book, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), prize[0], (short) prize[1]);
+                removeItem(this.item_secret_book, 1);
+                gainItem(prize[0], prize[1]);
                 // 翻訳
                 say("#b" + prize[1] + " #t" + prize[0] + "##kが手に入ったかい？どうだい？気に入ったかい？ははは…またね～");
                 return false;

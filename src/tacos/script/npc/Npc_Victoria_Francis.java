@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -43,7 +41,7 @@ public class Npc_Victoria_Francis extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                MapleQuest.getInstance(this.quest_francis).forceStart(getPlayer(), getNpcId(), "0");
+                setQuestData(this.quest_francis, "0");
                 // TODO : 移動先のポータル (jsでは3番)
                 warp(this.map_evil_eye_nest);
                 return false;

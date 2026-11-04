@@ -58,7 +58,7 @@ public class Npc_Perion_Runi extends NpcScriptMan {
             if (this.return_index < 0) {
                 return false;
             }
-            int quest_status = getPlayer().getQuestStatus(this.quest_newspaper);
+            int quest_status = getQuestStatus(this.quest_newspaper);
             if (quest_status == 1 || quest_status == 2) {
                 askYesNo("あら～新聞配達の申込書を手に入れたのね～ ハッピービレッジがあなたのためにどれだけの冒険を用意しているか、#G気になる:気になる#？行きましょう！");
             } else if (map_id == 101000000) {

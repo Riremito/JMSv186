@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -144,10 +142,10 @@ public class Npc_Leafre_ChiefTatamo extends NpcScriptMan {
             return true;
         }
         if (this.phase == PHASE_TOP_ANSWER) {
-            String data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_feeling)).getCustomData();
+            String data = getQuestData(this.quest_feeling);
             if (data.isEmpty() && answer == MENU_SEED) {
                 data = "000000";
-                MapleQuest.getInstance(this.quest_feeling).forceStart(getPlayer(), getNpcId(), data);
+                setQuestData(this.quest_feeling, data);
             }
             int feeling = 0;
             try {
@@ -170,7 +168,7 @@ public class Npc_Leafre_ChiefTatamo extends NpcScriptMan {
                 this.phase = PHASE_DONATE_MENU;
                 if (this.level == this.feeling_levels.length - 1) {
                     // 翻訳
-                    say("#b" + getPlayer().getName() + "#kさんではありませんか？またお会いできてうれしいです！あなたの素晴らしい働きのおかげで、町はとても順調で、最近は私のすることがほとんどないくらいです。この町の誰もがあなたを尊敬しているようですよ、本当に。多大なご協力には心から感謝していますが…もう一度だけ手を貸していただけませんか？リプレ周辺でアイテムを集めたなら、また私たちに寄付していただけませんか？", false, true);
+                    say("#b" + getCharacterName() + "#kさんではありませんか？またお会いできてうれしいです！あなたの素晴らしい働きのおかげで、町はとても順調で、最近は私のすることがほとんどないくらいです。この町の誰もがあなたを尊敬しているようですよ、本当に。多大なご協力には心から感謝していますが…もう一度だけ手を貸していただけませんか？リプレ周辺でアイテムを集めたなら、また私たちに寄付していただけませんか？", false, true);
                     return true;
                 }
                 say(this.donate_says[this.level], false, true);
@@ -242,7 +240,7 @@ public class Npc_Leafre_ChiefTatamo extends NpcScriptMan {
             }
             this.donate = answer;
             int item_id = this.donate_items[this.donate][0];
-            int max_give = getPlayer().getItemQuantity(item_id, false);
+            int max_give = getItemCount(item_id);
             if (max_give <= 0) {
                 // 翻訳
                 say("アイテムを持っていないようですね。");
@@ -271,7 +269,7 @@ public class Npc_Leafre_ChiefTatamo extends NpcScriptMan {
                 say("アイテムが十分にあるか確認してください。");
                 return false;
             }
-            String data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_feeling)).getCustomData();
+            String data = getQuestData(this.quest_feeling);
             int feeling = 0;
             try {
                 feeling = Integer.parseInt(data);
@@ -279,7 +277,7 @@ public class Npc_Leafre_ChiefTatamo extends NpcScriptMan {
                 feeling = 0;
             }
             feeling = Math.min(feeling + like * this.number, this.feeling_max);
-            MapleQuest.getInstance(this.quest_feeling).forceStart(getPlayer(), getNpcId(), String.format("%06d", feeling));
+            setQuestData(this.quest_feeling, String.format("%06d", feeling));
             // 翻訳
             say("本当にありがとうございます。");
             return false;

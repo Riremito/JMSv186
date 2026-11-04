@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.packet.ops.OpsBroadcastMsg;
-
 /**
  *
  * @author Riremito
@@ -48,14 +46,14 @@ public class Npc_Ariant_MysteriousVoice extends NpcScriptMan {
                     if (password.equals(getAnswerText())) {
                         // TODO : メッセージの種類
                         // 翻訳
-                        getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "合言葉を言うと、神秘的な力が洞窟の中へと導いた。");
+                        message("合言葉を言うと、神秘的な力が洞窟の中へと導いた。");
                         warp(this.map_thieves_hideout, this.portal_name);
                         return false;
                     }
                 }
                 // TODO : メッセージの種類
                 // 翻訳
-                getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "洞窟の扉はびくともしない。");
+                message("洞窟の扉はびくともしない。");
                 return false;
             }
             default -> {

@@ -31,12 +31,12 @@ public class Npc_Orbis_Lisa extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_where_is_hella) == 0) {
+                if (getQuestStatus(this.quest_where_is_hella) == 0) {
                     // 翻訳
                     say("#bヘラ#kを探しているの？一応ここに住んでいるんだけど、最近は会えないわよ。何か月か前に急に町を出て行って、それっきり戻ってこないの。彼女の家に行ってもあまり意味はないけど、少なくとも家政婦さんはいるはずよ。その人に話を聞いてみたら？");
                     return false;
                 }
-                if (getPlayer().getQuestStatus(this.quest_hidden_grave) == 0) {
+                if (getQuestStatus(this.quest_hidden_grave) == 0) {
                     // 翻訳
                     say("#bヘラ#kがどこへ行ったか…え？元気だってことだけはわかってるって？うーん…よそ者の言葉を信じていいのかわからないけど、本当ならよかったわ。もちろんジェイドにはもう伝えたわよね？誰よりも彼女のことを心配しているのは彼だもの。");
                     return false;

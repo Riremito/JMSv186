@@ -54,12 +54,12 @@ public class Npc_Orbis_Lea extends NpcScriptMan {
             }
             return false;
         }
-        if (getPlayer().getGuildId() <= 0 || getPlayer().getGuildRank() != this.guild_master_rank) {
+        if (getGuildId() <= 0 || getGuildRank() != this.guild_master_rank) {
             // 翻訳
             say("あら…あなたはギルドマスターじゃないわね。ギルドマークを作ったり、削除したり、変更したりできるのは#rギルドマスター#kだけよ。");
             return false;
         }
-        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getPlayer().getGuildId());
+        MapleGuild guild = getPlayer().getWorld().getGuild().getGuild(getGuildId());
         if (guild == null) {
             return false;
         }
@@ -110,7 +110,7 @@ public class Npc_Orbis_Lea extends NpcScriptMan {
                         if (mark_exist) {
                             return false;
                         }
-                        if (getPlayer().getMeso() < this.create_cost) {
+                        if (getMeso() < this.create_cost) {
                             // 翻訳
                             say("メルが足りないわ。#b" + String.format("%,d", this.create_cost) + "メル#kが必要よ。");
                             return false;
@@ -128,7 +128,7 @@ public class Npc_Orbis_Lea extends NpcScriptMan {
                             say("ギルドマークを削除するのに必要なメルが足りないわ。ギルドマークを削除するには#b" + String.format("%,d", this.delete_cost) + "メル#kが必要よ。");
                             return false;
                         }
-                        getPlayer().getWorld().getGuild().setGuildEmblem(getPlayer().getGuildId(), (short) 0, (byte) 0, (short) 0, (byte) 0);
+                        getPlayer().getWorld().getGuild().setGuildEmblem(getGuildId(), (short) 0, (byte) 0, (short) 0, (byte) 0);
                         return false;
                     }
                     default -> {

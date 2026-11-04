@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import java.awt.Point;
-import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.server.map.TacosMap;
 
 /**
@@ -36,14 +35,14 @@ public class Npc_Leafre_FallenKnight extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        TacosMap map = getPlayer().findMap(this.map_hidden_ereb);
+        TacosMap map = findMap(this.map_hidden_ereb);
         if (map == null) {
             return false;
         }
         if (0 < map.getCharactersSize()) {
             // TODO : メッセージの種類
             // TODO : 文章 (適当)
-            getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "ほかの誰かが黒魔女と戦っています。");
+            message("ほかの誰かが黒魔女と戦っています。");
             return false;
         }
         map.removeNpcById(this.npc_eleanor);

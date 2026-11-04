@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -34,7 +32,7 @@ public class Npc_Ludibrium_DocumentRoll extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_scroll_of_life) != 1) {
+                if (getQuestStatus(this.quest_scroll_of_life) != 1) {
                     return false;
                 }
                 if (checkItem(this.item_scroll_of_life)) {
@@ -50,12 +48,12 @@ public class Npc_Ludibrium_DocumentRoll extends NpcScriptMan {
                 if (checkItem(this.item_scroll_of_life)) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_scroll_of_life, 1, "")) {
+                if (!canHold(this.item_scroll_of_life, 1)) {
                     // 翻訳
                     say("インベントリに空きがありません。この書を持ち歩けるよう、空きを作った方がよさそうです。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_scroll_of_life, (short) 1);
+                gainItem(this.item_scroll_of_life, 1);
                 return false;
             }
             default -> {

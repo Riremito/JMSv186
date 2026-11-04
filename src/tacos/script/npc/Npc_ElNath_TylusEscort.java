@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -34,7 +32,7 @@ public class Npc_ElNath_TylusEscort extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_escort_tylus) != 1) {
+                if (getQuestStatus(this.quest_escort_tylus) != 1) {
                     warp(this.map_chief_residence);
                     return false;
                 }
@@ -44,12 +42,12 @@ public class Npc_ElNath_TylusEscort extends NpcScriptMan {
             }
             case 1 -> {
                 if (!checkItem(this.item_tylus_trust)) {
-                    if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_tylus_trust, 1, "")) {
+                    if (!canHold(this.item_tylus_trust, 1)) {
                         // 翻訳
                         say("ETCウィンドウに空きがないので、アイテムを渡せない。空きを作ってからもう一度話しかけてくれ。");
                         return false;
                     }
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_tylus_trust, (short) 1);
+                    gainItem(this.item_tylus_trust, 1);
                 }
                 warp(this.map_chief_residence);
                 return false;

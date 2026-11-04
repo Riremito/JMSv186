@@ -19,8 +19,7 @@
 package tacos.script.npc;
 
 import java.util.ArrayList;
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -162,7 +161,7 @@ public class NpcSalon extends NpcScriptMan {
         if (status != this.entry_status + 1) {
             return false;
         }
-        int index = this.entry.random ? (int) (Math.random() * this.style_ids.size()) : answer;
+        int index = this.entry.random ? Randomizer.nextInt(this.style_ids.size()) : answer;
         if (index < 0 || this.style_ids.size() <= index) {
             return false;
         }
@@ -171,7 +170,7 @@ public class NpcSalon extends NpcScriptMan {
             return false;
         }
         int id = this.style_ids.get(index);
-        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.CASH, this.entry.coupon, 1, true, false);
+        removeItem(this.entry.coupon, 1);
         switch (this.entry.kind) {
             case KIND_HAIR, KIND_HAIR_COLOR -> {
                 getPlayer().setHair(id);

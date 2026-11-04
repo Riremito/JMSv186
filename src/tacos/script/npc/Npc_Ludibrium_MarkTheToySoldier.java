@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 
 /**
@@ -47,7 +45,7 @@ public class Npc_Ludibrium_MarkTheToySoldier extends NpcScriptMan {
                     say("残ってくれると思っていたよ！始めたことを最後までやり遂げることが大切なんだ！さあ、ほかと違うドールハウスを見つけて壊し、#b#t" + this.item_pendulum + "##kを持ってきてくれ！");
                     return false;
                 }
-                if (getPlayer().getQuestStatus(this.quest_doll_house) != 1) {
+                if (getQuestStatus(this.quest_doll_house) != 1) {
                     // 翻訳
                     say("何だこれは…別の次元のモンスターが隠れているから、この部屋への立ち入りは禁止しているんだ。どうやってここに来たのかわからないが、すぐに出て行ってもらわないと。この部屋の中はとても危険なんだ。");
                     warp(this.map_eos_tower_100f);
@@ -68,14 +66,14 @@ public class Npc_Ludibrium_MarkTheToySoldier extends NpcScriptMan {
             }
             case 1 -> {
                 if (this.clear) {
-                    if (!checkItem(this.item_pendulum) || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_blue_pill, this.blue_pill_count, "")) {
+                    if (!checkItem(this.item_pendulum) || !canHold(this.item_blue_pill, this.blue_pill_count)) {
                         // 翻訳
                         say("本当に#b#t" + this.item_pendulum + "##kを1個持っているかい？確かなら、消費インベントリを確認してくれ。いっぱいかもしれないぞ！！");
                         return false;
                     }
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_pendulum, 1, true, false);
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_blue_pill, (short) this.blue_pill_count);
-                    getPlayer().gainExp(this.reward_exp, true, true, true);
+                    removeItem(this.item_pendulum, 1);
+                    gainItem(this.item_blue_pill, this.blue_pill_count);
+                    gainExp(this.reward_exp);
                     MapleQuest.getInstance(this.quest_doll_house).forceComplete(getPlayer(), getNpcId());
                     // 翻訳
                     say("どうだい？私があげた#b#t" + this.item_blue_pill + "#" + this.blue_pill_count + "個#kは気に入ったかい？手伝ってくれて本当にありがとう。君の英雄的な働きのおかげで時計塔はまた動くし、別の次元のモンスターもいなくなったようだ。では、外に出してあげよう。またどこかで会おう！", false, true);

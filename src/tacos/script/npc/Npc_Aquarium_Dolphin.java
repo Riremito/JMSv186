@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.maps.SavedLocationType;
 
 /**
@@ -44,7 +42,7 @@ public class Npc_Aquarium_Dolphin extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        boolean beginner = getPlayer().getJob() == 0;
+        boolean beginner = getJob() == 0;
         int cost_now = beginner ? this.cost / 10 : this.cost;
         int cost_sharp_cliff_now = beginner ? this.cost_sharp_cliff / 10 : this.cost_sharp_cliff;
         switch (status) {
@@ -83,7 +81,7 @@ public class Npc_Aquarium_Dolphin extends NpcScriptMan {
                             say("#b#t" + this.ticket + "##kを持っていないみたいだね。ヘネシスのカミラから#b#t" + this.ticket + "##kを手に入れる方法があるはずだよ…");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.ticket, 1, true, false);
+                        removeItem(this.ticket, 1);
                         warp(MAP_SHARP_CLIFF, "east00");
                     }
                     case MENU_SHARP_CLIFF -> {
@@ -111,7 +109,7 @@ public class Npc_Aquarium_Dolphin extends NpcScriptMan {
                         warp(MAP_AQUARIUM, "market00");
                     }
                     case MENU_FOGGY_SEA -> {
-                        getPlayer().saveLocation(SavedLocationType.MULUNG_TC);
+                        saveLocation(SavedLocationType.MULUNG_TC);
                         warp(MAP_FOGGY_SEA, "sp");
                     }
                     default -> {

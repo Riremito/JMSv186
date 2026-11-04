@@ -60,7 +60,7 @@ public class Npc_ElNath_AdobisExpedition extends NpcScriptMan {
             return false;
         }
         TacosNpcExpedition expedition = TacosNpcExpedition.get(getPlayer(), this.expedition_name);
-        String name = getPlayer().getName();
+        String name = getCharacterName();
         // lua の zakum_reset
         expedition.reset(field_set);
         // lua の zakum_master (遠征隊長の権限の確認)
@@ -74,7 +74,7 @@ public class Npc_ElNath_AdobisExpedition extends NpcScriptMan {
         switch (this.node) {
             case NODE_START -> {
                 String master = expedition.getMaster();
-                if (getPlayer().getLevel() < this.level_min) {
+                if (getLevel() < this.level_min) {
                     // 翻訳
                     say("ジャクム遠征隊に参加できるのは、レベル50以上のプレイヤーだけです。");
                     return false;

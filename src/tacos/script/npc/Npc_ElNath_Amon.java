@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -39,7 +37,7 @@ public class Npc_ElNath_Amon extends NpcScriptMan {
                     askYesNo("本当にあきらめてここから出ますか？次に戻ってきたときは、最初からやり直さなければなりません。");
                     return true;
                 }
-                String count = getPlayer().getQuest(MapleQuest.getInstance(this.quest_zakum_count)).getCustomData();
+                String count = getQuestData(this.quest_zakum_count);
                 if ("2".equals(count)) {
                     // 翻訳
                     askYesNo("本当にここから出ますか？ジャクムの祭壇には1日2回まで入ることができますが、すでに2回入っているので、今出ると、今日はもうこの祭壇に入れなくなります。");

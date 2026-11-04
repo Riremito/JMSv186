@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -35,7 +32,7 @@ public class Npc_ElNath_AncientIcyStone extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_hammer) != 2 || !checkItem(this.item_orichalcum_hammer)) {
+                if (getQuestStatus(this.quest_hammer) != 2 || !checkItem(this.item_orichalcum_hammer)) {
                     return false;
                 }
                 // 翻訳
@@ -46,13 +43,13 @@ public class Npc_ElNath_AncientIcyStone extends NpcScriptMan {
                 if (!checkItem(this.item_orichalcum_hammer)) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_ancient_ice_powder, 1, "")) {
+                if (!canHold(this.item_ancient_ice_powder, 1)) {
                     // 翻訳
                     say("消費ウィンドウに空き枠を作ってから、もう一度お試しください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_orichalcum_hammer, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_ancient_ice_powder, (short) 1);
+                removeItem(this.item_orichalcum_hammer, 1);
+                gainItem(this.item_ancient_ice_powder, 1);
                 // 翻訳
                 say("#b#t" + this.item_orichalcum_hammer + "##kで叩くと、氷石の粉がこぼれ落ちました。");
                 return false;

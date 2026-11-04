@@ -42,7 +42,7 @@ public class Npc_GuildQuest_SharenSpirit extends NpcScriptMan {
             return false;
         }
         // TODO : lua の isGuildQuestRegistered はギルドクエストの登録者の確認だが、ギルドマスターと副マスターの確認で代用
-        if (getPlayer().getGuildId() <= 0 || this.guild_rank_sub_master < getPlayer().getGuildRank()) {
+        if (getGuildId() <= 0 || this.guild_rank_sub_master < getGuildRank()) {
             String[] says = {
                 "永遠に続くかと思われた眠りの果てに、ついにシャレニアンを救ってくれる者を見つけた。",
                 "ギルドのリーダーが私に話しかけてくれ。"

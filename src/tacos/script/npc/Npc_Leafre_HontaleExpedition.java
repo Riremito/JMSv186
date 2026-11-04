@@ -62,7 +62,7 @@ public class Npc_Leafre_HontaleExpedition extends NpcScriptMan {
             return false;
         }
         TacosNpcExpedition expedition = TacosNpcExpedition.get(getPlayer(), this.expedition_name);
-        String name = getPlayer().getName();
+        String name = getCharacterName();
         // lua の hontale_reset
         expedition.reset(field_set);
         // lua の hontale_master (遠征隊長の権限の確認)
@@ -81,7 +81,7 @@ public class Npc_Leafre_HontaleExpedition extends NpcScriptMan {
                     say("ホーンテイルの洞窟に入場できるのは1日2回までです。");
                     return false;
                 }
-                if (getPlayer().getLevel() < this.level_min) {
+                if (getLevel() < this.level_min) {
                     // 翻訳
                     say("参加できるのはレベル80以上のユーザーのみです。");
                     return false;

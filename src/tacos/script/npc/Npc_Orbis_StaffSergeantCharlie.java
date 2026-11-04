@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-import odin.constants.GameConstants;
+import odin.server.Randomizer;
 
 /**
  *
@@ -327,19 +326,19 @@ public class Npc_Orbis_StaffSergeantCharlie extends NpcScriptMan {
             }
             case 4 -> {
                 int item_id = this.item_ids[this.selected];
-                int[] prize = this.prizes[this.selected][(int) (Math.random() * this.prizes[this.selected].length)];
-                if (!getPlayer().haveItem(item_id, this.required_quantity)) {
+                int[] prize = this.prizes[this.selected][Randomizer.nextInt(this.prizes[this.selected].length)];
+                if (!haveItem(item_id, this.required_quantity)) {
                     say("うむ… 君 #b#t" + item_id + "##k " + this.required_quantity + "個はちゃんと持っているのか？ならインベントリが空いているかもう一度確認してくれ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize[0], prize[1], "")) {
+                if (!canHold(prize[0], prize[1])) {
                     // 翻訳
                     say("ETCインベントリがいっぱいのようだな。俺と交換するには空きが必要だ！空きを作ってから会いに来な…");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(item_id), item_id, this.required_quantity, true, false);
-                getPlayer().gainExp(this.reward_exp, true, true, true);
-                MapleInventoryManipulator.addById(getPlayer(), prize[0], prize[1]); // TODO : item effect.
+                removeItem(item_id, this.required_quantity);
+                gainExp(this.reward_exp);
+                gainItem(prize[0], prize[1]); // TODO : item effect.
                 // 翻訳
                 say("お前の#b#t" + item_id + "# " + this.required_quantity + "個#kと引き換えに、俺の#b" + prize[1] + " #t" + prize[0] + "#個#kをやろう。どうだ？交換で渡したアイテムは気に入ったか？俺はしばらくここにいるから、もっとアイテムを集めたら、いつでも取引に応じるぞ…");
                 return false;

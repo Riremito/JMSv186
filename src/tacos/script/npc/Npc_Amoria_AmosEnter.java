@@ -57,7 +57,7 @@ public class Npc_Amoria_AmosEnter extends NpcScriptMan {
                 return true;
             }
             if (val.equals("ing")) {
-                if (getPlayer().getLevel() < this.level_min) {
+                if (getLevel() < this.level_min) {
                     // 翻訳
                     say("君には立派な闘志が見えるぞ、友よ。残念ながら、まだ十分には育っていないがな。俺の狩り場に入るには、少なくともレベル40が必要だ！");
                     return false;

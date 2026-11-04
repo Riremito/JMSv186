@@ -168,17 +168,17 @@ public class Npc_Zipangu_Spindle extends NpcScriptMan {
         // 次へ・はい・選択 の場合は status が増える
         boolean ok = this.last_status < status;
         this.last_status = status;
-        boolean has_orb = 0 < getPlayer().getItemQuantity(this.item_orb, false);
+        boolean has_orb = 0 < getItemCount(this.item_orb);
         boolean[] has_foxwit = new boolean[this.manuals_foxwit.length];
         boolean has_foxwit_any = false;
         for (int i = 0; i < this.manuals_foxwit.length; i++) {
-            has_foxwit[i] = 0 < getPlayer().getItemQuantity(this.manuals_foxwit[i], false);
+            has_foxwit[i] = 0 < getItemCount(this.manuals_foxwit[i]);
             has_foxwit_any |= has_foxwit[i];
         }
         boolean[] has_barricade = new boolean[this.manuals_barricade.length];
         boolean has_barricade_any = false;
         for (int i = 0; i < this.manuals_barricade.length; i++) {
-            has_barricade[i] = 0 < getPlayer().getItemQuantity(this.manuals_barricade[i], false);
+            has_barricade[i] = 0 < getItemCount(this.manuals_barricade[i]);
             has_barricade_any |= has_barricade[i];
         }
         // 前の会話の応答の処理

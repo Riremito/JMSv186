@@ -18,6 +18,8 @@
  */
 package tacos.script.npc;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -62,13 +64,13 @@ public class Npc_Ariant_Karcasa extends NpcScriptMan {
                 return true;
             }
             case 3 -> {
-                if (getPlayer().getMeso() < this.cost) {
+                if (getMeso() < this.cost) {
                     // TODO : 文章 (適当)
                     say("おいおい、お金が足りないのかい？乗るには#b" + this.cost + "#kメル必要だと言っただろう。");
                     return false;
                 }
                 payMoney(this.cost);
-                warp(this.map_towns[(int) (Math.random() * this.map_towns.length)]);
+                warp(this.map_towns[Randomizer.nextInt(this.map_towns.length)]);
                 return false;
             }
             default -> {

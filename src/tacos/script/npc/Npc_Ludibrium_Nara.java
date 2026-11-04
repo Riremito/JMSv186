@@ -90,7 +90,7 @@ public class Npc_Ludibrium_Nara extends NpcScriptMan {
                             say("メルが足りないようだね。お金を貯める方法はたくさんあるだろう…防具を売ったり…モンスターを倒したり…クエストをこなしたり…わかるだろう？");
                             return false;
                         }
-                        getPlayer().saveLocation(SavedLocationType.FLORINA);
+                        saveLocation(SavedLocationType.FLORINA);
                         warp(this.map_florina_beach, "st00");
                         return false;
                     }
@@ -100,7 +100,7 @@ public class Npc_Ludibrium_Nara extends NpcScriptMan {
                             say("うーん、それで#b#t" + this.item_free_pass + "##kは一体どこにあるんだい？？本当に持ってるのか？もう一度確認してみな！");
                             return false;
                         }
-                        getPlayer().saveLocation(SavedLocationType.FLORINA);
+                        saveLocation(SavedLocationType.FLORINA);
                         warp(this.map_florina_beach, "st00");
                         return false;
                     }

@@ -18,7 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 
 /**
@@ -37,19 +36,19 @@ public class Npc_Ellinia_PerionWarningPost extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_guard_third_job) != 1) {
+                if (getQuestStatus(this.quest_guard_third_job) != 1) {
                     // TODO : 文章 (適当)
                     say("警告板だ。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_reward, 1, "")) {
+                if (!canHold(this.item_reward, 1)) {
                     // TODO : 文章 (適当)
                     say("持ち物に空きが必要です。");
                     return false;
                 }
                 MapleQuest.getInstance(this.quest_guard_third_job).forceComplete(getPlayer(), getNpcId());
-                getPlayer().gainExp(this.reward_exp, true, true, true);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_reward, (short) 1);
+                gainExp(this.reward_exp);
+                gainItem(this.item_reward, 1);
                 // TODO : jsではエヴァンのスキルブック1にSPを加算している
                 getPlayer().gainSP(this.reward_sp, this.reward_sp_skillbook);
                 // TODO : 文章 (適当)

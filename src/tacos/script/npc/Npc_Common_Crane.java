@@ -46,7 +46,7 @@ public class Npc_Common_Crane extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        boolean beginner = getPlayer().getJob() == 0;
+        boolean beginner = getJob() == 0;
         switch (status) {
             case -1 -> {
                 // 白草村
@@ -104,7 +104,7 @@ public class Npc_Common_Crane extends NpcScriptMan {
                 switch (this.menu) {
                     case MENU_ORBIS_TICKETING -> {
                         int cost = beginner ? this.cost_orbis / 10 : this.cost_orbis;
-                        if (getPlayer().getMeso() < cost) {
+                        if (getMeso() < cost) {
                             // 翻訳
                             say("本当にメルは足りているかい？");
                             return false;
@@ -126,7 +126,7 @@ public class Npc_Common_Crane extends NpcScriptMan {
                         return true;
                     }
                     case MENU_MU_LUNG_TEMPLE -> {
-                        if (getPlayer().getMeso() < this.cost_mu_lung) {
+                        if (getMeso() < this.cost_mu_lung) {
                             // 翻訳
                             say("本当にメルは足りているかい？");
                             return false;

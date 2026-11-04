@@ -18,8 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -62,7 +61,7 @@ public class Npc_Ellinia_MagicianJobInstructor extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                int job = getPlayer().getJob();
+                int job = getJob();
                 for (int job_id : this.job_2nd) {
                     if (job == job_id) {
                         // 翻訳
@@ -73,7 +72,7 @@ public class Npc_Ellinia_MagicianJobInstructor extends NpcScriptMan {
                 if (job != this.job_1st) {
                     return false;
                 }
-                if (getPlayer().getLevel() < this.job_2nd_level) {
+                if (getLevel() < this.job_2nd_level) {
                     // 翻訳
                     say("今より強い魔法使いになりたいのですか？私にお任せください。ただ、あなたは少し弱そうですね。もう少し修行して強くなってから戻ってきてください。");
                     return false;
@@ -106,11 +105,11 @@ public class Npc_Ellinia_MagicianJobInstructor extends NpcScriptMan {
             }
             case 2 -> {
                 if (this.retry) {
-                    int quantity = getPlayer().getItemQuantity(this.item_dark_marble, false);
+                    int quantity = getItemCount(this.item_dark_marble);
                     if (0 < quantity) {
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_dark_marble, quantity, true, false);
+                        removeItem(this.item_dark_marble, quantity);
                     }
-                    warp(this.map_tests[(int) (Math.random() * this.map_tests.length)]);
+                    warp(this.map_tests[Randomizer.nextInt(this.map_tests.length)]);
                     return false;
                 }
                 // 翻訳
@@ -129,7 +128,7 @@ public class Npc_Ellinia_MagicianJobInstructor extends NpcScriptMan {
                 return true;
             }
             case 5 -> {
-                warp(this.map_tests[(int) (Math.random() * this.map_tests.length)]);
+                warp(this.map_tests[Randomizer.nextInt(this.map_tests.length)]);
                 return false;
             }
             default -> {

@@ -22,9 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
-import odin.server.quest.MapleQuest;
 
 /**
  *
@@ -141,8 +139,8 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
         // 前の会話の応答の処理
         switch (this.node) {
             case NODE_START -> {
-                String val = getPlayer().getQuest(MapleQuest.getInstance(this.quest_point)).getCustomData();
-                if (val == null || val.isEmpty()) {
+                String val = getQuestData(this.quest_point);
+                if (val.isEmpty()) {
                     this.node = NODE_JOIN_SAY;
                     break;
                 }
@@ -152,7 +150,7 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     this.points = 0;
                 }
                 // 毎日1回、ポイントを追加
-                String val2 = getPlayer().getQuest(MapleQuest.getInstance(this.quest_time)).getCustomData();
+                String val2 = getQuestData(this.quest_time);
                 LocalDateTime now = LocalDateTime.now();
                 long minutes = this.daily_minutes;
                 if (val2 != null && !val2.isEmpty()) {
@@ -163,11 +161,11 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     }
                 }
                 if (this.daily_minutes <= minutes) {
-                    MapleQuest.getInstance(this.quest_time).forceStart(getPlayer(), getNpcId(), now.format(this.time_format));
+                    setQuestData(this.quest_time, now.format(this.time_format));
                     int new_point = this.points + this.point_daily;
-                    MapleQuest.getInstance(this.quest_point).forceStart(getPlayer(), getNpcId(), String.valueOf(new_point));
+                    setQuestData(this.quest_point, String.valueOf(new_point));
                     // 翻訳
-                    this.text = "当ネットカフェにお越しいただきありがとうございます。そのお礼に、ネットカフェの累計ポイントに#b50ポイント#kを追加します。  #b" + getPlayer().getName() + "#kさんの現在のポイントは#r" + new_point + "ポイント#kです。貯まったポイントは、後でここにあるいろいろな品物と交換できますよ。";
+                    this.text = "当ネットカフェにお越しいただきありがとうございます。そのお礼に、ネットカフェの累計ポイントに#b50ポイント#kを追加します。  #b" + getCharacterName() + "#kさんの現在のポイントは#r" + new_point + "ポイント#kです。貯まったポイントは、後でここにあるいろいろな品物と交換できますよ。";
                     this.node = NODE_SAY_END;
                     break;
                 }
@@ -183,7 +181,7 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                MapleQuest.getInstance(this.quest_point).forceStart(getPlayer(), getNpcId(), "0");
+                setQuestData(this.quest_point, "0");
                 // 翻訳
                 this.says = new String[]{
                     "よし！これであなたは正式に当ネットカフェの会員です！2階の右側にあるパソコンが見えますか？あのパソコンからダンジョンに入れるんです。そこで#bモンスターを倒して#kいくうちに、#t4000047#が手に入るかもしれません。",
@@ -213,11 +211,11 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     }
                     case MENU_CHECK -> {
                         // 翻訳
-                        this.text = "ポイントを確認しますね。#b" + getPlayer().getName() + "#kさんの現在のポイントは#r" + this.points + "ポイント#kです。貯まったポイントは、後で当ネットカフェにある品物と交換できますから、集め続けてくださいね～";
+                        this.text = "ポイントを確認しますね。#b" + getCharacterName() + "#kさんの現在のポイントは#r" + this.points + "ポイント#kです。貯まったポイントは、後で当ネットカフェにある品物と交換できますから、集め続けてくださいね～";
                         this.node = NODE_SAY_END;
                     }
                     case MENU_GIVE -> {
-                        this.mouse_count = getPlayer().getItemQuantity(this.item_mouse, false);
+                        this.mouse_count = getItemCount(this.item_mouse);
                         if (this.mouse_count < 1) {
                             // 翻訳
                             this.text = "さっき当ネットカフェから持ち去られた#t4000047#は、まだ見つけていないみたいですね。途中で#t4000047#を見つけたら、戻ってきてポイントと交換してください！";
@@ -260,7 +258,7 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     this.node = NODE_SAY_END;
                     break;
                 }
-                MapleQuest.getInstance(this.quest_point).forceStart(getPlayer(), getNpcId(), String.valueOf(total_point));
+                setQuestData(this.quest_point, String.valueOf(total_point));
                 // 翻訳
                 this.text = "新しく" + add_point + "ポイントを加えて、累計ポイントは#r" + total_point + "#kになりました。これからも私たちのために#t4000047#を集めてくださいね～";
                 this.node = NODE_SAY_END;
@@ -300,7 +298,7 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                 int need_point = this.reward_points[this.reward];
                 int[] items = this.reward_items[this.reward];
                 int item_id = items[Randomizer.rand(0, items.length - 1)];
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), item_id, this.reward_counts[this.reward], "")) {
+                if (!canHold(item_id, this.reward_counts[this.reward])) {
                     // 翻訳
                     String[] texts = {
                         "インベントリがいっぱいのようです。空きを作ってからもう一度お試しください。",
@@ -333,7 +331,7 @@ public class Npc_Victoria_Billy extends NpcScriptMan {
                     break;
                 }
                 int remain_point = this.points - need_point;
-                MapleQuest.getInstance(this.quest_point).forceStart(getPlayer(), getNpcId(), String.valueOf(remain_point));
+                setQuestData(this.quest_point, String.valueOf(remain_point));
                 // 翻訳
                 String[] texts = {
                     "#r" + need_point + "ポイント#kを#bランダムなポーション#k10個と交換して、#b#t" + item_id + "# 10個#kを手に入れました。残りは#r" + remain_point + "ポイント#kです。お渡ししたものに満足していただけましたか？またのお越しを～",

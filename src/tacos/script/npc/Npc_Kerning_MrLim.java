@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.maps.Event_PyramidSubway;
 
 /**
@@ -51,12 +49,12 @@ public class Npc_Kerning_MrLim extends NpcScriptMan {
         }
         // 最後のプラットフォーム
         if (map_id == this.map_last_platform) {
-            if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_boarding_pass, 1, "")) {
+            if (!canHold(this.item_boarding_pass, 1)) {
                 // TODO : 英語の文章
                 say("Please make room for 1 ETC slot.");
                 return false;
             }
-            MapleInventoryManipulator.addById(getPlayer(), this.item_boarding_pass, 1); // TODO : item effect.
+            gainItem(this.item_boarding_pass, 1); // TODO : item effect.
             warp(this.map_subway); // TODO : portal name.
             return false;
         }
@@ -92,7 +90,7 @@ public class Npc_Kerning_MrLim extends NpcScriptMan {
                 switch (answer) {
                     case MENU_DUSTY_PLATFORM -> {
                         // TODO : グループリーダーの確認
-                        int level = getPlayer().getLevel();
+                        int level = getLevel();
                         if (level < this.level_min || this.level_max < level) {
                             say("You must be in the Level Range 25-30 and be the party leader.");
                             return false;
@@ -110,7 +108,7 @@ public class Npc_Kerning_MrLim extends NpcScriptMan {
                             say("The Train 999 is currently full at the moment");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_boarding_pass, 1, true, false);
+                        removeItem(this.item_boarding_pass, 1);
                     }
                     case MENU_MEDAL -> {
                         // TODO : 名誉駅務員の勲章 (item_medal) の受け取り, クエスト 7662 のカスタムデータ (駅でのモンスター討伐数) が 10000 以上, クエスト 29931 の開始と完了

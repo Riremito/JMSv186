@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -83,7 +80,7 @@ public class Npc_Zipangu_KonpeiHideout extends NpcScriptMan {
                 return true;
             }
             case npc_konpei_clear -> {
-                int count = getPlayer().getItemQuantity(this.item_boss_lantern, false);
+                int count = getItemCount(this.item_boss_lantern);
                 switch (status) {
                     case 0 -> {
                         // 翻訳
@@ -105,13 +102,13 @@ public class Npc_Zipangu_KonpeiHideout extends NpcScriptMan {
                         if (count <= 0) {
                             return false;
                         }
-                        if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_elixir, this.elixir_count, "")) {
+                        if (!canHold(this.item_elixir, this.elixir_count)) {
                             // 翻訳
                             say("アイテムインベントリがいっぱいでないか確認してくれ。", false, true);
                             return true;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_boss_lantern, count, true, false);
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_elixir, (short) this.elixir_count);
+                        removeItem(this.item_boss_lantern, count);
+                        gainItem(this.item_elixir, this.elixir_count);
                         this.ask_status = status;
                         // 翻訳
                         askYesNo("昭和村に戻るか？");

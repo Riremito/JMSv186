@@ -34,8 +34,8 @@ public class Npc_Ellinia_Shane extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
-        int state_diet = getPlayer().getQuestStatus(this.quest_diet_medicine);
-        int state_rejuvenation = getPlayer().getQuestStatus(this.quest_rejuvenation_medicine);
+        int state_diet = getQuestStatus(this.quest_diet_medicine);
+        int state_rejuvenation = getQuestStatus(this.quest_rejuvenation_medicine);
         switch (status) {
             case -1 -> {
                 // 翻訳
@@ -47,7 +47,7 @@ public class Npc_Ellinia_Shane extends NpcScriptMan {
                 if (state_rejuvenation == 1) {
                     // TODO : JMSの料金が不明 (翻訳元はレベル x 200)
                     this.to_map_id = this.map_forest_of_patience_3;
-                    this.to_cost = getPlayer().getLevel() * 200;
+                    this.to_cost = getLevel() * 200;
                         // 翻訳
                     askYesNo("この前の奴か…#b#p1061005##kにまた頼まれたのか？何？もっと長くいる必要があるって？うーん…あそこはとても危険だが…まあいい、#r" + this.to_cost + "メルで隅々まで探させてやろう。それで、入場料を払うか？");
                     return true;

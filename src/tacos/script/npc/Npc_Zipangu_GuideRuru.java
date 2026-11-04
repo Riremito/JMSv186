@@ -37,7 +37,7 @@ public class Npc_Zipangu_GuideRuru extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                int count = getPlayer().getItemQuantity(this.item_coupon, false);
+                int count = getItemCount(this.item_coupon);
                 if (0 < count && !exchange(0, this.item_coupon, -count)) {
                     // 翻訳
                     say("何かがおかしいよ。もう一度試してね。");

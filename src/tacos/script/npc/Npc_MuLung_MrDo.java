@@ -18,9 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.constants.GameConstants;
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -232,9 +230,9 @@ public class Npc_MuLung_MrDo extends NpcScriptMan {
                 switch (this.selected_type) {
                     case MENU_MEDICINE -> {
                         int[] medicine = this.medicines[this.selected_item];
-                        boolean complete = medicine[1] <= getPlayer().getMeso() && MapleInventoryManipulator.checkSpace(getPlayer(), medicine[0], 1, "");
+                        boolean complete = medicine[1] <= getMeso() && canHold(medicine[0], 1);
                         for (int i = 2; i < medicine.length; i += 2) {
-                            if (getPlayer().getItemQuantity(medicine[i], false) < medicine[i + 1]) {
+                            if (getItemCount(medicine[i]) < medicine[i + 1]) {
                                 complete = false;
                             }
                         }
@@ -247,33 +245,33 @@ public class Npc_MuLung_MrDo extends NpcScriptMan {
                             payMoney(medicine[1]);
                         }
                         for (int i = 2; i < medicine.length; i += 2) {
-                            MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(medicine[i]), medicine[i], medicine[i + 1], true, false);
+                            removeItem(medicine[i], medicine[i + 1]);
                         }
-                        MapleInventoryManipulator.addById(getPlayer(), medicine[0], (short) 1); // TODO : item effect.
+                        gainItem(medicine[0], 1); // TODO : item effect.
                         return false;
                     }
                     case MENU_SCROLL -> {
                         int[] scroll = this.scrolls[this.selected_item];
                         // 1% の確率で別の呪文書になる
-                        int scroll_id = (int) (Math.random() * 100) <= 98 ? scroll[0] : scroll[1];
-                        if (getPlayer().getItemQuantity(this.item_orb, false) < this.orb_quantity || getPlayer().getItemQuantity(scroll[2], false) < this.scroll_material_quantity || !MapleInventoryManipulator.checkSpace(getPlayer(), scroll_id, 1, "")) {
+                        int scroll_id = Randomizer.nextInt(100) <= 98 ? scroll[0] : scroll[1];
+                        if (getItemCount(this.item_orb) < this.orb_quantity || getItemCount(scroll[2]) < this.scroll_material_quantity || !canHold(scroll_id, 1)) {
                             say("材料が足りないか消費ウィンドウに空きがないのではないか確認してくれ。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_orb, this.orb_quantity, true, false);
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, scroll[2], this.scroll_material_quantity, true, false);
-                        MapleInventoryManipulator.addById(getPlayer(), scroll_id, (short) 1); // TODO : item effect.
+                        removeItem(this.item_orb, this.orb_quantity);
+                        removeItem(scroll[2], this.scroll_material_quantity);
+                        gainItem(scroll_id, 1); // TODO : item effect.
                         return false;
                     }
                     case MENU_DONATION -> {
                         int[] donation = this.donations[this.selected_item];
-                        int orb_count = (int) (Math.random() * (donation[1] + 1)) <= donation[2] ? donation[3] : donation[4];
-                        if (getPlayer().getItemQuantity(donation[0], false) < this.donation_quantity || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_orb, orb_count, "")) {
+                        int orb_count = Randomizer.nextInt((donation[1] + 1)) <= donation[2] ? donation[3] : donation[4];
+                        if (getItemCount(donation[0]) < this.donation_quantity || !canHold(this.item_orb, orb_count)) {
                             say("寄付する薬剤を本当に持っているのかETCウィンドウに空きがないのではないか確認してくれ。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, donation[0], this.donation_quantity, true, false);
-                        MapleInventoryManipulator.addById(getPlayer(), this.item_orb, (short) orb_count);
+                        removeItem(donation[0], this.donation_quantity);
+                        gainItem(this.item_orb, orb_count);
                         // 翻訳
                         say("寄付してくれて本当にありがとう。必ず役立てるよ。これが最後の寄付にならないといいんだがな。");
                         return false;

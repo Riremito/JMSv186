@@ -157,7 +157,7 @@ public class Npc_HerbTown_KikyoNijin extends NpcScriptMan {
                 return false;
             }
             case NODE_MENU -> {
-                String name = getPlayer().getName();
+                String name = getCharacterName();
                 // lua では give == 4 の場合も #L1# (ここから出る) で討伐回数のリセットの処理になる
                 if (answer == 1) {
                     if (this.clear_count < this.give_hat_counts[0] || this.give == 0) {

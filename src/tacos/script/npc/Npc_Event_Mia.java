@@ -73,7 +73,7 @@ public class Npc_Event_Mia extends NpcScriptMan {
             return false;
         }
         setQuestData(this.quest_event, "end");
-        getPlayer().gainExp(this.reward_exp, true, true, true);
+        gainExp(this.reward_exp);
         // TODO : lua の logEvent は未実装
         say("感謝祭～");
         return false;

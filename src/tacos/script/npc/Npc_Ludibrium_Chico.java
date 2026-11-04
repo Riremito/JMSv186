@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -127,17 +124,17 @@ public class Npc_Ludibrium_Chico extends NpcScriptMan {
         if (this.game == MENU_MATCH_CARDS) {
             switch (status) {
                 case 2 -> {
-                    boolean has_materials = this.material_count <= getPlayer().getItemQuantity(this.item_monster_card, false);
+                    boolean has_materials = this.material_count <= getItemCount(this.item_monster_card);
                     say("#b#t" + this.item_match_cards + "##kがほしいの？うーん…#t" + this.item_match_cards + "#を作るには、#b#t" + this.item_monster_card + "##kがいくつか必要なんだ。#t" + this.item_monster_card + "#は島のモンスターを倒すと手に入るよ。#t" + this.item_monster_card + "#を" + this.material_count + "個集めたら、#t" + this.item_match_cards + "#のセットを作れるよ。", false, has_materials);
                     return has_materials;
                 }
                 case 3 -> {
-                    if (getPlayer().getItemQuantity(this.item_monster_card, false) < this.material_count || !MapleInventoryManipulator.checkSpace(getPlayer(), this.item_match_cards, 1, "")) {
+                    if (getItemCount(this.item_monster_card) < this.material_count || !canHold(this.item_match_cards, 1)) {
                         say("本当に#r#t" + this.item_monster_card + "#を" + this.material_count + "個#k集めた？集めたなら、ETCインベントリがいっぱいでないか確認してね。");
                         return false;
                     }
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_monster_card, this.material_count, true, false);
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_match_cards, (short) 1);
+                    removeItem(this.item_monster_card, this.material_count);
+                    gainItem(this.item_match_cards, 1);
                     say("はい、#b#t" + this.item_match_cards + "##kだよ！「カード合わせ」ルームはゲーム内のほとんどどこでも遊べるよ。ここでルームを開いて、たくさんのほかのユーザーと遊んでね。素晴らしい成績を残したら、何かいいことがあるかもしれないよ。応援してるから、遊んできて！", false, true);
                     return true;
                 }
@@ -171,20 +168,20 @@ public class Npc_Ludibrium_Chico extends NpcScriptMan {
                 }
                 this.set_index = answer;
                 int[] set = this.omok_sets[this.set_index];
-                boolean has_materials = this.material_count <= getPlayer().getItemQuantity(set[1], false) && this.material_count <= getPlayer().getItemQuantity(set[2], false) && checkItem(set[3]);
+                boolean has_materials = this.material_count <= getItemCount(set[1]) && this.material_count <= getItemCount(set[2]) && checkItem(set[3]);
                 say("#b#t" + set[0] + "##kを作りたいのかい？うーん…材料を集めてきてくれたら作ってあげるよ。よく聞いてね、必要な材料は：#r #t" + set[1] + "#, " + this.material_count + " #t" + set[2] + "#, 1 #t" + set[3] + "##kだよ。モンスターがときどき落とすと思うよ…", false, has_materials);
                 return has_materials;
             }
             case 5 -> {
                 int[] set = this.omok_sets[this.set_index];
-                if (getPlayer().getItemQuantity(set[1], false) < this.material_count || getPlayer().getItemQuantity(set[2], false) < this.material_count || !checkItem(set[3]) || !MapleInventoryManipulator.checkSpace(getPlayer(), set[0], 1, "")) {
+                if (getItemCount(set[1]) < this.material_count || getItemCount(set[2]) < this.material_count || !checkItem(set[3]) || !canHold(set[0], 1)) {
                     say("本当に#b#t" + set[1] + "#, #t" + set[2] + "#, #t" + set[3] + "##kを集めた？集めたなら、ETCインベントリがいっぱいでないか確認してね。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, set[1], this.material_count, true, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, set[2], this.material_count, true, false);
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, set[3], 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), set[0], (short) 1);
+                removeItem(set[1], this.material_count);
+                removeItem(set[2], this.material_count);
+                removeItem(set[3], 1);
+                gainItem(set[0], 1);
                 say("はい、#b#t" + set[0] + "##kだよ！ゲーム内のほとんどどこでも五目並べルームを開いて、ほかのメイプルユーザーと対戦して楽しめるよ。すごい成績を残したら、何かいいことがあるかもしれないよ。応援してるから、遊んできて！", false, true);
                 return true;
             }

@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
 import tacos.server.TacosFieldSet;
@@ -103,7 +101,7 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.zakum_level) {
+                if (getLevel() < this.zakum_level) {
                     // 翻訳
                     say("ふむ…君を手助けできることは何もなさそうだ。もっと強くなってから来てくれ。");
                     return false;
@@ -112,7 +110,7 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
                 nt.add("私に何の用だい？");
                 nt.addMenu(MENU_JOB_3RD, "3次転職したいです。");
                 nt.addMenu(MENU_ZAKUM, "ジャクムダンジョンクエストを許可してください。");
-                if (getPlayer().getQuestStatus(this.quest_4th) == 1) {
+                if (getQuestStatus(this.quest_4th) == 1) {
                     nt.addMenu(MENU_4TH, "#q" + this.quest_4th + "#");
                 }
                 askMenu(nt);
@@ -121,27 +119,27 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
             case 1 -> {
                 switch (answer) {
                     case MENU_ZAKUM -> {
-                        String zakum_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_zakum)).getCustomData();
+                        String zakum_data = getQuestData(this.quest_zakum);
                         // 翻訳
-                        if (zakum_data != null && !zakum_data.isEmpty()) {
+                        if (!zakum_data.isEmpty()) {
                             say("ジャクムのダンジョンクエストはどうだ？その奥深くにはとんでもないモンスターがいると聞いた…とにかく、幸運を祈る。君ならきっとやり遂げられる。");
                             return false;
                         }
-                        if (getPlayer().getJob() < this.job_min || this.job_max < getPlayer().getJob()) {
+                        if (getJob() < this.job_min || this.job_max < getJob()) {
                             say("ジャクムのダンジョンクエストを行う許可がほしいのだな。悪いが、君は戦士には見えない。自分の職業の長を訪ねてくれ。");
                             return false;
                         }
-                        MapleQuest.getInstance(this.quest_zakum).forceStart(getPlayer(), getNpcId(), "s");
+                        setQuestData(this.quest_zakum, "s");
                         say("ジャクムのダンジョンクエストを行う許可がほしいのだな？#b#p2030008##kからだろう…よし、いいだろう！君ならダンジョンでも大丈夫だと確信している。向こうでは気をつけてくれよ…");
                         return false;
                     }
                     case MENU_4TH -> {
                         // 翻訳
-                        if (getPlayer().getParty() == null || getPlayer().getParty().getLeader().getId() != getPlayer().getId()) {
+                        if (!isPartyBoss()) {
                             say("入場するタイミングを決められるのはパーティーリーダーだけだ。");
                             return false;
                         }
-                        int job = getPlayer().getJob();
+                        int job = getJob();
                         if (job != 112 && job != 122 && job != 132) {
                             say("戦士がパーティーリーダーでなければならない。");
                             return false;
@@ -178,8 +176,8 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
                         return false;
                     }
                     case MENU_JOB_3RD -> {
-                        int job = getPlayer().getJob();
-                        if (getPlayer().getLevel() < this.required_level) {
+                        int job = getJob();
+                        if (getLevel() < this.required_level) {
                             // 翻訳
                             say("君はまだ3次転職する資格がない。そのためには少なくともレベル70が必要だ。もっと修行してから私に会いに来てくれ。");
                             return false;
@@ -201,8 +199,8 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
                             say("私は#bタイラス#k、すべての戦士の長であり、私の導きを必要とする戦士たちの力を最大限に引き出す役目を担っている。だが、君は戦士には見えないな。残念ながら、君の力にはなれない。この部屋には、それぞれの職業の長たちがいる。何か用があれば、その誰かに話しかけてくれ。");
                             return false;
                         }
-                        int quest_status = getPlayer().getQuestStatus(this.quest_job_3rd);
-                        String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+                        int quest_status = getQuestStatus(this.quest_job_3rd);
+                        String quest_data = getQuestData(this.quest_job_3rd);
                         if (this.skip_test[this.job_index] || quest_status == 2) {
                             this.mode = MODE_CHANGE;
                             this.no_status = status - 1;
@@ -255,7 +253,7 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
             case MODE_START -> {
                 switch (status) {
                     case 2 -> {
-                        MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "s");
+                        setQuestData(this.quest_job_3rd, "s");
                         // 原文ママ
                         say("よし！君が証明しなければいけないのは、 君の力と知恵、この二つだ。まず、力についての試験から説明をしてあげるよう。君に1次、2次転職をさせてくれたペリオンの #b" + getNpcName(this.npc_job) + "#kを覚えているだろう？を訪ねると彼が君に一つの任務を託するだろう。その任務を無事に完遂し、 " + getNpcName(this.npc_job) + "から#b#z" + this.item_necklace_of_strength + "##kをもらって来てくれ。", false, true);
                         return true;
@@ -278,8 +276,8 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
                             say("本当に#b#p1022000##kからもらった#b#t4031057##kを持っているか？ETCインベントリに空きを作っておくのを忘れないでくれ。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_necklace_of_strength, 1, true, false);
-                        MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "end1");
+                        removeItem(this.item_necklace_of_strength, 1);
+                        setQuestData(this.quest_job_3rd, "end1");
                         // 翻訳
                         say("これが試験の後半だ。この試験で、君が偉大さへの次の一歩を踏み出せるほど賢いかどうかが決まる。オシリアの雪原に、聖地と呼ばれる薄暗い雪に覆われた場所がある。モンスターさえたどり着けない場所だ。その中心には聖なる石と呼ばれる巨大な石がある。そこに特別なアイテムを捧げ物として供えなければならない。聖なる石がその場で君の知恵を試すだろう。", false, true);
                         return true;
@@ -301,7 +299,7 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
                         say("本当に聖なる石から授かった#b#t4031058##kを持っているか？確かなら、ETCインベントリに空きを作っておくのを忘れないでくれ。");
                         return false;
                     }
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_necklace_of_wisdom, 1, true, false);
+                    removeItem(this.item_necklace_of_wisdom, 1);
                     MapleQuest.getInstance(this.quest_job_3rd).forceComplete(getPlayer(), getNpcId());
                     this.mode = MODE_CHANGE;
                     this.no_status = status - 1;
@@ -314,16 +312,16 @@ public class Npc_ElNath_Tylus extends NpcScriptMan {
             case MODE_CHANGE -> {
                 // はいを選択した直後
                 if (status == this.no_status + 2) {
-                    if (getPlayer().getJob() != this.job_from[this.job_index]) {
+                    if (getJob() != this.job_from[this.job_index]) {
                         return false;
                     }
-                    if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.required_level) * 3) {
+                    if (getRemainingSp() > (getLevel() - this.required_level) * 3) {
                         // 翻訳
                         say("ふむ…#bSP#kが多すぎるようだ。そんなにSPを使わずに残したままでは3次転職できない。1次と2次のスキルにもっとSPを使ってから戻ってきてくれ。");
                         return false;
                     }
-                    getPlayer().changeJob(this.job_to[this.job_index]);
-                    getPlayer().gainAp((short) 5);
+                    changeJob(this.job_to[this.job_index]);
+                    gainAp(5);
                     say(this.job_texts[this.job_index], false, true);
                     return true;
                 }

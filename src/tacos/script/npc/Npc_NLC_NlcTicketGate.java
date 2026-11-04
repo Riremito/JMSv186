@@ -47,7 +47,7 @@ public class Npc_NLC_NlcTicketGate extends NpcScriptMan {
             say("ここに何か用事があるんですよね？");
             return false;
         }
-        int ticket = getPlayer().getLevel() <= this.level_basic ? this.item_ticket_kc_basic : this.item_ticket_kc;
+        int ticket = getLevel() <= this.level_basic ? this.item_ticket_kc_basic : this.item_ticket_kc;
         if (!exchange(0, ticket, -1)) {
             // 翻訳
             say("あら…チケットをお持ちでないようですね。チケットがないとご乗車いただけません。チケット売り場でチケットをお買い求めください。");

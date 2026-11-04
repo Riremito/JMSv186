@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -80,13 +77,13 @@ public class Npc_Zipangu_Chan extends NpcScriptMan {
                     say("金箔寺のチケットが必要です。");
                     return false;
                 }
-                if (0 < getPlayer().findMap(map_id).getCharactersSize()) {
+                if (0 < findMap(map_id).getCharactersSize()) {
                     // TODO : 文章 (適当)
                     say("すでに誰かがマップの中にいます。");
                     return false;
                 }
                 if (!checkItem(this.item_premium_ticket)) {
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_ticket, 1, true, false);
+                    removeItem(this.item_ticket, 1);
                 }
                 warp(map_id);
                 return false;

@@ -89,7 +89,7 @@ public class Npc_Henesys_TrainerBartos extends NpcScriptMan {
                 if (answer != MENU_SCROLL) {
                     return false;
                 }
-                if (!this.has_pet || getPlayer().getQuestStatus(this.quest_water_of_life) != 1) {
+                if (!this.has_pet || getQuestStatus(this.quest_water_of_life) != 1) {
                     // 翻訳
                     say("ねえ、本当に#b#p" + this.npc_mar + "##kに会ったの？会ったことがないなら嘘をつかないでよ、ばればれなんだから。下手な嘘だなあ！");
                     return false;

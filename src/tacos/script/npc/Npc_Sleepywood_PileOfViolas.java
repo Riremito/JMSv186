@@ -18,7 +18,7 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
+import odin.server.Randomizer;
 
 /**
  *
@@ -89,7 +89,7 @@ public class Npc_Sleepywood_PileOfViolas extends NpcScriptMan {
             return false;
         }
         int item_id = this.item_ids[index];
-        switch (getPlayer().getQuestStatus(this.quest_ids[index])) {
+        switch (getQuestStatus(this.quest_ids[index])) {
             case 0 -> {
                 // 翻訳
                 say("このあたりにはたくさんの花が咲いているが、#b#t" + item_id + "##kだけは咲いていない。");
@@ -101,24 +101,24 @@ public class Npc_Sleepywood_PileOfViolas extends NpcScriptMan {
                     say("#b#t" + item_id + "##kがたくさん咲いているが、すでに持っているので、今は摘むことができない。#m" + this.map_john + "#のジョンから花をもらう必要がある。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), item_id, this.item_counts[index], "")) {
+                if (!canHold(item_id, this.item_counts[index])) {
                     // 翻訳
                     say("申し訳ありませんが、ETCインベントリがいっぱいなので花をしまうことができません。花のために空きスロットを少なくとも1つ作ってください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), item_id, (short) this.item_counts[index]);
+                gainItem(item_id, this.item_counts[index]);
                 warp(this.map_exit);
                 return false;
             }
             default -> {
                 int[] prizes = this.prize_ids[index];
-                int prize_id = prizes[(int) (Math.random() * prizes.length)];
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), prize_id, this.prize_count, "")) {
+                int prize_id = prizes[Randomizer.nextInt(prizes.length)];
+                if (!canHold(prize_id, this.prize_count)) {
                     // 翻訳
                     say("ETCインベントリがいっぱいなので、これ以上アイテムを受け取れません。空きスロットを少なくとも1つ作ってください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), prize_id, (short) this.prize_count);
+                gainItem(prize_id, this.prize_count);
                 warp(this.map_exit);
                 return false;
             }

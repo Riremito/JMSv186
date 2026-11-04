@@ -60,7 +60,7 @@ public class Npc_Zipangu_CatherinePachinkoParlor extends NpcScriptMan {
                         return false;
                     }
                     case MENU_DUNGEON -> {
-                        int level = getPlayer().getLevel();
+                        int level = getLevel();
                         NpcScriptTag nt = new NpcScriptTag();
                         nt.add("あなたのレベルは" + level + "ね。");
                         nt.add((level / 10) + "ダンジョンに入りたいのかしら？");

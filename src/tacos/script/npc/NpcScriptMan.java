@@ -34,6 +34,7 @@ import odin.constants.GameConstants;
 import odin.handling.world.MapleParty;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
+import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
@@ -185,7 +186,11 @@ public abstract class NpcScriptMan {
         chr.DebugMsg("NpcScriptMan : started.");
         this.chr = chr;
         this.chr.setNpcScript(this);
-        action(this.status, 0);
+        // 初回の会話で終了する場合 (return false) はここで終了する
+        // 終了しないと会話を閉じた時にクライアントが送信する応答で action が再度呼び出され、同じメッセージが 2 度表示される
+        if (!action(this.status, 0)) {
+            end();
+        }
         return true;
     }
 
@@ -680,5 +685,98 @@ public abstract class NpcScriptMan {
         synchronized (NPC_VARS) {
             NPC_VARS.computeIfAbsent(this.chr.getChannelId(), k -> new HashMap<>()).computeIfAbsent(npc_id, k -> new HashMap<>()).put(key, value);
         }
+    }
+
+    // キャラクターの名前
+    protected String getCharacterName() {
+        return this.chr.getName();
+    }
+
+    protected int getLevel() {
+        return this.chr.getLevel();
+    }
+
+    protected int getJob() {
+        return this.chr.getJob();
+    }
+
+    protected void changeJob(int job_id) {
+        this.chr.changeJob(job_id);
+    }
+
+    protected int getMeso() {
+        return this.chr.getMeso();
+    }
+
+    protected int getRemainingSp() {
+        return this.chr.getRemainingSp();
+    }
+
+    protected void gainAp(int ap) {
+        this.chr.gainAp((short) ap);
+    }
+
+    // lua の target.incEXP
+    protected void gainExp(int exp) {
+        this.chr.gainExp(exp, true, true, true);
+    }
+
+    protected int getGuildId() {
+        return this.chr.getGuildId();
+    }
+
+    protected int getGuildRank() {
+        return this.chr.getGuildRank();
+    }
+
+    // 0 = 未開始, 1 = 進行中, 2 = 完了
+    protected int getQuestStatus(int quest_id) {
+        return this.chr.getQuestStatus(quest_id);
+    }
+
+    // 装備中のアイテムも含めて確認する (checkItem は装備中のアイテムを含まない)
+    protected boolean haveItem(int item_id, int count) {
+        return this.chr.haveItem(item_id, count);
+    }
+
+    // インベントリに空きがあるか
+    protected boolean canHold(int item_id, int count) {
+        return MapleInventoryManipulator.checkSpace(this.chr, item_id, count, "");
+    }
+
+    // アイテムを入手 (インベントリの空きは確認しない)
+    protected boolean gainItem(int item_id, int count) {
+        return MapleInventoryManipulator.addById(this.chr, item_id, count);
+    }
+
+    // アイテムを消費 (所持数は確認しない)
+    protected boolean removeItem(int item_id, int count) {
+        return MapleInventoryManipulator.removeById(this.chr, GameConstants.getInventoryType(item_id), item_id, count, true, false);
+    }
+
+    // 装備中のアイテムを削除
+    protected boolean removeEquippedItem(int item_id, int count) {
+        return MapleInventoryManipulator.removeById(this.chr, MapleInventoryType.EQUIPPED, item_id, count, true, false);
+    }
+
+    // type : インベントリの種類 (1 = 装備, 2 = 消費, 3 = 設置, 4 = ETC, 5 = キャッシュ)
+    protected void expandInventory(int type, int slots) {
+        this.chr.expandInventory((byte) type, slots);
+    }
+
+    protected void saveLocation(SavedLocationType type) {
+        this.chr.saveLocation(type);
+    }
+
+    protected TacosMap findMap(int map_id) {
+        return this.chr.findMap(map_id);
+    }
+
+    protected void setStandAloneMode(boolean enable) {
+        this.chr.SendPacket(ResCUserLocal.SetStandAloneMode(enable));
+    }
+
+    protected void setDirectionMode(boolean enable) {
+        this.chr.SendPacket(ResCUserLocal.SetDirectionMode(enable));
     }
 }

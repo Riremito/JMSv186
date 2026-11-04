@@ -18,10 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -163,9 +159,9 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (this.mode == -1) {
-            int job = getPlayer().getJob();
-            int level = getPlayer().getLevel();
-            String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+            int job = getJob();
+            int level = getLevel();
+            String quest_data = getQuestData(this.quest_job_3rd);
             boolean job_2nd_now = false;
             for (int job_id : this.job_2nd) {
                 if (job == job_id) {
@@ -176,7 +172,7 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
             this.mode = MODE_NONE;
             if ("s".equals(quest_data) && job_2nd_now) {
                 // 3次転職 力の試験の開始
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p1");
+                setQuestData(this.quest_job_3rd, "p1");
                 this.mode = MODE_SAYS;
                 this.says = this.says_3rd_start;
             } else if ("p1".equals(quest_data)) {
@@ -185,14 +181,14 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                     say("ビクトリアアイランドのどこかにある深い森の中に、新たな次元へと続く秘密の通路があります。その中で、私の分身と戦ってもらいます。あなたの任務は、それを倒して#b#t" + this.item_black_charm + "##kを持ち帰ることです。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("本当に#b#t" + this.item_black_charm + "##kを持っていますか？確かなら、ETCインベントリに空きがあるか確認してください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_black_charm, 1, true, false);
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
-                MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "p2");
+                removeItem(this.item_black_charm, 1);
+                gainItem(this.item_necklace_of_strength, 1);
+                setQuestData(this.quest_job_3rd, "p2");
                 // 翻訳
                 say("よくやりました。私の分身を倒して、#b#t" + this.item_black_charm + "##kを無事に持ち帰ってくれましたね。感心しました。これで3次転職の試験の前半に合格です。試験の後半を受けるには、このネックレスをオシリアの#bルネ#kに渡してください。気をつけて。応援していますよ。");
                 return false;
@@ -202,12 +198,12 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                     say("#b#t" + this.item_necklace_of_strength + "##kを持って、オシリアの#bルネ#kに会いに行ってください。3次転職の試験の一つに合格した証です。もう一つの試験にもきっと簡単に合格できますよ。さあ、行ってらっしゃい！");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_necklace_of_strength, 1, "")) {
+                if (!canHold(this.item_necklace_of_strength, 1)) {
                     // 翻訳
                     say("うーん…何かおかしいですね。アイテムインベントリがいっぱいですか？ETCインベントリに十分な空きがあるか確認してください。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, (short) 1);
+                gainItem(this.item_necklace_of_strength, 1);
                 // 翻訳
                 say("どうやら#b#t" + this.item_necklace_of_strength + "##kをなくしてしまったようですね。次からは気をつけてください。はい、もう一つどうぞ。これがないと3次転職の試験を受けられませんよ");
                 return false;
@@ -262,7 +258,7 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                         return true;
                     }
                     case 1 -> {
-                        if (getPlayer().getLevel() < this.job_1st_level || getPlayer().getStat().getDex() < this.job_1st_dex) {
+                        if (getLevel() < this.job_1st_level || getPlayer().getStat().getDex() < this.job_1st_dex) {
                             // 翻訳
                             say("もっと修行が必要です。弓使いになるのが簡単だとは思わないでくださいね…");
                             return false;
@@ -274,7 +270,7 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                     }
                     case 2 -> {
                         for (int[] item : this.items_1st) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), item[0], item[1], "")) {
+                            if (!canHold(item[0], item[1])) {
                                 // 翻訳
                                 say("ふむ…もう一度装備インベントリと消費インベントリを確認してください。  修行用の武器を渡そうとしているのです。");
                                 return false;
@@ -287,21 +283,21 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                     case 3 -> {
                         boolean space = true;
                         for (int[] item : this.items_1st) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), item[0], item[1], "")) {
+                            if (!canHold(item[0], item[1])) {
                                 space = false;
                             }
                         }
-                        if (getPlayer().getJob() != 0 || !space) {
+                        if (getJob() != 0 || !space) {
                             // 翻訳
                             say("ふむ…装備ウィンドウと消費ウィンドウを確認してください。1次転職のご褒美として、修行用の武器を渡したいのです。");
                             return false;
                         }
                         for (int[] item : this.items_1st) {
-                            MapleInventoryManipulator.addById(getPlayer(), item[0], (short) item[1]);
+                            gainItem(item[0], item[1]);
                         }
-                        getPlayer().changeJob(this.job_1st);
-                        getPlayer().expandInventory((byte) 1, 4);
-                        getPlayer().expandInventory((byte) 2, 4);
+                        changeJob(this.job_1st);
+                        expandInventory(1, 4);
+                        expandInventory(2, 4);
                         this.says = this.says_1st;
                         this.says_status = status;
                         say(this.says[0], false, true);
@@ -331,12 +327,12 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                     }
                     case 2 -> {
                         if (!checkItem(this.item_letter)) {
-                            if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_letter, 1, "")) {
+                            if (!canHold(this.item_letter, 1)) {
                                 // 翻訳
                                 say("ふむ…インベントリがいっぱいのようですね…ETCインベントリに空きを作ってから私のところに来てください。手紙がないと試験を受けられませんから。");
                                 return false;
                             }
-                            MapleInventoryManipulator.addById(getPlayer(), this.item_letter, (short) 1);
+                            gainItem(this.item_letter, 1);
                         }
                         // 翻訳
                         say("この手紙を、#m" + this.map_town + "#の近く、#b#m" + this.map_instructor + "##kのあたりにいる#b#p" + this.npc_instructor + "##kに届けてください。彼女が私の代わりに教官を務めています。手紙を渡せば、私の代わりに試験をしてくれます。幸運を祈ります。");
@@ -400,19 +396,19 @@ public class Npc_Henesys_AthenaPierce extends NpcScriptMan {
                         return true;
                     }
                     case 4 -> {
-                        if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.job_2nd_level) * 3) {
+                        if (getRemainingSp() > (getLevel() - this.job_2nd_level) * 3) {
                             // 翻訳
                             say("ふむ…#bSP#kが多すぎますね…そんなにSPを残したままでは2次転職できません。1次スキルにもっとSPを使ってから、また来てください。");
                             return false;
                         }
-                        if (getPlayer().getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
+                        if (getJob() != this.job_1st || !checkItem(this.item_proof_of_hero)) {
                             // 翻訳
                             say("ふむ…本当に#p" + this.npc_instructor + "#からもらった#b#t" + this.item_proof_of_hero + "##kを持っていますか？よく確認してください。それがないと次の職業に転職させられませんから…");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_proof_of_hero, 1, true, false);
-                        getPlayer().changeJob(this.job_2nd[this.job_index]);
-                        getPlayer().expandInventory((byte) 4, 4);
+                        removeItem(this.item_proof_of_hero, 1);
+                        changeJob(this.job_2nd[this.job_index]);
+                        expandInventory(4, 4);
                         this.says = this.says_2nd[this.job_index];
                         this.says_status = status;
                         say(this.says[0], false, true);

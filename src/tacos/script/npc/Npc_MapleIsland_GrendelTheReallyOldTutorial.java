@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import tacos.packet.response.ResCUserLocal;
-
 /**
  *
  * @author Riremito
@@ -53,8 +51,8 @@ public class Npc_MapleIsland_GrendelTheReallyOldTutorial extends NpcScriptMan {
             }
             case 2 -> {
                 // 職業体験カットシーン
-                getPlayer().SendPacket(ResCUserLocal.SetStandAloneMode(true));
-                getPlayer().SendPacket(ResCUserLocal.SetDirectionMode(true));
+                setStandAloneMode(true);
+                setDirectionMode(true);
                 warp(this.map_job_experience); // TODO : portal name.
                 return false;
             }

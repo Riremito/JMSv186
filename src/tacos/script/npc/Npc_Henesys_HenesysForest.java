@@ -39,7 +39,7 @@ public class Npc_Henesys_HenesysForest extends NpcScriptMan {
                     say("このあたりに怪しいものはないようだ。");
                     return false;
                 }
-                switch (getPlayer().getQuestStatus(this.quest_black_shadow)) {
+                switch (getQuestStatus(this.quest_black_shadow)) {
                     case 1 -> {
                         MapleQuest.getInstance(this.quest_black_shadow).forceComplete(getPlayer(), getNpcId());
                         // TODO : 文章 (適当)

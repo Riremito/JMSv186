@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -62,7 +60,7 @@ public class Npc_Leafre_Samuel extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 for (int i = 0; i < this.job_from.length; i++) {
-                    if (getPlayer().getJob() == this.job_from[i]) {
+                    if (getJob() == this.job_from[i]) {
                         this.job_index = i;
                     }
                 }
@@ -71,12 +69,12 @@ public class Npc_Leafre_Samuel extends NpcScriptMan {
                     say("なぜ私に会いたいのだ？私に聞きたいことなど何もないだろう。");
                     return false;
                 }
-                if (getPlayer().getLevel() < this.required_level) {
+                if (getLevel() < this.required_level) {
                     // TODO : 文章 (適当)
                     say("海賊の極みの道を歩むには、まだ弱すぎる。もっと強くなったら戻ってきてくれ。");
                     return false;
                 }
-                if (getPlayer().getQuestStatus(this.quest_job4) != 2) {
+                if (getQuestStatus(this.quest_job4) != 2) {
                     // TODO : 文章 (適当)
                     say("まだ4次転職する準備ができていないようだ。準備ができたら話しかけてくれ。");
                     return false;
@@ -97,22 +95,22 @@ public class Npc_Leafre_Samuel extends NpcScriptMan {
                     say("ためらう必要はない…決心したらいつでも話しかけてくれ。準備ができていれば、4次転職させてやろう。");
                     return false;
                 }
-                if (getPlayer().getJob() != this.job_from[this.job_index]) {
+                if (getJob() != this.job_from[this.job_index]) {
                     return false;
                 }
-                if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.required_level) * 3) {
+                if (getRemainingSp() > (getLevel() - this.required_level) * 3) {
                     // TODO : 文章 (適当)
                     say("ふむ…#bSP#kが多すぎる。SPがそんなに残っていては4次転職できない。");
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_skill_book, 1, "")) {
+                if (!canHold(this.item_skill_book, 1)) {
                     // TODO : 文章 (適当)
                     say("インベントリに空きスロットがないので進めない。インベントリを整理してからもう一度試してくれ。");
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_skill_book, (short) 1);
-                getPlayer().changeJob(this.job_to[this.job_index]);
-                getPlayer().gainAp((short) 5);
+                gainItem(this.item_skill_book, 1);
+                changeJob(this.job_to[this.job_index]);
+                gainAp(5);
                 // TODO : jsでは4次スキルをマスターレベル10で習得させている
                 say(this.job_texts[this.job_index][0], false, true);
                 return true;

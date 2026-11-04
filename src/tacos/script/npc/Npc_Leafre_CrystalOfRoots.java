@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.quest.MapleQuest;
-
 /**
  *
  * @author Riremito
@@ -112,7 +110,7 @@ public class Npc_Leafre_CrystalOfRoots extends NpcScriptMan {
                     if (getMapId() == map_expedition) {
                         this.asked = true;
                         this.warp_map = this.map_horntail_entrance;
-                        String count = getPlayer().getQuest(MapleQuest.getInstance(this.quest_horntail_count)).getCustomData();
+                        String count = getQuestData(this.quest_horntail_count);
                         if ("2".equals(count)) {
                             // 翻訳
                             askYesNo("遠征隊を諦めて退場しますか？ 入場できるのは1日2回までです。今退場すると、今日はもう入場できません。");

@@ -57,7 +57,7 @@ public class Npc_GuildQuest_GuildReturnStone extends NpcScriptMan {
                 TacosFieldSet field_set = getFieldSet(this.field_set_name);
                 if (field_set != null) {
                     // 翻訳
-                    field_set.broadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, getPlayer().getName() + "がギルドクエストを途中で終了しました。");
+                    field_set.broadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, getCharacterName() + "がギルドクエストを途中で終了しました。");
                 }
                 return false;
             }

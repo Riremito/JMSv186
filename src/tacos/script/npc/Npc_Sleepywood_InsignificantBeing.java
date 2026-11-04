@@ -37,11 +37,11 @@ public class Npc_Sleepywood_InsignificantBeing extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         // 翻訳
-        if (getPlayer().getQuestStatus(this.quest_snipe) != 1 || getPlayer().getQuestStatus(this.quest_snipe_pre) != 2) {
+        if (getQuestStatus(this.quest_snipe) != 1 || getQuestStatus(this.quest_snipe_pre) != 2) {
             say("何の話をしているのかわかりません。");
             return false;
         }
-        if (getPlayer().getParty() == null || getPlayer().getParty().getLeader().getId() != getPlayer().getId()) {
+        if (!isPartyBoss()) {
             say("4次転職した弓使い2人でパーティーを組んだら、パーティーリーダーが私に話しかけてください。");
             return false;
         }

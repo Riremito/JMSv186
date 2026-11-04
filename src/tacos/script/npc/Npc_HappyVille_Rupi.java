@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -79,7 +76,7 @@ public class Npc_HappyVille_Rupi extends NpcScriptMan {
         }
         for (int item_id : this.item_xmas) {
             removeItemAll(item_id);
-            MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.EQUIPPED, item_id, 1, true, false);
+            removeEquippedItem(item_id, 1);
         }
         warp(this.maps_return[this.return_index], "xmas00");
         return false;

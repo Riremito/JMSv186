@@ -18,6 +18,8 @@
  */
 package tacos.script.reactor;
 
+import odin.server.Randomizer;
+
 /**
  *
  * @author Riremito
@@ -41,7 +43,7 @@ public class Reactor_Zipangu_JPludiMob extends ReactorScriptMan {
             summonMob(mob2, 3);
             return;
         }
-        boolean swap = Math.random() < 0.5;
+        boolean swap = Randomizer.nextInt(2) == 0;
         summonMob(mob1, swap ? 4 : 3);
         summonMob(mob2, swap ? 3 : 4);
     }

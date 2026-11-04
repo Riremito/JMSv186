@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -98,7 +95,7 @@ public class Npc_Kerning_TheTicketGate extends NpcScriptMan {
                     say("#b#t" + this.item_tickets[answer] + "##kを改札機に入れてください。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_tickets[answer], 1, true, false);
+                removeItem(this.item_tickets[answer], 1);
                 warp(this.map_construction_sites[answer]);
                 return false;
             }

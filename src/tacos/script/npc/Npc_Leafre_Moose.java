@@ -31,7 +31,7 @@ public class Npc_Leafre_Moose extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_power_of_shield) != 1) {
+                if (getQuestStatus(this.quest_power_of_shield) != 1) {
                     // 翻訳
                     say("盾の修行場？どこでその話を聞いたんだ？");
                     return false;

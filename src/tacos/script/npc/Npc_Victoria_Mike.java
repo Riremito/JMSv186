@@ -39,7 +39,7 @@ public class Npc_Victoria_Mike extends NpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         if (this.says == null) {
-            if (getPlayer().getJob() != 0 && this.required_level <= getPlayer().getLevel() && getPlayer().getQuestStatus(this.quest_id) == 1) {
+            if (getJob() != 0 && this.required_level <= getLevel() && getQuestStatus(this.quest_id) == 1) {
                 this.says = this.says_quest;
             } else {
                 this.says = new String[]{this.says_quest[0]};

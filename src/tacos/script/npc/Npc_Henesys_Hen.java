@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -33,16 +31,16 @@ public class Npc_Henesys_Hen extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                if (getPlayer().getQuestStatus(this.quest_collect_eggs) != 1) {
+                if (getQuestStatus(this.quest_collect_eggs) != 1) {
                     // TODO : 文章 (適当)
                     say("#b今はたまごを取る必要はない。#k");
                     return false;
                 }
                 // TODO : jsでは持ち物の空きを確認していない
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_egg, 1, "")) {
+                if (!canHold(this.item_egg, 1)) {
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_egg, (short) 1);
+                gainItem(this.item_egg, 1);
                 // TODO : 文章 (適当)
                 say("#b(たまごを手に入れた。#p1013101#に届けよう。)#k");
                 return false;

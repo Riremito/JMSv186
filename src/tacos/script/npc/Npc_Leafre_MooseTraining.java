@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.server.TacosFieldSet;
 
 /**
@@ -41,7 +38,7 @@ public class Npc_Leafre_MooseTraining extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (getMapId()) {
             case MAP_FOREST -> {
-                if (getPlayer().getQuestStatus(this.quest_power_of_shield) != 1) {
+                if (getQuestStatus(this.quest_power_of_shield) != 1) {
                     return false;
                 }
                 if (status == 0) {
@@ -69,15 +66,15 @@ public class Npc_Leafre_MooseTraining extends NpcScriptMan {
                     case 2 -> {
                         switch (answer) {
                             case 0 -> {
-                                if (0 < getPlayer().getItemQuantity(this.item_shield, false)) {
+                                if (0 < getItemCount(this.item_shield)) {
                                     // 翻訳
                                     say("すでに#t" + this.item_shield + "##kを持っているな。これ以上は必要ない。");
                                     return false;
                                 }
                                 // TODO : 装備中の盾の削除 (動作未確認)
-                                if (MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.EQUIPPED, this.item_shield, 1, true, false)) {
+                                if (removeEquippedItem(this.item_shield, 1)) {
                                     // 翻訳
-                                    getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "スキル習得用の盾は削除されました。");
+                                    message("スキル習得用の盾は削除されました。");
                                 }
                                 if (!exchange(0, this.item_shield, 1)) {
                                     // 翻訳
@@ -127,11 +124,11 @@ public class Npc_Leafre_MooseTraining extends NpcScriptMan {
                     return true;
                 }
                 // TODO : 装備中の盾の削除 (動作未確認)
-                if (MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.EQUIPPED, this.item_shield, 1, true, false)) {
+                if (removeEquippedItem(this.item_shield, 1)) {
                     // 翻訳
-                    getPlayer().dropMessage(OpsBroadcastMsg.BM_EVENT.get(), "スキル習得用の盾は削除されました。");
+                    message("スキル習得用の盾は削除されました。");
                 }
-                if (0 < getPlayer().getItemQuantity(this.item_shield, false)) {
+                if (0 < getItemCount(this.item_shield)) {
                     exchange(0, this.item_shield, -1);
                 }
                 warp(MAP_FOREST, "st00");

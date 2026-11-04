@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -62,8 +59,8 @@ public class Npc_Nautilus_Kyrin extends NpcScriptMan {
             case 2 -> {
                 if (checkItem(this.item_black_charm)) {
                     // TODO : アイテム欄の空き確認
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_black_charm, 1, true, false);
-                    MapleInventoryManipulator.addById(getPlayer(), this.item_necklace_of_strength, 1); // TODO : item effect.
+                    removeItem(this.item_black_charm, 1);
+                    gainItem(this.item_necklace_of_strength, 1); // TODO : item effect.
                     return false;
                 }
                 // 原文ママ

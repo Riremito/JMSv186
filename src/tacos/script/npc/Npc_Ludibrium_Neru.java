@@ -19,7 +19,6 @@
 package tacos.script.npc;
 
 import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import tacos.server.map.object.TacosPet;
@@ -58,7 +57,7 @@ public class Npc_Ludibrium_Neru extends NpcScriptMan {
                     say("おい！本当に兄さんの手紙を持ってるのかい？ETCインベントリに手紙があるか確認してくれ！");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_weaver_letter, 1, true, false);
+                removeItem(this.item_weaver_letter, 1);
                 pet.setCloseness(pet.getCloseness() + this.pet_closeness);
                 getPlayer().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
                 // 翻訳

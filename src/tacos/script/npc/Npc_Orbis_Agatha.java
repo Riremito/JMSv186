@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -76,7 +74,7 @@ public class Npc_Orbis_Agatha extends NpcScriptMan {
                     say("ここに何か用事があるんですよね？");
                     return false;
                 }
-                if (getPlayer().getLevel() < 10) {
+                if (getLevel() < 10) {
                     // 翻訳
                     say("あなたのレベルはまだ低すぎるようです。安全上の理由から、レベル10未満の方はこの航路をご利用いただけません。");
                     return false;
@@ -99,7 +97,7 @@ public class Npc_Orbis_Agatha extends NpcScriptMan {
                     // TODO : アリアント行きのチケットの購入
                     return false;
                 }
-                boolean child = getPlayer().getLevel() < 30;
+                boolean child = getLevel() < 30;
                 this.ticket = child ? this.item_tickets_child[answer] : this.item_tickets[answer];
                 this.cost = child ? this.costs_child[answer] : this.costs[answer];
                 // 翻訳
@@ -107,13 +105,13 @@ public class Npc_Orbis_Agatha extends NpcScriptMan {
                 return true;
             }
             case 2 -> {
-                if (getPlayer().getMeso() < this.cost || !MapleInventoryManipulator.checkSpace(getPlayer(), this.ticket, 1, "")) {
+                if (getMeso() < this.cost || !canHold(this.ticket, 1)) {
                     // 翻訳
                     say("本当に#b" + this.cost + "メル#kをお持ちですか？お持ちでしたら、ETCインベントリがいっぱいでないか確認してみてください。");
                     return false;
                 }
                 payMoney(this.cost);
-                MapleInventoryManipulator.addById(getPlayer(), this.ticket, (short) 1);
+                gainItem(this.ticket, 1);
                 return false;
             }
             default -> {

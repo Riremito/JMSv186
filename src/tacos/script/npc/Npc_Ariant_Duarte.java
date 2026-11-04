@@ -134,7 +134,7 @@ public class Npc_Ariant_Duarte extends NpcScriptMan {
                         return false;
                     }
                     case MENU_MEDAL -> {
-                        String data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_pyramid_kills)).getCustomData();
+                        String data = getQuestData(this.quest_pyramid_kills);
                         int kills = 0;
                         try {
                             kills = Integer.parseInt(data);
@@ -151,7 +151,7 @@ public class Npc_Ariant_Duarte extends NpcScriptMan {
                             say("インベントリに空きを作ってください。");
                             return false;
                         }
-                        MapleQuest.getInstance(this.quest_protector_medal).forceStart(getPlayer(), getNpcId(), "");
+                        setQuestData(this.quest_protector_medal, "");
                         MapleQuest.getInstance(this.quest_protector_medal).forceComplete(getPlayer(), getNpcId());
                         return false;
                     }
@@ -165,7 +165,7 @@ public class Npc_Ariant_Duarte extends NpcScriptMan {
                     if (answer < 0 || this.mode_levels.length <= answer) {
                         return false;
                     }
-                    int level = getPlayer().getLevel();
+                    int level = getLevel();
                     if (level < this.mode_levels[answer][0]) {
                         // TODO : 文章 (適当)
                         say("レベル" + this.mode_levels[answer][0] + "以上でなければならない。");

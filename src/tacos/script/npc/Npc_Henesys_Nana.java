@@ -74,7 +74,7 @@ public class Npc_Henesys_Nana extends NpcScriptMan {
                 return true;
             }
             case 4 -> {
-                getPlayer().saveLocation(SavedLocationType.AMORIA);
+                saveLocation(SavedLocationType.AMORIA);
                 warp(this.map_wedding_town);
                 return false;
             }

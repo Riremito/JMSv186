@@ -85,12 +85,12 @@ public class Npc_Common_Spinel extends NpcScriptMan {
                     return false;
                 }
                 if (!this.traveling) {
-                    if (!payMoney(getPlayer().getJob() == 0 ? this.cost / 10 : this.cost)) {
+                    if (!payMoney(getJob() == 0 ? this.cost / 10 : this.cost)) {
                         // 翻訳
                         say("旅費に十分なメルをお持ちか確認してください。");
                         return false;
                     }
-                    getPlayer().saveLocation(SavedLocationType.WORLDTOUR);
+                    saveLocation(SavedLocationType.WORLDTOUR);
                 }
                 warp(this.map_ids[answer]);
                 return false;

@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 
 /**
@@ -88,7 +86,7 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
         }
         switch (status) {
             case 0 -> {
-                if (getPlayer().getLevel() < this.zakum_level) {
+                if (getLevel() < this.zakum_level) {
                     // 翻訳
                     say("ふむ…君を手助けできることは何もなさそうだ。もっと強くなってから来てくれ。");
                     return false;
@@ -103,24 +101,24 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
             case 1 -> {
                 switch (answer) {
                     case MENU_ZAKUM -> {
-                        String zakum_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_zakum)).getCustomData();
+                        String zakum_data = getQuestData(this.quest_zakum);
                         // 翻訳
-                        if (zakum_data != null && !zakum_data.isEmpty()) {
+                        if (!zakum_data.isEmpty()) {
                             say("ジャクムのダンジョンクエストはどうだ？その奥深くにはとんでもないモンスターがいると聞いた…とにかく、幸運を祈る。君ならきっとやり遂げられる。");
                             return false;
                         }
-                        if (getPlayer().getJob() < this.job_min || this.job_max < getPlayer().getJob()) {
+                        if (getJob() < this.job_min || this.job_max < getJob()) {
                             // 原文ママ
                             say("ジャクムダンジョンを探索しようとしてるんですか？…弓使いではないようですね？弓使いでない人を判断する能力までは持っていません。あなたを見極めることができる職業の長老を訪ねてください。");
                             return false;
                         }
-                        MapleQuest.getInstance(this.quest_zakum).forceStart(getPlayer(), getNpcId(), "s");
+                        setQuestData(this.quest_zakum, "s");
                         say("ジャクムのダンジョンクエストを行う許可がほしいのだな？#b#p2030008##kからだろう…よし、いいだろう！君ならダンジョンでも大丈夫だと確信している。向こうでは気をつけてくれよ…");
                         return false;
                     }
                     case MENU_JOB_3RD -> {
-                        int job = getPlayer().getJob();
-                        if (getPlayer().getLevel() < this.required_level) {
+                        int job = getJob();
+                        if (getLevel() < this.required_level) {
                             // 翻訳
                             say("あなたはまだ3次転職する資格がありません。そのためには少なくともレベル70が必要です。もっと修行してから私に会いに来てください。");
                             return false;
@@ -142,8 +140,8 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
                             say("私は#bルネ#k、すべての弓使いの長であり、私の導きを必要とする弓使いたちの力を最大限に引き出す役目を担っています。でも、あなたは弓使いではありませんね。あなたの力にはなれそうにありません。この部屋には、それぞれの職業の長たちがいます。何か用があれば、その誰かに話しかけてください。");
                             return false;
                         }
-                        int quest_status = getPlayer().getQuestStatus(this.quest_job_3rd);
-                        String quest_data = getPlayer().getQuest(MapleQuest.getInstance(this.quest_job_3rd)).getCustomData();
+                        int quest_status = getQuestStatus(this.quest_job_3rd);
+                        String quest_data = getQuestData(this.quest_job_3rd);
                         if (this.skip_test[this.job_index] || quest_status == 2) {
                             this.mode = MODE_CHANGE;
                             this.no_status = status - 1;
@@ -196,7 +194,7 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
             case MODE_START -> {
                 switch (status) {
                     case 2 -> {
-                        MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "s");
+                        setQuestData(this.quest_job_3rd, "s");
                         // 翻訳
                         say("よろしい。あなたは弓使いにとって大切な2つの面、力と知恵を試されることになります。まず試験の力の部分について説明しましょう。ヘネシスの#b#p1012100##kを覚えていますか？彼女のところへ行って、試験の最初の部分について説明を聞いてください。ミッションを完了して、#p1012100#から#b#t4031057##kを受け取るのです。", false, true);
                         return true;
@@ -219,8 +217,8 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
                             say("本当に#b#p1012100##kからもらった#b#t4031057##kを持っていますか？ETCインベントリに空きを作っておくのを忘れないでください。");
                             return false;
                         }
-                        MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_necklace_of_strength, 1, true, false);
-                        MapleQuest.getInstance(this.quest_job_3rd).forceStart(getPlayer(), getNpcId(), "end1");
+                        removeItem(this.item_necklace_of_strength, 1);
+                        setQuestData(this.quest_job_3rd, "end1");
                         // 翻訳
                         say("これが試験の後半です。この試験で、あなたが偉大さへの次の一歩を踏み出せるほど賢いかどうかが決まります。オシリアの雪原に、聖地と呼ばれる薄暗い雪に覆われた場所があります。モンスターさえたどり着けない場所です。その中心には聖なる石と呼ばれる巨大な石があります。そこに特別なアイテムを捧げ物として供えなければなりません。聖なる石がその場であなたの知恵を試すでしょう。", false, true);
                         return true;
@@ -242,7 +240,7 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
                         say("本当に聖なる石から授かった#b#t4031058##kを持っているか？確かなら、ETCインベントリに空きを作っておくのを忘れないでくれ。");
                         return false;
                     }
-                    MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_necklace_of_wisdom, 1, true, false);
+                    removeItem(this.item_necklace_of_wisdom, 1);
                     MapleQuest.getInstance(this.quest_job_3rd).forceComplete(getPlayer(), getNpcId());
                     this.mode = MODE_CHANGE;
                     this.no_status = status - 1;
@@ -255,16 +253,16 @@ public class Npc_ElNath_Rene extends NpcScriptMan {
             case MODE_CHANGE -> {
                 // はいを選択した直後
                 if (status == this.no_status + 2) {
-                    if (getPlayer().getJob() != this.job_from[this.job_index]) {
+                    if (getJob() != this.job_from[this.job_index]) {
                         return false;
                     }
-                    if (getPlayer().getRemainingSp() > (getPlayer().getLevel() - this.required_level) * 3) {
+                    if (getRemainingSp() > (getLevel() - this.required_level) * 3) {
                         // 翻訳
                         say("#bSP#kが多すぎるようですね。そんなにSPを使わずに残したままでは3次転職できません。1次と2次のスキルにもっとSPを使ってから戻ってきてください。");
                         return false;
                     }
-                    getPlayer().changeJob(this.job_to[this.job_index]);
-                    getPlayer().gainAp((short) 5);
+                    changeJob(this.job_to[this.job_index]);
+                    gainAp(5);
                     say(this.job_texts[this.job_index], false, true);
                     return true;
                 }

@@ -18,9 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -50,7 +47,7 @@ public class Npc_Ludibrium_FourthEosRock extends NpcScriptMan {
                     say("#b#t" + this.item_eos_rock + "##kがないと#b#p2040027##kを起動できません。");
                     return false;
                 }
-                MapleInventoryManipulator.removeById(getPlayer(), MapleInventoryType.ETC, this.item_eos_rock, 1, true, false);
+                removeItem(this.item_eos_rock, 1);
                 warp(this.map_eos_tower, "go00");
                 return false;
             }

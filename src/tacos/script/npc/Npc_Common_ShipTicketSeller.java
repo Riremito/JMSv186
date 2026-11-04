@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -77,7 +75,7 @@ public class Npc_Common_ShipTicketSeller extends NpcScriptMan {
                 return false;
             }
             case 0 -> {
-                if (getPlayer().getLevel() < 10) {
+                if (getLevel() < 10) {
                     // 翻訳
                     say("あなたのレベルはまだ低すぎるようです。安全上の理由から、レベル10未満の方はこの航路をご利用いただけません。");
                     return false;
@@ -91,7 +89,7 @@ public class Npc_Common_ShipTicketSeller extends NpcScriptMan {
                 if (index < 0) {
                     return false;
                 }
-                boolean child = getPlayer().getLevel() < 30 && getMapId() != this.map_stations[2];
+                boolean child = getLevel() < 30 && getMapId() != this.map_stations[2];
                 this.ticket = child ? this.item_ticket_child : this.item_ticket;
                 this.cost = child ? this.costs_child[index] : this.costs[index];
                 // 翻訳
@@ -99,13 +97,13 @@ public class Npc_Common_ShipTicketSeller extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                if (getPlayer().getMeso() < this.cost || !MapleInventoryManipulator.checkSpace(getPlayer(), this.ticket, 1, "")) {
+                if (getMeso() < this.cost || !canHold(this.ticket, 1)) {
                     // 翻訳
                     say("本当に#b" + this.cost + "メル#kをお持ちですか？お持ちでしたら、ETCインベントリがいっぱいでないか確認してみてください。");
                     return false;
                 }
                 payMoney(this.cost);
-                MapleInventoryManipulator.addById(getPlayer(), this.ticket, (short) 1);
+                gainItem(this.ticket, 1);
                 return false;
             }
             default -> {

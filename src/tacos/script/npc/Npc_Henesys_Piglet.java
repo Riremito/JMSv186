@@ -18,8 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.MapleInventoryManipulator;
-
 /**
  *
  * @author Riremito
@@ -34,13 +32,13 @@ public class Npc_Henesys_Piglet extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 // TODO : jsではクエスト22015を完了しているが、JMS186には存在しないため22005 (完了時に赤ちゃんオオカミが必要) で判定する
-                if (getPlayer().getQuestStatus(this.quest_rescue) != 1 || checkItem(this.item_baby_wolf)) {
+                if (getQuestStatus(this.quest_rescue) != 1 || checkItem(this.item_baby_wolf)) {
                     return false;
                 }
-                if (!MapleInventoryManipulator.checkSpace(getPlayer(), this.item_baby_wolf, 1, "")) {
+                if (!canHold(this.item_baby_wolf, 1)) {
                     return false;
                 }
-                MapleInventoryManipulator.addById(getPlayer(), this.item_baby_wolf, (short) 1);
+                gainItem(this.item_baby_wolf, 1);
                 // TODO : メッセージ表示 (赤ちゃんオオカミを救出した)
                 return false;
             }
