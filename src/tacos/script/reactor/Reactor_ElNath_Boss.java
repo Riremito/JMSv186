@@ -33,11 +33,11 @@ public class Reactor_ElNath_Boss extends ReactorScriptMan {
         if (getReactorId() == this.reactor_chaos_zakum) {
             getMap().spawnChaosZakum(-10, -215);
             // TODO : 文章 (js の英文を翻訳, 原文 : Chaos Zakum is summoned by the force of eye of fire.)
-            mapMessage("火の目の力でカオスジャクムが召喚されます。");
+            mapMessage2("火の目の力でカオスジャクムが召喚されます。");
             return;
         }
         spawnZakum();
         // TODO : 文章 (js の文章をそのまま利用)
-        mapMessage("火の目の力でジャクムが召喚されます。");
+        mapMessage2("火の目の力でジャクムが召喚されます。");
     }
 }

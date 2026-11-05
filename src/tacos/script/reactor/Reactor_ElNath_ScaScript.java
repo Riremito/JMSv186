@@ -18,7 +18,6 @@
  */
 package tacos.script.reactor;
 
-import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsMobSkill;
 
 /**
@@ -36,21 +35,19 @@ public class Reactor_ElNath_ScaScript extends ReactorScriptMan {
         if (old_state != 0 || getReactor().getState() != 1) {
             return;
         }
-        if (getMobCount(this.mob_lich) <= 0) {
-            return;
+        if (checkMob(this.mob_lich)) {
+            nuffMob(this.mob_lich, OpsMobSkill.MOBSKILL_EVA.get(), 2);
+            // 原文ママ
+            mapMessage("碑石が輝かしながら消えた途端、リッチの魔法能力が消えた。");
         }
-        // 翻訳
-        mapMessage(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX.get(), "リッチーの力の源である箱が壊れると、彼を守っていた見えない力が消えた。");
-        nuffMob(this.mob_lich, OpsMobSkill.MOBSKILL_EVA.get(), 2);
     }
 
     @Override
     public void action() {
-        if (getMobCount(this.mob_lich) <= 0) {
-            return;
+        if (checkMob(this.mob_lich)) {
+            nuffMob(this.mob_lich, OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
+            // 原文ママ
+            mapMessage("リッチの力の源である箱が破壊された途端、リッチを保護した目に見えない力が消えた。");
         }
-        // 翻訳
-        mapMessage(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX.get(), "石が光を放ちながら消え始めると、リッチーの魔力も消えていった。");
-        nuffMob(this.mob_lich, OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
     }
 }

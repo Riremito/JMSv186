@@ -32,7 +32,7 @@ public class Reactor_ElNath_2118003 extends ReactorScriptMan {
         getReactor().forceTrigger();
         getReactor().delayedDestroyReactor(1000);
         // TODO : 文章 (js の英文を翻訳, 原文 : Rex has been summoned.)
-        mapMessage("レックスが召喚されました。");
+        mapMessage2("レックスが召喚されました。");
         summonMob(this.mob_rex);
     }
 }

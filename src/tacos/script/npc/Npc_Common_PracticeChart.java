@@ -24,15 +24,25 @@ package tacos.script.npc;
  */
 public class Npc_Common_PracticeChart extends NpcScriptMan {
 
-    private final int mob_macro_detector = 5090001; // 仙人人形
+    private final int anti_macro_monster_id = 5090001; // 仙人人形
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // マクロ対策モンスターの弱体化
-                weakenMacroMob(this.mob_macro_detector);
+                if (checkMob(this.anti_macro_monster_id)) {
+                    // 原文ママ
+                    askYesNo("練習記録表に名前を書くことができます。書きますか。");
+                    return true;
+                }
+                // 原文ママ
                 say("練習日誌を書く練習記録表である。真面目に練習日誌を書いた修練生のみ仙人人形の怒りを静めることができるという。");
+                return false;
+            }
+            case 1 -> {
+                weakenMacroMob(this.anti_macro_monster_id);
+                // 原文ママ
+                mapMessage("練習記録表に名前を書きました。真面目な修練生として認められ、仙人人形を倒す資格を得ました");
                 return false;
             }
             default -> {

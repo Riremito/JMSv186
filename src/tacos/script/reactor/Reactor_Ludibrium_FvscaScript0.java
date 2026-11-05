@@ -25,11 +25,14 @@ package tacos.script.reactor;
 // Reactor.wz action : fvscaScript0 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_Ludibrium_FvscaScript0 extends ReactorScriptMan {
 
-    private final int mob_scholar_ghost = 6090003; // 学者鬼
+    private final int anti_macro_monster_id = 6090003; // 学者鬼
 
     @Override
     public void action() {
-        // マクロ対策モンスターの弱体化
-        weakenMacroMob(this.mob_scholar_ghost);
+        if (checkMob(this.anti_macro_monster_id)) {
+            weakenMacroMob(this.anti_macro_monster_id);
+            // 原文ママ
+            mapMessage("学者鬼の恨みが少しだけ晴れたようだ。今なら学者鬼を退治できるだろう。");
+        }
     }
 }

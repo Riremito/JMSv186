@@ -30,6 +30,6 @@ public class Reactor_Leafre_HontaleBoss extends ReactorScriptMan {
         changeMusic("Bgm14/HonTale");
         summonMob(8810026, 71, 260);
         // TODO : 文章 (js の英文を翻訳, 原文 : The cave shakes and rattles, Horned Tail is summoned.)
-        mapMessage("洞窟が激しく揺れ、ホーンテイルが召喚されました。");
+        mapMessage2("洞窟が激しく揺れ、ホーンテイルが召喚されました。");
     }
 }

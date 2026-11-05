@@ -24,15 +24,25 @@ package tacos.script.npc;
  */
 public class Npc_Magatia_SecurityControl extends NpcScriptMan {
 
-    private final int mob_security_system = 7090000; // 自動警備システム
+    private final int anti_macro_monster_id = 7090000; // 自動警備システム
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // TODO : 停止の条件が不明
-                // マクロ対策モンスターの弱体化
-                weakenMacroMob(this.mob_security_system);
+                if (checkMob(this.anti_macro_monster_id)) {
+                    // 原文ママ
+                    askYesNo("制御装置を通じて自動警備システムを操作可能です。自動警備システムを止めますか。");
+                    return true;
+                }
+                // TODO : 通常メッセージ
+                say("制御装置がある。");
+                return false;
+            }
+            case 1 -> {
+                weakenMacroMob(this.anti_macro_monster_id);
+                // 原文ママ
+                mapMessage("自動警備システムを止めました。自動警備システムの侵入者追放機能が止まります。");
                 return false;
             }
             default -> {

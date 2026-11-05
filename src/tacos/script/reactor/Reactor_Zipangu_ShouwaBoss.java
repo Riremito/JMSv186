@@ -37,6 +37,6 @@ public class Reactor_Zipangu_ShouwaBoss extends ReactorScriptMan {
         changeMusic("Bgm06/FinalFight");
         summonMob(9400112, 830, 160);
         // TODO : 文章 (js の文章をそのまま利用)
-        mapMessage("ボディガードAが召喚されます。");
+        mapMessage2("ボディガードAが召喚されます。");
     }
 }
