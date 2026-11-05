@@ -52,11 +52,13 @@ public class Npc_Henesys_Cloy extends NpcScriptMan {
             // TODO : アクションペットの説明 (文章が不明)
         },
         {
-            "ペットのスキルポイント、親密度、レベルを移すには、ペットのスキルポイント初期化の書が必要だ。この書をエリニアの妖精マーのところへ持っていけば、ペットのレベルと親密度をほかのペットに移してくれる。これを渡すのは、何よりお前さんのペットへの愛情が感じられるからだ。とはいえ、ただで配るわけにはいかん。この本は250,000メルで渡そう。おっと、言い忘れるところだった！この本を持っていても、スキルポイントを移す新しいペットがいなければ役に立たんぞ。",
-            "インベントリに空きスロットがあるか、お金が足りているか確認しなさい。"
+            "ペットのスキルポイント、親密度、レベルを移すには、ペットのスキルポイント初期化の書が必要だ。この書をエリニアの妖精マーのところへ持っていけば、ペットのレベルと親密度をほかのペットに移してくれる。これを渡すのは、何よりお前さんのペットへの愛情が感じられるからだ。とはいえ、ただで配るわけにはいかん。この本は250,000メルで渡そう。おっと、言い忘れるところだった！この本を持っていても、スキルポイントを移す新しいペットがいなければ役に立たんぞ。"
         }
     };
+    private final int item_pet_book = 4160011; // ペット能力値移転書
+    private final int cost_pet_book = 250000;
     private int menu = -1;
+    private boolean asked = false;
 
     @Override
     public boolean action(int status, int answer) {
@@ -89,6 +91,32 @@ public class Npc_Henesys_Cloy extends NpcScriptMan {
         }
         // 説明
         int index = status - 2;
+        // ペットのスキルポイント初期化の書の購入
+        if (this.menu == MENU_TRANSFER) {
+            int length = this.texts[this.menu].length;
+            if (this.asked) {
+                if (index != length + 1) {
+                    // 購入確認でいいえを選択した
+                    return false;
+                }
+                if (!exchange(-this.cost_pet_book, this.item_pet_book, 1)) {
+                    // 翻訳
+                    say("インベントリに空きスロットがあるか、お金が足りているか確認しなさい。");
+                }
+                return false;
+            }
+            if (index == length) {
+                this.asked = true;
+                // 翻訳
+                askYesNo("250,000メルが差し引かれる。本当に買うかね？");
+                return true;
+            }
+            if (0 <= index && index < length) {
+                say(this.texts[this.menu][index], false, true);
+                return true;
+            }
+            return false;
+        }
         if (this.menu < 0 || this.texts[this.menu].length <= index) {
             return false;
         }

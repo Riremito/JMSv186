@@ -27,7 +27,7 @@ import odin.server.quest.MapleQuest;
 public class Npc_Ludibrium_MarkTheToySoldier extends NpcScriptMan {
 
     private final int quest_doll_house = 3230; // 人形の家
-    private final int item_pendulum = 4031145; // 時計ネジ
+    private final int item_pendulum = 4031094; // 時計錘
     private final int item_blue_pill = 2000010; // 青い丸薬
     private final int blue_pill_count = 100;
     private final int reward_exp = 2400;

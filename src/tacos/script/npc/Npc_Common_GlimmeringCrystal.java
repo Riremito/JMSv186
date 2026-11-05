@@ -29,13 +29,15 @@ public class Npc_Common_GlimmeringCrystal extends NpcScriptMan {
         108010301, // 隠れ道 : 次元の世界
         108010201, // 隠れ道 : 次元の世界
         108010101, // 隠れ道 : 次元の世界
-        108010401 // 隠れ道 : 次元の世界
+        108010401, // 隠れ道 : 次元の世界
+        108010501 // 隠れ道 : 次元の世界
     };
     private final int[] to_map_ids = {
         102000000, // ぺリオン : ぺリオン
         101000000, // エリニア : エリニア
         100000000, // ヘネシス : ヘネシス
-        103000000 // カニングシティー : カニングシティー
+        103000000, // カニングシティー : カニングシティー
+        120000000 // ノーチラス船着場 : ノーチラス
     };
 
     @Override
@@ -53,7 +55,7 @@ public class Npc_Common_GlimmeringCrystal extends NpcScriptMan {
                         return false;
                     }
                 }
-                // TODO : 海賊 (108010501), デュアルブレード (804000710) の次元の世界
+                // TODO : デュアルブレード (804000710) の次元の世界 (移動先が不明)
                 return false;
             }
             default -> {
