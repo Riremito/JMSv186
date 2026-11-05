@@ -22,14 +22,17 @@ import java.awt.Point;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.server.Randomizer;
+import odin.server.life.MobSkill;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosFieldSet;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.wz.WzXML;
 
@@ -49,6 +52,16 @@ public abstract class ReactorScriptMan {
         this.chr = chr;
         this.reactor = reactor;
         action();
+    }
+
+    // Reactor の状態が変化した (破壊されていない) 場合の処理, 必要な場合のみ override する
+    public void changeState(int old_state) {
+    }
+
+    public void startChangeState(TacosCharacter chr, TacosReactor reactor, int old_state) {
+        this.chr = chr;
+        this.reactor = reactor;
+        changeState(old_state);
     }
 
     public TacosCharacter getPlayer() {
@@ -134,6 +147,36 @@ public abstract class ReactorScriptMan {
 
     public void killMob(int mob_id) {
         getMap().killMonster(mob_id);
+    }
+
+    // マップにいるモンスターの数
+    public int getMobCount(int mob_id) {
+        int count = 0;
+        for (TacosMonster monster : getMap().getAllMonsters()) {
+            if (monster.getId() == mob_id) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // lua の field.nuffMob, マップにいるモンスターに mob skill の効果を与える
+    public void nuffMob(int mob_id, int skill_id, int skill_level) {
+        MobSkill mob_skill = WzXML.SKILL.getMobSkillData(skill_id, skill_level);
+        if (mob_skill == null) {
+            return;
+        }
+        for (TacosMonster monster : getMap().getAllMonsters()) {
+            if (monster.getId() == mob_id) {
+                mob_skill.applyEffect(null, monster, false);
+            }
+        }
+    }
+
+    // マクロ対策モンスターの弱体化 (回避率の低下 155 Lv.2, スキル封印 157 Lv.1)
+    public void weakenMacroMob(int mob_id) {
+        nuffMob(mob_id, OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
+        nuffMob(mob_id, OpsMobSkill.MOBSKILL_EVA.get(), 2);
     }
 
     // Reactor の位置に召喚

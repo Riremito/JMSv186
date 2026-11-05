@@ -149,10 +149,6 @@ public class MobSkill {
                 break;
             case MOBSKILL_SEALSKILL:
                 stats.put(OpsMobStat.MS_SealSkill, x);
-                // eva is 0 while skills are sealed.
-                if (monster != null) {
-                    stats.put(OpsMobStat.MS_EVA, -monster.getStats().getEva());
-                }
                 break;
             case MOBSKILL_HEAL_M:
                 if (lt != null && rb != null && skill && monster != null) {

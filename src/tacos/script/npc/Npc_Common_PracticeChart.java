@@ -18,11 +18,6 @@
  */
 package tacos.script.npc;
 
-import odin.server.life.MobSkill;
-import tacos.packet.ops.OpsMobSkill;
-import tacos.server.map.object.TacosMonster;
-import tacos.wz.WzXML;
-
 /**
  *
  * @author Riremito
@@ -35,12 +30,8 @@ public class Npc_Common_PracticeChart extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // マクロ対策モンスターの弱体化 (スキル封印)
-                TacosMonster mob = getPlayer().getMap().getMonsterById(this.mob_macro_detector);
-                MobSkill seal_skill = WzXML.SKILL.getMobSkillData(OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
-                if (mob != null && seal_skill != null) {
-                    seal_skill.applyEffect(null, mob, false);
-                }
+                // マクロ対策モンスターの弱体化
+                weakenMacroMob(this.mob_macro_detector);
                 say("練習日誌を書く練習記録表である。真面目に練習日誌を書いた修練生のみ仙人人形の怒りを静めることができるという。");
                 return false;
             }

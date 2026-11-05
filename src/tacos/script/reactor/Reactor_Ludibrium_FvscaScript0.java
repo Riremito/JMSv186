@@ -22,11 +22,14 @@ package tacos.script.reactor;
  *
  * @author Riremito
  */
-// Reactor.wz action : fvscaScript0 (JMS186), js の処理を利用
+// Reactor.wz action : fvscaScript0 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_Ludibrium_FvscaScript0 extends ReactorScriptMan {
+
+    private final int mob_scholar_ghost = 6090003; // 学者鬼
 
     @Override
     public void action() {
-        killMob(6090003);
+        // マクロ対策モンスターの弱体化
+        weakenMacroMob(this.mob_scholar_ghost);
     }
 }

@@ -34,6 +34,7 @@ import odin.constants.GameConstants;
 import odin.handling.world.MapleParty;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
+import odin.server.life.MobSkill;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
@@ -41,6 +42,7 @@ import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCField;
@@ -661,6 +663,25 @@ public abstract class NpcScriptMan {
             }
         }
         return count;
+    }
+
+    // lua の field.nuffMob, 現在のマップにいるモンスターに mob skill の効果を与える
+    protected void nuffMob(int mob_id, int skill_id, int skill_level) {
+        MobSkill mob_skill = WzXML.SKILL.getMobSkillData(skill_id, skill_level);
+        if (mob_skill == null) {
+            return;
+        }
+        for (TacosMonster monster : this.chr.getMap().getAllMonsters()) {
+            if (monster.getId() == mob_id) {
+                mob_skill.applyEffect(null, monster, false);
+            }
+        }
+    }
+
+    // マクロ対策モンスターの弱体化 (回避率の低下 155 Lv.2, スキル封印 157 Lv.1)
+    protected void weakenMacroMob(int mob_id) {
+        nuffMob(mob_id, OpsMobSkill.MOBSKILL_SEALSKILL.get(), 1);
+        nuffMob(mob_id, OpsMobSkill.MOBSKILL_EVA.get(), 2);
     }
 
     // lua の field.setMobGen

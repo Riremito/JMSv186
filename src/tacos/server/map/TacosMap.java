@@ -2098,8 +2098,12 @@ public class TacosMap extends TacosMapData {
                             removeDrop(drop.getObjectId());
                             broadcastPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
                             reactor.hitReactor(client);
-                            reactor.setTimerActive(false);
-                            reactor.forceHitReactor((byte) 0);
+                            // アイテムで反応した後に攻撃で破壊するタイプ (死んだ木の森の箱など) の場合は状態を戻さない
+                            int type = reactor.getReactorType();
+                            if (type < 0 || 100 <= type) {
+                                reactor.setTimerActive(false);
+                                reactor.forceHitReactor((byte) 0);
+                            }
                             reactor.setTimerActive(true);
                             return;
                         }

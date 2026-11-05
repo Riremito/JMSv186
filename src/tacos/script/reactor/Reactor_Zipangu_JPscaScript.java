@@ -22,11 +22,14 @@ package tacos.script.reactor;
  *
  * @author Riremito
  */
-// Reactor.wz action : JPscaScript0, JPscaScript1, JPscaScript2 (JMS186), js の処理を利用
+// Reactor.wz action : JPscaScript0, JPscaScript1, JPscaScript2 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_Zipangu_JPscaScript extends ReactorScriptMan {
+
+    private final int mob_bamboo_warrior = 6090002; // 竹の武士
 
     @Override
     public void action() {
-        killMob(6090002);
+        // マクロ対策モンスターの弱体化
+        weakenMacroMob(this.mob_bamboo_warrior);
     }
 }

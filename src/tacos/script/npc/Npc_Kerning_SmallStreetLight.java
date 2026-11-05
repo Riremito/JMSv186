@@ -30,7 +30,8 @@ public class Npc_Kerning_SmallStreetLight extends NpcScriptMan {
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                getPlayer().getMap().killMonster(this.mob_shade);
+                // マクロ対策モンスターの弱体化
+                weakenMacroMob(this.mob_shade);
                 return false;
             }
             default -> {

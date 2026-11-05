@@ -31,7 +31,8 @@ public class Npc_Magatia_SecurityControl extends NpcScriptMan {
         switch (status) {
             case 0 -> {
                 // TODO : 停止の条件が不明
-                getPlayer().getMap().killMonster(this.mob_security_system);
+                // マクロ対策モンスターの弱体化
+                weakenMacroMob(this.mob_security_system);
                 return false;
             }
             default -> {

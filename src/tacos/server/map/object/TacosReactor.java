@@ -123,6 +123,8 @@ public class TacosReactor extends TacosMapObject {
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
+                    // 状態の変化 (Java のみ)
+                    ReactorMan.changeState(chr, this, oldState);
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
                         ReactorMan.act(chr, this);
                         done = true;
