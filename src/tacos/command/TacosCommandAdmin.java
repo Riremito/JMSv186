@@ -255,7 +255,7 @@ public class TacosCommandAdmin {
                 reactor.setPosition(pos);
                 reactor.setMap(map);
                 map.addReactor(reactor);
-                ReactorMan.act(client, reactor);
+                ReactorMan.act(chr, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;
             }

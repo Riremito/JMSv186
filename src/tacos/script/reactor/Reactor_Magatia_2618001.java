@@ -48,7 +48,7 @@ public class Reactor_Magatia_2618001 extends ReactorScriptMan {
         }
         TacosReactor reactor = map.getReactorByName(name);
         if (reactor != null) {
-            reactor.hitReactor(getClient());
+            reactor.hitReactor(getPlayer().getClient());
         }
     }
 }

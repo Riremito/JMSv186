@@ -23,7 +23,6 @@ import odin.handling.world.MapleParty;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosClient;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
@@ -41,23 +40,19 @@ import tacos.wz.WzXML;
 // Reactor の処理の基底クラス, js の rm (OdinReactorActionManager) と同じ処理を Odin のクラスを利用せずに実装する
 public abstract class ReactorScriptMan {
 
-    private TacosClient client;
+    private TacosCharacter chr;
     private TacosReactor reactor;
 
     public abstract void action();
 
-    public void start(TacosClient client, TacosReactor reactor) {
-        this.client = client;
+    public void start(TacosCharacter chr, TacosReactor reactor) {
+        this.chr = chr;
         this.reactor = reactor;
         action();
     }
 
-    public TacosClient getClient() {
-        return this.client;
-    }
-
     public TacosCharacter getPlayer() {
-        return this.client.getPlayer();
+        return this.chr;
     }
 
     public TacosReactor getReactor() {
@@ -156,20 +151,20 @@ public abstract class ReactorScriptMan {
 
     // マップ全体へのメッセージ
     public void mapMessage(String text) {
-        getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void mapMessage(int type, String text) {
-        getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
     }
 
     // Reactor を動かしたキャラクターへのメッセージ
     public void playerMessage(String text) {
-        this.client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void playerMessage(int type, String text) {
-        this.client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void warp(int map_id) {
@@ -186,7 +181,7 @@ public abstract class ReactorScriptMan {
         TacosMap map = getMapById(map_id);
         // 同じマップの近くのポータルの場合は瞬間移動
         if (portal != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortal(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.client.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
+            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
             return;
         }
         chr.changeMapPortal(map, map.getPortal(portal));
@@ -200,7 +195,7 @@ public abstract class ReactorScriptMan {
         }
         // 同じマップの近くのポータルの場合は瞬間移動
         if (map_id == chr.getMapId() && new Point(chr.getMap().getPortal(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.client.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortal(portal).getId()));
+            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortal(portal).getId()));
             return;
         }
         chr.changeMapPortal(map, map.getPortal(portal));
@@ -237,7 +232,7 @@ public abstract class ReactorScriptMan {
         if (guild_id <= 0) {
             return;
         }
-        this.client.getWorld().getGuild().gainGP(guild_id, gp);
+        this.chr.getWorld().getGuild().gainGP(guild_id, gp);
     }
 
     public void givePartyNX(int amount) {

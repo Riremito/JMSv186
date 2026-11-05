@@ -18,7 +18,7 @@
  */
 package tacos.script.reactor;
 
-import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.script.js.TacosScriptReactor;
 import tacos.server.map.object.TacosReactor;
 
@@ -29,14 +29,15 @@ import tacos.server.map.object.TacosReactor;
 public class ReactorMan {
 
     // Java の処理を優先し、存在しない場合は js を利用する
-    public static boolean act(TacosClient client, TacosReactor reactor) {
-        if (start(client, reactor)) {
+    public static boolean act(TacosCharacter chr, TacosReactor reactor) {
+        if (start(chr, reactor)) {
+            chr.DebugMsg("ReactorMan : " + reactor.getId());
             return true;
         }
-        return TacosScriptReactor.getInstance().act(client, reactor);
+        return TacosScriptReactor.getInstance().act(chr.getClient(), reactor);
     }
 
-    public static boolean start(TacosClient client, TacosReactor reactor) {
+    public static boolean start(TacosCharacter chr, TacosReactor reactor) {
         ReactorScriptMan reactor_script;
         switch (reactor.getId()) {
             case 2000 -> {
@@ -1545,7 +1546,7 @@ public class ReactorMan {
                 return false;
             }
         }
-        reactor_script.start(client, reactor);
+        reactor_script.start(chr, reactor);
         return true;
     }
 }
