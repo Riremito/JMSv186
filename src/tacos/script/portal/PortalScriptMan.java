@@ -152,6 +152,12 @@ public abstract class PortalScriptMan {
         return true;
     }
 
+    public boolean warpParty(int map_id, String portal_name) {
+        int portal_id = getPlayer().findMap(map_id).getPortal(portal_name).getId();
+        this.pi.warpParty(map_id, portal_id);
+        return true;
+    }
+
     // マップにいる全てのキャラクターを移動
     public boolean warpMapAll(int map_id, int portal) {
         this.pi.warpMap(map_id, portal);

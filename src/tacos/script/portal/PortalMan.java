@@ -927,7 +927,7 @@ public class PortalMan {
             case "MD_drakeroom" -> {
                 // 105090311, 中央ダンジョン : 冷たい揺りかご
                 // 105090320, ミニダンジョン : ドレイクの青い洞窟
-                return new Portal_Sleepywood_MD_drakeroom();
+                return new Portal_Common_MD();
             }
             case "MD_error" -> {
                 // 261020300, アルカドノ研究所 : 研究所C-1区域
@@ -977,7 +977,7 @@ public class PortalMan {
             case "MD_treasure" -> {
                 // 251010402, 白草村 : 赤鼻海賊団の盗掘2
                 // 251010410, ミニダンジョン : 宝島の掠奪
-                return new Portal_HerbTown_MD_treasure();
+                return new Portal_Common_MD();
             }
             case "met_in" -> {
                 // 102040000, カニングシティー : 工事現場-北

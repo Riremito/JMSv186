@@ -32,6 +32,11 @@ public class Portal_Common_MD extends PortalScriptMan {
         int map_dungeon;
         int dungeons;
         switch (getScriptName()) {
+            case "MD_drakeroom" -> {
+                map_base = 105090311; // 中央ダンジョン : 冷たい揺りかご
+                map_dungeon = 105090320;
+                dungeons = 20;
+            }
             case "MD_error" -> {
                 map_base = 261020300; // アルカドノ研究所 : 研究所C-1区域
                 map_dungeon = 261020301;
@@ -77,6 +82,11 @@ public class Portal_Common_MD extends PortalScriptMan {
                 map_dungeon = 260020630;
                 dungeons = 30;
             }
+            case "MD_treasure" -> {
+                map_base = 251010402; // 白草村 : 赤鼻海賊団の盗掘2
+                map_dungeon = 251010410;
+                dungeons = 20;
+            }
             default -> {
                 return false;
             }
@@ -92,9 +102,9 @@ public class Portal_Common_MD extends PortalScriptMan {
         for (int i = 0; i < dungeons; i++) {
             if (getPlayerCount(map_dungeon + i) == 0) {
                 if (isPartyMember()) {
-                    return warpParty(map_dungeon + i);
+                    return warpParty(map_dungeon + i, "out00");
                 }
-                return warp(map_dungeon + i);
+                return warp(map_dungeon + i, "out00");
             }
         }
         // TODO : 文章 (js の英文を翻訳, 原文 : All of the Mini-Dungeons are in use right now, please try again later.)
