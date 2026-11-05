@@ -554,6 +554,33 @@ public abstract class NpcScriptMan {
         this.chr.getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(path).build()));
     }
 
+    // lua の target.effectSound (話しかけたキャラクターのみ)
+    protected void effectSoundUser(String path) {
+        this.chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(path).build()));
+    }
+
+    // lua の target.givePartyBuff (同じマップにいるパーティーメンバーにアイテムの効果を与える)
+    protected void givePartyBuff(int item_id) {
+        for (TacosCharacter member : TacosFieldSet.getPartyMembers(this.chr)) {
+            if (member.getBuff().update(-item_id)) {
+                member.SendPacket(ResCWvsContext.TemporaryStatSet(member, -item_id));
+                member.sendRemoteTemporaryStatSet(-item_id);
+            }
+        }
+    }
+
+    // lua の target.cancelPartyBuff (同じマップにいるパーティーメンバーのアイテムの効果を解除する)
+    protected void cancelPartyBuff(int item_id) {
+        for (TacosCharacter member : TacosFieldSet.getPartyMembers(this.chr)) {
+            if (member.getBuff().getCTS(-item_id).isEmpty()) {
+                continue;
+            }
+            member.SendPacket(ResCWvsContext.TemporaryStatReset(member, -item_id));
+            member.sendRemoteTemporaryStatReset(-item_id);
+            member.getBuff().remove(-item_id);
+        }
+    }
+
     // lua の field.enablePortal
     protected boolean enablePortal(String portal_name, boolean enable) {
         TacosPortal portal = this.chr.getMap().getPortal(portal_name);

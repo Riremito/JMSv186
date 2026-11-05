@@ -61,6 +61,8 @@ public class Npc_Orbis_ChamberlainEak extends NpcScriptMan {
     private final int item_takeaway_first = 4001044; // 回収するアイテム (4001044 - 4001063)
     private final int item_takeaway_last = 4001063;
     private final int item_takeaway_extra = 4001074; // 透明アイテム
+    private final int item_buff_first = 2022090; // 妖精ウィンキの祝福 (2022090 - 2022093)
+    private final int item_buff_last = 2022093;
     private int node = NODE_NONE;
     private int last_status = 0;
     private int transfer_map = 0;
@@ -126,7 +128,10 @@ public class Npc_Orbis_ChamberlainEak extends NpcScriptMan {
                     removeItemAll(item_id);
                 }
                 removeItemAll(this.item_takeaway_extra);
-                // TODO : lua の cancelPartyBuff (妖精ウィンキの祝福 2022090 - 2022093) は未実装
+                // ウィンキの祝福の解除
+                for (int item_id = this.item_buff_first; item_id <= this.item_buff_last; item_id++) {
+                    cancelPartyBuff(item_id);
+                }
                 warp(this.map_strange_tower, "st00");
                 return false;
             }
