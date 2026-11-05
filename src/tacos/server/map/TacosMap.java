@@ -369,6 +369,7 @@ public class TacosMap extends TacosMapData {
         updateAreaOnEnter(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
         checkMasterMonsterTime(chr);
+        checkTimeMob(chr);
         // no split.
         sendChangeBGM(chr);
         if (!getNodeInfo().getPlatforms().isEmpty()) {
@@ -1112,6 +1113,18 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    // info/timeMob, 指定モンスターが存在するマップに入場した場合はメッセージを表示する
+    private boolean checkTimeMob(TacosCharacter chr) {
+        if (getTimeMobId() <= 0 || getTimeMobMessage() == null || getTimeMobMessage().isEmpty()) {
+            return false;
+        }
+        if (countMonsterById(getTimeMobId()) <= 0) {
+            return false;
+        }
+        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(getTimeMobMessage()).build()));
+        return true;
+    }
+
     private boolean checkMasterMonsterTime(TacosCharacter chr) {
         if (getBossSpawnPoint().isEmpty()) {
             return false;
@@ -1773,9 +1786,17 @@ public class TacosMap extends TacosMapData {
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getMobTime() != -1 && sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
+                    boolean time_mob = 0 < getTimeMobId() && sp.getId() == getTimeMobId();
+                    // info/timeMob, 指定時間外は出現判定を行わない
+                    if (time_mob && !isTimeMobRegenTime()) {
+                        continue;
+                    }
                     TacosMonster monster = sp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
+                        if (time_mob && getTimeMobMessage() != null && !getTimeMobMessage().isEmpty()) {
+                            sendText(getTimeMobMessage());
+                        }
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
