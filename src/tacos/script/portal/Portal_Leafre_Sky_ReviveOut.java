@@ -27,7 +27,7 @@ public class Portal_Leafre_Sky_ReviveOut extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(240080000, 0);
+        warp(240080000, "sp");
         return true;
     }
 }

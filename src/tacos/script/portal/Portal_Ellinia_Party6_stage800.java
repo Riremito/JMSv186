@@ -27,6 +27,6 @@ public class Portal_Ellinia_Party6_stage800 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(300030100, 0);
+        return warp(300030100, "sp");
     }
 }

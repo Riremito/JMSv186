@@ -52,7 +52,7 @@ public class Portal_Ereve_EnterDH extends PortalScriptMan {
                 }
                 // TODO : js では resetFully の後に respawn(true)
                 getMapById(map_hall).resetFully();
-                return warp(map_hall, 0);
+                return warp(map_hall, "sp");
             }
             case "enterthirdDH" -> {
                 for (int quest_id = 20601; quest_id <= 20605; quest_id++) {
@@ -92,6 +92,6 @@ public class Portal_Ereve_EnterDH extends PortalScriptMan {
         TacosMap map = getMapById(map_hall);
         map.killAllMonsters(false);
         // TODO : js では killAllMonsters の後に respawn(true)
-        return warp(map_hall, 0);
+        return warp(map_hall, "sp");
     }
 }

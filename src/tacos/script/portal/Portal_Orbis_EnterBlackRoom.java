@@ -27,6 +27,6 @@ public class Portal_Orbis_EnterBlackRoom extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(200080601, 0);
+        return warp(200080601, "out00");
     }
 }

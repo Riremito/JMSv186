@@ -27,7 +27,7 @@ public class Portal_Kerning_Depart_topOut extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(103040300, 0);
+        warp(103040300, "goUp");
         return false;
     }
 }

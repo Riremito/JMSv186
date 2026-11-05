@@ -28,9 +28,9 @@ public class Portal_Rien_OutChild extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(21001) == 0) {
-            return warp(914000220, 2);
+            return warp(914000220, "west00");
         } else {
-            return warp(914000400, 2);
+            return warp(914000400, "west00");
         }
     }
 }

@@ -27,6 +27,6 @@ public class Portal_LithHarbor_EnterInfo extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(104000004, 1);
+        return warp(104000004, "out00");
     }
 }

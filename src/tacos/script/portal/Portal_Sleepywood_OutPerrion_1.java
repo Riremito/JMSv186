@@ -27,6 +27,6 @@ public class Portal_Sleepywood_OutPerrion_1 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(105100000, 2);
+        return warp(105100000, "top00");
     }
 }

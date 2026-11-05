@@ -27,7 +27,7 @@ public class Portal_Zipangu_Tokyoboss4_go extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(802000610, 0);
+        warp(802000610, "sp");
         return true;
     }
 }

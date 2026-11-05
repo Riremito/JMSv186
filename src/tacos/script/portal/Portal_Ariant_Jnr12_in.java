@@ -28,7 +28,7 @@ public class Portal_Ariant_Jnr12_in extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getUserCount() == 4 || getUserCount(926100401) > 0) {
-            return warpParty(926110401, 0);
+            return transferParty(926110401, "sp");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : Not everyone is here.)
             playerMessage(5, "全員そろっていません。");

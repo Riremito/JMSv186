@@ -28,7 +28,7 @@ public class Portal_Rien_RienTutor3 extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(21012) == 2) {
-            return warp(140090400, 1);
+            return warp(140090400, "east00");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : You must complete the quest before proceeding to the next map.)
             playerMessage(5, "次のマップへ進む前にクエストを完了させる必要があります。");

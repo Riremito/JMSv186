@@ -42,8 +42,7 @@ public class Npc_Victoria_Francis extends NpcScriptMan {
             }
             case 2 -> {
                 setQuestData(this.quest_francis, "0");
-                // TODO : 移動先のポータル (jsでは3番)
-                warp(this.map_evil_eye_nest);
+                warp(this.map_evil_eye_nest, "in00");
                 return false;
             }
             default -> {

@@ -48,7 +48,17 @@ public class Npc_Common_DimensionalMirror extends NpcScriptMan {
         180000000, // GM･Hazard : 撮影現場
         950100000 // 隠れ道 : 金箔寺
     };
-    // TODO : portal (0, 0, 4, 4, 0, 4, 0, 0, 9)
+    private final String[] portals = {
+        "sp",
+        "sp",
+        "out00",
+        "out00",
+        "sp",
+        "out00",
+        "sp",
+        "sp",
+        "out00"
+    };
 
     @Override
     public boolean action(int status, int answer) {
@@ -66,7 +76,7 @@ public class Npc_Common_DimensionalMirror extends NpcScriptMan {
                     return false;
                 }
                 saveLocation(SavedLocationType.MULUNG_TC);
-                warp(this.map_ids[answer]); // TODO : portal name.
+                warp(this.map_ids[answer], this.portals[answer]);
                 return false;
             }
             default -> {

@@ -27,6 +27,6 @@ public class Portal_Victoria_MoveBefore extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(108000700, 0);
+        return warp(108000700, "sp");
     }
 }

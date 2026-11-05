@@ -28,9 +28,9 @@ public class Portal_Orbis_EnterNepenthes extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (isQuestActive(21738)) {
-            return warp(920030000, 0);
+            return warp(920030000, "out00");
         } else {
-            return warp(200060001, 0);
+            return warp(200060001, "out00");
         }
     }
 }

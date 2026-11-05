@@ -27,6 +27,6 @@ public class Portal_Rien_EnterSnowDragon extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(914100021, 0);
+        return warp(914100021, "out00");
     }
 }

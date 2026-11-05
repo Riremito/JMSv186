@@ -27,6 +27,6 @@ public class Portal_Ellin_Cellar extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(300000012, 0);
+        return warp(300000012, "sp");
     }
 }

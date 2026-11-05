@@ -27,6 +27,6 @@ public class Portal_Ellin_EnterWarehouse extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(300000011, 0);
+        return warp(300000011, "out00");
     }
 }

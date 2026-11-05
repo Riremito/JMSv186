@@ -27,7 +27,7 @@ public class Portal_HauntedHouse_Inhalloween extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(229000000, 0);
+        warp(229000000, "out00");
         return true;
     }
 }

@@ -28,7 +28,7 @@ public class Portal_Ereve_OutDarkEreb extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (isQuestFinished(20407)) {
-            return warp(130000000, 0);
+            return warp(130000000, "sp");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : I have to defeat the Black Witch first!)
             playerMessage(5, "先に黒魔女を倒さなければ！");

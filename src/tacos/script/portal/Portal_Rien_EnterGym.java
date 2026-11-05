@@ -28,11 +28,11 @@ public class Portal_Rien_EnterGym extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(21701) == 1) {
-            return warp(914010000, 1);
+            return warp(914010000, "out00");
         } else if (getQuestStatus(21702) == 1) {
-            return warp(914010100, 1);
+            return warp(914010100, "out00");
         } else if (getQuestStatus(21703) == 1) {
-            return warp(914010200, 1);
+            return warp(914010200, "out00");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : Only if you are recieving a lesson from Puo, you will be allowed to enter the Pengiun Training Ground.)
             playerMessage(5, "プオのレッスンを受けている場合のみ、ペンギン訓練場に入ることができます。");

@@ -35,6 +35,6 @@ public class Portal_Henesys_TD_MC_first extends PortalScriptMan {
             playerMessage(5, "地面から放たれる力のせいで近づくことができません。");
             return false;
         }
-        return warp(this.map_mushroom_forest, 1);
+        return warp(this.map_mushroom_forest, "left00");
     }
 }

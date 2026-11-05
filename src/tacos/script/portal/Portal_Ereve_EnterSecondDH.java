@@ -28,7 +28,7 @@ public class Portal_Ereve_EnterSecondDH extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(20201) == 1 || getQuestStatus(20202) == 1 || getQuestStatus(20203) == 1 || getQuestStatus(20204) == 1 || getQuestStatus(20205) == 1) {
-            return warp(108000600, 0);
+            return warp(108000600, "sp");
         }
         return false;
     }

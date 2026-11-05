@@ -31,6 +31,6 @@ public class Portal_Rien_AranTutorOut2 extends PortalScriptMan {
         teachSkill(20000015, 0, -1);
         teachSkill(20000014, 1, 0);
         teachSkill(20000015, 1, 0);
-        return warp(914000210, 1);
+        return warp(914000210, "east00");
     }
 }

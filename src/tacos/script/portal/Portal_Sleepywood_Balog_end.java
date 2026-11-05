@@ -40,6 +40,6 @@ public class Portal_Sleepywood_Balog_end extends PortalScriptMan {
         gainExpR(getMapId() == this.map_easy_balrog ? 260000 : 520000);
         // TODO : js では gainNX (2000 or 3000)
         gainItem(this.item_balrog_fur, 1);
-        return warp(this.map_balrog_entrance, 0);
+        return warp(this.map_balrog_entrance, "sp");
     }
 }

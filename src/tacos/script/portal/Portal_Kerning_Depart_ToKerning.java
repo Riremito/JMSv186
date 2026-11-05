@@ -27,7 +27,7 @@ public class Portal_Kerning_Depart_ToKerning extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(103000100, 0);
+        warp(103000100, "sp");
         return true;
     }
 }

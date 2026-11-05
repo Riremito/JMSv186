@@ -40,10 +40,11 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
         Point npc_pos;
         int map_out;
         String portal_out;
-        int portal_out_id = 0;
+        String portal_forest;
         switch (getScriptName()) {
             case "enterDisguise1" -> {
                 map_forest = 108010600; // 隠れ道 : ティノの森
+                portal_forest = "out00";
                 npc_fake = 1104101; // オズ(偽者)
                 npc_pos = new Point(2517, 88);
                 map_out = 130010010; // クィーンズロード : ティノの森
@@ -51,6 +52,7 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
             }
             case "enterDisguise2" -> {
                 map_forest = 108010610; // 隠れ道 : ティヴの森
+                portal_forest = "out00";
                 npc_fake = 1104102; // イリーナ(偽者)
                 npc_pos = new Point(3307, 88);
                 map_out = 130010020; // クィーンズロード : ティヴの森
@@ -58,13 +60,15 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
             }
             case "enterDisguise3" -> {
                 map_forest = 108010620; // 隠れ道 : ティムの森
+                portal_forest = "out00";
                 npc_fake = 1104100; // ミハエル(偽者)
                 npc_pos = new Point(263, 88);
                 map_out = 130010110; // クィーンズロード : ティムの森
-                portal_out = "";
+                portal_out = "out00";
             }
             case "enterDisguise4" -> {
                 map_forest = 108010630; // 隠れ道 : ティルの森
+                portal_forest = "out00";
                 npc_fake = 1104103; // イカルト(偽者)
                 npc_pos = new Point(-1766, 88);
                 map_out = 130010120; // クィーンズロード : ティルの森
@@ -72,11 +76,11 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
             }
             case "enterDisguise5" -> {
                 map_forest = 108010640; // 隠れ道 : 訓練場の入口
+                portal_forest = "east00";
                 npc_fake = 1104104; // ホークアイ(偽者)
                 npc_pos = new Point(542, 88);
                 map_out = 130020000; // クィーンズロード : 訓練場の入口
-                portal_out = "";
-                portal_out_id = 10;
+                portal_out = "east00";
             }
             default -> {
                 return false;
@@ -90,9 +94,6 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
             }
         }
         if (!searching) {
-            if (portal_out.isEmpty()) {
-                return warp(map_out, portal_out_id);
-            }
             return warp(map_out, portal_out);
         }
         if (getPlayerCount(map_forest) != 0) {
@@ -109,6 +110,6 @@ public class Portal_Ereve_EnterDisguise extends PortalScriptMan {
         TacosMap map = getMapById(map_forest);
         map.killAllMonsters(false);
         map.spawnNpc(npc_fake, npc_pos);
-        return warp(map_forest, 0);
+        return warp(map_forest, portal_forest);
     }
 }

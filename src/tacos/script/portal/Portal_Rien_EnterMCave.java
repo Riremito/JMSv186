@@ -32,6 +32,6 @@ public class Portal_Rien_EnterMCave extends PortalScriptMan {
             // TODO : 文章 (js の英文を翻訳, 原文 : You recovered your memories!)
             playerMessage(5, "記憶を取り戻した！");
         }
-        return warp(108000700, 0);
+        return warp(108000700, "out00");
     }
 }

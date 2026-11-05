@@ -27,7 +27,7 @@ public class Portal_Zipangu_TokPQ1 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(802000802, 0);
+        warp(802000802, "sp");
         return true;
     }
 }

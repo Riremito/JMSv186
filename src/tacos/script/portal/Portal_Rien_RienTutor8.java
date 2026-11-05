@@ -27,6 +27,6 @@ public class Portal_Rien_RienTutor8 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(140010000, 2);
+        return warp(140010000, "east00");
     }
 }

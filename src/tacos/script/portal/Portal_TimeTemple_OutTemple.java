@@ -28,7 +28,7 @@ public class Portal_TimeTemple_OutTemple extends PortalScriptMan {
     @Override
     public boolean enter() {
         useItem(2210016);
-        warp(200090510, 0);
+        warp(200090510, "sp");
         return true;
     }
 }

@@ -27,6 +27,6 @@ public class Portal_Ellinia_EnterMagiclibrar extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(101000003, 8);
+        return warp(101000003, "jobout00");
     }
 }

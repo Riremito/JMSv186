@@ -28,7 +28,7 @@ public class Portal_Rien_RienTutor7 extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(21014) == 2 || getJob() != 2000) {
-            return warp(140010100, 2);
+            return warp(140010100, "east00");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : The town of Rien is to the right. Take the portal on the right and go into town to meet Lilin.)
             playerMessage(5, "リエンの村は右側です。右のポータルから村に入ってリリンに会いましょう。");

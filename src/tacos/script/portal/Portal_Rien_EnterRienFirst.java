@@ -28,9 +28,9 @@ public class Portal_Rien_EnterRienFirst extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (getQuestStatus(21014) != 2) {
-            return warp(140000000, 1);
+            return warp(140000000, "st00");
         } else {
-            return warp(140000000, 3);
+            return warp(140000000, "west00");
         }
     }
 }

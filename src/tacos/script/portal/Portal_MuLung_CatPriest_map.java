@@ -27,6 +27,6 @@ public class Portal_MuLung_CatPriest_map extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(925000000, 2);
+        return warp(925000000, "out00");
     }
 }

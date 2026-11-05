@@ -27,7 +27,7 @@ public class Portal_Magatia_Magatia_dark0 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(261020700, 0);
+        warp(261020700, "down00");
         return false;
     }
 }

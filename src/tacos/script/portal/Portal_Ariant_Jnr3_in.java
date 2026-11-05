@@ -30,42 +30,51 @@ public class Portal_Ariant_Jnr3_in extends PortalScriptMan {
     public boolean enter() {
         String reactor_name;
         int map_next;
+        String portal_next;
         boolean in = true;
         switch (getScriptName()) {
             case "jnr3_in0" -> {
                 reactor_name = "jnr3_out1";
                 map_next = 926110201; // 暗い研究室1
+                portal_next = "out00";
             }
             case "jnr3_in1" -> {
                 reactor_name = "jnr3_out2";
                 map_next = 926110202; // 暗い研究室2
+                portal_next = "out00";
             }
             case "jnr_201_0" -> {
                 reactor_name = "jnr31_out";
                 map_next = 926110200; // 特殊な実験室
+                portal_next = "in00";
                 in = false;
             }
             case "jnr_202" -> {
                 reactor_name = "jnr32_out";
                 map_next = 926110200; // 特殊な実験室
+                portal_next = "in01";
                 in = false;
             }
             case "rnj3_in0" -> {
                 reactor_name = "rnj3_out1";
                 map_next = 926100201; // 暗い研究室1
+                portal_next = "out00";
             }
             case "rnj3_in1" -> {
                 reactor_name = "rnj3_out2";
                 map_next = 926100202; // 暗い研究室2
+                portal_next = "out00";
             }
             case "rnj_201_0" -> {
                 reactor_name = "rnj31_out";
                 map_next = 926100200; // 特殊な実験室
+                portal_next = "in00";
                 in = false;
             }
             case "rnj_202" -> {
                 reactor_name = "rnj32_out";
                 map_next = 926100200; // 特殊な実験室
+                portal_next = "in01";
                 in = false;
             }
             default -> {
@@ -82,6 +91,6 @@ public class Portal_Ariant_Jnr3_in extends PortalScriptMan {
             }
             return false;
         }
-        return warp(map_next, 0);
+        return warp(map_next, portal_next);
     }
 }

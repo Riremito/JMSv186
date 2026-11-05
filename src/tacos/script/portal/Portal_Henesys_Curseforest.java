@@ -27,6 +27,6 @@ public class Portal_Henesys_Curseforest extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(910100000, 0);
+        return warp(910100000, "out00");
     }
 }

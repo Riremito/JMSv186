@@ -27,6 +27,6 @@ public class Portal_Leafre_InNix2 extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(240020600, 0);
+        return warp(240020600, "sp");
     }
 }

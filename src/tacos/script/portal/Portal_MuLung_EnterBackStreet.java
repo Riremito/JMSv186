@@ -27,6 +27,6 @@ public class Portal_MuLung_EnterBackStreet extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(925040000, 0);
+        return warp(925040000, "sp");
     }
 }

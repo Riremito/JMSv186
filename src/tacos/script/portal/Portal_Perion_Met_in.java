@@ -27,7 +27,7 @@ public class Portal_Perion_Met_in extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(910320000, 2);
+        warp(910320000, "out00");
         return true;
     }
 }

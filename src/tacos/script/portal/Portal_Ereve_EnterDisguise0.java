@@ -32,7 +32,7 @@ public class Portal_Ereve_EnterDisguise0 extends PortalScriptMan {
                 // TODO : 文章 (js の英文を翻訳, 原文 : The erev search begins.)
                 playerMessage("エレヴの捜索を開始します。");
             }
-            return warp(130010000, 3);
+            return warp(130010000, "east00");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : Only the knights of Cygnus may enter.)
             playerMessage("シグナス騎士団のみ入ることができます。");

@@ -36,6 +36,6 @@ public class Portal_Victoria_EvanGolemDoor extends PortalScriptMan {
             playerMessage(5, "カミラを救出した！");
             gainSp(1);
         }
-        return warp(this.map_golem_temple_entrance, 0);
+        return warp(this.map_golem_temple_entrance, "out00");
     }
 }

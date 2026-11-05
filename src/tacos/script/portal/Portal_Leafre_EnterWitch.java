@@ -28,11 +28,11 @@ public class Portal_Leafre_EnterWitch extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (isQuestFinished(20407)) {
-            return warp(924010200, 0);
+            return warp(924010200, "out00");
         } else if (isQuestFinished(20406)) {
-            return warp(924010100, 0);
+            return warp(924010100, "out00");
         } else if (isQuestFinished(20404)) {
-            return warp(924010000, 0);
+            return warp(924010000, "out00");
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : I shouldn't go here.. it's creepy!)
             playerMessage(5, "ここには行かないほうがよさそう…不気味だ！");

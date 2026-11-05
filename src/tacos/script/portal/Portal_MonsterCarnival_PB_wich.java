@@ -28,7 +28,7 @@ public class Portal_MonsterCarnival_PB_wich extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (haveItem(1002971, 1)) {
-            warp(980040010, 0);
+            warp(980040010, "out00");
             return false;
         } else {
             // TODO : 文章 (js の英文を翻訳, 原文 : You need the Pink Bean Hat before entering.)

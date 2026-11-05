@@ -36,11 +36,11 @@ public class Portal_Ludibrium_EnterBlackFrog extends PortalScriptMan {
             gainAp(5);
             // TODO : 文章 (js の英文を翻訳, 原文 : Ibech has ran away! Gained 5 AP!)
             playerMessage(5, "イベックが逃げ出した！APを5獲得しました！");
-            return warp(this.map_after, 0);
+            return warp(this.map_after, "out00");
         }
         if (isQuestFinished(this.quest_black_frog)) {
-            return warp(this.map_after, 0);
+            return warp(this.map_after, "out00");
         }
-        return warp(this.map_before, 0);
+        return warp(this.map_before, "out00");
     }
 }

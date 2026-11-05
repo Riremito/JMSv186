@@ -27,6 +27,6 @@ public class Portal_Sleepywood_EnterDollcave extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(910050300, 0);
+        return warp(910050300, "out00");
     }
 }

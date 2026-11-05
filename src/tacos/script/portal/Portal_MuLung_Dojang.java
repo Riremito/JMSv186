@@ -51,7 +51,7 @@ public class Portal_MuLung_Dojang extends PortalScriptMan {
             }
             case "dojang_tuto" -> {
                 if (getMap().getMonsterById(this.mob_boss_check) != null) {
-                    return warp(this.map_dojo_entrance, 0);
+                    return warp(this.map_dojo_entrance, "sp");
                 }
                 // TODO : 文章 (js の英文を翻訳, 原文 : So Gong: Haha! You're going to run away like a coward? I won't let you get away that easily!)
                 playerMessage(6, "ソゴン : ハハ！臆病者のように逃げ出すつもりか？そう簡単には逃がさんぞ！");

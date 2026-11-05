@@ -28,7 +28,7 @@ public class Portal_Ariant_Nets_in extends PortalScriptMan {
     @Override
     public boolean enter() {
         saveLocation("MULUNG_TC");
-        warp(926010000, 0);
+        warp(926010000, "sp");
         return true;
     }
 }

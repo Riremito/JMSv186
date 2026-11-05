@@ -27,6 +27,6 @@ public class Portal_Rien_AranTutorAloneX extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(914000100, 1);
+        return warp(914000100, "in00");
     }
 }

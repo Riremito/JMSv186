@@ -48,7 +48,7 @@ public class Npc_Ludibrium_MarkTheToySoldier extends NpcScriptMan {
                 if (getQuestStatus(this.quest_doll_house) != 1) {
                     // 翻訳
                     say("何だこれは…別の次元のモンスターが隠れているから、この部屋への立ち入りは禁止しているんだ。どうやってここに来たのかわからないが、すぐに出て行ってもらわないと。この部屋の中はとても危険なんだ。");
-                    warp(this.map_eos_tower_100f);
+                    warp(this.map_eos_tower_100f, "q000");
                     return false;
                 }
                 if (checkItem(this.item_pendulum)) {

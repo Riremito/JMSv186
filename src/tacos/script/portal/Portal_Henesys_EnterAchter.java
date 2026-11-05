@@ -27,7 +27,7 @@ public class Portal_Henesys_EnterAchter extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(100000201, 0);
+        warp(100000201, "out02");
         return true;
     }
 }

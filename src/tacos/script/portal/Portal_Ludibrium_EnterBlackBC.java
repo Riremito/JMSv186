@@ -37,7 +37,7 @@ public class Portal_Ludibrium_EnterBlackBC extends PortalScriptMan {
             // TODO : 文章 (js の英文を翻訳, 原文 : Door lock destroyed.)
             playerMessage(5, "扉の鍵を破壊しました。");
         }
-        warp(220011001, 0);
+        warp(220011001, "out00");
         return false;
     }
 }

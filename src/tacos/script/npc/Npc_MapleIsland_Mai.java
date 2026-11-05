@@ -50,7 +50,7 @@ public class Npc_MapleIsland_Mai extends NpcScriptMan {
                 if (answer < 0 || this.map_ids.length <= answer) {
                     return false;
                 }
-                warp(this.map_ids[answer]); // TODO : portal 4
+                warp(this.map_ids[answer], "out00");
                 return false;
             }
             default -> {

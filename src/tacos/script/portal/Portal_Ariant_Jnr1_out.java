@@ -45,6 +45,6 @@ public class Portal_Ariant_Jnr1_out extends PortalScriptMan {
             playerMessage(5, "ポータルはまだ開いていません。");
             return false;
         }
-        return warp(map_next, 0);
+        return warp(map_next, "sp");
     }
 }

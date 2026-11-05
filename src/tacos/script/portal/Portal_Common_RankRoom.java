@@ -30,22 +30,22 @@ public class Portal_Common_RankRoom extends PortalScriptMan {
     public boolean enter() {
         switch (getMapId()) {
             case 130000000 -> {
-                return warp(130000100, 5); // クィーンズロード : 騎士の殿堂 (or 130000101)
+                return warp(130000100, "east00"); // クィーンズロード : 騎士の殿堂 (or 130000101)
             }
             case 130000200 -> {
-                return warp(130000100, 4); // クィーンズロード : 騎士の殿堂 (or 130000101)
+                return warp(130000100, "west00"); // クィーンズロード : 騎士の殿堂 (or 130000101)
             }
             case 140010100 -> {
-                return warp(140010110, 0); // スノーアイランド : 英雄の殿堂 (or 140010111)
+                return warp(140010110, "out00"); // スノーアイランド : 英雄の殿堂 (or 140010111)
             }
             case 120000101 -> {
-                return warp(120000105, 0); // ノーチラス : 訓練場
+                return warp(120000105, "out00"); // ノーチラス : 訓練場
             }
             case 103000003 -> {
-                return warp(103000008, 0); // ビクトリアロード : 盗賊の殿堂 (or 103000009)
+                return warp(103000008, "out00"); // ビクトリアロード : 盗賊の殿堂 (or 103000009)
             }
             case 100000201 -> {
-                return warp(100000204, 0); // ビクトリアロード : 弓使いの殿堂 (or 100000205)
+                return warp(100000204, "out00"); // ビクトリアロード : 弓使いの殿堂 (or 100000205)
             }
             default -> {
                 return warp(getMapId() + 1, 0); // or + 2

@@ -27,6 +27,6 @@ public class Portal_Rien_RienCaveEnter extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warp(140030000, 1);
+        return warp(140030000, "out00");
     }
 }

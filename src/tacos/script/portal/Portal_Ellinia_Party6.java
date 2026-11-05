@@ -56,7 +56,7 @@ public class Portal_Ellinia_Party6 extends PortalScriptMan {
                         playerMessage(5, "トゲが道を塞いでいる。");
                         return false;
                     }
-                    return warp(this.map_foggy_forest, 0);
+                    return warp(this.map_foggy_forest, "sp");
                 }
                 return false;
             }
@@ -72,7 +72,7 @@ public class Portal_Ellinia_Party6 extends PortalScriptMan {
                 endPartyQuest(1206);
                 // TODO : js では gainNX(2000)
                 gainItem(this.item_altaire_fragment, 1);
-                return warp(this.map_forest_exit, 0);
+                return warp(this.map_forest_exit, "sp");
             }
             default -> {
                 return false;

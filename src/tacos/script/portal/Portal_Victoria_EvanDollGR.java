@@ -32,6 +32,6 @@ public class Portal_Victoria_EvanDollGR extends PortalScriptMan {
             playerMessage(5, "調査完了！");
             forceCompleteQuest(22556);
         }
-        return warp(910600010, 0);
+        return warp(910600010, "out00");
     }
 }
