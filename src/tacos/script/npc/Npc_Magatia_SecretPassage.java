@@ -28,6 +28,7 @@ import odin.server.quest.MapleQuest;
 public class Npc_Magatia_SecretPassage extends NpcScriptMan {
 
     private final int quest_password = 3360; // 暗証番号の認証
+    private final int quest_password_key = 7061; // q3360s (暗証番号の認証) で設定される秘密の通路のキー
     private final int map_zenumist_hallway = 261010000; // ジェニミスト研究所 : 研究所1階廊下
     private final int map_secret_tunnel = 261030000; // アルカドノ研究所 : 暗黒の魔法使いの研究室へ続く道
     private final String portal_zenumist = "sp_jenu";
@@ -60,8 +61,7 @@ public class Npc_Magatia_SecretPassage extends NpcScriptMan {
                 return true;
             }
             case 1 -> {
-                // TODO : 暗証番号はクエスト開始時にクエストのデータとして設定される想定 (設定する処理がない)
-                String password = getQuestData(this.quest_password);
+                String password = getQuestData(this.quest_password_key);
                 if (password.isEmpty() || !password.equals(getAnswerText())) {
                     // TODO : 文章 (適当)
                     say("暗証番号が違います。");

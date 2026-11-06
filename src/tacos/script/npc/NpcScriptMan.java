@@ -42,6 +42,7 @@ import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
@@ -51,6 +52,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.builder.PB_FieldEffect;
+import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.builder.PB_ScriptMessage;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.TacosFieldSet;
@@ -820,6 +822,45 @@ public abstract class NpcScriptMan {
     // lua の target.incEXP
     protected void gainExp(int exp) {
         this.chr.gainExp(exp, true, true, true);
+    }
+
+    // lua の target.incPOP
+    protected void gainFame(int fame) {
+        this.chr.addFame(fame);
+        this.chr.sendStatChanged();
+        this.chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
+    }
+
+    // lua の target.nGender (0 = 男性, 1 = 女性)
+    protected int getGender() {
+        return this.chr.getGender();
+    }
+
+    // lua の target.nHP
+    protected int getHp() {
+        return this.chr.getStat().getHp();
+    }
+
+    // lua の target.nMHP
+    protected int getMaxHp() {
+        return this.chr.getStat().getCurrentMaxHp();
+    }
+
+    // lua の target.incHP
+    protected void addHp(int hp) {
+        this.chr.addHP(hp);
+    }
+
+    // lua の target.getMorphState
+    // TODO : 変身状態は未実装のため常に 0 (変身していない) を返す
+    protected int getMorphState() {
+        return 0;
+    }
+
+    // lua の target.checkCondition (状態異常の種類を 1 文字ずつ並べた文字列)
+    // TODO : 状態異常の確認は未実装のため常に空文字列 (状態異常なし) を返す
+    protected String checkCondition() {
+        return "";
     }
 
     protected int getGuildId() {

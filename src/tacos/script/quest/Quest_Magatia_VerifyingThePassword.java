@@ -22,37 +22,41 @@ package tacos.script.quest;
  *
  * @author Riremito
  */
-// Quest.wz startscript : q3360s (JMS186), 暗証番号の認証, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
+// Quest.wz startscript : q3360s (JMS186), 暗証番号の認証, lua の処理を利用
 public class Quest_Magatia_VerifyingThePassword extends QuestScriptMan {
 
+    private final int quest_password = 7061; // lua の qr.set( 7061, pass2 ), 秘密の通路のキー
+    private final int quest_password_input = 7062; // lua の qr.set( 7062, "00" )
     private final String password_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final int password_length = 10;
 
     @Override
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
-        if (getLastAction() == 0) {
-            say("Come on, hurry up. Get your pen and paper out if you're not that smart!", false, true);
+        if (getLastAction() == 0 && status == 0) {
+            // 翻訳
+            say("早く早く。覚える自信がないならペンでも出したまえ！");
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Oh! Finally you have come! I'm glad you are here in time. I have the master key for you to open the secert passage! Hahahaha! Isn't it amazing? Say it amazing!", false, true);
+                // 翻訳
+                say("おお！来たのかい？ちょうどいいところに来た。君のために、このパーウェンが秘密の通路に出入りできるマスターキーを突き止めたんだ！はっはっはっは！すごいだろう？早くすごいと言いたまえ！", false, true);
                 return true;
             }
             case 1 -> {
-                askAccept("All right, now, this key is very long and complex. I need you to memorize it very well. I won't say again, so you'd better write it down somewhere. Are you ready?");
+                // 翻訳
+                askAccept("さあ。キーはとても長くて複雑だから、よく覚えておいてくれ。一度しか言わないから、どこかに書いておくといい。準備はいいかい？");
                 return true;
             }
             case 2 -> {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < this.password_length; i++) {
-                    sb.append(this.password_chars.charAt(random(0, this.password_chars.length() - 1)));
-                }
-                String password = sb.toString();
-                say("The key code is #b" + password + "#k. Got that? Put the key into the door of the secret passage, and you will be able to walk around the passage freely.");
-                forceStartQuest(getQuestId(), password);
+                String password = shuffle(this.password_chars).substring(0, this.password_length);
+                setQuestData(this.quest_password, password);
+                setQuestData(this.quest_password_input, "00");
+                // lua の qr.set( 3360, "0" ), qr.setState( 3360, 1 )
+                forceStartQuest(getQuestId(), "0");
+                // 翻訳
+                say("キー番号は#b" + password + "#kだ。忘れていないだろうね？このキーを秘密の通路の入口に入力すれば、秘密の通路を自由に使えるようになるよ。");
                 return false;
             }
             default -> {

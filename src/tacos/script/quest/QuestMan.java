@@ -403,6 +403,85 @@ public class QuestMan {
                 // 50234, オチャマルと親しくなろう！
                 return new Quest_Common_PetFriends();
             }
+            case 1028 -> {
+                // 1028, リス港口へ！
+                return new Quest_MapleIsland_ToLithHarbor();
+            }
+            case 3452 -> {
+                // 3452, ブロックパスは外界生物？
+                return new Quest_OmegaSector_IsBloctopusAnAlien();
+            }
+            case 3941 -> {
+                // 3941, 王妃の絹を奪う
+                return new Quest_Ariant_StealingTheQueensSilk();
+            }
+            case 3933 -> {
+                // 3933, アディンの砂絵団
+                return new Quest_Ariant_AdinsSandBandits();
+            }
+            case 2127 -> {
+                // 2127, 砂漠へ…
+                return new Quest_Ariant_ToTheDesert();
+            }
+            case 2124, 2126 -> {
+                // 2124, 砂絵団の補給品
+                // 2126, 砂絵団の補給品！
+                return new Quest_Ariant_SandBanditsSupplies();
+            }
+            case 3833 -> {
+                // 3833, 足りない薬材探し
+                return new Quest_MuLung_MissingHerbs();
+            }
+            case 3314 -> {
+                // 3314, 生命錬金術と、失踪した錬金術師
+                return new Quest_Magatia_LifeAlchemyAndTheMissingAlchemist();
+            }
+            case 3305, 3306 -> {
+                // 3305, ジェニミストのマントを再び受け取る。
+                // 3306, アルカドノのマントを再び受け取る。
+                return new Quest_Magatia_ReceivingTheCapeAgain();
+            }
+            case 3320 -> {
+                // 3320, ファウェンが知っていること
+                return new Quest_Magatia_WhatParwenKnows();
+            }
+            case 3321 -> {
+                // 3321, 失踪した錬金術師ドラン
+                return new Quest_Magatia_TheMissingAlchemistDrang();
+            }
+            case 3301, 3303 -> {
+                // 3301, ジェニミスト協会長のテスト
+                // 3303, アルカドノ協会長のテスト
+                return new Quest_Magatia_AssociationPresidentsTest();
+            }
+            case 6700 -> {
+                // 6700, 궁수의 길
+                return new Quest_Victoria_ArrowSupply();
+            }
+            case 3353 -> {
+                // 3353, ドランの願い
+                return new Quest_Magatia_DrangsWish();
+            }
+            case 3354 -> {
+                // 3354, ドランの薬
+                return new Quest_Magatia_DrangsMedicine();
+            }
+            case 2148, 2149, 2150, 2151, 2152 -> {
+                // 2148, 噂の真相-豚と一緒に踊りを
+                // 2149, 噂の真相-マンジ
+                // 2150, 噂の真相-イヤン
+                // 2151, 噂の真相-コブシを開いて立て
+                // 2152, 噂の真相-Dr.ベティ
+                return new Quest_Perion_TheTruthBehindTheRumor();
+            }
+            case 3108 -> {
+                // 3108, スノウマンの怒り-手がかり発見
+                return new Quest_ElNath_SnowmansAnger();
+            }
+            case 2156 -> {
+                // 2156, 願いを聞き入れる無知改色デンデン皮!？
+                return new Quest_Victoria_RainbowSnailShell();
+            }
             default -> {
             }
         }
