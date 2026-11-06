@@ -93,6 +93,7 @@ public abstract class NpcScriptMan {
 
     public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result, long liCashItemSN) {
         NpcScriptMan npc_script = chr.getNpcScript();
+        npc_script.last_action = action;
 
         switch (ops) {
             case SM_ASKTEXT:
@@ -147,6 +148,8 @@ public abstract class NpcScriptMan {
     }
 
     private int status = 0;
+    // 直前の応答 (1 = 次へ・はい・受諾, 0 = 前へ・いいえ・拒否)
+    private int last_action = 1;
     private String answer_text = "";
     private long answer_pet_sn = 0;
     private final ArrayList<String> pages = new ArrayList<>();
@@ -178,6 +181,11 @@ public abstract class NpcScriptMan {
         return false;
     }
 
+    // 直前の応答 (1 = 次へ・はい・受諾, 0 = 前へ・いいえ・拒否), 前へ・いいえ・拒否の場合は status が 1 減った状態で action が呼び出される
+    protected int getLastAction() {
+        return this.last_action;
+    }
+
     private TacosCharacter chr;
 
     protected TacosCharacter getPlayer() {
@@ -186,6 +194,7 @@ public abstract class NpcScriptMan {
 
     public boolean start(TacosCharacter chr) {
         this.status = 0;
+        this.last_action = 1;
         this.pages.clear();
         chr.DebugMsg("NpcScriptMan : started.");
         this.chr = chr;
@@ -263,6 +272,12 @@ public abstract class NpcScriptMan {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKYESNO, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).build()));
     }
 
+    protected void askMenu(String text) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text, false);
+        askMenu(nt);
+    }
+
     protected void askMenu(NpcScriptTag nt) {
         askMenu(nt, false, false);
     }
@@ -273,6 +288,12 @@ public abstract class NpcScriptMan {
 
     protected void askAvatar(NpcScriptTag nt, ArrayList<Integer> ids) {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKAVATAR, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).ids(ids).build()));
+    }
+
+    protected void askAccept(String text) {
+        NpcScriptTag nt = new NpcScriptTag();
+        nt.add(text);
+        askAccept(nt);
     }
 
     protected void askAccept(NpcScriptTag nt) {
@@ -568,6 +589,14 @@ public abstract class NpcScriptMan {
                 member.SendPacket(ResCWvsContext.TemporaryStatSet(member, -item_id));
                 member.sendRemoteTemporaryStatSet(-item_id);
             }
+        }
+    }
+
+    // lua の target.giveBuff (アイテムの効果を与える)
+    protected void giveBuff(int item_id) {
+        if (this.chr.getBuff().update(-item_id)) {
+            this.chr.SendPacket(ResCWvsContext.TemporaryStatSet(this.chr, -item_id));
+            this.chr.sendRemoteTemporaryStatSet(-item_id);
         }
     }
 

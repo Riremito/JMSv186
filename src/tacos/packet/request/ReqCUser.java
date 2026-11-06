@@ -105,6 +105,7 @@ import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.js.TacosScriptNPC;
 import tacos.script.js.TacosScriptQuest;
+import tacos.script.quest.QuestMan;
 import tacos.script.npc.NpcMan;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.server.TacosWorld;
@@ -2587,12 +2588,20 @@ public class ReqCUser {
                 short pos_x = cp.Decode2();
                 short pos_y = cp.Decode2();
 
+                // quest from code.
+                if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, true, false)) {
+                    return true;
+                }
                 TacosScriptQuest.getInstance().startQuest(client, m_dwNpcTemplateID, uQuestID);
                 return true;
             }
             case QuestReq_CompleteScript: {
                 int m_dwNpcTemplateID = cp.Decode4();
 
+                // quest from code.
+                if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, false, true)) {
+                    return true;
+                }
                 TacosScriptQuest.getInstance().endQuest(client, m_dwNpcTemplateID, uQuestID, false);
 
                 PB_UserEffect pb = PB_UserEffect.builder()

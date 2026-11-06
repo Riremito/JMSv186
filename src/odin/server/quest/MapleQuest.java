@@ -15,6 +15,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.js.TacosScriptQuest;
+import tacos.script.quest.QuestMan;
 import tacos.wz.WzXML;
 
 public class MapleQuest {
@@ -138,7 +139,7 @@ public class MapleQuest {
             }
             if (!customend) {
                 forceStart(chr, npc_id, null);
-            } else {
+            } else if (!QuestMan.start(chr, npc_id, getId(), false, false)) {
                 TacosScriptQuest.getInstance().endQuest(chr.getClient(), npc_id, getId(), true);
             }
         }
