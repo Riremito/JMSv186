@@ -32,19 +32,39 @@ public class Npc_Victoria_RegularCab extends NpcScriptMan {
         103000000, // カニングシティー : カニングシティー
         120000000 // ノーチラス船着場 : ノーチラス
     };
-    // TODO : 料金
-    private final int[] costs = {
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+    // 料金 (lua の taxi1 - taxi4), [出発地][目的地] で map_ids と同じ並び, 初心者は 1/10
+    // TODO : リス港口とノーチラスの料金 (lua に記載なし)
+    private final int[][] costs = {
+        // リス : 港口 (lua に記載なし)
+        {0, 0, 0, 0, 0, 0},
+        // ヘネシス (taxi2)
+        {800, 0, 1000, 1000, 1200, 0},
+        // ぺリオン (taxi1)
+        {1200, 1000, 0, 1000, 800, 0},
+        // エリニア (taxi4)
+        {1200, 1000, 1000, 0, 1200, 0},
+        // カニングシティー (taxi3)
+        {1000, 1000, 800, 1200, 0, 0},
+        // ノーチラス (lua に記載なし)
+        {0, 0, 0, 0, 0, 0}
     };
     private int to_map_index = -1;
 
     @Override
     public boolean action(int status, int answer) {
+        boolean beginner = getJob() == 0;
+        int from_map_index = -1;
+        for (int i = 0; i < this.map_ids.length; i++) {
+            if (getMapId() == this.map_ids[i]) {
+                from_map_index = i;
+            }
+        }
+        // いいえを選択した
+        if (getLastAction() == 0 && status == 1) {
+            // 翻訳
+            say("この町にも見どころはたくさんありますよ。別の場所へ行きたくなったら、また声をかけてください。");
+            return false;
+        }
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
@@ -54,13 +74,21 @@ public class Npc_Victoria_RegularCab extends NpcScriptMan {
             }
             case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
+                if (beginner) {
+                    // 翻訳
+                    nt.add("初心者の方には90%の特別割引があります。");
+                }
                 nt.add("目的地をお選びください。村事に料金が異なります。");
                 for (int i = 0; i < this.map_ids.length; i++) {
                     // 現在のマップはスキップ
                     if (getMapId() == this.map_ids[i]) {
                         continue;
                     }
-                    nt.addMenu(i, getMapName(this.map_ids[i]) + "(" + this.costs[i] + "メル)");
+                    int cost = (from_map_index < 0) ? 0 : this.costs[from_map_index][i];
+                    if (beginner) {
+                        cost /= 10;
+                    }
+                    nt.addMenu(i, getMapName(this.map_ids[i]) + "(" + cost + "メル)");
                 }
                 askMenu(nt);
                 return true;
@@ -70,14 +98,26 @@ public class Npc_Victoria_RegularCab extends NpcScriptMan {
                     return false;
                 }
                 this.to_map_index = answer;
+                int cost = (from_map_index < 0) ? 0 : this.costs[from_map_index][this.to_map_index];
+                if (beginner) {
+                    cost /= 10;
+                }
                 NpcScriptTag nt = new NpcScriptTag();
-                // TODO : 文章
-                nt.add("ここではもう用事がないようですね。本当に" + getMapName(this.map_ids[this.to_map_index]) + "へ移動しますか？");
+                // 翻訳
+                nt.add("ここでの用事はもう済みましたよね？#b#m" + this.map_ids[this.to_map_index] + "##kへ行きますか？料金は#b" + cost + " mesos#k.");
                 askYesNo(nt);
                 return true;
             }
             case 3 -> {
-                // TODO : 料金の支払い
+                int cost = (from_map_index < 0) ? 0 : this.costs[from_map_index][this.to_map_index];
+                if (beginner) {
+                    cost /= 10;
+                }
+                if (!payMoney(cost)) {
+                    // 翻訳
+                    say("お金が足りませんね。残念ですが、十分なお金がないとタクシーには乗れませんよ。");
+                    return false;
+                }
                 warp(this.map_ids[this.to_map_index]);
                 return false;
             }

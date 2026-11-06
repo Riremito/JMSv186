@@ -28,8 +28,32 @@ public class Npc_Ariant_Mazra extends NpcScriptMan {
 
     private final int item_hair_coupon = 5150027; // 調髪特別券(アリアント)
     private final int item_hair_color_coupon = 5151022; // 染毛特別券(アリアント)
-    private final int[] male_hairs = {30030, 30020, 30000, 30130, 30350, 30190, 30110, 30180, 30050, 30040, 30160};
-    private final int[] female_hairs = {31050, 31040, 31000, 31060, 31090, 31020, 31130, 31120, 31140, 31330, 31010};
+    private final int[] male_hairs = {
+        30030, // 丸坊主(黒)
+        30020, // 長髪(黒)
+        30000, // かりあげ(黒)
+        30130, // パーマ(黒)
+        30350, // ワイルド(黒)
+        30190, // パンプキン(黒)
+        30110, // とんがり(黒)
+        30180, // ライオンA(黒)
+        30050, // プリンス(黒)
+        30040, // 短髪(灰)
+        30160 // サンダー(黒)
+    };
+    private final int[] female_hairs = {
+        31050, // ショート(黒)
+        31040, // パンク(黒)
+        31000, // キューティー(黒)
+        31060, // シック(黒)
+        31090, // ポニーテールA(黒)
+        31020, // ウェーブ(黒)
+        31130, // 両編み(黒)
+        31120, // 片編み(黒)
+        31140, // チャイナA(黒)
+        31330, // マジック(黒)
+        31010 // ウインド(黒)
+    };
     private final int hair_color_count = 8;
     private static final int MENU_HAIR = 0;
     private static final int MENU_HAIR_COLOR = 1;

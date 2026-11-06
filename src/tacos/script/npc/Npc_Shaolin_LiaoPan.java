@@ -45,9 +45,14 @@ public class Npc_Shaolin_LiaoPan extends NpcSalon {
                         null,
                         new int[][]{
                             // 男性
-                            {30030, 30430},
+                            {
+                                30030, // 丸坊主(黒)
+                                30430 // スキンヘッド(黒)
+                            },
                             // 女性
-                            {31430}
+                            {
+                                31430 // スキンヘッド(黒)
+                            }
                         })
         );
     }
