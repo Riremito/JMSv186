@@ -22,14 +22,16 @@ package tacos.script.reactor;
  *
  * @author Riremito
  */
-// Reactor.wz action : snowscaScript0, snowscaScript1, snowscaScript2 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_ElNath_SnowscaScript extends ReactorScriptMan {
 
-    private final int mob_ghost = 6090001; // 雪山の亡霊
+    private final int anti_macro_monster_id = 6090001; // 雪山の亡霊
 
     @Override
     public void action() {
-        // マクロ対策モンスターの弱体化
-        weakenMacroMob(this.mob_ghost);
+        if (checkMob(this.anti_macro_monster_id)) {
+            weakenMacroMob(this.anti_macro_monster_id);
+            // 原文ママ
+            mapMessage("祭壇の光が雪山の魔女の憎悪を緩和した。魔女の力が弱くなった。");
+        }
     }
 }

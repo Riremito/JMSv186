@@ -28,7 +28,7 @@ public class Reactor_GuildQuest_SyarenNPC0 extends ReactorScriptMan {
     @Override
     public void action() {
         // TODO : 文章 (js の英文を翻訳, 原文 : A bright flash of light, then someone familiar appears in front of the blocked gate.)
-        mapMessage("まばゆい光とともに、塞がれた門の前に見覚えのある姿が現れた。");
+        mapMessage2("まばゆい光とともに、塞がれた門の前に見覚えのある姿が現れた。");
         summonNpc(9040003);
     }
 }

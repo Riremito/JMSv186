@@ -22,14 +22,16 @@ package tacos.script.reactor;
  *
  * @author Riremito
  */
-// Reactor.wz action : magascaScript0, magascaScript1, magascaScript2 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_Magatia_MagascaScript extends ReactorScriptMan {
 
-    private final int mob_rurumo = 6090004; // ルルモ
+    private final int anti_macro_monster_id = 6090004; // ルルモ
 
     @Override
     public void action() {
-        // マクロ対策モンスターの弱体化
-        weakenMacroMob(this.mob_rurumo);
+        if (checkMob(this.anti_macro_monster_id)) {
+            weakenMacroMob(this.anti_macro_monster_id);
+            // TODO : 弱体化時のメッセージ
+            mapMessage("ルルモが弱体化されました。");
+        }
     }
 }

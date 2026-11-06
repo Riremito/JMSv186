@@ -404,6 +404,12 @@ public class TacosCommandDebug {
                 dm.start(chr);
                 return true;
             }
+            case "/antimacro" -> {
+                DebugMan_WarpBoss dm = new DebugMan_WarpBoss();
+                dm.setAntiMacorMonsters();// Anti Macro Monster
+                dm.start(chr);
+                return true;
+            }
             // map.
             case "/removeall" -> {
                 map.removeAllObjects();

@@ -160,6 +160,15 @@ public abstract class ReactorScriptMan {
         return count;
     }
 
+    protected boolean checkMob(int mob_id) {
+        for (TacosMonster monster : this.chr.getMap().getAllMonsters()) {
+            if (monster.getId() == mob_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // lua の field.nuffMob, マップにいるモンスターに mob skill の効果を与える
     public void nuffMob(int mob_id, int skill_id, int skill_level) {
         MobSkill mob_skill = WzXML.SKILL.getMobSkillData(skill_id, skill_level);
@@ -193,8 +202,12 @@ public abstract class ReactorScriptMan {
     }
 
     // マップ全体へのメッセージ
-    public void mapMessage(String text) {
+    public void mapMessage2(String text) {
         this.chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    public void mapMessage(String text) {
+        this.chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void mapMessage(int type, String text) {

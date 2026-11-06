@@ -24,15 +24,25 @@ package tacos.script.npc;
  */
 public class Npc_Magatia_IncompleteMagicSquare extends NpcScriptMan {
 
-    private final int mob_dito_and_roi = 8090000; // ディトとロイ
+    private final int anti_macro_monster_id = 8090000; // ディトとロイ
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
-                // マクロ対策モンスターの弱体化
-                weakenMacroMob(this.mob_dito_and_roi);
+                if (checkMob(this.anti_macro_monster_id)) {
+                    // TODO : マクロ対策モンスターが存在する場合のメッセージ
+                    askYesNo("魔法陣を起動しますか？");
+                    return true;
+                }
+                // 原文ママ
                 say("幾何学な模様が描かれている魔方陣だ。完成には至っていないようだが…。");
+                return false;
+            }
+            case 1 -> {
+                weakenMacroMob(this.anti_macro_monster_id);
+                // TODO : 弱体化時のメッセージ
+                mapMessage("ディトとロイが弱体化されました。");
                 return false;
             }
             default -> {

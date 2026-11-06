@@ -22,14 +22,16 @@ package tacos.script.reactor;
  *
  * @author Riremito
  */
-// Reactor.wz action : JPscaScript0, JPscaScript1, JPscaScript2 (JMS186), マクロ対策モンスターの弱体化
 public class Reactor_Zipangu_JPscaScript extends ReactorScriptMan {
 
-    private final int mob_bamboo_warrior = 6090002; // 竹の武士
+    private final int anti_macro_monster_id = 6090002; // 竹の武士
 
     @Override
     public void action() {
-        // マクロ対策モンスターの弱体化
-        weakenMacroMob(this.mob_bamboo_warrior);
+        if (checkMob(this.anti_macro_monster_id)) {
+            weakenMacroMob(this.anti_macro_monster_id);
+            // 原文ママ
+            mapMessage("小さい竹をへし折ると竹武士が興奮して自制力をなくし、攻撃しやすくなった。");
+        }
     }
 }
