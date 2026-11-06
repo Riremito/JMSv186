@@ -245,6 +245,15 @@ public abstract class NpcScriptMan {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).text(nt.get()).prev(prev).next(next).build()));
     }
 
+    // param : 話し手などの表示の種類 (旧 js の sendNextS などの type)
+    protected void say(int param, String text, boolean prev, boolean next) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).param((byte) param).text(text).prev(prev).next(next).build()));
+    }
+
+    protected void askYesNo(int param, String text) {
+        this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_ASKYESNO, PB_ScriptMessage.builder().npc_id(getNpcId()).param((byte) param).text(text).build()));
+    }
+
     // プレイヤーの台詞
     protected void sayUser(String text, boolean prev, boolean next) {
         this.chr.SendPacket(ResCScriptMan.ScriptMessage(OpsScriptMan.SM_SAY, PB_ScriptMessage.builder().npc_id(getNpcId()).param((byte) 2).text(text).prev(prev).next(next).build()));

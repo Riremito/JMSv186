@@ -18,13 +18,19 @@
  */
 package tacos.script.quest;
 
+import odin.client.Skill;
+import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.npc.NpcScriptMan;
+import tacos.server.TacosWorld;
+import tacos.server.map.object.TacosPet;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -35,6 +41,7 @@ public abstract class QuestScriptMan extends NpcScriptMan {
 
     private int quest_id;
     private boolean quest_start;
+    private boolean safe_dispose = false;
 
     public void setQuest(int quest_id, boolean quest_start) {
         this.quest_id = quest_id;
@@ -43,6 +50,9 @@ public abstract class QuestScriptMan extends NpcScriptMan {
 
     @Override
     public boolean action(int status, int answer) {
+        if (this.safe_dispose) {
+            return false;
+        }
         if (this.quest_start) {
             return questStart(status, answer);
         }
@@ -92,6 +102,48 @@ public abstract class QuestScriptMan extends NpcScriptMan {
     // クエストを放棄する
     protected void forfeitQuest(int quest_id) {
         MapleQuest.getInstance(quest_id).forfeit(getPlayer());
+    }
+
+    // 現在のメッセージの応答で会話を終了する (旧 js の safeDispose)
+    protected void safeDispose() {
+        this.safe_dispose = true;
+    }
+
+    // エヴァンのチュートリアルの画像 (旧 js の evanTutorial)
+    protected void evanTutorial(String path) {
+        getPlayer().SendPacket(ResCScriptMan.getEvanTutorial(path));
+    }
+
+    // スキルの習得 (旧 js の teachSkill)
+    protected void teachSkill(int skill_id, int level, int master_level) {
+        getPlayer().changeSkillLevel(WzXML.SKILL.getSkill().get(skill_id), (byte) level, (byte) master_level);
+    }
+
+    // スキルの習得, マスターレベルはスキルの最大レベル (旧 js の teachSkill)
+    protected void teachSkill(int skill_id, int level) {
+        Skill skill = WzXML.SKILL.getSkill().get(skill_id);
+        if (level < getPlayer().getSkillLevel(skill)) {
+            level = getPlayer().getSkillLevel(skill);
+        }
+        getPlayer().changeSkillLevel(skill, (byte) level, (byte) skill.getMaxLevel());
+    }
+
+    protected int getSkillLevel(int skill_id) {
+        return getPlayer().getSkillLevel(skill_id);
+    }
+
+    // skill_book : SP の種類 (エヴァンの転職段階)
+    protected void gainSp(int sp, int skill_book) {
+        getPlayer().gainSP(sp, skill_book);
+    }
+
+    protected void resetStats(int str, int dex, int int_, int luk) {
+        getPlayer().resetStats(str, dex, int_, luk);
+    }
+
+    // ペットの入手 (旧 js の gainPet)
+    protected void gainPet(int item_id, String name, int level, int closeness, int fullness, int period) {
+        MapleInventoryManipulator.addById(getPlayer(), item_id, (short) 1, "", TacosPet.createPet(item_id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), period), 45);
     }
 
     // lua の target.questEndEffect (クエスト完了のエフェクト)
