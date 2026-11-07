@@ -327,7 +327,7 @@ public class MaplePlayerShop implements IPlayerShop {
         }
     }
 
-    public void buy(TacosCharacter chr, int item, short quantity) {
+    public void buy(TacosCharacter chr, int item, int quantity) {
         OpsPSBuy result = buyItem(chr, item, quantity);
         // CWvsContext::SetExclRequestSent is cleared by the stat update.
         chr.updateStat();
@@ -343,7 +343,7 @@ public class MaplePlayerShop implements IPlayerShop {
         closeShop(false, true, OpsMRLeave.PSLeave_NoMoreItem.get());
     }
 
-    private OpsPSBuy buyItem(TacosCharacter chr, int item, short quantity) {
+    private OpsPSBuy buyItem(TacosCharacter chr, int item, int quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles < quantity) {
             return OpsPSBuy.PSBuy_NoStock;

@@ -111,4 +111,34 @@ public class ResCNpcPool {
 
         return sp;
     }
+
+    // CNpc::OnUpdateLimitedInfo, not tested.
+    public static ServerPacket NpcUpdateLimitedInfo(TacosNpc npc, boolean m_bEnabled) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcUpdateLimitedInfo);
+
+        sp.Encode4(npc.getObjectId()); // dwNpcId
+        sp.Encode1(m_bEnabled ? 1 : 0); // m_bEnabled
+        return sp;
+    }
+
+    // CNpc::OnSetSpecialAction, not tested.
+    public static ServerPacket NpcSpecialAction(TacosNpc npc, String action) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcSpecialAction);
+
+        sp.Encode4(npc.getObjectId()); // dwNpcId
+        sp.EncodeStr(action);
+        return sp;
+    }
+
+    // CNpcTemplate::OnSetNpcScript, not tested.
+    public static ServerPacket NpcSetScript(TacosNpc npc, String script, int tStartDate, int tEndDate) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcSetScript);
+
+        sp.Encode1(1); // count
+        sp.Encode4(npc.getId()); // dwTemplateID
+        sp.EncodeStr(script);
+        sp.Encode4(tStartDate); // tStartDate
+        sp.Encode4(tEndDate); // tEndDate
+        return sp;
+    }
 }

@@ -14,7 +14,7 @@ import tacos.wz.QuestWz;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.TacosScriptQuest;
+import tacos.script.quest.QuestMan;
 import tacos.wz.WzXML;
 
 public class MapleQuest {
@@ -139,7 +139,7 @@ public class MapleQuest {
             if (!customend) {
                 forceStart(chr, npc_id, null);
             } else {
-                TacosScriptQuest.getInstance().endQuest(chr.getClient(), npc_id, getId(), true);
+                QuestMan.start(chr, npc_id, getId(), false, false);
             }
         }
     }
@@ -169,18 +169,18 @@ public class MapleQuest {
     }
 
     public void forfeit(TacosCharacter chr) {
-        if (chr.getQuest(this).getStatus() != (byte) 1) {
+        if (chr.getQuest(this).getStatus() != 1) {
             return;
         }
         MapleQuestStatus oldStatus = chr.getQuest(this);
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 0, 0);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
         chr.updateQuest(newStatus);
     }
 
     public void forceStart(TacosCharacter chr, int npc, String customData) {
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 1, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         newStatus.setCompletionTime(chr.getQuest(this).getCompletionTime());
         newStatus.setCustomData(customData);
@@ -188,7 +188,7 @@ public class MapleQuest {
     }
 
     public void forceComplete(TacosCharacter chr, int npc) {
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, 2, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         chr.updateQuest(newStatus);
     }
@@ -204,7 +204,7 @@ public class MapleQuest {
     private boolean checkNPCOnMap(TacosCharacter player, int npcid) {
         //mir = 1013000
         TacosMap map = player.getMap();
-        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNPC(npcid));
+        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNpc(npcid));
     }
 
     public int getMedalItem() {

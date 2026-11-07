@@ -336,5 +336,4 @@ public class MapleCarnivalChallenge {
     public String getChallengeInfo() {
         return challengeinfo;
     }
-
 }

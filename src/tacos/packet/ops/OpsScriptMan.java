@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsScriptMan implements IPacketOps {
-    // GMS v95
     SM_SAY(0),
     SM_SAYIMAGE(1),
     SM_ASKYESNO(2),
@@ -48,11 +47,11 @@ public enum OpsScriptMan implements IPacketOps {
 
     private int value;
 
-    OpsScriptMan(int val) {
-        this.value = val;
+    private OpsScriptMan(int value) {
+        this.value = value;
     }
 
-    OpsScriptMan() {
+    private OpsScriptMan() {
         this.value = -1;
     }
 
@@ -62,14 +61,14 @@ public enum OpsScriptMan implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsScriptMan find(int val) {
+    public static OpsScriptMan find(int value) {
         for (OpsScriptMan ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }

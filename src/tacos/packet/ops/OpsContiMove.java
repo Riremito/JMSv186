@@ -40,11 +40,11 @@ public enum OpsContiMove implements IPacketOps {
 
     private int value;
 
-    OpsContiMove(int val) {
-        this.value = val;
+    private OpsContiMove(int value) {
+        this.value = value;
     }
 
-    OpsContiMove() {
+    private OpsContiMove() {
         this.value = -1;
     }
 
@@ -54,11 +54,7 @@ public enum OpsContiMove implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static void init() {
-
+    public void set(int value) {
+        this.value = value;
     }
 }

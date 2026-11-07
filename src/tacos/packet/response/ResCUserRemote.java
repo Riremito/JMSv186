@@ -141,6 +141,19 @@ public class ResCUserRemote {
         return sp;
     }
 
+    // CUserRemote::OnMovingShootAttackPrepare, not tested.
+    public static ServerPacket UserMovingShootAttackPrepare(TacosCharacter chr, int nSLV, int nSkillID, int nAction, int nActionSpeed) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMovingShootAttackPrepare);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(chr.getLevel()); // m_nLevel
+        sp.Encode1(nSLV); // nSLV
+        sp.Encode4(nSkillID, nSLV != 0); // nSkillID
+        sp.Encode2(nAction); // nAction
+        sp.Encode1(nActionSpeed); // nActionSpeed
+        return sp;
+    }
+
     // CUserRemote::OnSkillCancel
     public static ServerPacket UserSkillCancel(TacosCharacter chr, int nSkillID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
@@ -224,6 +237,17 @@ public class ResCUserRemote {
         return sp;
     }
 
+    // CUserRemote::OnShowUpgradeTombEffect, not tested.
+    public static ServerPacket UserShowUpgradeTombEffect(TacosCharacter chr, int nItemID, int nPosX, int nPosY) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserShowUpgradeTombEffect);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(nItemID);
+        sp.Encode4(nPosX); // nPosX
+        sp.Encode4(nPosY);
+        return sp;
+    }
+
     // CUserRemote::OnSetActivePortableChair
     public static ServerPacket UserSetActivePortableChair(int characterid, int itemid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActivePortableChair);
@@ -295,6 +319,40 @@ public class ResCUserRemote {
         sp.Encode4(cid);
         sp.Encode4(curhp);
         sp.Encode4(maxhp);
+        return sp;
+    }
+
+    // CUserRemote::OnGuildNameChanged, not tested.
+    public static ServerPacket UserGuildNameChanged(TacosCharacter chr, String guild_name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserGuildNameChanged);
+
+        sp.Encode4(chr.getId());
+        sp.EncodeStr(guild_name);
+        return sp;
+    }
+
+    // CUserRemote::OnGuildMarkChanged, not tested.
+    public static ServerPacket UserGuildMarkChanged(TacosCharacter chr, int m_nGuildMarkBg, int m_nGuildMarkBgColor, int m_nGuildMark, int m_nGuildMarkColor) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserGuildMarkChanged);
+
+        sp.Encode4(chr.getId());
+        sp.Encode2(m_nGuildMarkBg); // m_nGuildMarkBg
+        sp.Encode1(m_nGuildMarkBgColor); // m_nGuildMarkBgColor
+        sp.Encode2(m_nGuildMark); // m_nGuildMark
+        sp.Encode1(m_nGuildMarkColor); // m_nGuildMarkColor
+        return sp;
+    }
+
+    // CUserRemote::OnThrowGrenade, not tested.
+    public static ServerPacket UserThrowGrenade(TacosCharacter chr, int x, int y, int tKeyDown, int nSkillID, int nSLV) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserThrowGrenade);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(x);
+        sp.Encode4(y);
+        sp.Encode4(tKeyDown); // tKeyDown
+        sp.Encode4(nSkillID); // nSkillID
+        sp.Encode4(nSLV);
         return sp;
     }
 

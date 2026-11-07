@@ -43,5 +43,4 @@ public class ResCField_Coconut {
         sp.Encode2(coconutscore[1]); // story team score
         return sp;
     }
-
 }

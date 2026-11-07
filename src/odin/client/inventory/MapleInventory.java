@@ -28,16 +28,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import tacos.packet.ops.OpsBodyPart;
 
 public class MapleInventory implements Iterable<Item> {
 
-    private Map<Short, Item> inventory;
+    private Map<Integer, Item> inventory;
     private byte slotLimit = 96;
     private MapleInventoryType type;
 
-    /**
-     * Creates a new instance of MapleInventory
-     */
     public MapleInventory(MapleInventoryType type) {
         this.inventory = new LinkedHashMap<>();
         this.type = type;
@@ -62,10 +60,6 @@ public class MapleInventory implements Iterable<Item> {
         slotLimit = slot;
     }
 
-    /**
-     * Returns the item with its slot id if it exists within the inventory,
-     * otherwise null is returned
-     */
     public Item findByUniqueId(long itemId) {
         for (Item item : inventory.values()) {
             if (item.getUniqueId() == itemId) {
@@ -89,11 +83,8 @@ public class MapleInventory implements Iterable<Item> {
         return inventory.values();
     }
 
-    /**
-     * Adds the item to the inventory and returns the assigned slot id
-     */
-    public short addItem(Item item) {
-        short slotId = getNextFreeSlot();
+    public int addItem(Item item) {
+        int slotId = getNextFreeSlot();
         if (slotId < 0) {
             return -1;
         }
@@ -110,7 +101,7 @@ public class MapleInventory implements Iterable<Item> {
         inventory.put(item.getPosition(), item);
     }
 
-    public void move(short sSlot, short dSlot, short slotMax) {
+    public void move(int sSlot, int dSlot, int slotMax) {
         if (dSlot > slotLimit) {
             return;
         }
@@ -127,10 +118,10 @@ public class MapleInventory implements Iterable<Item> {
             if (type.getType() == MapleInventoryType.EQUIP.getType() || type.getType() == MapleInventoryType.CASH.getType()) {
                 swap(target, source);
             } else if (source.getQuantity() + target.getQuantity() > slotMax) {
-                source.setQuantity((short) ((source.getQuantity() + target.getQuantity()) - slotMax));
+                source.setQuantity(((source.getQuantity() + target.getQuantity()) - slotMax));
                 target.setQuantity(slotMax);
             } else {
-                target.setQuantity((short) (source.getQuantity() + target.getQuantity()));
+                target.setQuantity((source.getQuantity() + target.getQuantity()));
                 inventory.remove(sSlot);
             }
         } else {
@@ -141,25 +132,25 @@ public class MapleInventory implements Iterable<Item> {
     private void swap(Item source, Item target) {
         inventory.remove(source.getPosition());
         inventory.remove(target.getPosition());
-        short swapPos = source.getPosition();
+        int swapPos = source.getPosition();
         source.setPosition(target.getPosition());
         target.setPosition(swapPos);
         inventory.put(source.getPosition(), source);
         inventory.put(target.getPosition(), target);
     }
 
-    public boolean removeItem(short slot) {
-        return removeItem(slot, (short) 1, false);
+    public boolean removeItem(int slot) {
+        return removeItem(slot, 1, false);
     }
 
     // returns true if the slot was removed.
-    public boolean removeItem(short slot, short quantity, boolean allowZero) {
+    public boolean removeItem(int slot, int quantity, boolean allowZero) {
         Item item = inventory.get(slot);
         if (item == null) { // TODO is it ok not to throw an exception here?
             return false;
         }
         // Equip keeps its quantity at 1, so decide by the remaining quantity instead of item.getQuantity().
-        short remaining = (short) Math.max(item.getQuantity() - quantity, 0);
+        int remaining = Math.max(item.getQuantity() - quantity, 0);
         item.setQuantity(remaining);
         if (remaining == 0 && !allowZero) {
             removeSlot(slot);
@@ -168,7 +159,7 @@ public class MapleInventory implements Iterable<Item> {
         return false;
     }
 
-    public void removeSlot(short slot) {
+    public void removeSlot(int slot) {
         inventory.remove(slot);
     }
 
@@ -180,11 +171,8 @@ public class MapleInventory implements Iterable<Item> {
         return inventory.size() + margin >= slotLimit;
     }
 
-    /**
-     * Returns the next empty slot id, -1 if the inventory is full
-     */
-    public short getNextItem(short slot) {
-        for (short i = slot; i <= slotLimit; i++) {
+    public int getNextItem(int slot) {
+        for (int i = slot; i <= slotLimit; i++) {
             if (inventory.keySet().contains(i)) {
                 return i;
             }
@@ -192,12 +180,12 @@ public class MapleInventory implements Iterable<Item> {
         return 0;
     }
 
-    public short getNumFreeSlot() {
+    public int getNumFreeSlot() {
         if (isFull()) {
             return 0;
         }
-        byte free = 0;
-        for (short i = 1; i <= slotLimit; i++) {
+        int free = 0;
+        for (int i = 1; i <= slotLimit; i++) {
             if (!inventory.keySet().contains(i)) {
                 free++;
             }
@@ -207,6 +195,13 @@ public class MapleInventory implements Iterable<Item> {
 
     public MapleInventoryType getType() {
         return type;
+    }
+
+    public Item getItemByBodyPart(OpsBodyPart body_part) {
+        if (type != MapleInventoryType.EQUIPPED) {
+            return null;
+        }
+        return inventory.get(body_part.get());
     }
 
     // used by script
@@ -232,9 +227,6 @@ public class MapleInventory implements Iterable<Item> {
                 ret.add(item);
             }
         }
-        // the linkedhashmap does impose insert order as returned order but we can not guarantee that this is still the
-        // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
-        // addition, or we could use an array/list, it's only 255 entries anyway...
         if (ret.size() > 1) {
             Collections.sort(ret, (item1, item2) -> Item.comparePosition(item1, item2));
         }
@@ -242,16 +234,16 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     // used by script
-    public Item getItem(short slot) {
+    public Item getItem(int slot) {
         return inventory.get(slot);
     }
 
     // used by script
-    public short getNextFreeSlot() {
+    public int getNextFreeSlot() {
         if (isFull()) {
             return -1;
         }
-        for (short i = 1; i <= slotLimit; i++) {
+        for (int i = 1; i <= slotLimit; i++) {
             if (!inventory.keySet().contains(i)) {
                 return i;
             }
@@ -264,5 +256,4 @@ public class MapleInventory implements Iterable<Item> {
     public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
     }
-
 }

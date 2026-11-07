@@ -44,5 +44,4 @@ public class DQ_NxCode {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "setNXCodeUsed");
         }
     }
-
 }

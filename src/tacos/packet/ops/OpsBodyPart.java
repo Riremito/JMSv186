@@ -24,8 +24,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsBodyPart {
-    // GMS v95
+public enum OpsBodyPart implements IPacketOps {
     BP_HAIR(0),
     BP_CAP(1),
     BP_FACEACC(2),
@@ -114,24 +113,26 @@ public enum OpsBodyPart {
 
     private int value;
 
-    OpsBodyPart(int flag) {
-        value = flag;
+    private OpsBodyPart(int value) {
+        this.value = value;
     }
 
-    OpsBodyPart() {
-        value = -1;
+    private OpsBodyPart() {
+        this.value = -1;
     }
 
-    public short get() {
-        return (short) value;
+    @Override
+    public int get() {
+        return this.value;
     }
 
     public short getSlot() {
-        return (short) -value;
+        return (short) -this.value;
     }
 
-    public void set(int val) {
-        value = val;
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {
@@ -167,15 +168,6 @@ public enum OpsBodyPart {
             BP_MEDAL.set(21);
             return;
         }
-    }
-
-    public static OpsBodyPart find(int val) {
-        for (OpsBodyPart o : OpsBodyPart.values()) {
-            if (o.get() == val) {
-                return o;
-            }
-        }
-        return UNKNOWN;
     }
 
     public static OpsBodyPart get_bodypart_from_item(int itemid) {

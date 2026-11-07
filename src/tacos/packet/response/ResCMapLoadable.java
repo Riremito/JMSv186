@@ -20,12 +20,34 @@ package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsBackEffect;
 
 /**
  *
  * @author Riremito
  */
 public class ResCMapLoadable {
+
+    // CMapLoadable::OnSetBackEffect, not tested.
+    public static ServerPacket SetBackgroundEffect(OpsBackEffect nEffect, int nFieldID, int nPageID, int tDuration) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetBackgroundEffect);
+
+        sp.Encode1(nEffect.get()); // nEffect
+        sp.Encode4(nFieldID); // nFieldID
+        sp.Encode1(nPageID); // nPageID
+        sp.Encode4(tDuration); // tDuration
+        return sp;
+    }
+
+    // CMapLoadable::OnSetMapObjectVisible, not tested.
+    public static ServerPacket SetMapObjectVisible(String name, boolean visible) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetMapObjectVisible);
+
+        sp.Encode1(1); // count
+        sp.EncodeStr(name);
+        sp.Encode1(visible ? 1 : 0);
+        return sp;
+    }
 
     // CMapLoadable::OnClearBackEffect
     public static ServerPacket ClearBackgroundEffect() {

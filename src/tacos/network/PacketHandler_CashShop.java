@@ -49,5 +49,4 @@ public class PacketHandler_CashShop extends PacketHandler implements IPacketHand
         }
         return false;
     }
-
 }

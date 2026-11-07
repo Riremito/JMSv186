@@ -333,11 +333,11 @@ public class RD_CharacterStat {
 
         data.Encode4(0, Config.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Config.PreBB()) || Config.GreaterOrEqual(Region.BMS, 24));
 
-        // KMS 84
+        // KMS84
         if (Config.LessOrEqual(Region.KMS, 84) || Region.BMS.check()) {
             return data.getBytes();
         }
-        // JMS 180, KMS 95
+        // JMS180
         data.Encode2(chr.getSubcategory(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
 
         if (Config.LessOrEqual(Region.KMST, 330)) {
@@ -370,13 +370,13 @@ public class RD_CharacterStat {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
-            // JMS v180-186
+            // JMS180-186
             data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
             return data.getBytes();
         }
         // Post BB
         data.Encode4(0, Config.Equal(Region.JMS, 187));
-        // JMS v188+
+        // JMS188+
         data.Encode8(0);
         data.Encode4(0);
         data.Encode4(0);

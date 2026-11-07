@@ -19,14 +19,14 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 import tacos.wz.WzDataStorage;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
+public class DebugMan_WarpBoss extends DebugNpcScriptMan {
 
     private class WarpBossData {
 
@@ -51,43 +51,28 @@ public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
     }
 
     @Override
-    public boolean start(TacosCharacter chr) {
-        if (this.warp_boss_data.isEmpty()) {
-            return false;
-        }
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
-
-    @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 for (int index = 0; index < this.warp_boss_data.size(); index++) {
                     nt.addMenu(index, "#m" + this.warp_boss_data.get(index).map_id + "# (#o" + this.warp_boss_data.get(index).mob_id + "#)");
                 }
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (0 <= answer && answer < this.warp_boss_data.size()) {
                     nt.add("go to #m" + this.warp_boss_data.get(answer).map_id + "# (#o" + this.warp_boss_data.get(answer).mob_id + "#)");
                     this.target_map_id = this.warp_boss_data.get(answer).map_id;
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                chr.changeMapById(this.target_map_id);
+                getPlayer().changeMapById(this.target_map_id);
                 return false;
             }
             default: {
@@ -200,5 +185,28 @@ public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
         add(200010300, 8220000); // エリジャー
         add(261030000, 8220002); // キメラ
         add(240040401, 8220003); // レヴィアタン
+    }
+
+    // マクロ対策モンスター
+    public void setAntiMacorMonsters() {
+        add(103000105, 5090000); // シェード
+        add(103000202, 5090000); // シェード
+        add(250020000, 5090001); // 仙人人形
+        add(211041100, 6090000); // リーチ
+        add(211041200, 6090000); // リーチ
+        add(211041300, 6090000); // リーチ
+        add(211041400, 6090000); // リーチ
+        add(211010000, 6090001); // 雪山の亡霊
+        add(211020000, 6090001); // 雪山の亡霊
+        add(211050000, 6090001); // 雪山の亡霊
+        add(800020110, 6090002); // 竹の武士
+        add(800020120, 6090002); // 竹の武士
+        add(800020130, 6090002); // 竹の武士
+        add(222010300, 6090003); // 学者鬼
+        add(261020200, 6090004); // ルルモ
+        add(261020400, 6090004); // ルルモ
+        add(261020600, 6090004); // ルルモ
+        add(261020401, 7090000); // 自動警備システム
+        add(261010102, 8090000); // ディトとロイ
     }
 }

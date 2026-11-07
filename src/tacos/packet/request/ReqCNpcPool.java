@@ -47,13 +47,16 @@ public class ReqCNpcPool {
 
         int npc_oid = cp.Decode4();
 
-        TacosNpc npc = map.getNPCByOid(npc_oid);
+        TacosNpc npc = map.getNpcByOid(npc_oid);
         if (npc == null) {
             return false;
         }
 
         switch (header) {
             case CP_NpcMove: {
+                if (npc.getOwnerId() != chr.getId()) {
+                    return true;
+                }
                 byte nChatIdx = cp.Decode1();
                 byte m_nOneTimeAction = cp.Decode1();
                 int unk = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));

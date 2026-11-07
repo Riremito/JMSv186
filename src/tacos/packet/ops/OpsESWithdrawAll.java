@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsESWithdrawAll implements IPacketOps {
-    // GMS v95 and JMS v186, CEntrustedShopDlg::OnWithdrawAllResult
     ESWithdrawAll_Done(0), // アイテムとメルを全部取り出しました。
     ESWithdrawAll_OverPrice(1), // 商店にあるお金が多すぎでメルとアイテムを取り戻せませんでした。
     ESWithdrawAll_OnlyItem(2), // メルを取り戻しました。1個のみ持てないアイテムがあってアイテムは取り戻せませんでした。
@@ -34,11 +33,11 @@ public enum OpsESWithdrawAll implements IPacketOps {
 
     private int value;
 
-    OpsESWithdrawAll(int val) {
-        this.value = val;
+    private OpsESWithdrawAll(int value) {
+        this.value = value;
     }
 
-    OpsESWithdrawAll() {
+    private OpsESWithdrawAll() {
         this.value = -1;
     }
 
@@ -48,16 +47,7 @@ public enum OpsESWithdrawAll implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsESWithdrawAll find(int val) {
-        for (OpsESWithdrawAll ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

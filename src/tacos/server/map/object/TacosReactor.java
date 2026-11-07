@@ -24,9 +24,10 @@ import tacos.server.map.TacosMap;
 import java.awt.Rectangle;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.maps.MapleReactorStats;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
-import tacos.script.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 import tacos.wz.WzXML;
 
 /**
@@ -102,7 +103,7 @@ public class TacosReactor extends TacosMapObject {
     }
 
     //hitReactor command for item-triggered reactors
-    public void hitReactor(int dwHitOption, short tActionDelay, TacosClient client) {
+    public void hitReactor(TacosCharacter chr, int dwHitOption, short tActionDelay) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             //type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             byte oldState = state;
@@ -116,19 +117,21 @@ public class TacosReactor extends TacosMapObject {
                         map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
                     // a reactor without a script drops the items of Reward.img.
-                    if (!TacosScriptReactor.getInstance().act(client, this) && client.getPlayer() != null) {
-                        TacosReward.getReactorReward(client.getPlayer(), this);
+                    if (!ReactorMan.act(chr, this)) {
+                        TacosReward.getReactorReward(chr, this);
                     }
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
+                    // 状態の変化 (Java のみ)
+                    ReactorMan.changeState(chr, this, oldState);
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
-                        TacosScriptReactor.getInstance().act(client, this);
+                        ReactorMan.act(chr, this);
                         done = true;
                     }
                     if (stats.getTimeOut(state) > 0) {
                         if (!done) {
-                            TacosScriptReactor.getInstance().act(client, this);
+                            ReactorMan.act(chr, this);
                         }
                         scheduleSetState(state, oldState, stats.getTimeOut(state));
                     }
@@ -176,7 +179,7 @@ public class TacosReactor extends TacosMapObject {
 
     // used by script
     public void forceStartReactor(TacosClient client) {
-        TacosScriptReactor.getInstance().act(client, this);
+        ReactorMan.act(client.getPlayer(), this);
     }
 
     // used by script
@@ -188,7 +191,7 @@ public class TacosReactor extends TacosMapObject {
 
     // used by script
     public void hitReactor(TacosClient client) {
-        hitReactor(0, (short) 0, client);
+        hitReactor(client.getPlayer(), 0, (short) 0);
     }
 
     // used by script

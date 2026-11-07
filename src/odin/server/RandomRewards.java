@@ -93,5 +93,4 @@ public class RandomRewards {
     public int getFishingReward() {
         return compiledFishing.get(Randomizer.nextInt(compiledFishing.size()));
     }
-
 }

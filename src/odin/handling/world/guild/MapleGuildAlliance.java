@@ -279,5 +279,4 @@ public class MapleGuildAlliance {
     public String getName() {
         return name;
     }
-
 }

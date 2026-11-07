@@ -77,7 +77,7 @@ public class CustomMap {
                 npc.setRx0(npc_x + 50);
                 npc.setRx1(npc_x - 50);
                 npc.setFootholdId(npc_fh);
-                map.addNPC(npc);
+                map.addNpc(npc);
             }
         }
 

@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsFamily implements IPacketOps {
-    // GMS v95, same values in JMS v186 (CWvsContext::OnFamilyResult).
     FamilyRes_Success(0),
     FamilyRes_Success_Unregister(1), // You have severed ties with %s.
     FamilyRes_Fail_CanNotRegister(64), // You cannot add this character as a Junior.
@@ -49,11 +48,11 @@ public enum OpsFamily implements IPacketOps {
 
     private int value;
 
-    OpsFamily(int val) {
-        this.value = val;
+    private OpsFamily(int value) {
+        this.value = value;
     }
 
-    OpsFamily() {
+    private OpsFamily() {
         this.value = -1;
     }
 
@@ -63,16 +62,7 @@ public enum OpsFamily implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsFamily find(int val) {
-        for (OpsFamily ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

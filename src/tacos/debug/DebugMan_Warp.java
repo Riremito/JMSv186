@@ -19,15 +19,15 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_Warp extends DebugMan implements IDebugMan {
+public class DebugMan_Warp extends DebugNpcScriptMan {
 
-    private NpcTag nt_first = new NpcTag();
+    private NpcScriptTag nt_first = new NpcScriptTag();
     private final ArrayList<Integer> selection_list = new ArrayList<>();
     private int target_map_id = 910000000;
 
@@ -37,7 +37,7 @@ public class DebugMan_Warp extends DebugMan implements IDebugMan {
     }
 
     private void setFirstTalk() {
-        this.nt_first = new NpcTag();
+        this.nt_first = new NpcScriptTag();
 
         for (int index = 0; index < this.selection_list.size(); index++) {
             this.nt_first.addMenu(index, this.selection_list.get(index) + " : #m" + this.selection_list.get(index) + "#");
@@ -45,36 +45,24 @@ public class DebugMan_Warp extends DebugMan implements IDebugMan {
     }
 
     @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
-
-    @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
-                super.askMenu(chr, this.nt_first);
+                askMenu(this.nt_first);
                 return true;
             }
             case 1: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (0 <= answer && answer < this.selection_list.size()) {
                     nt.add("go to " + this.selection_list.get(answer) + " : #m" + this.selection_list.get(answer) + "#");
                     this.target_map_id = this.selection_list.get(answer);
-                    super.say(chr, nt, true, false);
+                    say(nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                chr.changeMapById(this.target_map_id);
+                getPlayer().changeMapById(this.target_map_id);
                 return false;
             }
             default: {

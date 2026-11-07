@@ -32,11 +32,11 @@ public enum OpsGoldHammer implements IPacketOps {
 
     private int value;
 
-    OpsGoldHammer(int val) {
-        this.value = val;
+    private OpsGoldHammer(int value) {
+        this.value = value;
     }
 
-    OpsGoldHammer() {
+    private OpsGoldHammer() {
         this.value = -1;
     }
 
@@ -46,8 +46,7 @@ public enum OpsGoldHammer implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
-
 }

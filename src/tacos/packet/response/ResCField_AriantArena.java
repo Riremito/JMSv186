@@ -46,5 +46,4 @@ public class ResCField_AriantArena {
 
         return sp;
     }
-
 }

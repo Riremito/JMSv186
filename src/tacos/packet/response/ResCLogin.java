@@ -112,8 +112,8 @@ public class ResCLogin {
                                 sp.Encode1(0);
                             } else {
                                 sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
-                                sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
-                                sp.Encode1(1); // should be 1 for KMS v2.114 to ignore personal number
+                                sp.Encode4(3); // should be 3 for KMS114 to ignore personal number
+                                sp.Encode1(1); // should be 1 for KMS114 to ignore personal number
                                 sp.Encode1(0); // m_nPurchaseExp
                                 sp.Encode1(0); // m_nChatBlockReason
                                 sp.Encode8(0); // m_dtChatUnblockDate
@@ -729,6 +729,14 @@ public class ResCLogin {
         return sp;
     }
 
+    // CLogin::OnCheckDeleteCharacterOTP, not tested.
+    public static ServerPacket DeleteCharacterOTPRequest(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DeleteCharacterOTPRequest);
+
+        sp.Encode1(result);
+        return sp;
+    }
+
     // CLogin::OnLatestConnectedWorld
     public static ServerPacket LatestConnectedWorld() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LatestConnectedWorld);
@@ -782,6 +790,34 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckSPWResult);
 
         sp.Encode1(0); // unused.
+        return sp;
+    }
+
+    // CLogin::OnCheckSSN2OnCreateNewCharacterResult, not tested.
+    public static ServerPacket CheckSSN2OnCreateNewCharacterResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckSSN2OnCreateNewCharacterResult);
+
+        sp.Encode1(result);
+        return sp;
+    }
+
+    // CLogin::OnCheckSPWOnCreateNewCharacterResult, not tested.
+    public static ServerPacket CheckSPWOnCreateNewCharacterResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckSPWOnCreateNewCharacterResult);
+
+        sp.Encode1(result);
+        return sp;
+    }
+
+    // CLogin::OnFirstSSNOnCreateNewCharacterResult, not tested.
+    public static ServerPacket FirstSSNOnCreateNewCharacterResult(int result, int value1, int value2) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FirstSSNOnCreateNewCharacterResult);
+
+        sp.Encode1(result);
+        if (result == 0) {
+            sp.Encode4(value1);
+            sp.Encode1(value2);
+        }
         return sp;
     }
 }

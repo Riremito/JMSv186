@@ -26,7 +26,6 @@ import tacos.config.Config;
  * @author Riremito
  */
 public enum OpsCashItemFailReason implements IPacketOps {
-    // GMS v95
     CashItemFailReason_Unknown(0),
     CashItemFailReason_Timeout(1),
     CashItemFailReason_CashDaemonDBError(2),
@@ -101,11 +100,11 @@ public enum OpsCashItemFailReason implements IPacketOps {
 
     private int value;
 
-    OpsCashItemFailReason(int val) {
-        this.value = val;
+    private OpsCashItemFailReason(int value) {
+        this.value = value;
     }
 
-    OpsCashItemFailReason() {
+    private OpsCashItemFailReason() {
         this.value = -1;
     }
 
@@ -115,17 +114,8 @@ public enum OpsCashItemFailReason implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsCashItemFailReason find(int val) {
-        for (OpsCashItemFailReason ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {
@@ -143,7 +133,7 @@ public enum OpsCashItemFailReason implements IPacketOps {
             initJMS147();
             return;
         }
-        // JMS v186
+        // JMS186
         CashItemFailReason_Timeout.set(178);
         CashItemFailReason_NoRemainCash.set(180);
         CashItemFailReason_GiftUnderAge.set(181);
@@ -190,7 +180,7 @@ public enum OpsCashItemFailReason implements IPacketOps {
         // 0xE8 Lv30以上, 0xE9 Lv70以上
     }
 
-    // JMS v147 (CCashShop::NoticeFailReason), other reasons are shown by the default message.
+    // JMS147 (CCashShop::NoticeFailReason), other reasons are shown by the default message.
     private static void initJMS147() {
         CashItemFailReason_Timeout.set(137);
         CashItemFailReason_NoRemainCash.set(139);

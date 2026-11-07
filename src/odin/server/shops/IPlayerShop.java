@@ -25,7 +25,8 @@ import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 
 /**
- * The mini rooms a character can own or visit: TacosMerchant (entrusted shop), MaplePlayerShop (personal shop) and MapleMiniGame (omok, memory game).
+ * The mini rooms a character can own or visit: TacosMerchant (entrusted shop),
+ * MaplePlayerShop (personal shop) and MapleMiniGame (omok, memory game).
  *
  * @author Riremito
  */
@@ -83,7 +84,7 @@ public interface IPlayerShop {
 
     void setAvailable(boolean b);
 
-    void buy(TacosCharacter chr, int item, short quantity);
+    void buy(TacosCharacter chr, int item, int quantity);
 
     void closeShop(boolean saveItems, boolean remove, int reason);
 

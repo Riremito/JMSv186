@@ -36,8 +36,8 @@ public enum OpsGrade implements IPacketOps {
 
     private int value;
 
-    private OpsGrade(int val) {
-        this.value = val;
+    private OpsGrade(int value) {
+        this.value = value;
     }
 
     private OpsGrade() {
@@ -52,15 +52,6 @@ public enum OpsGrade implements IPacketOps {
     @Override
     public void set(int value) {
         this.value = value;
-    }
-
-    public static OpsGrade find(int val) {
-        for (OpsGrade ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
     }
 
     public static void clear() {

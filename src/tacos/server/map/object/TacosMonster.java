@@ -46,7 +46,6 @@ import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
@@ -199,7 +198,6 @@ public class TacosMonster extends TacosMapObject {
     private boolean fake;
     private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
-    private OdinEventInstanceManager eventInstance;
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
@@ -335,10 +333,40 @@ public class TacosMonster extends TacosMapObject {
         return false;
     }
 
+    // the client controller flag is lost when the controller changes.
+    @Override
+    public void setOwnerId(int owner_id) {
+        if (getOwnerId() != owner_id) {
+            setNextAttackPossible(false);
+        }
+        super.setOwnerId(owner_id);
+    }
+
+    // nLevel 2 makes the client chase the local user, the mob can not use attack and skill without the target.
+    public void setAggro(TacosCharacter chr) {
+        if (chr.getMap() != this.map) {
+            return;
+        }
+        int character_id = chr.getId();
+        if (getOwnerId() == character_id && getNextAttackPossible()) {
+            return;
+        }
+        if (getOwnerId() != character_id) {
+            TacosCharacter owner = this.map.getPlayerById(getOwnerId());
+            if (owner != null) {
+                owner.SendPacket(ResCMobPool.MobChangeController(this, 0));
+            }
+            setOwnerId(character_id);
+        }
+        setNextAttackPossible(true);
+        chr.SendPacket(ResCMobPool.MobChangeController(this, 2));
+    }
+
     public void damage(TacosCharacter from, long damage, boolean updateAttackTime, int lastSkill) {
         if (from == null || damage <= 0 || !isAlive()) {
             return;
         }
+        setAggro(from);
 
         // ボスモンスターレイド
         // ボスが弱すぎるのでダメージ計算式を変更して最低20回の攻撃ヒット回数を求める
@@ -646,7 +674,7 @@ public class TacosMonster extends TacosMapObject {
     }
 
     public void switchShammosController(TacosCharacter newController, boolean immediateAggro) {
-        if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+        if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
                 resetShammos(newController.getClient());
             } else {
@@ -674,7 +702,7 @@ public class TacosMonster extends TacosMapObject {
         }
         if (lastNode >= 0) {
             client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(this, map));
-            if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+            if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
                 if (lastNodeController != -1) { //new controller, please re update. sendSpawn only comes when you get too far then come back anyway
                     resetShammos(client);
                 } else {
@@ -688,13 +716,9 @@ public class TacosMonster extends TacosMapObject {
         if (lastNode == -1) {
             client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }
-        if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
+        if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             resetShammos(client);
         }
-    }
-
-    public OdinEventInstanceManager getEventInstance() {
-        return eventInstance;
     }
 
     public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom) {

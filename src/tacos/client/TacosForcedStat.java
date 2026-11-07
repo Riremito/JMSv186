@@ -207,5 +207,4 @@ public class TacosForcedStat {
     public void setSpeedMax(int nSpeedMax) {
         this.nSpeedMax = nSpeedMax;
     }
-
 }

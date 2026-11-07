@@ -287,7 +287,7 @@ public class ReqCUser_Admin {
         npc.setRx0(x + 50);
         npc.setRx1(y - 50);
         npc.setFootholdId(map.findBelow(npc_xy).getId());
-        map.addNPC(npc);
+        map.addNpc(npc);
         return true;
     }
 }

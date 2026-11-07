@@ -182,7 +182,7 @@ public class ResCCashShop {
                 }
                 sp.Encode2(chr.getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(client.getCharSlots()); // m_nCharacterSlotCount
-                // JMS v147 does not have these.
+                // JMS147 does not have these.
                 sp.Encode2(0, !Config.LessOrEqual(Region.JMS, 147)); // m_nBuyCharacterCount
                 sp.Encode2(client.getCharaterCount(), !Config.LessOrEqual(Region.JMS, 147)); // m_nCharacterCount
                 break;
@@ -349,6 +349,25 @@ public class ResCCashShop {
         return sp;
     }
 
+    // CCashShop::OnCheckDuplicatedIDResult, not tested.
+    public static ServerPacket CashShopCheckDuplicatedIDResult(String name, int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCheckDuplicatedIDResult);
+
+        sp.EncodeStr(name);
+        sp.Encode1(result);
+        return sp;
+    }
+
+    // CCashShop::OnCheckNameChangePossibleResult, not tested.
+    public static ServerPacket CashShopCheckNameChangePossibleResult(TacosCharacter chr, int result, int nBirthDate) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCheckNameChangePossibleResult);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(result);
+        sp.Encode4(nBirthDate); // nBirthDate
+        return sp;
+    }
+
     // CCashShop::OnCheckTransferWorldPossibleResult
     // -> CP_CashShopCashItemRequest, @00FA [31] [FFFFFFFF] [WORLD_ID (4 bytes)]
     public static ServerPacket CheckTransferWorldPossibleResult() {
@@ -365,6 +384,15 @@ public class ResCCashShop {
             sp.EncodeStr(world);
         }
 
+        return sp;
+    }
+
+    // CCashShop::OnCashShopGachaponStampResult, not tested.
+    public static ServerPacket CashShopGachaponStampItemResult(boolean success, int value) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopGachaponStampItemResult);
+
+        sp.Encode1(success ? 1 : 0);
+        sp.Encode4(value, success);
         return sp;
     }
 
@@ -392,6 +420,39 @@ public class ResCCashShop {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_GashItemGachapon_Failed.get());
+        return sp;
+    }
+
+    // CCashShop::OnCashItemGachaponResult, not tested.
+    public static ServerPacket CashShopCashGachaponOpenResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashGachaponOpenResult);
+
+        sp.Encode1(result);
+        return sp;
+    }
+
+    // CCashShop::OnOneADay, not tested.
+    public static ServerPacket CashShopOneADay(int m_nOneADayItemDate, int m_nOneADayItemSN) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopOneADay);
+
+        sp.Encode4(m_nOneADayItemDate); // m_nOneADayItemDate
+        sp.Encode4(m_nOneADayItemSN); // m_nOneADayItemSN
+        sp.Encode4(0); // m_aPrevOneADayInfo count
+        return sp;
+    }
+
+    // CCashShop::OnNoticeFreeCashItem, not tested.
+    public static ServerPacket CashShopNoticeFreeCashItem() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopNoticeFreeCashItem);
+
+        return sp;
+    }
+
+    // CCashShop::OnMemberShopResult, not tested.
+    public static ServerPacket CashShopMemberShopResult(int result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopMemberShopResult);
+
+        sp.Encode1(result);
         return sp;
     }
 

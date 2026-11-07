@@ -43,10 +43,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptPortal;
-import tacos.script.TacosScriptQuest;
-import tacos.script.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
@@ -75,10 +72,6 @@ public class TacosCommandAdmin {
             }
             case "/reload" -> {
                 Property_Packet.reload();
-                TacosScriptPortal.getInstance().clearScripts();
-                TacosScriptNPC.getInstance().clearScripts();
-                TacosScriptQuest.getInstance().clearScripts();
-                TacosScriptReactor.getInstance().clearScripts();
                 DebugLogger.InfoLog("reload : done.");
                 chr.sendStatChanged(true);
                 chr.DebugMsg("reload : done.");
@@ -204,7 +197,7 @@ public class TacosCommandAdmin {
                     npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
                     npc.setFootholdId(chr.getFootholdId());
 
-                    map.addNPC(npc);
+                    map.addNpc(npc);
                     chr.DebugMsg("npc : " + npc_id);
                 }
                 return true;
@@ -218,7 +211,7 @@ public class TacosCommandAdmin {
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getMoveAction());
                 pnpc.setFootholdId(chr.getFootholdId());
 
-                map.addNPC(pnpc);
+                map.addNpc(pnpc);
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
                 return true;
@@ -254,7 +247,7 @@ public class TacosCommandAdmin {
                 reactor.setPosition(pos);
                 reactor.setMap(map);
                 map.addReactor(reactor);
-                TacosScriptReactor.getInstance().act(client, reactor);
+                ReactorMan.act(chr, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;
             }

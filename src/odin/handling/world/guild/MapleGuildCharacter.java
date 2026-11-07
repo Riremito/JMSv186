@@ -134,5 +134,4 @@ public class MapleGuildCharacter { // alias for a character
     public int getAllianceRank() {
         return allianceRank;
     }
-
 }

@@ -31,7 +31,7 @@ public class Skill {
     private String name = "";
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
-    private byte level;
+    private int level;
     private int id;
     private int animationTime;
     private int requiredSkill;
@@ -53,7 +53,7 @@ public class Skill {
         this.element = element;
     }
 
-    public void setLevel(byte level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
@@ -184,7 +184,7 @@ public class Skill {
             }
             return false;
         }
-        // JMS v164
+        // JMS164
         if (2 <= (job_id % 10)) {
             return true;
         }

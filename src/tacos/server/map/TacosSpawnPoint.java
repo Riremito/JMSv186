@@ -20,7 +20,7 @@ package tacos.server.map;
 
 import java.awt.Point;
 import tacos.server.map.object.TacosMonster;
-import lombok.Data;
+import lombok.Getter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.wz.MapWz;
@@ -31,7 +31,7 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-@Data
+@Getter
 public class TacosSpawnPoint {
 
     private int node_id;

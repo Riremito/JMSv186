@@ -47,6 +47,8 @@ public class TacosTask {
         player.getChannelServer().update(player, time_current);
         // map.
         map.update(player, time_current);
+        // field set.
+        TacosFieldSet.update(player, time_current);
         // player.
         player.update(time_current);
         return true;

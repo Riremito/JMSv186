@@ -21,7 +21,7 @@ package tacos.server.map;
 import java.awt.Point;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
-import tacos.script.TacosScriptPortal;
+import tacos.script.portal.PortalMan;
 
 /**
  *
@@ -117,7 +117,7 @@ public class TacosPortal {
 
         // script portal
         if (this.scriptName != null) {
-            return TacosScriptPortal.getInstance().enter(this, chr.getClient());
+            return PortalMan.enter(chr.getClient(), this);
         }
         // normal portal
         if (this.scriptName == null) {
@@ -141,5 +141,4 @@ public class TacosPortal {
 
         return false;
     }
-
 }

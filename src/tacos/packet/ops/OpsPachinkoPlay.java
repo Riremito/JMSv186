@@ -37,11 +37,11 @@ public enum OpsPachinkoPlay implements IPacketOps {
 
     private int value;
 
-    OpsPachinkoPlay(int val) {
-        this.value = val;
+    private OpsPachinkoPlay(int value) {
+        this.value = value;
     }
 
-    OpsPachinkoPlay() {
+    private OpsPachinkoPlay() {
         this.value = -1;
     }
 
@@ -51,19 +51,7 @@ public enum OpsPachinkoPlay implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsPachinkoPlay find(int val) {
-        for (OpsPachinkoPlay ops : OpsPachinkoPlay.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
-    }
-
-    public static void init() {
+    public void set(int value) {
+        this.value = value;
     }
 }

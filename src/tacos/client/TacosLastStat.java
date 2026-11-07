@@ -200,5 +200,4 @@ public class TacosLastStat {
     public void clearStatMask() {
         this.statmask = 0;
     }
-
 }

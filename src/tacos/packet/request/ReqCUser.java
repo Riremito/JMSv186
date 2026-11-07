@@ -75,7 +75,6 @@ import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
-import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.client.TacosDoorSkill;
@@ -104,8 +103,8 @@ import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCRPSGameDlg;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
+import tacos.script.quest.QuestMan;
+import tacos.script.npc.NpcMan;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
@@ -160,7 +159,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                if (!OnUserMigrateToCashShopRequest(client, chr)) {
+                if (!OnUserMigrateToCashShopRequest(chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
                 }
                 return true;
@@ -230,10 +229,6 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserShopRequest: {
-                if (chr.getDebugShop() != null) {
-                    DebugShop.OnUserShopRequestHook(chr, cp);
-                    return true;
-                }
                 ReqCShopDlg.OnPacket(chr, cp);
                 return true;
             }
@@ -831,7 +826,7 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(TacosClient client, TacosCharacter chr) {
+    public static boolean OnUserMigrateToCashShopRequest(TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
@@ -1311,7 +1306,7 @@ public class ReqCUser {
 
         TacosClient client = chr.getClient();
         TacosMap map = chr.getMap();
-        TacosNpc npc = map.getNPCByOid(m_dwNpcId);
+        TacosNpc npc = map.getNpcByOid(m_dwNpcId);
         if (npc == null) {
             DebugLogger.ErrorLog("OnUserSelectNpc : npc");
             return false;
@@ -1363,14 +1358,13 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_script_id);
             return true;
         }
-        // npc shop from database.
-        if (TacosNpcShop.startDatabaseNpcShop(chr, npc_script_id)) {
-            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc_script_id);
+        // npc from code.
+        if (NpcMan.start(chr, npc_info, npc_script_id, npc_id)) {
+            chr.DebugMsg("OnUserSelectNpc (Java) : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
             return true;
         }
-        // npc from script.
-        chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript());
-        return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
+        chr.DebugMsg("OnUserSelectNpc (not coded) : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
+        return false;
     }
 
     // CWvsContext::SendRemoteShopOpenRequest
@@ -1614,7 +1608,7 @@ public class ReqCUser {
         boolean success = er == EnhancementResult.SUCCESS;
         boolean cursed = er == EnhancementResult.CURSED;
 
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1822,7 +1816,7 @@ public class ReqCUser {
             return false;
         }
         boolean success = true;
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1856,7 +1850,7 @@ public class ReqCUser {
             return false;
         }
         boolean success = true;
-        short scroll_quantity = scroll.getQuantity();
+        int scroll_quantity = scroll.getQuantity();
         chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition());
         scroll_quantity--;
         PB_InvOp.Builder io = PB_InvOp.builder();
@@ -1892,7 +1886,7 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false, io);
             io.add(GameConstants.getInventoryType(equip.getItemId()), equip);
             chr.sendInventoryOperation(true, io);
-            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip.getPosition()));
+            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, equip));
         } else {
             chr.updateInv();
             return false;
@@ -2591,19 +2585,21 @@ public class ReqCUser {
                 short pos_x = cp.Decode2();
                 short pos_y = cp.Decode2();
 
-                TacosScriptQuest.getInstance().startQuest(client, m_dwNpcTemplateID, uQuestID);
+                // quest from code.
+                if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, true, false)) {
+                    return true;
+                }
+                chr.DebugMsg("OnUserQuestRequest (not coded) : startscript, " + uQuestID);
                 return true;
             }
             case QuestReq_CompleteScript: {
                 int m_dwNpcTemplateID = cp.Decode4();
 
-                TacosScriptQuest.getInstance().endQuest(client, m_dwNpcTemplateID, uQuestID, false);
-
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .player(chr)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_QuestComplete));
-                map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), chr.getId());
+                // quest from code.
+                if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, false, true)) {
+                    return true;
+                }
+                chr.DebugMsg("OnUserQuestRequest (not coded) : endscript, " + uQuestID);
                 return true;
             }
             default: {
@@ -2628,8 +2624,8 @@ public class ReqCUser {
         // 1. 最初の空きスロットを探す
         // 2. 空きスロット以降に存在するアイテムを探す
         // 3. アイテムを空きスロットに移動する
-        for (short slot_to = mi.getNextFreeSlot(); slot_to <= mi.getSlotLimit(); slot_to++) {
-            short slot_from = mi.getNextItem(slot_to);
+        for (int slot_to = mi.getNextFreeSlot(); slot_to <= mi.getSlotLimit(); slot_to++) {
+            int slot_from = mi.getNextItem(slot_to);
             if (slot_from == 0) {
                 break;
             }
@@ -2683,7 +2679,7 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendChangeSlotPositionRequest
-    public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
+    public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, int slot_from, int slot_to, int quantity) {
         if (chr.getPlayerShop() != null || chr.getTrade() != null) {
             return false;
         }
@@ -3762,11 +3758,11 @@ public class ReqCUser {
 
         switch (job_id) {
             case 1000: {
-                TacosScriptNPC.getInstance().start(chr.getClient(), 1101008);
+                OnUserSelectNpcInternal(chr, 1101008, 1101008);
                 return true;
             }
             case 2000: {
-                TacosScriptNPC.getInstance().start(chr.getClient(), 1202000);
+                OnUserSelectNpcInternal(chr, 1202000, 1202000);
                 return true;
             }
             default: {

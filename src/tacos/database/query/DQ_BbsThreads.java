@@ -104,5 +104,4 @@ public class DQ_BbsThreads {
 
         return false;
     }
-
 }

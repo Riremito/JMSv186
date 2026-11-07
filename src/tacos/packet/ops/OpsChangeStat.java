@@ -25,8 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsChangeStat {
-    // JMS v186, GMS v95
+public enum OpsChangeStat implements IPacketOps {
     CS_SKIN(1), // 0x1
     CS_FACE(1 << 1), // 0x2
     CS_HAIR(1 << 2), // 0x4
@@ -53,26 +52,30 @@ public enum OpsChangeStat {
 
     private int value;
 
-    OpsChangeStat(int flag) {
-        value = flag;
+    private OpsChangeStat(int value) {
+        this.value = value;
     }
 
-    OpsChangeStat() {
-        value = -1;
+    private OpsChangeStat() {
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int val) {
-        value = val;
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsChangeStat find(int val) {
-        for (OpsChangeStat o : OpsChangeStat.values()) {
-            if (o.get() == val) {
-                return o;
+    public static OpsChangeStat find(int value) {
+        for (OpsChangeStat ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
