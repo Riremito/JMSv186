@@ -24,7 +24,6 @@ package tacos.script.quest;
  */
 // Quest.wz startscript, endscript (JMS186), エヴァンのクエスト, 旧 js (scripts_JMS) を参考に実装
 // TODO : js の仮の処理 (本来の会話や転職などの処理がなく、クエストの開始や完了のみ)
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_Simplified extends QuestScriptMan {
 
     private final int item_letter = 4032455; // グリドの手紙
@@ -42,54 +41,63 @@ public class Quest_Evan_Simplified extends QuestScriptMan {
             // 手紙配達
             case 22510 -> {
                 if (!canHold(this.item_letter, 1)) {
-                    say("Please have some space.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("インベントリに空きを作ってください。", false, true);
                     return false;
                 }
-                say("Go deliver this to Chief Stan of Henesys.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("これをヘネシスの長老スタンに届けてください。", false, true);
                 gainItem(this.item_letter, 1);
                 forceStartQuest();
                 return false;
             }
             // ドラゴンマスターのお仕事
             case 22512 -> {
-                say("Go talk to Rina of Henesys.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ヘネシスのリナと話してください。", false, true);
                 forceStartQuest();
                 return false;
             }
             // 修練あるのみ
             case 22514 -> {
-                say("Go talk to Chief Stan of Henesys.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ヘネシスの長老スタンと話してください。", false, true);
                 forceCompleteQuest();
                 questEndEffect();
                 return false;
             }
             // 絶えないヘンケルの妄想
             case 22518 -> {
-                say("Please eliminate 100 Spores.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("スポアを100匹倒してください。", false, true);
                 forceStartQuest();
                 return false;
             }
             // カニングシティーでの捜査 : ネーラ
             case 22536 -> {
-                say("Let's talk to Nella of Kerning City.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("カニングシティのネラと話しましょう。", false, true);
                 forceStartQuest();
                 return false;
             }
             // 本の行方は？1
             case 22541 -> {
-                say("Go talk to Icarus in Kerning City.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("カニングシティのイカルスと話してください。", false, true);
                 forceStartQuest();
                 return false;
             }
             // 秘密組織への加入条件1
             case 22560 -> {
-                say("Please kill 150 Curse Eye.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("カールアイを150匹倒してください。", false, true);
                 forceStartQuest();
                 return false;
             }
             // ミルの考え
             case 22565 -> {
-                say("Let's talk to Mir.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ミルと話しましょう。", false, true);
                 forceStartQuest();
                 gainSp(2, 3);
                 forceCompleteQuest();
@@ -99,7 +107,8 @@ public class Quest_Evan_Simplified extends QuestScriptMan {
             // 秘密組織　二回目の任務
             case 22575 -> {
                 if (!canHold(this.item_black_key, 1)) {
-                    say("Make ETC space.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("ETCインベントリに空きを作ってください。", false, true);
                     return false;
                 }
                 gainItem(this.item_black_key, 1);
@@ -112,7 +121,8 @@ public class Quest_Evan_Simplified extends QuestScriptMan {
             }
             // 秘密組織に関する疑問
             case 22578 -> {
-                say("Let's talk to Mir.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ミルと話しましょう。", false, true);
                 forceStartQuest();
                 gainSp(2, 4);
                 forceCompleteQuest();
@@ -121,13 +131,15 @@ public class Quest_Evan_Simplified extends QuestScriptMan {
             }
             // 秘密組織　三回目の任務の前に
             case 22581 -> {
-                say("Talk to Hiver in Ludibrium Village.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ルディブリアムの村にいるハイバーと話してください。", false, true);
                 forceStartQuest();
                 return false;
             }
             // 秘密組織に関する疑惑
             case 22585 -> {
-                say("Let's talk to Mir.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ミルと話しましょう。", false, true);
                 forceStartQuest();
                 gainSp(1, 5);
                 forceCompleteQuest();
@@ -182,7 +194,8 @@ public class Quest_Evan_Simplified extends QuestScriptMan {
                     questEndEffect();
                     return false;
                 }
-                say("Make a growth accelerant.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("成長促進剤を作ってください。", false, true);
                 forceStartQuest();
                 return false;
             }

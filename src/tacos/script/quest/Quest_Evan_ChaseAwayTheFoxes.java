@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22008s, endscript : q22008e (JMS186), 裏庭の狐の追放, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_ChaseAwayTheFoxes extends QuestScriptMan {
 
     private final int item_wand = 1372043; // 初歩魔法使いのワンド
@@ -35,17 +34,20 @@ public class Quest_Evan_ChaseAwayTheFoxes extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("Are you scared of the #o9300385#es? Don't tell anyone you're related to me. That's shameful.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("#o9300385#が怖いのか？俺の家族だなんて誰にも言うなよ。恥ずかしいからな。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("It's strange. The chickens are acting funny. They used to hatch way more #t4032451#s. Do you think the Foxes have something to do with it? If so, we better hurry up and do something.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("変だな。ニワトリの様子がおかしいんだ。前はもっとたくさん#t4032451#を産んでいたのに。狐のせいだと思うか？だとしたら、急いで何とかしないとな。");
                 return true;
             }
             case 1 -> {
                 forceStartQuest();
-                say("Right? Let us go and defeat those Foxes. Go on ahead and defeat #r10 #o9300385#es#k in #b#m100030103##k first. I'll follow you and take care of what's left behind. Now, hurry over to #m100030103#!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("だろ？一緒にあの狐たちを倒しに行こう。まずはお前が先に行って、#b#m100030103##kで#r#o9300385#を10匹#k倒してくれ。俺は後からついて行って、残りを片付けるから。さあ、急いで#m100030103#へ行け！", false, true);
                 return true;
             }
             case 2 -> {
@@ -62,31 +64,38 @@ public class Quest_Evan_ChaseAwayTheFoxes extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Did you defeat the Cunning Foxes?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ずる賢い狐は倒したか？", false, true);
                 return true;
             }
             case 1 -> {
-                say(3, "#bWhat happened to slaying the Foxes left behind?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b残りの狐を片付けるって話はどうなったの？", true, true);
                 return true;
             }
             case 2 -> {
-                say("Oh, that? Haha. I did chase them, sort of, but I wanted to make sure that they do not catch up to you. I wouldn't want you eaten by a #o9300385# or anything. So I just let them be.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ああ、あれか？はは。いちおう追いかけたんだけどさ、お前に追いつかれないようにしたかったんだよ。お前が#o9300385#に食べられでもしたら大変だろ。だから放っておいたんだ。", true, true);
                 return true;
             }
             case 3 -> {
-                say(3, "#bAre you sure you weren't just hiding because you were scared of the Foxes?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b本当は狐が怖くて隠れてたんじゃないの？", true, true);
                 return true;
             }
             case 4 -> {
-                say("What? No way! Sheesh, I fear nothing!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("何だって？まさか！ふん、俺に怖いものなんてないさ！", true, true);
                 return true;
             }
             case 5 -> {
-                say(3, "#bWatch out! There's a #o9300385# right behind you!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b危ない！すぐ後ろに#o9300385#がいるよ！", true, true);
                 return true;
             }
             case 6 -> {
-                say("Eeeek! Mommy!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ひいいっ！ママー！", true, true);
                 return true;
             }
             case 7 -> {
@@ -98,15 +107,18 @@ public class Quest_Evan_ChaseAwayTheFoxes extends QuestScriptMan {
                 return true;
             }
             case 9 -> {
-                say("You little brat! I'm your older brother. Don't you mess with me! Your brother has a weak heart, you know. Don't surprise me like that!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("このガキ！俺はお前の兄ちゃんだぞ。からかうな！兄ちゃんは心臓が弱いんだからな。そんなふうに驚かすなよ！", true, true);
                 return true;
             }
             case 10 -> {
-                say(3, "#b(This is why I don't want to call you Older Brother...)", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（だから兄ちゃんって呼びたくないんだよ…）", true, true);
                 return true;
             }
             case 11 -> {
-                say("Hmph! Anyway, I'm glad you were able to defeat the #o9300385#es. As a reward, I'll give you something an adventurer gave me a long time ago. Here you are. \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_wand + "# 1 #t" + this.item_wand + "# \r\n#i" + this.item_milk + "# 25 #t" + this.item_milk + "# \r\n#i" + this.item_juice + "# 25 #t" + this.item_juice + "#s \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ふん！とにかく、#o9300385#を倒してくれてよかったよ。お礼に、昔ある冒険家にもらったものをやるよ。ほら。 \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_wand + "# 1 #t" + this.item_wand + "# \r\n#i" + this.item_milk + "# 25 #t" + this.item_milk + "# \r\n#i" + this.item_juice + "# 25 #t" + this.item_juice + "#s \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値", true, true);
                 return true;
             }
             case 12 -> {
@@ -118,11 +130,13 @@ public class Quest_Evan_ChaseAwayTheFoxes extends QuestScriptMan {
                     gainItem(this.item_juice, 25);
                     gainExp(this.reward_exp);
                 }
-                say("#bThis is a weapon that Magicians use. It's a Wand#k. You probably won't really need it, but it'll make you look important if you carry it around. Hahahahaha.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#bこれは魔法使いが使う武器、ワンドだ#k。お前には必要ないだろうけど、持ち歩けば偉そうに見えるぞ。はははははは。", true, true);
                 return true;
             }
             case 13 -> {
-                say("Anyway, the Foxes have increased, right? How weird is that? Why are they growing day by day? We should really look into it and get to the bottom of this.", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("それにしても、狐が増えてるよな？おかしくないか？どうして日に日に増えてるんだろう？ちゃんと調べて、原因を突き止めないとな。", true, false);
                 return false;
             }
             default -> {

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20015s (JMS186), 幼い女王の挨拶, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_EncounterWithTheYoungQueen extends QuestScriptMan {
 
     private final int item_medal = 1142065; // ノーブレスの勲章
@@ -32,21 +31,25 @@ public class Quest_Cygnus_EncounterWithTheYoungQueen extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 1) {
-            say("You may be hesitant now, but I can see an incredible amount of courage behind your eyes. Close your eyes and feel the courage and passion inside of you.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("今はためらっているかもしれませんが、あなたの目の奥にはすばらしい勇気が見えます。目を閉じて、あなたの中にある勇気と情熱を感じてください。", false, true);
             safeDispose();
             return true;
         }
         switch (status) {
             case 0 -> {
-                say("Did you know? Maple World may look peaceful, but certain areas are filled with forces of darkness. The Black Mage and those who want to revive the Black Mage are threatening Maple World.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("知っていますか？メイプルワールドは平和に見えても、ところどころ闇の力で満ちているのです。暗黒の魔法使いと、暗黒の魔法使いを復活させようとする者たちが、メイプルワールドを脅かしています。", false, true);
                 return true;
             }
             case 1 -> {
-                say("We can't just sit here and do nothing while our enemies get stronger. Our own fear will only come back to haunt us.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("敵が強くなっていくのを、何もせずに見ているわけにはいきません。恐れていては、いずれその恐れが私たちに返ってくるだけです。", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("But I won't worry too much. Someone as determined as you will be able to protect Maple World from danger, right? If you are brave enough to volunteer to become one of the Knights, I know I can count on you. \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_medal + "# #t" + this.item_medal + "# - 1");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("でも、あまり心配はしていません。あなたのように意志の強い人なら、きっとメイプルワールドを危険から守ってくれますよね？自ら騎士に志願するほど勇敢なあなたなら、頼りにできると信じています。 \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_medal + "# #t" + this.item_medal + "# - 1");
                 return true;
             }
             case 3 -> {
@@ -54,11 +57,13 @@ public class Quest_Cygnus_EncounterWithTheYoungQueen extends QuestScriptMan {
                     gainItem(this.item_medal, 1);
                     forceCompleteQuest();
                 }
-                say("Heehee, I knew you'd say that. But you know you still have a ways to go before you can fight for Maple World, right?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ふふ、そう言ってくれると思っていました。でも、メイプルワールドのために戦えるようになるまでには、まだ道のりがあることはわかっていますよね？", false, true);
                 return true;
             }
             case 4 -> {
-                say("#p1101002#, my Tactician, who is standing right next to me, will help you become an honorable Knight. I'll be looking forward to your progress. I'm counting on you!", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("私の隣にいる軍師の#p1101002#が、あなたが立派な騎士になれるよう手助けしてくれます。あなたの成長を楽しみにしていますね。期待していますよ！", true, false);
                 safeDispose();
                 return true;
             }

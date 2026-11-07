@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21202s, endscript : q21202e (JMS186), 最高の武器を探して, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_SearchingForTheBestWeapon extends QuestScriptMan {
 
     private final int job_aran_2 = 2110; // アラン 2次
@@ -44,7 +43,8 @@ public class Quest_Aran_SearchingForTheBestWeapon extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
-        say("You want a pole arm? Hah! You don't look strong at all. Way outta your league. If you want a pole arm, prove me wrong by hunting #r#o9001012#s#k to the west of here, and find 30 #b#t" + this.item_proof + "##k!", false, true);
+        // TODO : 文章 (js の英文を翻訳)
+        say("鉾がほしいだと？はっ！とても強そうには見えないな。お前には無理だ。鉾がほしいなら、ここから西にいる#r#o9001012##kを狩って#b#t" + this.item_proof + "##kを30個集め、俺が間違っていると証明してみせろ！", false, true);
         forceStartQuest();
         return false;
     }
@@ -53,15 +53,18 @@ public class Quest_Aran_SearchingForTheBestWeapon extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Hah! You have proven your worth.. and you shall get what you want; the best pole arm possible!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("はっ！お前の実力はよくわかった…望みのものをくれてやろう。最高の鉾だ！", false, true);
                 return true;
             }
             case 1 -> {
                 if ((getLevel() - this.required_level) * 3 < getRemainingSp()) {
-                    say("You still have way too much #bSP#k with you. You can't earn a new title like that. I strongly urge you to use more SP on your 1st and second level skills.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("まだ#bSP#kが残りすぎているな。それでは新しい称号は得られないぞ。1次と2次のスキルにもっとSPを使うことを強く勧める。", false, true);
                     return false;
                 }
-                say(2, "My memories are returning...", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "記憶がよみがえってくる…", false, true);
                 changeJob(this.job_aran_2);
                 gainItem(this.item_medal, 1);
                 removeItem(this.item_proof, this.item_proof_count);
@@ -74,7 +77,8 @@ public class Quest_Aran_SearchingForTheBestWeapon extends QuestScriptMan {
                 return true;
             }
             case 2 -> {
-                say("Haha! You've got what you want, now leave!");
+                // TODO : 文章 (js の英文を翻訳)
+                say("はは！望みのものは手に入れただろう、さあ行け！");
                 return false;
             }
             default -> {

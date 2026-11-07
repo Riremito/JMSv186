@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22000s, endscript : q22000e (JMS186), 不思議な夢, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_StrangeDream extends QuestScriptMan {
 
     private final int reward_exp = 20;
@@ -32,45 +31,55 @@ public class Quest_Evan_StrangeDream extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 6) {
-            say("Hm? Don't you want to tell Utah? You have to be nice to your brother, dear.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("ん？#p1013101#に話したくないの？お兄ちゃんには優しくしなきゃだめよ。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Did you sleep well,Evan?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("よく眠れた、エヴァン？", false, true);
                 return true;
             }
             case 1 -> {
-                say(3, "#bYes,what about you,Mom?#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bうん、お母さんは？#k", true, true);
                 return true;
             }
             case 2 -> {
-                say("I did as well. But you seem so tired. Are you sure you slept okay? Did the thunder and lightning last night keep you up?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("私もよく眠れたわ。でも、あなたはずいぶん疲れているみたいね。本当によく眠れたの？昨夜の雷で目が覚めちゃった？", true, true);
                 return true;
             }
             case 3 -> {
-                say(3, "#bOh, no. It's not that, Mom. I just had a strange dream last night.#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bううん、そうじゃないんだ、お母さん。昨夜、変な夢を見たんだ。#k", true, true);
                 return true;
             }
             case 4 -> {
-                say("A strange dream? What kind of strange dream?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("変な夢？どんな夢？", true, true);
                 return true;
             }
             case 5 -> {
-                say(3, "#bWell...#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bええと…#k", true, true);
                 return true;
             }
             case 6 -> {
-                say(3, "#b(You explain that you met a dragon in your dream.)", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（夢の中でドラゴンに会ったことを話した。）", true, true);
                 return true;
             }
             case 7 -> {
-                askAccept("Hahaha, a dragon? That's incredible. I'm glad he didn't swallow you whole! You should tell Utah about your dream. I'm sure he'll enjoy it.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("あはは、ドラゴン？すごいわね。丸のみにされなくてよかったわ！その夢の話、#p1013101#にもしてあげたら？きっと面白がるわよ。");
                 return true;
             }
             case 8 -> {
                 forceStartQuest();
-                say("#bUtah#k went to the #bFront Porch#k to feed the Bull Dog. You'll see him right outside.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#b#p1013101##kは#b玄関前#kでブルドッグに餌をやっているわ。外に出ればすぐに会えるはずよ。", false, true);
                 return true;
             }
             case 9 -> {
@@ -87,11 +96,13 @@ public class Quest_Evan_StrangeDream extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Hey, Evan. You up? What's with the dark circles under your eyes? Didn't sleep well? Huh? A strange dream? What was it about? Whoa? A dream about a dragon?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("よう、エヴァン。起きたのか？目の下にくまができてるぞ。よく眠れなかったのか？ん？変な夢？どんな夢だ？おお？ドラゴンの夢？", false, true);
                 return true;
             }
             case 1 -> {
-                say("Muahahahahaha, a dragon? Are you serious? I don't know how to interpret dreams, but that sounds like a good one! Did you see a dog in your dream, too? Hahaha!\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ぶわははははは、ドラゴン？本気かよ？夢占いなんてわからないけど、いい夢っぽいじゃないか！夢に犬も出てきたか？ははは！\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0#" + this.reward_exp + " 経験値", true, true);
                 return true;
             }
             case 2 -> {

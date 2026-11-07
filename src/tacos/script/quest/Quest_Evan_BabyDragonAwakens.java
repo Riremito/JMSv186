@@ -23,76 +23,91 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22500s (JMS186), ちびドラゴン目覚める, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_BabyDragonAwakens extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 11) {
-            say("You don't believe me? Grrrrr, you're getting me mad!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("信じないのか？ぐるるる、怒るぞ！", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("I'm finally here! *inhales* Ah, this must be air I'm breathing. And that, that must be the sun! And that, a tree! And that, a plant! And that, a flower! Woohahahaha! This is incredible! This is much better than I imagined the world to be while I was trapped inside the egg. And you... Are you my master? Hm, I pictured you differently.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ついに外に出られた！*すうっ* ああ、これが空気ってやつか。それに、あれは太陽だな！あれは木！あれは草！あれは花！うはははは！すごいぞ！卵の中に閉じ込められていたときに想像していた世界よりずっといい。それで、お前…お前が俺のご主人様か？ふーん、思ってたのと違うな。", false, true);
                 return true;
             }
             case 1 -> {
-                say(3, "#bWhoooooa, it talks!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bうわあああ、しゃべった！", true, true);
                 return true;
             }
             case 2 -> {
-                say("My master is strange. I guess I can't do anything about it now, since the pact has been made. *sigh* Well, good to meet you. We'll be seeing a lot of each other.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("変なご主人様だな。でも契約しちゃったから、今さらどうしようもないか。*はあ* まあ、よろしくな。これから長い付き合いになるぞ。", true, true);
                 return true;
             }
             case 3 -> {
-                say(3, "#bEh? What do you mean? We'll be seeing a lot of each other? What pact?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bえ？どういうこと？長い付き合いって？契約って何？", true, true);
                 return true;
             }
             case 4 -> {
-                say("What do you mean what do I mean?! You woke me from the Egg. You're my master! So of course it's your responsibility to take care of me and train me and help me become a strong Dragon. Obviously!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("どういうことってどういうことだよ！お前が俺を卵から起こしたんだろ。お前は俺のご主人様だ！だから俺の面倒を見て、鍛えて、強いドラゴンにするのはお前の役目に決まってるだろ！", true, true);
                 return true;
             }
             case 5 -> {
-                say(3, "#bWhaaat? A Dragon? You're a Dragon?! I don't get it... Why am I your master? What are you talking about?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bええっ？ドラゴン？君がドラゴンなの？！よくわからないよ…どうして僕が君のご主人様なの？何の話をしてるの？", true, true);
                 return true;
             }
             case 6 -> {
-                say("What are YOU talking about? Your spirit made a pact with my spirit! We're pretty much the same person now. Do I really have to explain? As a result, you've become my master. We're bound by the pact. You can't change your mind... The pact cannot be broken.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("お前こそ何言ってるんだよ？お前の魂が俺の魂と契約したんだ！俺たちはもうほとんど同じ存在なんだよ。いちいち説明しなきゃだめか？その結果、お前は俺のご主人様になったんだ。俺たちは契約で結ばれてる。今さら気は変えられないぞ…契約は破れないんだ。", true, true);
                 return true;
             }
             case 7 -> {
-                say(3, "#bWait, wait, wait. Let me get this straight. You're saying I have no choice but to help you?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bちょっと待って、待って。整理させて。つまり、僕は君を助けるしかないってこと？", true, true);
                 return true;
             }
             case 8 -> {
-                say("Yuuup! Heeeey...! What's with the face? You...don't want to be my master?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("そのとおり！おーい…！なんだその顔は？お前…俺のご主人様になりたくないのか？", true, true);
                 return true;
             }
             case 9 -> {
-                say(3, "#bNo... It's not that... I just don't know if I'm ready for a pet.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bいや…そうじゃなくて…ペットを飼う心の準備ができてるかわからなくて。", true, true);
                 return true;
             }
             case 10 -> {
-                say("A p-p-pet?! Did you just call me a pet?! How dare... Why, I'm a Dragon! The strongest being in the world!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ペ、ペ、ペット？！今、俺のことをペットって言ったか？！よくも…俺はドラゴンだぞ！世界で一番強い生き物なんだぞ！", true, true);
                 return true;
             }
             case 11 -> {
-                say(3, "#b...#b(You stare at him skeptically. He looks like a lizard. A puny little one, at that.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b…#b（疑わしげに見つめた。トカゲにしか見えない。しかも、ちっぽけな。）#k", true, true);
                 return true;
             }
             case 12 -> {
-                askAccept("Why are you looking at me like that?! Just watch! See what I can do with my power. Ready?");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("なんでそんな目で見るんだよ！見てろよ！俺の力でどんなことができるか見せてやる。いいか？");
                 return true;
             }
             case 13 -> {
                 forceStartQuest();
-                say("Command me to slay the #r#o1210100#s#k! Do it now! I'll show you how fast a Dragon can defeat the #o1210100#s! Goooo, charge!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#r#o1210100##kを倒せと命令してくれ！今すぐだ！ドラゴンがどれだけ速く#o1210100#を倒せるか見せてやる！いっけえ、突撃だ！", false, true);
                 return true;
             }
             case 14 -> {
-                say("Wait a minute! Did you distribute your AP? I'm heavily affected by my master's #bINT and LUK#k! If you really want to see what I can do, distribute your AP and #bequip your Magician equipment#k before you use the skill!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ちょっと待て！APは振ったか？俺はご主人様の#bINTとLUK#kに大きく影響されるんだ！俺の力を本当に見たいなら、スキルを使う前にAPを振って、#b魔法使いの装備を身につけろ#k！", true, true);
                 return true;
             }
             case 15 -> {

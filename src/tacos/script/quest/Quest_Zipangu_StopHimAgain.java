@@ -23,19 +23,20 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q50003s, endscript : q50003e (JMS186), 何度でも止めてみせる！, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Zipangu_StopHimAgain extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("...What is it? Ah, I see that he's coming really close!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("…どうした？ああ、奴がすぐそこまで迫っているんだな！", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("Watch out, because he seems... much more powerful than before. Do not underestimate him!");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("気をつけろ、奴は…前よりずっと強くなっているようだ。甘く見るなよ！");
                 return true;
             }
             case 1 -> {

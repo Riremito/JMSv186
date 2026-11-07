@@ -23,33 +23,37 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20700s (JMS186), このまま出られる？, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_AreYouSureYouCanLeave extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 0) {
-            say("When will you realize how weak you are... When you get yourself in trouble in Victoria Island?", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("自分がどれほど弱いか、いつになったら気づくのですか…ビクトリアアイランドで痛い目にあってからですか？", false, true);
             safeDispose();
             return true;
         }
         switch (status) {
             case 0 -> {
-                say("You have finally become a Knight-in-Training. I'd like to give you a mission right away, but you still look miles away from even being able to handle a task on your own. Are you sure you can even go to Victoria Island like this?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ついに見習い騎士になりましたね。すぐにでも任務を与えたいところですが、まだ一人で任務をこなせるようにはとても見えません。本当にこのままビクトリアアイランドへ行くつもりですか？", false, true);
                 return true;
             }
             case 1 -> {
-                askAccept("It's up to you to head over to Victoria Island, but a Knight-in-Training that can't take care of one''s self in battles is likely to cause harm to the Empress''s impeccable reputation. As the Head Tactician of this island, I can't let that happen, period. I want you to keep training until the right time comes.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("ビクトリアアイランドへ行くのはあなたの自由ですが、戦いで自分の身も守れない見習い騎士は、女王陛下の名声に傷をつけかねません。この島の軍師として、それだけは絶対に許すわけにはいきません。しかるべき時が来るまで修行を続けてください。");
                 return true;
             }
             case 2 -> {
                 forceCompleteQuest();
-                say("#p1102000#, the Training Instructor, will help you train into a serviceable knight. Once you reach Level 13, I'll assign you a mission or two. So until then, keep training.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("修練教官の#p1102000#が、役に立つ騎士になれるよう修行を手伝ってくれます。レベル13になったら、任務をいくつか与えましょう。それまでは修行を続けてください。", false, true);
                 return true;
             }
             case 3 -> {
-                say("Oh, and are you aware that if you strike a conversation with #p1101001#, she'll give you a blessing? The blessing will definitely help you on your journey.", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("それと、#p1101001#に話しかけると祝福をしてくれることを知っていますか？祝福はきっと旅の助けになるはずです。", true, false);
                 return true;
             }
             default -> {

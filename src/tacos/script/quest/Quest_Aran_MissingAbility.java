@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21012s, endscript : q21012e (JMS186), 消えた能力, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_MissingAbility extends QuestScriptMan {
 
     private final int item_red_potion = 2000022; // リエン特製赤い薬
@@ -34,29 +33,35 @@ public class Quest_Aran_MissingAbility extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 1) {
-            say("Hm... You don''t think that would help? Think about it. It could help, you know...", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("ふむ…役に立たないと思うのかい？考えてみなよ。役に立つかもしれないよ…", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Welcome hero! What's that? You want to know how I knew who you were? That's easy. I eavesdropped on some people talking loudly next to me. I''m sure the rumor has spread through the entire island already. Everyone knows that you've returned!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ようこそ、英雄さん！え？どうしてあなたのことを知っているのかって？簡単さ。隣で大声で話している人たちの話を聞いちゃったんだ。噂はもう島中に広まっているはずだよ。あなたが帰ってきたことは、みんな知ってるさ！", false, true);
                 return true;
             }
             case 1 -> {
-                say("Anyway, what's with the long face? Is something wrong? Hm? You''re not sure whether you''re really a hero or not? You lost your memory?! No way... It must be because you were trapped inside the ice for hundreds and hundreds of years.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ところで、浮かない顔だね。何かあったのかい？ん？本当に英雄なのかどうか自信がない？記憶をなくした？！そんな…何百年も氷の中に閉じ込められていたせいに違いないね。", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("Hm, how about you trying out that sword? Wouldn't that bring back some memories? How about #bfighting some monsters#k?");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("ふむ、その剣を使ってみたらどうだい？何か思い出すかもしれないよ。#bモンスターと戦ってみる#kのはどうだい？");
                 return true;
             }
             case 3 -> {
                 forceStartQuest();
-                say("It just so happens that there are a lot of #r#o9300383#s#k near here. How about defeating just #r3#k of them? It could help you remember a thing or two.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ちょうどこの近くに#r#o9300383##kがたくさんいるんだ。#r3匹#kだけ倒してみたらどうだい？何か思い出すかもしれないよ。", false, true);
                 return true;
             }
             case 4 -> {
-                say(1, "Ah, you''ve also forgotten how to use your skills? #bPlace skills in the quick slots for easy access.#k You can also place consumable items in the slots, so use the slots to your advantage.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(1, "あれ、スキルの使い方も忘れちゃったのかい？#bスキルをクイックスロットに登録すると使いやすくなるよ。#k消費アイテムも登録できるから、うまく活用してね。", true, true);
                 return true;
             }
             case 5 -> {
@@ -73,12 +78,14 @@ public class Quest_Aran_MissingAbility extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == -1) {
-            say("What? You don't want the potion?", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("え？薬はいらないのかい？", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askYesNo("Hm... Your expression tells me that the exercise didn''t jog any memories. But don''t you worry. They''ll come back, eventually. Here, drink this potion and power up! \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_red_potion + "# 10 #t" + this.item_red_potion + "# \r\n#i" + this.item_blue_potion + "# 10 #t" + this.item_blue_potion + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("ふむ…その顔を見ると、体を動かしても何も思い出せなかったみたいだね。でも心配いらないよ。そのうち思い出すさ。ほら、この薬を飲んで元気を出して！ \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_red_potion + "# 10 #t" + this.item_red_potion + "# \r\n#i" + this.item_blue_potion + "# 10 #t" + this.item_blue_potion + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値");
                 return true;
             }
             case 1 -> {
@@ -88,7 +95,8 @@ public class Quest_Aran_MissingAbility extends QuestScriptMan {
                 forceCompleteQuest();
                 questEndEffect();
                 // js の sendOkS は type が反映されない
-                say(2, "#b(Even if you''re really the hero everyone says you are... What good are you without any skills?)#k", false, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（みんなが言うように本当に英雄だとしても…スキルが使えないのでは何の役にも立たない。）#k", false, false);
                 return false;
             }
             default -> {

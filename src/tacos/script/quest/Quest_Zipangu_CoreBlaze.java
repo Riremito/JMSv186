@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q50004e, q50005e (JMS186), コアブレイズ始動, コアブレイズ暴走, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Zipangu_CoreBlaze extends QuestScriptMan {
 
     @Override
@@ -34,23 +33,28 @@ public class Quest_Zipangu_CoreBlaze extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                say("(I re-entered Shibuya of 2102. What I see down there is... #p9120033#!) \n......You are......!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("（2102年の渋谷に再びやって来た。そこに見えたのは…#p9120033#だ！） \n……君は……！", false, true);
                 return true;
             }
             case 1 -> {
-                say("...Ah, so you're sent here to defeat #o9400296#. Seriously, I'm so sorry...\n(As he uttered those words, #p9120033# couldn't bear looking at me in the eye)", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("…ああ、#o9400296#を倒すために送られてきたんだな。本当にすまない…\n（そう言うと、#p9120033#は私の目をまともに見られないようだった）", true, true);
                 return true;
             }
             case 2 -> {
-                say("The enemy headquarters is located at the center of Roppongi, at #bRoppongi Mall#k. Of course, you won't be able to enter the face-on. At the main lobby, an army of robots called #o9400287# stand by, serving as security. Your first task is to enter the building wile faking those robots out.\n(As he mentioned these, #p9120033# handed me a single copy of globe.)", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("敵の本拠地は六本木の中心、#b六本木モール#kにある。もちろん正面からは入れない。メインロビーには#o9400287#というロボットの軍団が警備として待ち構えているんだ。まずはそのロボットたちの目を欺いて建物に入るのが最初の任務だ。\n（そう言いながら、#p9120033#は地図を一枚手渡してくれた。）", true, true);
                 return true;
             }
             case 3 -> {
-                say("The truth is, there have been underground pathways that leads from Shibuya to Roppongi Mall. Using this will allow you to enter the building without being noticed by #o9400287#. This is the map that'll lead you to there. It's just a straight line, so you should have no trouble entering there, but I'll give you the map nontheless.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("実は、渋谷から六本木モールへ続く地下通路があるんだ。そこを使えば、#o9400287#に気づかれずに建物に入れる。これがそこまでの地図だ。一本道だから迷うことはないと思うが、念のため地図を渡しておく。", true, true);
                 return true;
             }
             case 4 -> {
-                say("Please head over to Shibuya in year 2102, and use the undergroud path to enter the mall. Since the mall is the headquarters, you may encounter a number of monsters you wil have never seen. Please do not underestimate them. Good luck!");
+                // TODO : 文章 (js の英文を翻訳)
+                say("2102年の渋谷へ行って、地下通路を使ってモールに入ってくれ。モールは敵の本拠地だから、見たこともないモンスターがたくさんいるかもしれない。決して甘く見ないでくれ。幸運を祈る！");
                 forceCompleteQuest();
                 questEndEffect();
                 safeDispose();

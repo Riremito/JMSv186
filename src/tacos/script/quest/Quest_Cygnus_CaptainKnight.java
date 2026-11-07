@@ -23,19 +23,20 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20408s (JMS186), 女王の騎士団長 (4次転職), 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_CaptainKnight extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == -1) {
-            say("I guess you are not ready to tackle on the responsibilities of an official knight.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("まだ正騎士としての責任を負う準備ができていないようですね。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askYesNo("You've saved Erev. Do you want to become a Captain Knight?");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("あなたはエレヴを救いました。騎士団長になりますか？");
                 return true;
             }
             case 1 -> {
@@ -44,7 +45,8 @@ public class Quest_Cygnus_CaptainKnight extends QuestScriptMan {
                 if (job == 1111 || job == 1211 || job == 1311 || job == 1411 || job == 1511) {
                     changeJob(job + 1);
                 }
-                say("You are now an official knight of the Knights of Cygnus.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("あなたは今からシグナス騎士団の正式な騎士です。", false, true);
                 return true;
             }
             default -> {

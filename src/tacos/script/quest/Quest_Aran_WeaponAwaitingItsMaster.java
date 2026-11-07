@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21200s, endscript : q21200e, q21201e (JMS186), 主を待つ武器, 念願の鏡, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_WeaponAwaitingItsMaster extends QuestScriptMan {
 
     private final int quest_weapon = 21200; // 主を待つ武器
@@ -35,12 +34,14 @@ public class Quest_Aran_WeaponAwaitingItsMaster extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("It's really urgent, and you'll regret it if you refuse to. #bIt has something to do with your pole arm,#k which means it has to do with your past. Who knows...? Maybe the pole arm is key to reawakening your abilities...?", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("本当に急ぎの用なのです。断ったら後悔しますよ。#bあなたの鉾に関することなのです。#kつまり、あなたの過去に関わることです。もしかすると…鉾があなたの能力を目覚めさせる鍵なのかもしれません…", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("How's the training going? Wow, looking at you, I can tell your levels have shot through the roof. That's amazing... well, anyway, I see that you'r busy, but you'll have to return to the island for a bit.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("修行は順調ですか？まあ、ずいぶんレベルが上がったようですね。すごいです…それはそうと、忙しいところ申し訳ないのですが、少しの間島に戻ってきてもらえますか。");
                 return true;
             }
             case 1 -> {
@@ -50,7 +51,8 @@ public class Quest_Aran_WeaponAwaitingItsMaster extends QuestScriptMan {
                 questEndEffect();
                 forceStartQuest(this.quest_best_weapon);
                 forceStartQuest(this.quest_unknown, "0");
-                say("Your #bGiant Pole Arm#k that's being kept in #bRien#k is acting strange all of a sudden. According to the book, the pole arm reacts like this when it's calling for its master. #bMaybe it's calling for you?#k? Please come back to the island and find out.");
+                // TODO : 文章 (js の英文を翻訳)
+                say("#bリエン#kで保管している#b巨大な鉾#kが、急に様子がおかしくなったのです。本によると、鉾が主を呼んでいるときにこのような反応をするそうです。#bもしかしてあなたを呼んでいるのでは？#k島に戻って確かめてみてください。");
                 return false;
             }
             default -> {
@@ -69,7 +71,8 @@ public class Quest_Aran_WeaponAwaitingItsMaster extends QuestScriptMan {
         }
         // いいえを選択した
         if (getLastAction() == 0 && status == 10) {
-            say("Hey, at least you tell me you tried!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("おい、せめてやってみたとくらい言ってくれよ！", false, true);
             return false;
         }
         // 動画を見る
@@ -81,61 +84,75 @@ public class Quest_Aran_WeaponAwaitingItsMaster extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                say(2, "Hmmmmmm mmmm mmmmm....", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "うううううん…", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(Giant Pole Arm is buzzing, but who's that boy standing there?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（巨大な鉾が震えている。でも、あそこに立っている少年は誰だろう？）#k", true, true);
                 return true;
             }
             case 2 -> {
-                say(2, "#b(I've never met him before. He doesn't look human.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（今まで会ったことがない。人間ではなさそうだ。）#k", true, true);
                 return true;
             }
             case 3 -> {
-                say("Hey Aran! Do you still not hear me? Seriously, can't you hear me? Ahhh, this is frustrating!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おい、アラン！まだ聞こえないのか？本当に聞こえないのかよ？ああ、もう、イライラする！", true, true);
                 return true;
             }
             case 4 -> {
-                say(2, "#b(Whoa, who was that? Sounds like an angry boy...)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（うわっ、今のは誰だ？怒っている少年の声みたいだ…）#k", true, true);
                 return true;
             }
             case 5 -> {
-                say("Seriously, the one master I had turned out to be trapped in ice for hundreds of years, abandoning the weapon, and now the 'master' can't even hear me?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("まったく、たった一人の主は武器をほったらかして何百年も氷に閉じ込められていたうえに、今度はその「主」が俺の声も聞こえないなんて！", true, true);
                 return true;
             }
             case 6 -> {
-                say(2, "Who are you?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "お前は誰だ？", true, true);
                 return true;
             }
             case 7 -> {
-                say("Aran? Do you hear me now? It's me, it's me! I'm your weapon #bMaha the pole arm!#k!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("アラン？今度は聞こえるか？俺だよ、俺！お前の武器、#b鉾のマッハ#kだ！", true, true);
                 return true;
             }
             case 8 -> {
-                say(2, "#b(...Maha? Giant pole Arm actually talks?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（…マッハ？巨大な鉾がしゃべっている？）#k", true, true);
                 return true;
             }
             case 9 -> {
-                say("Why do you have that look on your face like you can't believe it? I see that you have lost all your memories, but... did you also forget about me? How can you do that to me??", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("なんで信じられないって顔をしてるんだよ？記憶を全部なくしたのはわかるけど…俺のことまで忘れたのか？そんなのひどいだろ？？", true, true);
                 return true;
             }
             case 10 -> {
-                say(2, "I'm sorry, but seriously... I don't remember a thing.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "すまない、でも本当に…何も覚えていないんだ。", true, true);
                 return true;
             }
             case 11 -> {
-                askYesNo("Is that all you can say after all those years? I'm sorry? Do you understand how bored I was all by myself for hundreds of years? Bring it out if you can. Bring your memories out! Bring them all out! Dig them up if you need to!");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("何百年ぶりなのに、言うことはそれだけか？すまない？何百年もひとりぼっちで、俺がどれだけ退屈だったかわかるか？思い出せるものなら思い出してみろ。記憶を引っぱり出せ！全部だ！掘り起こしてでも思い出せ！");
                 return true;
             }
             case 12 -> {
-                say(2, "#b(The voice that claims to be Maha the Giant Pole Arm seem quite perturbed. This conversation is going nowhere. I better talk to Lirin first.)#k", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（巨大な鉾のマッハだと名乗る声は、かなり腹を立てているようだ。このままでは話が進まない。まずは#p1201000#と話してみよう。）#k", false, true);
                 forceCompleteQuest();
                 questEndEffect();
                 return true;
             }
             case 13 -> {
-                askYesNo("Would you like to skip the video clip?  Even if you skip the scene, game play will not be affected.");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("映像をスキップしますか？スキップしてもゲームの進行には影響ありません。");
                 return true;
             }
             default -> {

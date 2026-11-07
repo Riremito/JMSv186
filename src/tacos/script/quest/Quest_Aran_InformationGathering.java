@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21712s, q21716s (JMS186), 1番目の情報収集の完了, 2番目の情報収集 完了, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_InformationGathering extends QuestScriptMan {
 
     private final int quest_first = 21712; // 1番目の情報収集の完了
@@ -33,25 +32,30 @@ public class Quest_Aran_InformationGathering extends QuestScriptMan {
         if (getQuestId() == this.quest_first) {
             // 受諾しなかった
             if (getLastAction() == 0 && status == 1) {
-                say("You still don't understand what's going on? I'll explain it to you again if you talk to me one more time.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("まだ状況がわからないのかい？もう一度話しかけてくれれば、また説明してあげるよ。", false, true);
                 return false;
             }
             switch (status) {
                 case 0 -> {
-                    say("#t4032315#... #rThis puppet is making a strange noise#k. You can't hear it with your ears, of course, since it can only be heard by the #o1210102#s. I believe it's this noise that changed the personality of the #o1210102#s.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("#t4032315#…#rこの人形が変な音を出しているんだ#k。もちろん耳では聞こえないよ。#o1210102#にしか聞こえない音だからね。この音のせいで#o1210102#の性格が変わってしまったんだと思う。", false, true);
                     return true;
                 }
                 case 1 -> {
-                    askAccept("The #o1210102#s that have been affected by the noise have turned cynical. They've started fighting the non-affected #o1210102#s, which has made all #o1210102#s prepare for combat. #bThe reason for all these changes in the #o1210102#s is this puppet#k! Do you understand?");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("音の影響を受けた#o1210102#はひねくれてしまって、影響を受けていない#o1210102#と争い始めたんだ。そのせいで#o1210102#がみんな戦う態勢になってしまった。#b#o1210102#がこんなふうに変わってしまった原因は、この人形なんだ#k！わかったかい？");
                     return true;
                 }
                 case 2 -> {
                     forceStartQuest();
-                    say(9, "I wonder what triggered this in the first place. There is no way this puppet was naturally created, which means someone planned this. I should keep an eye on the #o1210102#s.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(9, "そもそも何がきっかけだったんだろう。この人形が自然にできるはずがないから、誰かが仕組んだということだ。#o1210102#から目を離さないようにしないと。", false, true);
                     return true;
                 }
                 case 3 -> {
-                    say(2, "#b(You were able to find out what caused the changes in the #o1210102#s. You should report to #p1002104# and deliver the information you''ve gathered.)#k", true, false);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#b（#o1210102#が変わってしまった原因がわかった。#p1002104#に報告して、集めた情報を伝えよう。）#k", true, false);
                     return false;
                 }
                 default -> {
@@ -61,29 +65,35 @@ public class Quest_Aran_InformationGathering extends QuestScriptMan {
         }
         // 受諾しなかった
         if (getLastAction() == 0 && status == 1) {
-            say("What? I don''t think there are any suspects besides that kid. Please think again.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("何ですって？あの子以外に怪しい人はいないと思うけど。もう一度よく考えてみて。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say(8, "What did #p1032112# say?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "#p1032112#は何て言っていたの？", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(You tell her what #p1032112# observed.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（#p1032112#が見たことを話した。）#k", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("A kid with a puppet? That seems very suspicious. I am sure that kid is the reason the Green Mushrooms have suddenly turned violent.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("人形を持った子ども？それはとても怪しいわね。緑キノコが急に凶暴になったのは、きっとその子のせいだわ。");
                 return true;
             }
             case 3 -> {
                 forceStartQuest();
-                say(2, "How dare this kid wreak havoc in the South Forest. Who knows how long it will take to restore the forest... I''ll have to devote most of my time cleaning up the mess.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "南の森をこんなに荒らすなんて、許せない子ね。森が元に戻るまでどのくらいかかるかわからないわ…しばらくは後片付けにかかりきりになりそう。", false, true);
                 return true;
             }
             case 4 -> {
-                say(2, "#b(You were able to find out what caused the changes in the Green Mushrooms. You should report #p1002104# and deliver the information you''ve collected.)#k", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（緑キノコが変わってしまった原因がわかった。#p1002104#に報告して、集めた情報を伝えよう。）#k", true, false);
                 return true;
             }
             default -> {

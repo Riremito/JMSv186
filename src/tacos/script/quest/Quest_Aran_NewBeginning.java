@@ -23,44 +23,51 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21700s (JMS186), 新たな始まり, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_NewBeginning extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 3) {
-            say("No? Are you saying you can train on your own? I'm just letting you know that you'll get better results if you train with an instructor. You can't live in this world alone. You must learn to get along with other people.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("いいえ？一人で修行できるということですか？教官と一緒に修行した方がいい結果が出るということだけは言っておきますよ。この世界は一人では生きていけません。人と協力することを学ばなければなりません。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say(8, "It seems like you've started to remember things. Your Polearm must have recognized you. This means you are surely #bAran, the wielder of Polearms#k. Is there anything else you remember? Skills you used with the Polearm perhaps? Anything?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "少しずつ思い出してきたようですね。鉾があなたを認めたのでしょう。つまり、あなたは間違いなく#b鉾の使い手、アラン#kです。ほかに何か覚えていることはありませんか？鉾で使っていたスキルとか？何でもいいのです。", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(You tell her that you remember a few skills.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（いくつかのスキルを思い出したことを伝えた。）#k", true, true);
                 return true;
             }
             case 2 -> {
-                say(8, "That's not a lot, but it's progress. Our focus, then, should be to get you back to the state before you were frozen. You may have lost your memory, but I'm sure it won't take long for you to recover the abilities that your body remembers.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "多くはありませんが、進歩ですね。それなら、凍りつく前の状態に戻ることを目指しましょう。記憶はなくしても、体が覚えている能力はすぐに取り戻せるはずです。", true, true);
                 return true;
             }
             case 3 -> {
-                say(2, "How do I recover my abilities?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "どうすれば能力を取り戻せる？", true, true);
                 return true;
             }
             case 4 -> {
-                askAccept("There is only one way to do that. Train! Train! Train! Train! If you continue to train, your body will instinctively remember its abilities. To help you through the process, I'll introduce you to an instructor.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("方法はひとつだけです。修行！修行！修行！修行です！修行を続ければ、体が本能的に能力を思い出すはずです。その手助けとして、教官を紹介しましょう。");
                 return true;
             }
             case 5 -> {
                 forceStartQuest();
-                say("I gave you a #bPolearm#k because I figured it would be best for you to use a weapon you're familiar with. It will be useful in your training.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("使い慣れた武器が一番だと思って、#b鉾#kを渡しました。修行に役立つはずです。", false, true);
                 return true;
             }
             case 6 -> {
-                say("You'll find a Training Center if you exit to the #bleft#k. There, you''ll meet #b#p1202006##k. I'm a bit worried because I think he may be struggling with bouts of Alzheimer's, but he spent a long time researching skills to help you. I'm sure you'll learn a thing or two from him.", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#b左#kに出ると修練場があります。そこで#b#p1202006##kに会ってください。少し物忘れがひどいのが心配ですが、あなたのために長い間スキルを研究してきた方です。きっと何か学べるはずです。", true, false);
                 return false;
             }
             default -> {

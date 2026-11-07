@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q20104e, q20105e (JMS186), ナイトウォーカーの道, ストライカーの道, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_FirstJobAdvancement extends QuestScriptMan {
 
     private final int quest_night_walker = 20104; // ナイトウォーカーの道
@@ -39,17 +38,20 @@ public class Quest_Cygnus_FirstJobAdvancement extends QuestScriptMan {
         boolean night_walker = (getQuestId() == this.quest_night_walker);
         // いいえを選択した
         if (getLastAction() == 0 && status == -1) {
-            say("This is an important decision to make.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("これは大切な決断です。", false, true);
             safeDispose();
             return true;
         }
         switch (status) {
             case 0 -> {
-                askYesNo("Have you made your decision? The decision will be final, so think carefully before deciding what to do. Are you sure you want to become a " + (night_walker ? "Night Walker" : "Striker") + "?");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("決心はつきましたか？一度決めたら変えられませんので、よく考えてから決めてください。本当に" + (night_walker ? "ナイトウォーカー" : "ストライカー") + "になりますか？");
                 return true;
             }
             case 1 -> {
-                say("I have just molded your body to make it perfect for a Soul Master. If you wish to become more powerful, use Stat Window (S) to raise the appropriate stats. If you arn't sure what to raise, just click on #bAuto#k.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("あなたの体をソウルマスターにふさわしいものに作り変えました。もっと強くなりたいなら、能力値ウィンドウ（S）で適切な能力値を上げてください。何を上げればいいかわからなければ、#b自動#kをクリックするだけで大丈夫です。", false, true);
                 int job = night_walker ? this.job_night_walker : this.job_striker;
                 if (getJob() != job) {
                     if (night_walker) {
@@ -69,19 +71,23 @@ public class Quest_Cygnus_FirstJobAdvancement extends QuestScriptMan {
                 return true;
             }
             case 2 -> {
-                say("I have also expanded your inventory slot counts for your equipment and etc. inventory. Use those slots wisely and fill them up with items required for Knights to carry.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("装備とETCのインベントリのスロット数も増やしておきました。騎士として持ち歩くべきアイテムで、スロットを上手に活用してください。", true, true);
                 return true;
             }
             case 3 -> {
-                say("I have also given you a hint of #bSP#k, so open the #bSkill Menu#k to acquire new skills. Of course, you can't raise them at all once, and there are some skills out there where you won't be able to acquire them unless you master the basic skills first.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#bSP#kも少し与えておきましたので、#bスキルウィンドウ#kを開いて新しいスキルを覚えてください。もちろん一度にすべて上げることはできませんし、基本のスキルを極めないと覚えられないスキルもあります。", true, true);
                 return true;
             }
             case 4 -> {
-                say("Unlike your time as a Nobless, once you become the Soul Master, you will lost a portion of your EXP when you run out of HP, okay?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ノーブレスだったころとは違い、ソウルマスターになるとHPがなくなったときに経験値を一部失いますので、気をつけてくださいね。", true, true);
                 return true;
             }
             case 5 -> {
-                say("Now... I want you to go out there and show the world how the Knights of Cygnus operate.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("さあ…世界に出て、シグナス騎士団の活躍を見せてきてください。", true, true);
                 safeDispose();
                 return true;
             }

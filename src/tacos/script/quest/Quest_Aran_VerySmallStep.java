@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21704s (JMS186), とても小さな一歩, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_VerySmallStep extends QuestScriptMan {
 
     private final int reward_exp = 500;
@@ -36,15 +35,18 @@ public class Quest_Aran_VerySmallStep extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                say(8, "How did the training go? The Penguin Teacher #p1202006# likes to exaggerate and it worried me knowing that he has bouts of Alzheimer's, but I'm sure he helped you. He's been studying the skills of heroes for a very long time.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "修行はどうでしたか？ペンギン先生の#p1202006#は大げさなところがありますし、物忘れがひどいので心配していたのですが、きっと役に立ったはずです。彼は長い間、英雄たちのスキルを研究してきたのですから。", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(You tell her that you were able to remember the Combo Ability skill.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（コンボアビリティのスキルを思い出したことを伝えた。）#k", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("That's great! Honestly, though, I think it has less to do with the method of #p1202006#'s training and more to do with your body remembering its old abilities. #bI'm sure your body will remember more skills as you continue to train#k!  \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("よかったですね！でも正直なところ、#p1202006#の修行の方法というよりは、あなたの体が昔の能力を覚えていたからだと思います。#b修行を続ければ、体はもっと多くのスキルを思い出すはずです#k！  \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0#" + this.reward_exp + " 経験値");
                 return true;
             }
             case 3 -> {

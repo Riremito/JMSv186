@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22501s - q22504s (JMS186), お腹が空いたちびドラゴン, 乾草を一口, オオカミ肉を一口, 美味しい牛乳1, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_HungryBabyDragon extends QuestScriptMan {
 
     private final int quest_hungry = 22501; // お腹が空いたちびドラゴン
@@ -35,31 +34,37 @@ public class Quest_Evan_HungryBabyDragon extends QuestScriptMan {
         if (getQuestId() == this.quest_hungry) {
             // 受諾しなかった
             if (getLastAction() == 0 && status == 2) {
-                say("*gasp* How can you refuse to feed your Dragon? This is child abuse!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("*はっ* 自分のドラゴンに餌をくれないなんて！これは虐待だぞ！", false, true);
                 return false;
             }
             switch (status) {
                 case 0 -> {
-                    say("Yo, master. Now that I've shown you what I can do, it's your turn. Prove to me...that you can find food! I'm starving. You can use my power now, so you have to take care of me.", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("よう、ご主人様。俺の力は見せたから、今度はお前の番だ。食べ物を見つけられるってことを証明してみせろ！腹ぺこなんだ。もう俺の力が使えるんだから、俺の面倒を見てくれよな。", false, true);
                     return true;
                 }
                 case 1 -> {
                     forceStartQuest();
-                    say(2, "Eh, I still don't get what's going on, but I can't let a poor little critter like you starve, right? Food, you say? what do you want to eat?", true, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "うーん、まだよくわからないけど、君みたいなかわいそうなちびを飢えさせるわけにはいかないよね？食べ物だって？何が食べたいの？", true, true);
                     return true;
                 }
                 case 2 -> {
-                    say("Hi, I was just born a few minutes ago. How would I know what I eat? All I know is that I'm a Dragon... I'm YOUR Dragon. And you're my master. You have to treat me well!", true, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("あのな、俺はほんの数分前に生まれたばかりなんだぞ。何を食べるかなんてわかるわけないだろ？わかってるのは、俺がドラゴンだってことだけだ…お前のドラゴンだ。そして、お前は俺のご主人様だ。ちゃんと大事にしてくれよ！", true, true);
                     return true;
                 }
                 case 3 -> {
-                    askAccept("I guess we're supposed to learn together. But I'm hungry. Master, I want food. Remember, I'm a baby! I'll start crying soon!");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("一緒に覚えていくしかないみたいだな。でも腹が減った。ご主人様、ご飯がほしい。俺は赤ちゃんなんだぞ！もうすぐ泣いちゃうぞ！");
                     return true;
                 }
                 case 4 -> {
                     forceStartQuest();
                     // js の sendOkS は type が反映されない
-                    say(2, "#b(Mir the baby Dragon appears to be extremely hungry. You must feed him. Maybe your Dad can give you advice on what dragons eat.)", false, false);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#b（ちびドラゴンのミルはとてもお腹を空かせているようだ。何か食べさせなければ。お父さんなら、ドラゴンが何を食べるか教えてくれるかもしれない。）", false, false);
                     return false;
                 }
                 default -> {
@@ -70,12 +75,14 @@ public class Quest_Evan_HungryBabyDragon extends QuestScriptMan {
         if (getQuestId() == this.quest_hay) {
             // 受諾しなかった
             if (getLastAction() == 0 && status == -1) {
-                say("Hm, you never know unless you try. That lizard is big enough to be on Maple's Believe It Or Not. It might eat hay", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ふむ、やってみなければわからないさ。あのトカゲは、メイプルのびっくり大全に載りそうなくらい大きいからな。干し草を食べるかもしれないぞ", false, true);
                 return false;
             }
             switch (status) {
                 case 0 -> {
-                    askAccept("Wouldn't a lizard enjoy a #bHandful of Hay#k, like a cow? There are a lot of #bHaystacks#k nearby, so try feeding it that.");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("トカゲも牛みたいに#b干し草ひとつかみ#kを喜ぶんじゃないか？近くに#b干し草の山#kがたくさんあるから、それを食べさせてみなさい。");
                     return true;
                 }
                 case 1 -> {
@@ -92,34 +99,42 @@ public class Quest_Evan_HungryBabyDragon extends QuestScriptMan {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 1) {
             if (pork) {
-                say("How can you starve me like this. I'm just a baby. This is wrong!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("こんなふうに俺を飢えさせるなんて。俺はまだ赤ちゃんなんだぞ。こんなのおかしいよ！", false, true);
             } else {
-                say("No use trying to find an answer to this on my own. I'd better look for #bsomeone older and wiser than master!#k", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("自分で答えを探しても無駄みたいだ。#bご主人様より年上で物知りな人#kを探さないと！", false, true);
             }
             return false;
         }
         switch (status) {
             case 0 -> {
                 if (pork) {
-                    say("No, no, no. This isn't what I need. I need something more nutritious, master!", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("違う、違う、違う。これじゃないんだ。もっと栄養のあるものがほしいんだよ、ご主人様！", false, true);
                 } else {
-                    say("Ugh. This isn't going to work. I need something else. No plants. No meat. What, you have no idea? But you're the master, and you're older than me, too. You must know what'd be good for me!", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("うえっ。これじゃだめだ。何か別のものがいい。草はいやだ。肉もいやだ。なんだ、わからないのか？でもご主人様だし、俺より年上だろ。俺に合うものくらいわかるはずだ！", false, true);
                 }
                 return true;
             }
             case 1 -> {
                 if (pork) {
-                    say(2, "#bHm... So you're not a herbivore. You might be a carnivore. You're a Dragon, after all. How does some Pork sound?#k", true, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#bうーん…じゃあ草食じゃないんだね。肉食なのかも。なにしろドラゴンだし。豚肉なんてどう？#k", true, true);
                 } else {
-                    say(2, "#But I don't. It's not like age has anything to do with this...", true, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#bわからないよ。年は関係ないと思うけど…", true, true);
                 }
                 return true;
             }
             case 2 -> {
                 if (pork) {
-                    askAccept("What's a...Pork? Never heard of it, but if it's yummy, I accept! Just feed me something tasty. Anything but plants!");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("ブタニク…って何だ？聞いたことないけど、おいしいならそれでいい！とにかく、おいしいものを食べさせてくれ。草以外ならな！");
                 } else {
-                    askAccept("Since you're older, you must be more experienced in the world, too. Makes sense that you'd know more than me. Oh, fine. I'll ask someone who's even older than you, master!");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("年上なんだから、世の中のことにも詳しいはずだろ。俺より物知りなのは当然だ。まあいいや。ご主人様よりもっと年上の人に聞いてみるよ！");
                 }
                 return true;
             }
@@ -127,9 +142,11 @@ public class Quest_Evan_HungryBabyDragon extends QuestScriptMan {
                 forceStartQuest();
                 // js の sendOkS は type が反映されない
                 if (pork) {
-                    say(2, "#b(Try giving Mir some Pork. You have to hunt a few Pigs at the farm. Ten should be plenty...)#k", false, false);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#b（ミルに豚肉をあげてみよう。農場で豚を何匹か狩らないと。10匹もいれば十分だろう…）#k", false, false);
                 } else {
-                    say(2, "#b(You already asked Dad once, but you don't have any better ideas. Time to ask him again!)#k", false, false);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say(2, "#b（お父さんにはもう一度聞いたけど、ほかにいい考えも浮かばない。もう一度聞いてみよう！）#k", false, false);
                 }
                 return false;
             }

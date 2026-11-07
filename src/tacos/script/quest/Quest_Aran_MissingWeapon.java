@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q21011e (JMS186), 消えた武器, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_MissingWeapon extends QuestScriptMan {
 
     private final int item_sword = 1302000; // 剣
@@ -33,7 +32,8 @@ public class Quest_Aran_MissingWeapon extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == 3) {
-            say("*sniff sniff* Isn''t this sword good enough for you, just for now? I''d be so honored...", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("*ぐすん* とりあえず、この剣ではだめですか？使っていただけたら光栄なのですが…", false, true);
             return false;
         }
         switch (status) {
@@ -42,7 +42,8 @@ public class Quest_Aran_MissingWeapon extends QuestScriptMan {
                     forceStartQuest();
                     return false;
                 }
-                say("Wait, are you... No way... Are you the hero that #p1201000# has been talking about all this time?! #p1201000#! Don''t just nod... Tell me! Is this the hero you''ve been waiting for?!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("待って、あなたはもしかして…まさか…#p1201000#がずっと話していた英雄様ですか？！#p1201000#！うなずいてばかりいないで…教えてください！この方があなたの待っていた英雄様なのですか？！", false, true);
                 return true;
             }
             case 1 -> {
@@ -50,15 +51,18 @@ public class Quest_Aran_MissingWeapon extends QuestScriptMan {
                 return true;
             }
             case 2 -> {
-                say("I''m sorry. I''m just so overcome with emotions... *Sniff sniff* My goodness, I''m starting to tear up. You must be so happy, #p1201000#.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ごめんなさい。胸がいっぱいになってしまって…*ぐすん* なんてこと、涙が出てきちゃいました。本当によかったですね、#p1201000#。", true, true);
                 return true;
             }
             case 3 -> {
-                say("Wait a minute... You''re not carrying any weapons. From what I''ve heard, each of the heroes had a special weapon. Oh, you must have lost it during the battle against the Black Mage.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ちょっと待ってください…武器を持っていませんね。英雄たちはそれぞれ特別な武器を持っていたと聞いています。きっと暗黒の魔法使いとの戦いでなくしてしまったのですね。", true, true);
                 return true;
             }
             case 4 -> {
-                askYesNo("This isn''t good enough to replace your weapon, but #bcarry this sword with you for now#k. It''s my gift to you. A hero can''t be walking around empty-handed. \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_sword + "# 1 #t" + this.item_sword + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("あなたの武器の代わりにはなりませんが、#bとりあえずこの剣を持っていってください#k。私からの贈り物です。英雄が手ぶらで歩き回るわけにはいきませんから。 \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_sword + "# 1 #t" + this.item_sword + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値");
                 return true;
             }
             case 5 -> {
@@ -68,7 +72,8 @@ public class Quest_Aran_MissingWeapon extends QuestScriptMan {
                 }
                 forceCompleteQuest();
                 questEndEffect();
-                say(3, "#b(Your skills are nowhere close to being hero-like... But a sword? Have you ever even held a sword in your lifetime? You can''t remember... How do you even equip it?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（スキルは英雄にはほど遠い…それに剣？今まで剣を握ったことなんてあっただろうか？思い出せない…そもそもどうやって装備するんだろう？）#k", true, true);
                 return true;
             }
             case 6 -> {

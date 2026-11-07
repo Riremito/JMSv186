@@ -23,13 +23,13 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q2230e (JMS186), 謎の小さな卵, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 // TODO : js ではルーンスネイル (5000054) の入手処理がコメントアウトされており、メッセージを表示して完了するだけ
 public class Quest_Ellinia_MysteriousSmallEgg extends QuestScriptMan {
 
     @Override
     public boolean questEnd(int status, int answer) {
-        say("Snail Roon is no longer available.", false, true);
+        // TODO : 文章 (js の英文を翻訳)
+        say("カタツムリのルーンはもう利用できません。", false, true);
         forceCompleteQuest();
         questEndEffect();
         return false;

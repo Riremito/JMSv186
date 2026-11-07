@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20016s (JMS186), 暗黒の魔法使い, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_DoYouKnowTheBlackMagician extends QuestScriptMan {
 
     private final int reward_exp = 380;
@@ -32,45 +31,55 @@ public class Quest_Cygnus_DoYouKnowTheBlackMagician extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 7) {
-            say("Oh, do you still have some questions? Talk to me again and I'll explain it to you from the very beginning.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("おや、まだ何か質問がありますか？もう一度話しかけてくれれば、最初から説明しますよ。", false, true);
             safeDispose();
             return true;
         }
         switch (status) {
             case 0 -> {
-                say("Hello, #h0#. Welcome to #p1101000# Knights. My name is #p1101002# and I am currently serving as the young Empress's Tactician. We'd better get acquainted since we'll be seeing a lot of each other. Haha!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("こんにちは、#h0#。#p1101000#騎士団へようこそ。私は#p1101002#、幼い女王陛下の軍師を務めています。これからよく顔を合わせることになるでしょうから、仲良くしましょう。ははは！", false, true);
                 return true;
             }
             case 1 -> {
-                say("I'm sure you have a lot of questions since everything happened so quickly. I'll explain it all, one by one, from where you are to what you're here to do.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("あっという間の出来事だったので、わからないことがたくさんあるでしょう。ここがどこなのか、あなたがここで何をするのか、ひとつずつ説明しましょう。", true, true);
                 return true;
             }
             case 2 -> {
-                say("This island is called Erev. Thanks to the Empress's magic, this island usually floats around like a boat in the sky and patrols around Maple World. Right now, however, we've stopped here for a reason.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("この島はエレヴといいます。女王陛下の魔法のおかげで、この島は普段は空に浮かぶ船のようにメイプルワールドを巡回しています。ですが、今はわけあってここに停まっているのです。", true, true);
                 return true;
             }
             case 3 -> {
-                say("The young Empress is the ruler of Maple World. What? This is the first time you've heard of her? Ah, yes. Well, she's the ruler of Maple World but she doesn't like to control it. She watches from afar to make sure that all is well. Well, at least that's her usual role.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("幼い女王陛下はメイプルワールドの統治者です。え？初めて聞いた？ああ、そうでしょうね。陛下はメイプルワールドの統治者ですが、世界を支配することを好みません。すべてが平穏であるよう、遠くから見守っておられるのです。少なくとも、それが普段の役目です。", true, true);
                 return true;
             }
             case 4 -> {
-                say("But that's not the case right now. We've been finding signs all over Maple World that foreshadow the revival of the Black Mage. We can't have the Black Mage come back to terrorize Maple World as he has in the past!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ですが、今はそうではありません。メイプルワールドのあちこちで、暗黒の魔法使いの復活を予感させる兆しが見つかっているのです。暗黒の魔法使いがよみがえって、かつてのようにメイプルワールドを恐怖に陥れるようなことがあってはなりません！", true, true);
                 return true;
             }
             case 5 -> {
-                say("But that was ages ago and people today don''t realize how scary the Black Mage is. We've all become spoiled by the peaceful Maple World we enjoy today and forgotten how chaotic and frightening Maple World once was. If we don't do something, the Black Mage will once again rule Maple World!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ですが、それははるか昔のことで、今の人々は暗黒の魔法使いの恐ろしさを知りません。みんな今の平和なメイプルワールドに慣れきってしまい、かつてメイプルワールドがどれほど混乱し、恐ろしい場所だったかを忘れてしまったのです。このまま何もしなければ、暗黒の魔法使いが再びメイプルワールドを支配してしまうでしょう！", true, true);
                 return true;
             }
             case 6 -> {
-                say("This is why the young Empress has decided to take matters into her own hands. She''s forming a knighthood of brave Maplers to defeat the Black Mage once and for all. You know what you need to do, right? I''m sure you have an idea since you, yourself, signed up to be a Knight.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("だからこそ、幼い女王陛下は自ら動くことを決意されたのです。暗黒の魔法使いを完全に倒すため、勇敢なメイプラーたちによる騎士団を結成されています。自分が何をすべきか、わかりますね？自ら騎士に志願したのですから、見当はついているでしょう。", true, true);
                 return true;
             }
             case 7 -> {
-                say("We have to get stronger so we can defeat the Black Mage if he revives. Our primary goal is to prevent him from destroying Maple World, and you will play a prominent role in that.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("暗黒の魔法使いが復活したときに倒せるよう、私たちは強くならなければなりません。最大の目標は、暗黒の魔法使いがメイプルワールドを滅ぼすのを防ぐことです。そして、あなたはそこで重要な役割を果たすことになります。", true, true);
                 return true;
             }
             case 8 -> {
-                askAccept("That concludes my explanation. Have I answered all your questions? \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("説明は以上です。疑問はすべて解けましたか？ \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#fUI/UIWindow.img/QuestIcon/8/0#" + this.reward_exp + " 経験値");
                 return true;
             }
             case 9 -> {
@@ -78,19 +87,23 @@ public class Quest_Cygnus_DoYouKnowTheBlackMagician extends QuestScriptMan {
                     gainExp(this.reward_exp);
                     forceCompleteQuest();
                 }
-                say("I'm glad you're clear about our current situation, but you know, at your current level, you're not even strong enough to face the Black Mage's minions, let alone the Black Mage himself. Not even his minions' minions, as a matter of fact. How will you protect Maple World at your current level?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("今の状況をわかってもらえてうれしいですが、今のあなたのレベルでは、暗黒の魔法使い本人どころか、その手下と戦うことすらできません。実のところ、手下の手下にもかなわないでしょう。今のレベルでどうやってメイプルワールドを守るのですか？", false, true);
                 return true;
             }
             case 10 -> {
-                say("Although you've been accepted into the knighthood, you cannot be recognized as a knight yet. You are not an Official Knight because you're not even a Knight-in-Training. If you remain at your current level, you'll be nothing more than the handyman of #p1101000# Knights.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("騎士団に入ることは認められましたが、まだ騎士として認められたわけではありません。見習い騎士ですらないのですから、正騎士でもありません。今のレベルのままでは、#p1101000#騎士団の雑用係にすぎませんよ。", true, true);
                 return true;
             }
             case 11 -> {
-                say("But no one starts as a strong Knight on day one. The Empress didn''t want someone strong. She wanted someone with courage whom she could develop into a strong Knight through rigorous training. So, you should first become a Knight-in-Training. We'll talk about your missions when you get to that point.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ですが、最初から強い騎士などいません。女王陛下は強い人を求めたのではありません。厳しい修行を通して強い騎士に育てられる、勇気ある人を求めたのです。ですから、まずは見習い騎士になってください。任務についてはそれから話しましょう。", true, true);
                 return true;
             }
             case 12 -> {
-                say("Take the portal on the left to reach the Training Forest. There, you will find #p1102000#, the Training Instructor, who will teach you how to become stronger. I don''t want to find you wandering around aimlessly until you reach Lv. 10, you hear?", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("左のポータルから修練の森へ行けます。そこにいる修練教官の#p1102000#が、強くなる方法を教えてくれるでしょう。レベル10になるまで、あてもなくうろうろしていてはいけませんよ、いいですね？", true, false);
                 safeDispose();
                 return true;
             }

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21101s, endscript : q21101e (JMS186), 鉾の使い手たる英雄, 旧 js (scripts_JMS) を参考に実装, js の end は処理なし
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_HeroOfThePolearm extends QuestScriptMan {
 
     private final int job_aran_beginner = 2000; // アラン (見習い)
@@ -46,7 +45,8 @@ public class Quest_Aran_HeroOfThePolearm extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == -1) {
-            say("#b(You need to think about this for a second...)#k", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("#b（少し考える必要がありそうだ…）#k", false, true);
             return false;
         }
         // 動画を見る
@@ -58,7 +58,8 @@ public class Quest_Aran_HeroOfThePolearm extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                askYesNo("#b(Are you certain that you were the hero that wielded the #p1201001#? Yes, you''re sure. You better grab the #p1201001# really tightly. Surely it will react to you.)#k");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("#b（本当に#p1201001#を振るっていた英雄なのだろうか？いや、間違いない。#p1201001#をしっかりつかんでみよう。きっと反応するはずだ。）#k");
                 return true;
             }
             case 1 -> {
@@ -80,11 +81,13 @@ public class Quest_Aran_HeroOfThePolearm extends QuestScriptMan {
                 for (int skill_id : this.skills) {
                     teachSkill(skill_id, 0);
                 }
-                say(3, "#b(I feel like something popping up in my head...)#k", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（頭の中に何かが浮かんでくるような気がする…）#k", false, true);
                 return true;
             }
             case 2 -> {
-                askYesNo(1, "Will you skip the video clip? Even if you skip the scene, game-play will not be affected.");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo(1, "映像をスキップしますか？スキップしてもゲームの進行には影響ありません。");
                 return true;
             }
             case 3 -> {

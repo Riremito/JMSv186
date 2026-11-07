@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21100s (JMS186), 5人の英雄, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_FiveHeroes extends QuestScriptMan {
 
     @Override
@@ -31,36 +30,44 @@ public class Quest_Aran_FiveHeroes extends QuestScriptMan {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 5) {
             // 原文ママ
-            say("Oh, is 5 not enough? If you feel the need to train further, please feel free to slay more than that. If you slay all of them, I''ll just have to look the other way even if it breaks my heart, since they will have been sacrificed for a good cause...", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("あら、5匹では物足りませんか？もっと修行が必要だと思うなら、それ以上倒しても構いませんよ。全部倒してしまっても、心は痛みますが見なかったことにしましょう。立派な目的のための犠牲ですから…", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say(8, "There isn't much record left of the heores that fought against the Black Mage. Even in the Book of Prophecy, the only information available is that there were five of them. There is nothing about who they were or what they looked like. Is there anything you remember? Anything at all?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "暗黒の魔法使いと戦った英雄たちの記録はほとんど残っていません。予言書にも、英雄が5人いたということしか書かれていないのです。誰だったのか、どんな姿だったのかもわかりません。何か覚えていることはありませんか？どんなことでもいいのです。", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "I don't remember a thing...", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "何も覚えていない…", true, true);
                 return true;
             }
             case 2 -> {
-                say(8, "As I expected. Of course, the curse of the Black Mage was strong enough to wipe out all of your memory. But even if that''s the case, there has got to be a point where the past will uncover, especially now that we are certain you are one of the heroes. I know you've lost your armor and weapon during the battle but... Oh, yes, yes. I almost forgot! Your #bweapon#k!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "やはりそうですか。暗黒の魔法使いの呪いは、記憶をすべて消してしまうほど強力だったのですね。それでも、あなたが英雄の一人だとはっきりした今、いつか過去が明らかになるはずです。戦いの中で鎧と武器をなくしてしまったようですが…ああ、そうでした。忘れるところでした！あなたの#b武器#kです！", true, true);
                 return true;
             }
             case 3 -> {
-                say(2, "My weapon?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "私の武器？", true, true);
                 return true;
             }
             case 4 -> {
-                say(8, "I found an incredible weapon while digging through blocks of ice a while back. I figured the weapon belonged to a hero, so I brought it to town and placed it somewhere in the center of the town. Haven't you seen it? #bThe #p1201001##k... \r\r#i4032372#\r\rIt looks like this...", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "少し前に氷の塊を掘っていたら、すごい武器を見つけたのです。英雄の武器だと思って村に持ち帰り、村の中央に置いておきました。見かけませんでしたか？#bあの#p1201001##kです…\r\r#i4032372#\r\rこんな形をしています…", true, true);
                 return true;
             }
             case 5 -> {
-                say(2, "Come to think of it, I did see a #p1201001# in town.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "そういえば、村で#p1201001#を見かけた。", true, true);
                 return true;
             }
             case 6 -> {
-                askAccept("Yes, that's it. According to what's been recorded, the weapon of a hero will recognize its rightful owner, and if you''re the hero that used the #p1201001#, the #p1201001# will react when you grab the #p1201001#. Please go find the #b#p1201001# and click on it.#k");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("そう、それです。記録によると、英雄の武器は本当の持ち主を見分けるそうです。あなたが#p1201001#を使っていた英雄なら、#p1201001#をつかんだときに反応するはずです。#b#p1201001#を探してクリックしてみてください。#k");
                 return true;
             }
             case 7 -> {
@@ -69,7 +76,8 @@ public class Quest_Aran_FiveHeroes extends QuestScriptMan {
                     questEndEffect();
                 }
                 // js の sendOkS は type が反映されない
-                say(8, "If the #p1201001# reacts to you, then we'll know that you're #bAran#k, the hero that wielded a #p1201001#.", false, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "#p1201001#があなたに反応すれば、あなたが#p1201001#を振るっていた英雄、#bアラン#kだとわかります。", false, false);
                 showReservedEffect("Effect/Direction1.img/aranTutorial/ClickPoleArm");
                 return false;
             }

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22004s, endscript : q22004e (JMS186), 垣根の修理, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_FixingTheFence extends QuestScriptMan {
 
     private final int item_board = 4032498; // 木の切れ端
@@ -37,21 +36,25 @@ public class Quest_Evan_FixingTheFence extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 0) {
-            say("Hm, #p1013101# would have done it at the drop of a hat.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("ふむ、#p1013101#ならすぐにやってくれただろうに。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("The #o1210100#s at the farm have been acting strange these past couple days. They've been angry and irritable for no reason. I was worried so I came out to the farm early this morning and sure enough, it seems like a few of these #o1210100#s got past the fence.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ここ数日、農場の#o1210100#の様子がおかしいんだ。わけもなく怒ったり、いらいらしたりしている。心配になって今朝早く農場に来てみたら、案の定、何匹かの#o1210100#が垣根を越えて逃げ出してしまったようなんだ。", false, true);
                 return true;
             }
             case 1 -> {
-                askAccept("Before I go and find the #o1210100#s, I should mend the broken fence. Luckily, it wasn't damaged too badly. I just need a few #t" + this.item_board + "#es to fix it right up. Will you bring me #b3#k #b#t" + this.item_board + "##k, Evan?");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("#o1210100#を探しに行く前に、壊れた垣根を直さないといけない。幸い、それほどひどく壊れてはいないんだ。#t" + this.item_board + "#が少しあればすぐに直せる。#b#t" + this.item_board + "##kを#b3個#k持ってきてくれないか、エヴァン？");
                 return true;
             }
             case 2 -> {
                 forceStartQuest();
-                say("Oh, that's very nice of you. You'll be able to find #b#t" + this.item_board + "#es#k from the nearby #r#o0130100#s#k. They're not too strong, but use your skills and items when you find yourself in danger.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おお、助かるよ。#b#t" + this.item_board + "##kは近くにいる#r#o0130100##kが持っているはずだ。それほど強くはないが、危なくなったらスキルやアイテムを使うんだぞ。", false, true);
                 return true;
             }
             case 3 -> {
@@ -68,7 +71,8 @@ public class Quest_Evan_FixingTheFence extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Ah, did you bring all the #t" + this.item_board + "#  That's my kid! What shall I give you as a reward... Let's see... Oh, right! \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_chair + "# 1 #t" + this.item_chair + "# \r\n#i" + this.item_milk + "# 15 #t" + this.item_milk + "#s \r\n#i" + this.item_juice + "# 15 #t" + this.item_juice + "#s \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おお、#t" + this.item_board + "#を全部持ってきてくれたのか。さすがは私の子だ！お礼に何をあげようか…ええと…そうだ！ \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i" + this.item_chair + "# 1 #t" + this.item_chair + "# \r\n#i" + this.item_milk + "# 15 #t" + this.item_milk + "#s \r\n#i" + this.item_juice + "# 15 #t" + this.item_juice + "#s \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値", false, true);
                 return true;
             }
             case 1 -> {
@@ -81,7 +85,8 @@ public class Quest_Evan_FixingTheFence extends QuestScriptMan {
                     gainItem(this.item_juice, 15);
                     gainExp(this.reward_exp);
                 }
-                say("Here, I made this new chair from the wooden boards I had left over after fixing the fence. It may not seem like much, but it's sturdy. I'm sure it'll come in handy.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ほら、垣根を直したときに余った木の板で、新しい椅子を作ったんだ。大したものには見えないかもしれないが、丈夫だぞ。きっと役に立つはずだ。", true, true);
                 return true;
             }
             case 2 -> {

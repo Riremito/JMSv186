@@ -23,12 +23,12 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20200s (JMS186), 見習い騎士の終わり, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_SecondJobAdvancement extends QuestScriptMan {
 
     @Override
     public boolean questStart(int status, int answer) {
-        say("Are you sure you are ready for second job advancement?", false, true);
+        // TODO : 文章 (js の英文を翻訳)
+        say("本当に2次転職の準備はできていますか？", false, true);
         forceStartQuest();
         return false;
     }

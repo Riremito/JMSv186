@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21703s, endscript : q21703e (JMS186), 修行だけが唯一の道！3, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_TrainingIsTheOnlyWay3 extends QuestScriptMan {
 
     private final int skill_combo_ability = 21000000; // コンボアビリティ
@@ -34,41 +33,50 @@ public class Quest_Aran_TrainingIsTheOnlyWay3 extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 5) {
-            say("I know it takes an incredible amount of strength and will to outdo your instructor, but you weren't meant to let yourself wither away. You must move on to bigger and better things! You must do everything you can to embrace your heroic nature!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("教官を超えるには並々ならぬ力と意志が必要なのはわかる。だが、ここで立ち止まっていてはいかん。もっと大きなことを目指して進むのだ！英雄としての本性を取り戻すために、できることは何でもするのだ！", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Your abilities are really beginning to take shape. I am surprised that an old man like me was able to help you. I''m tearing up just thinking about how happy it makes me to have been of assistance to you. *Sniff sniff*", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("お前の能力は本当に形になってきたな。わしのような年寄りが役に立てたとは驚きだ。お前の力になれたと思うと、うれしくて涙が出てくるわい。*ぐすん*", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(You didn't even train that long with him... Why is he crying?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（それほど長く一緒に修行したわけでもないのに…なぜ泣いているんだろう？）#k", true, true);
                 return true;
             }
             case 2 -> {
-                say("Alright, here''s the third and the final stage of training. Your last opponent is... #r#o9300343#s#k! Do you know anything about #o1210100#s?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("よし、これが修行の3番目、最後の段階だ。最後の相手は…#r#o9300343##kだ！#o1210100#について何か知っているか？", true, true);
                 return true;
             }
             case 3 -> {
-                say(2, "Well, a little bit...", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "まあ、少しは…", true, true);
                 return true;
             }
             case 4 -> {
-                say("They are natural warriors! They''re born with a voracious appetite for food. They devour any food that''s visible the moment they sweep by. Terrifying, isn''t it?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("奴らは生まれながらの戦士だ！生まれつき食べ物に目がなくてな。通りすがりに目に入った食べ物は何でも平らげてしまうのだ。恐ろしいだろう？", true, true);
                 return true;
             }
             case 5 -> {
-                say(2, "#b(Is that really true?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（それは本当だろうか？）#k", true, true);
                 return true;
             }
             case 6 -> {
-                askAccept("Okay, now... #bEnter the Training Center again#k, defeat #r30#k #o9300343#s, and show me what you're made of! You'll have to exert all your energy to defeat them! Go, go, go! Rise above me!");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("よし、では…#bもう一度修練場に入って#k、#o9300343#を#r30匹#k倒し、お前の実力を見せてみろ！全力を出さなければ倒せんぞ！行け、行け、行け！わしを超えてみせろ！");
                 return true;
             }
             case 7 -> {
                 forceStartQuest();
-                say("Now go and take on those monstrous #o9300343#s!");
+                // TODO : 文章 (js の英文を翻訳)
+                say("さあ、あの恐ろしい#o9300343#を倒してくるのだ！");
                 return false;
             }
             default -> {
@@ -81,20 +89,24 @@ public class Quest_Aran_TrainingIsTheOnlyWay3 extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == 1) {
-            say("Are you reluctant to leave your instructor? *Sniff sniff* I'm so moved, but you can't stop here. You are destined for bigger and better things!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("教官と離れるのが名残惜しいのか？*ぐすん* 感動したぞ。だが、ここで立ち止まってはいかん。お前はもっと大きなことを成し遂げる運命なのだ！", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Ah, you've come back after defeating all 30 #o9300343#s. I knew you had it in you... Even though you have no memories and few abilities, I could see that you were different! How? Because you're carrying around a Polearm, obviously!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おお、#o9300343#を30匹すべて倒して戻ってきたか。お前ならできると思っていた…記憶もなく能力もほとんどないのに、お前はほかとは違うとわかっていた！なぜかって？鉾を持ち歩いているからに決まっているだろう！", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(Is he pulling your leg?)#k'", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（からかわれているのだろうか？）#k", true, true);
                 return true;
             }
             case 2 -> {
-                askYesNo("I have nothing more to teach you, as you've surpassed my level of skill. Go now! Don't look back! This old man is happy to have served as your instructor.");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("もうお前に教えることは何もない。お前はわしの腕を超えたのだ。さあ行け！振り返るな！お前の教官を務められて、この年寄りは幸せだったぞ。");
                 return true;
             }
             case 3 -> {
@@ -104,12 +116,14 @@ public class Quest_Aran_TrainingIsTheOnlyWay3 extends QuestScriptMan {
                     teachSkill(this.skill_combo_ability, getSkillLevel(this.skill_combo_ability), this.skill_master_level);
                     gainExp(this.reward_exp);
                 }
-                say(2, "(You remembered the #bCombo Ability#k skill! You were skeptical of the training at first, since the old man suffers from Alzheimer's and all, but boy, was it effective!)", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "（#bコンボアビリティ#kのスキルを思い出した！物忘れのひどい老人の修行なので最初は半信半疑だったが、驚くほど効果があった！）", false, true);
                 avatarOriented("Effect/BasicEff.img/AranGetSkill");
                 return true;
             }
             case 4 -> {
-                say("Now report back to #p1201000#. I know she'll be ecstatic when she sees the progress you've made!", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("さあ、#p1201000#に報告しに行くのだ。お前の成長ぶりを見たら、きっと大喜びするだろう！", true, false);
                 return false;
             }
             default -> {

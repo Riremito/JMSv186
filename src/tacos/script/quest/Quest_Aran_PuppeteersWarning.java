@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q21720e (JMS186), 人形使いの警告, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 // js ではクエストの状態が 0 の場合にスキルを習得する条件のため完了時にスキルを習得できないが、21703 と同じ進行中 (1) の条件にする
 public class Quest_Aran_PuppeteersWarning extends QuestScriptMan {
 
@@ -39,31 +38,38 @@ public class Quest_Aran_PuppeteersWarning extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                say(8, "What can I do for you? Tru sent me a message saying that you've been training diligently in Victoria Island while helping him with his work. What is it? What? The Black Wings?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "何の用ですか？#p1002104#から、あなたがビクトリアアイランドで彼の仕事を手伝いながら熱心に修行していると連絡がありました。どうしたのですか？何ですって？ブラックウィング？", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "#b(You tell her about the Puppeteer and the Black Wings, and about their mission.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（人形使いとブラックウィング、そして彼らの目的について話した。）#k", true, true);
                 return true;
             }
             case 2 -> {
-                say(8, "I see... I didn''t know there was a group called the Black Wings... They must be fools if they''re trying to revive the Black Mage, knowing how dangerous he is.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "そうですか…ブラックウィングという組織があったなんて知りませんでした…暗黒の魔法使いがどれほど危険かわかっていながら復活させようとするなんて、愚か者に違いありません。", true, true);
                 return true;
             }
             case 3 -> {
-                say(2, "That...that''s true...\r\r#b(She''s definitely not afraid to speak her mind.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "そ…そうだな…\r\r#b（言いたいことははっきり言う人のようだ。）#k", true, true);
                 return true;
             }
             case 4 -> {
-                say(8, "The Book of Prophecy states that the hero will revive and fight against the Black Mage. I wasn''t sure if that was true, but this confirms that the Black Mage is still around.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "予言書には、英雄がよみがえって暗黒の魔法使いと戦うと書かれています。本当かどうかわかりませんでしたが、これで暗黒の魔法使いがまだ存在していることがはっきりしました。", true, true);
                 return true;
             }
             case 5 -> {
-                say(2, "Aren't you scared?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "怖くないのか？", true, true);
                 return true;
             }
             case 6 -> {
-                askYesNo("Scared? Pfft. Who cares if the Black Mage appears. You'll be here to protect us. If anything, this makes me want to prepare you for the big battle. Ah, that reminds me, I found a #bskill#k. Would you like to see it?");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("怖い？ふん。暗黒の魔法使いが現れたって構いません。あなたが私たちを守ってくれるのですから。むしろ、大きな戦いに備えてあなたを鍛えたくなりました。ああ、そういえば#bスキル#kを見つけたのです。見てみますか？");
                 return true;
             }
             case 7 -> {
@@ -74,19 +80,23 @@ public class Quest_Aran_PuppeteersWarning extends QuestScriptMan {
                     gainExp(this.reward_exp);
                 }
                 avatarOriented("Effect/BasicEff.img/AranGetSkill");
-                say(2, "#b(You remembered the Polearm Booster skill!)#k", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "#b（ブースター(鉾)のスキルを思い出した！）#k", false, true);
                 return true;
             }
             case 8 -> {
-                say(8, "This skill was found in an ancient incomprehensible script. I had a hunch it might be a skill you used in the past, and I think I was right. You're not as strong as you used to be, but you'll get there, in time.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "このスキルは、解読できない古代の文書から見つけたものです。あなたが昔使っていたスキルではないかと思ったのですが、どうやら当たっていたようですね。昔ほど強くはありませんが、いずれ取り戻せるでしょう。", true, true);
                 return true;
             }
             case 9 -> {
-                say(8, "You are steadily becoming more powerful, and I''ll be here to keep motivating you. You have nothing to be afraid of. You will not lose the battle. You didn''t emerge from ice only to lose to the Black Mage, did you? This time, you''ll finish him, once and for all!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "あなたは着実に強くなっています。私もここであなたを励まし続けます。恐れることは何もありません。あなたは負けません。暗黒の魔法使いに負けるために氷の中から目覚めたわけではないでしょう？今度こそ、彼を完全に倒すのです！", true, true);
                 return true;
             }
             case 10 -> {
-                say(8, "To do so, there''s only one thing you can do. Train, train, train. Head to Victoria Island and continue training. Let''s make sure you become so powerful that the Black Mage doesn''t stand a chance!", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "そのためにできることはひとつだけです。修行、修行、修行です。ビクトリアアイランドへ行って修行を続けてください。暗黒の魔法使いが手も足も出ないほど強くなりましょう！", true, false);
                 return true;
             }
             default -> {

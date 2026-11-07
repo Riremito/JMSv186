@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q50016s (JMS186), ブレイズブレイク！, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Zipangu_BlazeBreak extends QuestScriptMan {
 
     private final int map_roppongi_mall = 802000800; // ジパング : 六本木モール2102年
@@ -32,7 +31,8 @@ public class Quest_Zipangu_BlazeBreak extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Okay, so you are going to the battle as well. Thanks... Just letting you know, the enemy is probably more powerful than anything you've ever faced, Are you ready?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("そうか、君も戦いに行くんだな。ありがとう…言っておくが、敵はおそらく君が今まで戦ってきたどんな相手よりも強い。準備はいいか？", false, true);
                 return true;
             }
             case 1 -> {

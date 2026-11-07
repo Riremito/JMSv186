@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20600s, q20610s (JMS186), 終わらない修行, まだ終わらない修行, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_EndlessTraining extends QuestScriptMan {
 
     private final int quest_endless_training = 20600; // 終わらない修行
@@ -35,15 +34,18 @@ public class Quest_Cygnus_EndlessTraining extends QuestScriptMan {
             case -1 -> {
                 // 受諾しなかった
                 if (!endless) {
-                    say("Well, what you're doing right now doesn't make you look like someone that's humble. You just look complacent by doing that, and that's never a good thing.");
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("今のあなたの態度は、謙虚な人には見えませんね。ただ慢心しているように見えるだけです。それは決してよいことではありません。");
                 }
                 return false;
             }
             case 0 -> {
                 if (endless) {
-                    askAccept("#h0#. Have you been slacking off on training since reaching Level 100? We all know how powerful you are, but the training is not complete. Take a look at these Knight Commanders. They train day and night, preparing themselves for the possible encounter with the Black Wizard.");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("#h0#。レベル100になってから修行を怠けていませんか？あなたが強いことはみんな知っていますが、修行はまだ終わっていません。騎士団長たちを見てください。暗黒の魔法使いと出会うときに備えて、昼も夜も修行しているのですよ。");
                 } else {
-                    askAccept("Have you been mastering your skills? I am sure you've mastered all your skills, which means... it's time for you to learn a #bnew skill#k, right?");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("スキルを極めていますか？もうすべてのスキルを極めたのでしょう。ということは…#b新しいスキル#kを覚える時が来たということですね？");
                 }
                 return true;
             }

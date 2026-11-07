@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q2300s - q2310s, endscript : q2300e - q2310e (JMS186), キノコ王国の事件！, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 // TODO : js では入口まで送ると言いつつ移動処理がない
 public class Quest_MushroomCastle_KingdomInDanger extends QuestScriptMan {
 
@@ -37,35 +36,42 @@ public class Quest_MushroomCastle_KingdomInDanger extends QuestScriptMan {
         boolean first = (getQuestId() == this.quest_first);
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("Really? It's an urgent matter, so if you have some time, please see me.");
+            // TODO : 文章 (js の英文を翻訳)
+            say("そうですか？急ぎの用件なので、時間があるときに来てください。");
             return false;
         }
         // いいえを選択した
         if (getLastAction() == 0 && status == 2) {
             if (!first) {
-                say("Really? It's an urgent matter, so if you have some time, please see me.");
+                // TODO : 文章 (js の英文を翻訳)
+                say("そうですか？急ぎの用件なので、時間があるときに来てください。");
                 return false;
             }
             // TODO : js では推薦書を渡さずにクエストを開始している
-            say("Okay. In that case, I'll just give you the routes to the Kingdom of Mushroom. #bNear the west entrance of Henesys,#k you'll find an #bempty house#k. Enter the house, and turn left to enter#b<Themed Dungeon : Mushroom Castle>#k. That's the entrance to the Kingdom of Mushroom. There's not much time!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("わかりました。それでは、キノコ王国への行き方だけ教えましょう。#bヘネシスの西の入口の近くに#k#b空き家#kがあります。その家に入って左へ進むと、#b<テーマダンジョン : キノコ城>#kに入れます。そこがキノコ王国の入口です。時間がありません！", false, true);
             forceStartQuest();
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("Now that you have made the job advancement, you look like you're ready for this. I have something I'd like to ask you for help. Are you willing to listen?");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("転職を終えたあなたなら、もう任せても大丈夫そうですね。手を貸してほしいことがあるのですが、聞いてもらえますか？");
                 return true;
             }
             case 1 -> {
-                say("What happened is that the #bKingdom of Mushroom#k is currently in disarray. Kingdom of Mushroom is located near Henesys, featuring the peace-loving, intelligent King Mush. Recently, he began to feel ill, so he decided to appoint his only daughter #bPrincess Violetta#k. Something must have happened since then for the kingdom to be in its current state.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("実は今、#bキノコ王国#kが混乱に陥っているのです。キノコ王国はヘネシスの近くにあり、平和を愛する聡明なキノコ王が治めています。最近、王が病に伏せるようになり、一人娘の#bビオレッタ姫#kに後を継がせることにしたのです。その後、何かが起こって王国が今のような状態になってしまったのでしょう。", false, true);
                 return true;
             }
             case 2 -> {
-                say("I am not aware of the exact details, but it's obvious something terrible had taken place, so I think it'll be better if you go there and assess the damage yourself. An explorer like you seem more than capable of saving Kingdom of Mushroom. I have just written you a #brecommendation letter#k, so I suggest you head over to Kingdom of Mushroom immediately and look for the #bHead Patrol Officer#k.\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v" + this.item_letter + "# #t" + this.item_letter + "#", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("詳しいことはわかりませんが、何か大変なことが起きたのは明らかです。直接行って被害を確かめてきたほうがいいでしょう。あなたのような冒険家なら、きっとキノコ王国を救えるはずです。#b推薦状#kを書いておきましたので、すぐにキノコ王国へ向かって#b警備隊長#kを探してください。\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v" + this.item_letter + "# #t" + this.item_letter + "#", false, true);
                 return true;
             }
             case 3 -> {
-                askYesNo("By the way, do you know where Kingdom of Mushroom is located? It'll be okay if you can find your way there, but if you don't mind, I can take you straight to the entrance.");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("ところで、キノコ王国がどこにあるか知っていますか？自分で行けるならそれでいいのですが、よければ入口まで直接送ってあげますよ。");
                 return true;
             }
             case 4 -> {
@@ -83,11 +89,13 @@ public class Quest_MushroomCastle_KingdomInDanger extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Hmmm? Is that a #brecommendation letter from the job instructor#k??! What is this, are you the one that came to save us, the Kingdom of Mushroom?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("んん？それは#b転職教官の推薦状#kではないか？！どういうことだ、お前が我らキノコ王国を救いに来てくれた者なのか？", false, true);
                 return true;
             }
             case 1 -> {
-                say("Hmmm... okay. Since the letter is from the job instructor, I suppose you are really the one. I apologize for not introducing myself to you earlier. I'm the #bHead Security Officer#k in charge of protecting King Mush. As you can see, this temporary hideout is protected by the team of security and soldiers. Our situation may be dire, but nevertheless, welcome to Kingdom of Mushroom.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ふむ…わかった。転職教官からの手紙なら、お前が本当にその者なのだろう。名乗るのが遅れてすまない。私はキノコ王をお守りする#b警備隊長#kだ。見てのとおり、この仮の隠れ家は警備隊と兵士たちが守っている。状況は厳しいが、それでもキノコ王国へようこそ。", true, true);
                 return true;
             }
             case 2 -> {

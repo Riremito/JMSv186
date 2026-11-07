@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q20400s, q20401s, q20405s, q20406s (JMS186), 騎士の軌跡を追って, ゾンビ倒し, 暗黒の魔女の洞窟, 消えた騎士, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Cygnus_KnightsTrail extends QuestScriptMan {
 
     private final int quest_trail = 20400; // 騎士の軌跡を追って
@@ -33,13 +32,17 @@ public class Quest_Cygnus_KnightsTrail extends QuestScriptMan {
     @Override
     public boolean questStart(int status, int answer) {
         if (getQuestId() == this.quest_trail) {
-            say("Please go find Jane in El Nath for more information.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("詳しいことは、エルナスにいるジェーンを訪ねてください。", false, true);
         } else if (getQuestId() == this.quest_zombie) {
-            say("I don't know.. maybe you can go #bHunt the Zombies#k for a clue. Maybe an item or something will lead you to it.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("わかりません…手がかりを探しに#bゾンビを倒して#kみてはどうでしょう。何かアイテムが手がかりになるかもしれません。", false, true);
         } else if (getQuestId() == this.quest_cave) {
-            say("Go back to Erev to report about the situation.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("エレヴに戻って状況を報告してください。", false, true);
         } else {
-            say("Maybe you should go back to the cave to see if anyone is there...", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("洞窟に戻って、誰かいないか確かめてみてはどうでしょう…", false, true);
         }
         forceStartQuest();
         forceCompleteQuest();

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22002s, endscript : q22002e (JMS186), ランチはサンドイッチ, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_SandwichForLunch extends QuestScriptMan {
 
     private final int item_sandwich = 2022620; // 手作りサンドイッチ
@@ -36,16 +35,19 @@ public class Quest_Evan_SandwichForLunch extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 0) {
-            say("Oh, what? Aren't you going to have breakfast? Breakfast is the most important meal of the day! Talk to me again if you change your mind. If you don't, I'm going to eat it myself.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("あれ、どうした？朝ごはん食べないのか？朝ごはんは一日で一番大事な食事なんだぞ！気が変わったらまた話しかけてくれ。そうじゃなきゃ、俺が食べちゃうからな。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Did you feed #p1013102#? You should have some breakfast now then, Evan. Today's breakfast is a #t" + this.item_sandwich + "#. I've brought it with me. Hee hee. I was going to eat it myself if you didn't agree to feed #p1013102#.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#p1013102#に餌をやったか？じゃあ、そろそろ朝ごはんを食べないとな、エヴァン。今日の朝ごはんは#t" + this.item_sandwich + "#だ。持ってきてやったぞ。へへ。お前が#p1013102#に餌をやってくれなかったら、俺が食べちゃうつもりだったんだ。", false, true);
                 return true;
             }
             case 1 -> {
-                askAccept("Here, I'll give you this #bSandwich#k, so #bgo talk to mom when you finish eating#k. She says she has something to tell you.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("ほら、この#bサンドイッチ#kをやるから、#b食べ終わったら母さんと話してこい#k。何か話があるってさ。");
                 return true;
             }
             case 2 -> {
@@ -53,7 +55,8 @@ public class Quest_Evan_SandwichForLunch extends QuestScriptMan {
                     forceStartQuest();
                     gainItem(this.item_sandwich, 1);
                 }
-                say(3, "#b(Mom has something to say? Eat your #t" + this.item_sandwich + "# and head back inside the house.)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（お母さんが話があるって？#t" + this.item_sandwich + "#を食べて家の中に戻ろう。）#k", true, true);
                 return true;
             }
             case 3 -> {
@@ -70,7 +73,8 @@ public class Quest_Evan_SandwichForLunch extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("Did you eat your breakfast, Evan? Then, will you do me a favor?\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#i" + this.item_hat + "# 1 #t" + this.item_hat + "#  \r\n#i" + this.item_milk + "# 5 #t" + this.item_milk + "#s \r\n#i" + this.item_juice + "# 5 #t" + this.item_juice + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("朝ごはんは食べた、エヴァン？それなら、ちょっとお願いを聞いてくれる？\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#i" + this.item_hat + "# 1 #t" + this.item_hat + "#  \r\n#i" + this.item_milk + "# 5 #t" + this.item_milk + "#s \r\n#i" + this.item_juice + "# 5 #t" + this.item_juice + "# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値", false, true);
                 return true;
             }
             case 1 -> {

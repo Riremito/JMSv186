@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21000s, q21001s, endscript : q21001e (JMS186), 子供を助けてください1, 子供を助けてください2, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_RescueTheChild extends QuestScriptMan {
 
     private final int quest_rescue_1 = 21000; // 子供を助けてください1
@@ -37,23 +36,27 @@ public class Quest_Aran_RescueTheChild extends QuestScriptMan {
         if (getQuestId() == this.quest_rescue_1) {
             // 受諾しなかった
             if (getLastAction() == 0 && status == -1) {
-                say("No, Aran... There's no point of leaving here if we're to just leave the kid here all by himself. I know it's a lot to ask... but please reconsider!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("だめよ、アラン…あの子をひとりここに残していくのなら、逃げる意味がないわ。無理なお願いなのはわかっているけど…どうか考え直して！", false, true);
                 return false;
             }
             switch (status) {
                 case 0 -> {
-                    askAccept("Wait, where's the kid? Oh no, he must be stuck in the forest! We need to bring the kid back here before the ark leaves! Aran... please go in there and find the kid for me! I know it's a lot to ask considering you're injured... but you're our only hope!");
+                    // TODO : 文章 (js の英文を翻訳)
+                    askAccept("待って、あの子はどこ？大変、森の中に取り残されているんだわ！方舟が出る前にあの子を連れ戻さないと！アラン…森に入ってあの子を見つけてきて！怪我をしているのに無理なお願いなのはわかっているけど…あなたしか頼れないの！");
                     return true;
                 }
                 case 1 -> {
                     // TODO : js ではクエストのデータに文字化けした値 ("..w?PGﾃ・・") を設定している
                     forceStartQuest();
                     // js では status 1 が重複しており "The most important thing right now is not to panic, Aran. ..." は表示されない
-                    say("#bThe kid is probably somewhere deep in the forest#k! We need to leave right now before the Black Wizard finds us, so please hurry!", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("#bあの子はきっと森の奥のどこかにいるわ#k！暗黒の魔法使いに見つかる前にすぐに出発しないといけないから、急いで！", false, true);
                     return true;
                 }
                 case 2 -> {
-                    say("Please rescue the kid from the forest, Aran! We cannot afford any more casualties at the hands of the Black Wizard!", true, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("アラン、森からあの子を助け出して！暗黒の魔法使いのせいで、これ以上犠牲者を出すわけにはいかないわ！", true, true);
                     return true;
                 }
                 case 3 -> {
@@ -67,12 +70,14 @@ public class Quest_Aran_RescueTheChild extends QuestScriptMan {
         }
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("Nooooo! Aran wants to leave me alone here!!..", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("いやだー！アランがぼくをここに置いていこうとしてる！！..", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("O.(Shivering) I...was...so...scared...in...here. Please take me to Athena Pierce!");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("う…（震えながら）ここ…すごく…こわ…かった…。#p1209000#のところに連れていって！");
                 return true;
             }
             case 1 -> {
@@ -93,7 +98,8 @@ public class Quest_Aran_RescueTheChild extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == -1) {
-            say("Where's the kid? If you brought the kid with you, hand him over to me!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("あの子はどこ？あの子を連れてきたのなら、私に預けて！", false, true);
             return false;
         }
         // 動画を見る
@@ -110,39 +116,48 @@ public class Quest_Aran_RescueTheChild extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                askYesNo("Ahhh, you're safe! What about the kid? Where's the kid?");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("ああ、無事だったのね！あの子は？あの子はどこ？");
                 return true;
             }
             case 1 -> {
-                say("..Oh phew... thank goodness..", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("..ああ、よかった…本当によかった..", false, true);
                 return true;
             }
             case 2 -> {
-                say(3, "Get on board right now! We do not have much time!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "今すぐ乗って！時間がないわ！", true, true);
                 return true;
             }
             case 3 -> {
-                say("Yes, yes. We don't have much time for that. I can feel the force of Black Wizard creeping up ever so close, and I have a feeling the Wizard has located the ark! If we don't leave now, then we will be attacked!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ええ、そうね。そんなことをしている時間はないわ。暗黒の魔法使いの力がすぐそこまで迫っているのを感じるの。方舟の場所も見つかってしまったみたい！今出発しないと襲われてしまうわ！", true, true);
                 return true;
             }
             case 4 -> {
-                say(3, "Leave now!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "今すぐ出発するんだ！", true, true);
                 return true;
             }
             case 5 -> {
-                say("Aran! Get on board right now! I understand that you want to join them in the battle, but... it's too late! Let your friends take care of the Black Wizard, and you should get on right now and escape to Victoria Island!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("アラン！今すぐ乗って！一緒に戦いたい気持ちはわかるけど…もう遅いわ！暗黒の魔法使いは仲間たちに任せて、あなたは今すぐ乗ってビクトリアアイランドへ逃げて！", true, true);
                 return true;
             }
             case 6 -> {
-                say(3, "No, I can't do that!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "いや、そうはいかない！", true, true);
                 return true;
             }
             case 7 -> {
-                say(3, "Athena Pierce, you take care of these people and head over to Victoria Island. I promise you, I will not die. I will meet you there at the island soon. I better help my friends out and battle the Black Wizard once and for all!", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#p1209000#、みんなを連れてビクトリアアイランドへ向かってくれ。約束する、俺は死なない。すぐに島で会おう。俺は仲間を助けて、暗黒の魔法使いと決着をつけてくる！", true, true);
                 return true;
             }
             case 8 -> {
-                askYesNo("Would you like to skip the video clip?  Even if you skip the scene, game play will not be affected.");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("映像をスキップしますか？スキップしてもゲームの進行には影響ありません。");
                 return true;
             }
             case 9 -> {

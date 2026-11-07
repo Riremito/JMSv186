@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22001s (JMS186), エゾオオカミに餌をあげる, 旧 js (scripts_JMS) を参考に実装, endscript なし (js の end は未使用)
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_FeedTheBulldog extends QuestScriptMan {
 
     private final int item_food = 4032447; // オオカミの餌
@@ -32,20 +31,24 @@ public class Quest_Evan_FeedTheBulldog extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 1) {
-            say("Stop being lazy. Do you want to see your brother bitten by a dog? Hurry up! Talk to me again and accept the quest!", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("怠けるなよ。兄ちゃんが犬にかまれるところを見たいのか？早くしろ！もう一度話しかけて、クエストを受けてくれ！", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Haha. I had a good laugh. Hahaha. But enough with that nonsense. Feed #p1013102#, would you?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("はは。大笑いしたよ。ははは。でも、冗談はそれくらいにして。#p1013102#に餌をやってくれないか？", false, true);
                 return true;
             }
             case 1 -> {
-                say(3, "#bWhat? That's Utah's job!#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#bえ？それは#p1013101#の仕事でしょ！#k", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("You little brat! I told you to call me Older Brother! You know how much #p1013102# hates me. He'll bite me if I go near him. You feed him. He likes you.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("このガキ！兄ちゃんと呼べって言っただろ！#p1013102#が俺のことをどれだけ嫌ってるか知ってるだろ。近づいたらかまれちゃうよ。お前が餌をやってくれ。あいつはお前のことが好きだからな。");
                 return true;
             }
             case 3 -> {
@@ -53,11 +56,13 @@ public class Quest_Evan_FeedTheBulldog extends QuestScriptMan {
                     gainItem(this.item_food, 1);
                     forceStartQuest();
                 }
-                say("Hurry up and head #bleft#k to feed #b#p1013102##k. He's been barking to be fed all morning.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("早く#b左#kへ行って、#b#p1013102##kに餌をやってくれ。朝からずっと餌をくれって吠えてるんだ。", false, true);
                 return true;
             }
             case 4 -> {
-                say("Feed #p1013102# and come back to see me.", true, false);
+                // TODO : 文章 (js の英文を翻訳)
+                say("#p1013102#に餌をやったら、また俺のところに来てくれ。", true, false);
                 return false;
             }
             default -> {

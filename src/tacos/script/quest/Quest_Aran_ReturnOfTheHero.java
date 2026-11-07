@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21010s, endscript : q21010e (JMS186), 英雄の帰還, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
 
     private final int item_red_potion = 2000022; // リエン特製赤い薬
@@ -34,12 +33,14 @@ public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == 2) {
-            say("No no no, you don't have to say no. It's just a potion, anyway. Besides, for a hero like you, I can give you these all day! Let me know when you change your mind.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("いやいや、断らなくていいよ。ただの薬なんだから。それに、あなたのような英雄になら、いくらでもあげるよ！気が変わったら言ってね。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Hmmm? What's human doing here? Wait, hey there #p1201000#. What brought you here? Oh and... do you know this person, #p1201000#? What? A hero?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("んん？人間がこんなところで何をしているんだ？あ、#p1201000#じゃないか。どうしてここに？それと…#p1201000#、この人を知っているのかい？え？英雄？", false, true);
                 return true;
             }
             case 1 -> {
@@ -47,16 +48,19 @@ public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
                 return true;
             }
             case 2 -> {
-                say("Wait, so I am looking at the very person that your race has been waiting for hundreds of years? Wow!! I could tell the hero looked a bit different from the rest...", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ということは、君たちの種族が何百年も待ち続けていた、まさにその人が目の前にいるってことかい？すごい！！どうりでほかの人とは少し違って見えたわけだ…", true, true);
                 return true;
             }
             case 3 -> {
-                askAccept("But because of that curse of the Black Wizard that got you trapped in ice for hundreds of years, you do look quite weak. #bHere's a potion for recovery. Please take it#k.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("でも、暗黒の魔法使いの呪いで何百年も氷に閉じ込められていたせいで、ずいぶん弱っているみたいだね。#b回復用の薬だよ。受け取って#k。");
                 return true;
             }
             case 4 -> {
                 // TODO : js のコメントでは HP を半分にする処理が必要
-                say("Just drink it up first, then we'll continue our talk!", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("まずはそれを飲んで、それから話を続けよう！", false, true);
                 if (getQuestStatus(getQuestId()) == 0) {
                     gainItem(this.item_red_potion, 1);
                     forceStartQuest();
@@ -64,7 +68,8 @@ public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
                 return true;
             }
             case 5 -> {
-                say(3, "#b(Wait, how do I drink this? I don't remember...)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（あれ、これはどうやって飲むんだっけ？思い出せない…）#k", true, true);
                 return true;
             }
             case 6 -> {
@@ -81,15 +86,18 @@ public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         switch (status) {
             case 0 -> {
-                say("I've been searching through blocks of ice inside the cave in hopes of finding our hero, but... I didn't think I'd actually see one in front of me right now! The prophecy is correct! #p1201000#, you were right! Now that the hero has been resurrected, we won't have to worry about the Black Wizard anymore, right?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("英雄が見つかるかもしれないと思って洞窟の氷の塊を探していたけど…まさか本当に目の前に現れるなんて思わなかったよ！予言は正しかったんだ！#p1201000#、君の言うとおりだったね！英雄がよみがえったからには、もう暗黒の魔法使いの心配をしなくてもいいんだよね？", false, true);
                 return true;
             }
             case 1 -> {
-                say("Wait, I have been holding onto you for too long. I'm sorry, but I bet you other penguins will react the same way as I did. I know you're busy and all, but on your way to town, #bplease go strike up a conversation with other penguins#k. Everyone will be shocked if the hero is the one initiating a conversation with them! \n\r #fUI/UIWindow.img/QuestIcon/4/0# \r #i" + this.item_red_potion + "# #t" + this.item_red_potion + "# 5 \r #i" + this.item_blue_potion + "# #t" + this.item_blue_potion + "# 5 \n\r #fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おっと、ずいぶん引き止めてしまったね。ごめんよ。でも、ほかのペンギンたちもきっと僕と同じ反応をすると思うな。忙しいのはわかっているけど、村へ行く途中で#bほかのペンギンたちにも話しかけてみて#k。英雄のほうから話しかけたら、みんな驚くはずだよ！ \n\r #fUI/UIWindow.img/QuestIcon/4/0# \r #i" + this.item_red_potion + "# #t" + this.item_red_potion + "# 5 \r #i" + this.item_blue_potion + "# #t" + this.item_blue_potion + "# 5 \n\r #fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " 経験値", true, true);
                 return true;
             }
             case 2 -> {
-                say("Wow, you managed to level up! That means you may have acquired skill points too. In the world of Maple, every level up means 3 skill points. Press #bK#k to open the skill window and find out.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("おお、レベルが上がったね！ということは、スキルポイントも手に入ったはずだよ。メイプルの世界では、レベルが1上がるごとにスキルポイントが3もらえるんだ。#bK#kを押してスキルウィンドウを開いて確かめてみて。", true, true);
                 if (getQuestStatus(getQuestId()) == 1) {
                     gainExp(this.reward_exp);
                     gainItem(this.item_red_potion, 5);
@@ -100,7 +108,8 @@ public class Quest_Aran_ReturnOfTheHero extends QuestScriptMan {
                 return true;
             }
             case 3 -> {
-                say(3, "#b(These penguins are so nice to me in every way possible, yet I don't remember them one bit. I better check the skill window first... but how do I do that?)#k", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(3, "#b（このペンギンたちはこんなにも親切にしてくれるのに、まったく思い出せない。まずはスキルウィンドウを確認しよう…でも、どうやって開くんだっけ？）#k", true, true);
                 return true;
             }
             case 4 -> {

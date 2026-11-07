@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q21719s (JMS186), 人形使いの招待, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Aran_PuppeteersInvitation extends QuestScriptMan {
 
     private final int map_cave = 910510200; // 隠れ道 : 人形使いの洞窟
@@ -36,15 +35,18 @@ public class Quest_Aran_PuppeteersInvitation extends QuestScriptMan {
         }
         switch (status) {
             case 0 -> {
-                say(8, "Aren''t you the one that used to be in #m101000000# until not too long ago? I finally found you! Do you know how long it took for me to finally find you?", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(8, "少し前まで#m101000000#にいた奴じゃないか？やっと見つけたぞ！見つけるのにどれだけかかったと思ってるんだ？", false, true);
                 return true;
             }
             case 1 -> {
-                say(2, "Who are you?", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say(2, "お前は誰だ？", true, true);
                 return true;
             }
             case 2 -> {
-                askAccept("Me? If you want to know, stop by my cave. I'll even send you an invitation. You'll be directly sent to my cave as soon as you accept. Look forward to seeing you there.");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("俺か？知りたければ俺の洞窟に来い。招待状を送ってやろう。受け取ればすぐに俺の洞窟へ送られる。待っているぞ。");
                 return true;
             }
             case 3 -> {

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz endscript : q22007e (JMS186), 卵を集める, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Evan_CollectingEggs extends QuestScriptMan {
 
     private final int item_egg = 4032451; // たまご
@@ -33,16 +32,19 @@ public class Quest_Evan_CollectingEggs extends QuestScriptMan {
     public boolean questEnd(int status, int answer) {
         // いいえを選択した
         if (getLastAction() == 0 && status == 0) {
-            say("Hm? That's strange. The Incubator wasn't installed properly. Try again.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("ん？おかしいな。ふ化器がちゃんと設置されていないよ。もう一度やってみて。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                say("Oh, did you bring the #t" + this.item_egg + "#? Here, give it to me. I'll give you the Incubator then.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("あら、#t" + this.item_egg + "#を持ってきてくれたの？ほら、ちょうだい。代わりにふ化器をあげるわ。", false, true);
                 return true;
             }
             case 1 -> {
-                askYesNo("Alright, here you go. I have no idea how you use it, but it's yours... \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# " + this.reward_exp + " exp");
+                // TODO : 文章 (js の英文を翻訳)
+                askYesNo("はい、どうぞ。どうやって使うのかはわからないけど、あなたのものよ… \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0#" + this.reward_exp + " 経験値");
                 return true;
             }
             case 2 -> {

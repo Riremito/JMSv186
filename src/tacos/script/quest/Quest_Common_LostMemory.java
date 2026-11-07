@@ -23,14 +23,14 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q3529s, q3539s (JMS186), 失われた思い出見付け, 失った思い出を探して, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Common_LostMemory extends QuestScriptMan {
 
     private final int quest_memory = 3507; // js で同時に完了するクエスト
 
     @Override
     public boolean questStart(int status, int answer) {
-        say("Oh my gosh, you've grown so much since we first met! You've lost your memories? I'll take care of that.", false, true);
+        // TODO : 文章 (js の英文を翻訳)
+        say("まあ、初めて会ったときよりずいぶん成長したわね！記憶をなくしたの？私に任せて。", false, true);
         forceCompleteQuest();
         forceCompleteQuest(this.quest_memory);
         return false;

@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q4686s, q4689s (JMS186), 決戦！移動要塞ベルガモット, 強襲！機械化小隊マーヴェリック, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 public class Quest_Zipangu_FutureBoss extends QuestScriptMan {
 
     private final int quest_vergamot = 4686; // 決戦！移動要塞ベルガモット
@@ -36,9 +35,11 @@ public class Quest_Zipangu_FutureBoss extends QuestScriptMan {
         switch (status) {
             case 0 -> {
                 if (vergamot) {
-                    say("Are you sure you want to leave right now? The boss is not easy to battle against, so if you can gather some friends, then do it! Let me know when you're ready, so I can take you to the spot where it awaits. Okay?", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("本当に今すぐ出発するのか？ボスは簡単に倒せる相手じゃないから、仲間を集められるなら集めたほうがいい！準備ができたら教えてくれ。奴が待ち構えている場所まで連れていこう。いいな？", false, true);
                 } else {
-                    say("I don't think you can escape from here now. If you do plan on battling here, you'll need more teammates to make it an even fight. What do you want to do? Do you still want to battle?", false, true);
+                    // TODO : 文章 (js の英文を翻訳)
+                    say("もうここからは逃げられないと思う。ここで戦うつもりなら、互角に戦うためにもっと仲間が必要だ。どうする？それでも戦うか？", false, true);
                 }
                 return true;
             }

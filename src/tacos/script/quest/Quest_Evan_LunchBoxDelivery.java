@@ -23,7 +23,6 @@ package tacos.script.quest;
  * @author Riremito
  */
 // Quest.wz startscript : q22003s (JMS186), お弁当配達, 旧 js (scripts_JMS) を参考に実装
-// TODO : 文章 (js の英文のまま)
 // js では status 2 の処理が抜けていて会話が進まないため、status 3, 4 の処理を status 2, 3 で行う
 public class Quest_Evan_LunchBoxDelivery extends QuestScriptMan {
 
@@ -33,24 +32,28 @@ public class Quest_Evan_LunchBoxDelivery extends QuestScriptMan {
     public boolean questStart(int status, int answer) {
         // 受諾しなかった
         if (getLastAction() == 0 && status == -1) {
-            say("Good kids listen to their mothers. Now, Evan, be a good kid and talk to me again.", false, true);
+            // TODO : 文章 (js の英文を翻訳)
+            say("いい子はお母さんの言うことを聞くものよ。さあ、エヴァン、いい子だからもう一度話しかけて。", false, true);
             return false;
         }
         switch (status) {
             case 0 -> {
-                askAccept("Your #bDad#k forgot his Lunch Box when he left for the farm this morning. Will you #bdeliver this Lunch Box#k to your Dad in #b#m100030300##k, honey?");
+                // TODO : 文章 (js の英文を翻訳)
+                askAccept("#bお父さん#kが今朝農場へ出かけるときに、お弁当を忘れていったの。#b#m100030300##kにいるお父さんに#bこのお弁当を届けて#kくれる？");
                 return true;
             }
             case 1 -> {
                 forceStartQuest();
-                say("Heehee, my Evan is such a good kid! Head #bleft after you exit the house#k. Rush over to your dad. I'm sure he's starving.", false, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("ふふ、うちのエヴァンは本当にいい子ね！#b家を出たら左へ#k行ってね。急いでお父さんのところへ。きっとお腹を空かせているわ。", false, true);
                 if (!haveItem(this.item_lunch_box, 1)) {
                     gainItem(this.item_lunch_box, 1);
                 }
                 return true;
             }
             case 2 -> {
-                say("Come back to me if you happen to lose the Lunch Box. I'll make his lunch again.", true, true);
+                // TODO : 文章 (js の英文を翻訳)
+                say("もしお弁当をなくしたら戻ってきてね。もう一度作ってあげるから。", true, true);
                 return true;
             }
             case 3 -> {
