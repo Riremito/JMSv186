@@ -43,10 +43,6 @@ import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
-import tacos.script.js.TacosScriptNPC;
-import tacos.script.js.TacosScriptPortal;
-import tacos.script.js.TacosScriptQuest;
-import tacos.script.js.TacosScriptReactor;
 import tacos.script.reactor.ReactorMan;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
@@ -76,10 +72,6 @@ public class TacosCommandAdmin {
             }
             case "/reload" -> {
                 Property_Packet.reload();
-                TacosScriptPortal.getInstance().clearScripts();
-                TacosScriptNPC.getInstance().clearScripts();
-                TacosScriptQuest.getInstance().clearScripts();
-                TacosScriptReactor.getInstance().clearScripts();
                 DebugLogger.InfoLog("reload : done.");
                 chr.sendStatChanged(true);
                 chr.DebugMsg("reload : done.");

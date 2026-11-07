@@ -103,8 +103,6 @@ import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCRPSGameDlg;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.js.TacosScriptNPC;
-import tacos.script.js.TacosScriptQuest;
 import tacos.script.quest.QuestMan;
 import tacos.script.npc.NpcMan;
 import tacos.server.TacosEnhancement.EnhancementResult;
@@ -1365,9 +1363,8 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc (Java) : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
             return true;
         }
-        // npc from script.
-        chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
-        return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
+        chr.DebugMsg("OnUserSelectNpc (not coded) : " + npc_script_id + ", " + npc_info.getScript() + ", " + chr.getMap().getId());
+        return false;
     }
 
     // CWvsContext::SendRemoteShopOpenRequest
@@ -2592,7 +2589,7 @@ public class ReqCUser {
                 if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, true, false)) {
                     return true;
                 }
-                TacosScriptQuest.getInstance().startQuest(client, m_dwNpcTemplateID, uQuestID);
+                chr.DebugMsg("OnUserQuestRequest (not coded) : startscript, " + uQuestID);
                 return true;
             }
             case QuestReq_CompleteScript: {
@@ -2602,13 +2599,7 @@ public class ReqCUser {
                 if (QuestMan.start(chr, m_dwNpcTemplateID, uQuestID, false, true)) {
                     return true;
                 }
-                TacosScriptQuest.getInstance().endQuest(client, m_dwNpcTemplateID, uQuestID, false);
-
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .player(chr)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_QuestComplete));
-                map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), chr.getId());
+                chr.DebugMsg("OnUserQuestRequest (not coded) : endscript, " + uQuestID);
                 return true;
             }
             default: {
@@ -3767,11 +3758,11 @@ public class ReqCUser {
 
         switch (job_id) {
             case 1000: {
-                TacosScriptNPC.getInstance().start(chr.getClient(), 1101008);
+                OnUserSelectNpcInternal(chr, 1101008, 1101008);
                 return true;
             }
             case 2000: {
-                TacosScriptNPC.getInstance().start(chr.getClient(), 1202000);
+                OnUserSelectNpcInternal(chr, 1202000, 1202000);
                 return true;
             }
             default: {

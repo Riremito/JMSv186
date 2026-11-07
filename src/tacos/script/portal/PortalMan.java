@@ -19,7 +19,6 @@
 package tacos.script.portal;
 
 import tacos.client.TacosClient;
-import tacos.script.js.TacosScriptPortal;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -29,11 +28,11 @@ import tacos.server.map.TacosPortal;
 // ポータルスクリプト (Map.wz の portal の script) の Java の実装
 public class PortalMan {
 
-    // Java の実装を優先し、存在しない場合は js を利用する
     public static boolean enter(TacosClient client, TacosPortal portal) {
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {
-            return TacosScriptPortal.getInstance().enter(portal, client);
+            client.getPlayer().DebugMsg("Portal (not coded) : " + portal.getScriptName());
+            return false;
         }
         client.getPlayer().DebugMsg("Portal (Java) : " + portal.getScriptName());
         return portal_script.start(client, portal);

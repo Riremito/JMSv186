@@ -35,7 +35,7 @@ public class QuestMan {
             return false;
         }
         if (!quest_start && check_complete && !MapleQuest.getInstance(quest_id).canComplete(chr, null)) {
-            // Java で処理するクエストなので js は実行しない
+            // 完了条件を満たしていないため何もしない
             return true;
         }
         quest_script.setNpcId(npc_id);

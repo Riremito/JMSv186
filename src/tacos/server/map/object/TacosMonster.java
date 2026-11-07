@@ -46,7 +46,6 @@ import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
@@ -199,7 +198,6 @@ public class TacosMonster extends TacosMapObject {
     private boolean fake;
     private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
-    private OdinEventInstanceManager eventInstance;
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
@@ -721,10 +719,6 @@ public class TacosMonster extends TacosMapObject {
         if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             resetShammos(client);
         }
-    }
-
-    public OdinEventInstanceManager getEventInstance() {
-        return eventInstance;
     }
 
     public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom) {

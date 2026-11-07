@@ -55,7 +55,6 @@ import odin.server.maps.SavedLocationType;
 import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.script.js.TacosScriptNPC;
 import tacos.server.TacosEnhancement.EnhancementResult;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
@@ -207,7 +206,7 @@ public class ReqCUser_Item {
             MapleInventoryManipulator.addById(chr, 2430007, (short) 1, null, null, 0, io); // Blank Compass
         }
         chr.sendInventoryOperation(false, io);
-        TacosScriptNPC.getInstance().start(chr.getClient(), 2084001);
+        ReqCUser.OnUserSelectNpcInternal(chr, 2084001, 2084001);
     }
 
     private static void useGoldCompass(TacosCharacter chr) {

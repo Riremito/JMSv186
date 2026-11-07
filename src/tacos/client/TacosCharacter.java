@@ -152,8 +152,6 @@ import tacos.database.query.DQ_Notes;
 import tacos.script.npc.NpcShopMan;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.js.TacosScriptNPC;
-import tacos.script.js.TacosScriptQuest;
 import tacos.shared.TacosSharedDate;
 import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
@@ -3546,8 +3544,6 @@ public class TacosCharacter extends TacosPlayer {
                 playerShop.setOpen(true);
             }
         }
-        TacosScriptNPC.getInstance().dispose(client);
-        TacosScriptQuest.getInstance().dispose(client);
     }
 
     public boolean canUseFamilyBuff(MapleFamilyBuffEntry buff) {

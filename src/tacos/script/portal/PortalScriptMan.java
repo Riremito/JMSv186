@@ -45,6 +45,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
@@ -53,8 +54,6 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.js.TacosScriptNPC;
-import tacos.script.npc.NpcMan;
 import tacos.server.TacosFieldSet;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosPortal;
@@ -417,12 +416,9 @@ public abstract class PortalScriptMan {
         getPlayer().clearSavedLocation(SavedLocationType.fromString(type));
     }
 
-    // NPC の会話を開始 (Java を優先し、存在しない場合は js)
+    // NPC の会話を開始
     public void openNpc(int npc_id) {
-        if (NpcMan.start(getPlayer(), WzXML.NPC.getNpcInfo(npc_id), npc_id, npc_id)) {
-            return;
-        }
-        TacosScriptNPC.getInstance().start(this.client, npc_id);
+        ReqCUser.OnUserSelectNpcInternal(getPlayer(), npc_id, npc_id);
     }
 
     public void removeNpc(int map_id, int npc_id) {

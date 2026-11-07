@@ -37,8 +37,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import tacos.debug.DebugLogger;
-import tacos.script.js.TacosScriptNPC;
-import tacos.script.js.TacosScriptQuest;
+import tacos.packet.request.ReqCUser;
 import tacos.wz.WzXML;
 
 public class MapScriptMethods {
@@ -453,9 +452,7 @@ public class MapScriptMethods {
             case shammos_Enter: { //nothing to go on inside the map
                 chr.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((chr.getMapId() % 1000) / 100)));
                 if (chr.getMapId() == 921120500) {
-                    TacosScriptNPC.getInstance().dispose(chr.getClient());
-                    TacosScriptQuest.getInstance().dispose(chr.getClient());
-                    TacosScriptNPC.getInstance().start(chr.getClient(), 2022006);
+                    ReqCUser.OnUserSelectNpcInternal(chr, 2022006, 2022006);
                 }
                 break;
             }

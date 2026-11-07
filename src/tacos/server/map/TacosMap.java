@@ -41,7 +41,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.handling.world.MapleParty.PartyOperation;
-import tacos.odin.OdinEventManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
@@ -77,7 +76,6 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_FieldEffect;
-import tacos.script.js.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
 import tacos.server.map.object.TacosDrop.DropEnterType;
@@ -1642,62 +1640,6 @@ public class TacosMap extends TacosMapData {
                 return null;
         }
         return TacosWorld.find(0).getChannelServer(channel).getMapleSquad(zz);
-    }
-
-    public OdinEventManager getEMByMap() {
-        String em = null;
-        switch (map_id) {
-            case 105100400:
-                em = "BossBalrog_EASY";
-                break;
-            case 105100300:
-                em = "BossBalrog_NORMAL";
-                break;
-            case 280030000:
-                em = "ZakumBattle";
-                break;
-            case 240060200:
-                em = "HorntailBattle";
-                break;
-            case 280030001:
-                em = "ChaosZakum";
-                break;
-            case 240060201:
-                em = "ChaosHorntail";
-                break;
-            case 270050100:
-                em = "PinkBeanBattle";
-                break;
-            case 802000111:
-                em = "NamelessMagicMonster";
-                break;
-            case 802000211:
-                em = "Vergamot";
-                break;
-            case 802000311:
-                em = "2095_tokyo";
-                break;
-            case 802000411:
-                em = "Dunas";
-                break;
-            case 802000611:
-                em = "Nibergen";
-                break;
-            case 802000711:
-                em = "Dunas2";
-                break;
-            case 802000801:
-            case 802000802:
-            case 802000803:
-                em = "CoreBlaze";
-                break;
-            case 802000821:
-                em = "Aufhaven";
-                break;
-            default:
-                return null;
-        }
-        return TacosScriptEvent.getInstance().getEventManager(em);
     }
 
     // used by script
