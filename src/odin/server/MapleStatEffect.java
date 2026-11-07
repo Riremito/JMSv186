@@ -461,14 +461,6 @@ public class MapleStatEffect {
         return applyTo(chr, chr, true, null, duration);
     }
 
-    public boolean applyTo(TacosCharacter chr, Point pos) {
-        return applyTo(chr, chr, true, pos, duration);
-    }
-
-    private boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos) {
-        return applyTo(applyfrom, applyto, primary, pos, duration);
-    }
-
     public boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos, int newDuration) {
         TacosMap map = applyfrom.getMap();
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
@@ -667,10 +659,6 @@ public class MapleStatEffect {
             mylt = new Point(rb.x * -1 + posFrom.x, lt.y + posFrom.y);
         }
         return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
-    }
-
-    public void setDuration(int d) {
-        this.duration = d;
     }
 
     private int calcHPChange(TacosCharacter applyfrom, boolean primary) {
@@ -878,48 +866,8 @@ public class MapleStatEffect {
         return sourceid == 5121010;
     }
 
-    public short getHp() {
-        return hp;
-    }
-
-    public short getMp() {
-        return mp;
-    }
-
-    public short getWatk() {
-        return watk;
-    }
-
     public short getMatk() {
         return matk;
-    }
-
-    public short getWdef() {
-        return wdef;
-    }
-
-    public short getMdef() {
-        return mdef;
-    }
-
-    public short getAcc() {
-        return acc;
-    }
-
-    public short getAvoid() {
-        return avoid;
-    }
-
-    public short getHands() {
-        return hands;
-    }
-
-    public short getSpeed() {
-        return speed;
-    }
-
-    public short getJump() {
-        return jump;
     }
 
     public ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> getOss() {
@@ -938,14 +886,6 @@ public class MapleStatEffect {
         return y;
     }
 
-    public short getDamage() {
-        return damage;
-    }
-
-    public byte getMobCount() {
-        return mobCount;
-    }
-
     public int getCooldown() {
         return cooldown;
     }
@@ -956,21 +896,6 @@ public class MapleStatEffect {
 
     public boolean isMPRecovery() {
         return skill && sourceid == 5101005;
-    }
-
-    public boolean isPoison() {
-        switch (sourceid) {
-            case 2111003:
-            case 2101005:
-            case 2111006:
-            case 2121003:
-            case 2221003:
-            case 12111005: // Flame gear
-            case 3111003: //inferno, new
-            case 22161002: //phantom imprint
-                return skill;
-        }
-        return false;
     }
 
     private boolean isMist() {
@@ -993,36 +918,6 @@ public class MapleStatEffect {
 
     public boolean isMorph() {
         return morphId > 0;
-    }
-
-    public int getMorph() {
-        switch (sourceid) {
-            case 15111002:
-            case 5111005:
-                return 1000;
-            case 5121003:
-                return 1001;
-            case 5101007:
-                return 1002;
-            case 13111005:
-                return 1003;
-        }
-        return morphId;
-    }
-
-    public int getMorph(TacosCharacter chr) {
-        int morph = getMorph();
-        switch (morph) {
-            case 1000:
-            case 1001:
-            case 1003:
-                return morph + (chr.getGender() == 1 ? 100 : 0);
-        }
-        return morph;
-    }
-
-    public byte getLevel() {
-        return level;
     }
 
     public int getSourceId() {

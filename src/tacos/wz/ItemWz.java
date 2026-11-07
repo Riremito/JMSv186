@@ -286,7 +286,6 @@ public class ItemWz extends WzXML {
 
     // Pet
     private Map<SimpleImmutableEntry<Integer, Integer>, PetCommand> map_petCommands = null;
-    private Map<Integer, Integer> map_petHunger = null;
 
     public PetCommand getPetCommand(int petId, int skillId) {
         if (map_petCommands == null) {
@@ -306,20 +305,6 @@ public class ItemWz extends WzXML {
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
         map_petCommands.put(new SimpleImmutableEntry<>(petId, skillId), ret);
-        return ret;
-    }
-
-    private int getHunger(int petId) {
-        if (map_petHunger == null) {
-            map_petHunger = new HashMap<>();
-        }
-        Integer found = map_petHunger.get(petId);
-        if (found != null) {
-            return found;
-        }
-
-        Integer ret = getData("Pet/" + petId + ".img").getInt("info/hungry", 1);
-        map_petHunger.put(petId, ret);
         return ret;
     }
 
@@ -433,52 +418,6 @@ public class ItemWz extends WzXML {
         ret.itemCon = source.getInt("itemCon");
         ret.itemConNo = source.getInt("itemConNo");
         ret.moveTo = source.getInt("moveTo", -1);
-        return ret;
-    }
-
-    public Map<Integer, Map<String, Integer>> loadEquipIncrements(int itemId) {
-        Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return null;
-        }
-        MapleData info = item.getChildByPath("info/level/info");
-        if (info == null) {
-            return null;
-        }
-        for (MapleData dat : info.getChildren()) {
-            Map<String, Integer> incs = new HashMap<>();
-            for (MapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
-                if (data.getName().length() > 3) {
-                    incs.put(data.getName().substring(3), dat.getInt(data.getName()));
-                }
-            }
-            ret.put(Integer.valueOf(dat.getName()), incs);
-        }
-        return ret;
-    }
-
-    public Map<Integer, List<Integer>> loadEquipSkills(int itemId) {
-        Map<Integer, List<Integer>> ret = new LinkedHashMap<>();
-        MapleData item = getResolvedItemData(itemId);
-        if (item == null) {
-            return null;
-        }
-        MapleData info = item.getChildByPath("info/level/case");
-        if (info == null) {
-            return null;
-        }
-        for (MapleData dat : info.getChildren()) {
-            for (MapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
-                if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
-                    List<Integer> adds = new ArrayList<>();
-                    for (MapleData skil : data.getChildByPath("Skill").getChildren()) {
-                        adds.add(skil.getInt("id"));
-                    }
-                    ret.put(Integer.valueOf(data.getName()), adds);
-                }
-            }
-        }
         return ret;
     }
 
@@ -745,10 +684,6 @@ public class ItemWz extends WzXML {
             this.skillId = skillId;
             this.prob = prob;
             this.inc = inc;
-        }
-
-        public int getSkillId() {
-            return skillId;
         }
 
         public int getProbability() {

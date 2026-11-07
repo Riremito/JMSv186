@@ -30,10 +30,7 @@ import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryType;
-import tacos.database.query.DQ_Gifts;
-import tacos.packet.response.ResCCashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.client.TacosCharacter;
 import tacos.server.TacosWorld;
 
 public class CashShop {
@@ -94,32 +91,8 @@ public class CashShop {
         return null;
     }
 
-    public void checkExpire(TacosCharacter chr) {
-        List<Item> toberemove = new ArrayList<>();
-        for (Item item : inventory) {
-            if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
-                toberemove.add(item);
-            }
-        }
-        if (!toberemove.isEmpty()) {
-            for (Item item : toberemove) {
-                removeFromInventory(item);
-                chr.SendPacket(ResCCashShop.CashItemResult_Expire_Done(item.getUniqueId()));
-            }
-            toberemove.clear();
-        }
-    }
-
     public Item toItem(CashItemInfo cItem) {
         return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), "");
-    }
-
-    public Item toItem(CashItemInfo cItem, String gift) {
-        return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), gift);
-    }
-
-    public Item toItem(CashItemInfo cItem, int uniqueid) {
-        return toItem(cItem, uniqueid, "");
     }
 
     public Item toItem(CashItemInfo cItem, int uniqueid, String gift) {
@@ -164,14 +137,6 @@ public class CashShop {
 
     public void removeFromInventory(Item item) {
         inventory.remove(item);
-    }
-
-    public void gift(int recipient, String from, String message, int sn) {
-        gift(recipient, from, message, sn, 0);
-    }
-
-    public void gift(int recipient, String from, String message, int sn, int uniqueid) {
-        DQ_Gifts.add(recipient, from, message, sn, uniqueid);
     }
 
     public boolean canSendNote(int uniqueid) {

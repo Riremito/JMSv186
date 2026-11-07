@@ -287,10 +287,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         return ownerName;
     }
 
-    public int getOwnerAccId() {
-        return owneraccount;
-    }
-
     public String getDescription() {
         if (des == null) {
             return "";
@@ -305,10 +301,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     public void addItem(MaplePlayerShopItem item) {
         items.add(item);
         save();
-    }
-
-    public boolean removeItem(int item) {
-        return false;
     }
 
     public void removeFromSlot(int slot) {

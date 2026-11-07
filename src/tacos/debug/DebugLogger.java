@@ -19,7 +19,6 @@
 package tacos.debug;
 
 import tacos.config.DeveloperMode;
-import tacos.client.TacosCharacter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -57,48 +56,11 @@ public class DebugLogger {
         }
     }
 
-    public static void close() {
-        if (fw != null) {
-            try {
-                fw.close();
-            } catch (IOException ex) {
-                ExceptionLog("DebugLogger - close");
-            }
-        }
-        fw = null;
-    }
-
-    public static boolean DevLog(String text) {
-        if (fw == null) {
-            return false;
-        }
-        try {
-            if (!DeveloperMode.DM_LOG_DEV.get()) {
-                return false;
-            }
-            fw.write("[" + getDateString() + "]" + "[DEV]" + text + "\r\n");
-            fw.flush();
-            return true;
-        } catch (IOException ex) {
-            ExceptionLog("DebugLogger - write");
-        }
-
-        return false;
-    }
-
     public static boolean DebugLog(String log_text) {
         if (!DeveloperMode.DM_LOG_DEBUG.get()) {
             return false;
         }
         Log("DEBUG", log_text);
-        return true;
-    }
-
-    public static boolean DebugLog(TacosCharacter chr, String log_text) {
-        if (!DeveloperMode.DM_LOG_DEBUG.get()) {
-            return false;
-        }
-        Log("DEBUG_CHR : \"" + chr.getName() + "\"", log_text);
         return true;
     }
 
@@ -158,14 +120,6 @@ public class DebugLogger {
             return false;
         }
         Log("WZDATA", data_path + " : " + text);
-        return true;
-    }
-
-    public static boolean ScriptLog(String log_text) {
-        if (!DeveloperMode.DM_LOG_SCRIPT.get()) {
-            return false;
-        }
-        Log("SCRIPT", log_text);
         return true;
     }
 

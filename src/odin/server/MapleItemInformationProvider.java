@@ -129,11 +129,6 @@ public class MapleItemInformationProvider {
         return getInfo(itemId, ei -> ei.getPickUpBlock() == 1, ii -> ii.getPickUpBlock() == 1, false);
     }
 
-    // true = cant sell, false = can sell
-    public boolean cantSell(int itemId) {
-        return getInfo(itemId, ei -> ei.getNotSale() == 1, ii -> ii.getNotSale() == 1, false);
-    }
-
     public boolean isCash(int itemId) {
         if (GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH) {
             return true;

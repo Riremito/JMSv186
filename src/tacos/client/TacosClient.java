@@ -64,7 +64,6 @@ public class TacosClient extends BaseClient {
     private List<TacosCharacter> characters = null;
     // server info
     private int loginAttempt = 0;
-    private int world = 0;
     private int selected_world = 0;
     private int selected_channel = 1;
     // in game info

@@ -103,10 +103,6 @@ public class TacosHoldInventory {
         return 0 <= chr.getMeso() + this.meso;
     }
 
-    public boolean canReturnTo(TacosCharacter chr) {
-        return hasRoomIn(chr) && !hasOnlyItemIn(chr) && hasMesoRoomIn(chr);
-    }
-
     // moves everything into the character's inventory, what does not fit stays here.
     public void returnTo(TacosCharacter chr) {
         Iterator<Item> it = this.items.iterator();

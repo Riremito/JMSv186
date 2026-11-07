@@ -83,32 +83,16 @@ public class TacosMonster extends TacosMapObject {
         this.id = id;
     }
 
-    public int getF() {
-        return this.f;
-    }
-
     public void setF(int f) {
         this.f = f;
-    }
-
-    public int getCy() {
-        return this.cy;
     }
 
     public void setCy(int cy) {
         this.cy = cy;
     }
 
-    public int getRx0() {
-        return this.rx0;
-    }
-
     public void setRx0(int rx0) {
         this.rx0 = rx0;
-    }
-
-    public int getRx1() {
-        return this.rx1;
     }
 
     public void setRx1(int rx1) {
@@ -179,10 +163,6 @@ public class TacosMonster extends TacosMapObject {
         return getStance() % 2 != 0;
     }
 
-    public int getFacingDirection() {
-        return getStance() % 2;
-    }
-
     private MapleMonsterStats stats;
     private OverrideMonsterStats ostats = null;
     private long hp;
@@ -192,13 +172,11 @@ public class TacosMonster extends TacosMapObject {
     private TacosMonster sponge = null;
     private int highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
     private int stolen = -1; //monster can only be stolen ONCE
-    private byte venom_counter;
     private byte carnivalTeam;
     private TacosMap map;
     private boolean fake;
     private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
-    private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
     private final TacosMobBuff buffs = new TacosMobBuff();
@@ -209,23 +187,11 @@ public class TacosMonster extends TacosMapObject {
         initWithStats(stats);
     }
 
-    public TacosMonster(TacosMonster monster) {
-        setId(monster.getId());
-        setF(monster.getF());
-        setCy(monster.getCy());
-        setRx0(monster.getRx0());
-        setRx1(monster.getRx1());
-        setFootholdId(monster.getFootholdId());
-        setHomeFoothold(monster.getFootholdId());
-        initWithStats(monster.stats);
-    }
-
     private void initWithStats(MapleMonsterStats stats) {
         setStance(5);
         this.stats = stats;
         hp = stats.getHp();
         mp = stats.getMp();
-        venom_counter = 0;
 //	showdown = 100;
         carnivalTeam = -1;
         fake = false;
@@ -294,12 +260,6 @@ public class TacosMonster extends TacosMapObject {
             return ostats.getExp();
         }
         return stats.getExp();
-    }
-
-    public void setOverrideStats(OverrideMonsterStats ostats) {
-        this.ostats = ostats;
-        this.hp = ostats.getHp();
-        this.mp = ostats.getMp();
     }
 
     public TacosMonster getSponge() {
@@ -552,7 +512,6 @@ public class TacosMonster extends TacosMapObject {
         }
 
         nodepack = null;
-        reflectpack = null;
         cancelDropItem();
         int v1 = highestDamageChar;
         this.highestDamageChar = 0; //reset so we dont kill twice
@@ -665,10 +624,6 @@ public class TacosMonster extends TacosMapObject {
         return hp > 0;
     }
 
-    public void setCarnivalTeam(byte team) {
-        carnivalTeam = team;
-    }
-
     public byte getCarnivalTeam() {
         return carnivalTeam;
     }
@@ -690,45 +645,6 @@ public class TacosMonster extends TacosMapObject {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client.getPlayer(), "shammos_Fenter");
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        if (!isAlive()) {
-            return;
-        }
-        client.SendPacket(ResCMobPool.MobEnterField(this));
-        if (reflectpack != null) {
-            client.SendPacket(reflectpack);
-        }
-        if (lastNode >= 0) {
-            client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(this, map));
-            if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
-                if (lastNodeController != -1) { //new controller, please re update. sendSpawn only comes when you get too far then come back anyway
-                    resetShammos(client);
-                } else {
-                    setLastNodeController(client.getPlayer().getId());
-                }
-            }
-        }
-    }
-
-    public void sendDestroyData(TacosClient client) {
-        if (lastNode == -1) {
-            client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
-        }
-        if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
-            resetShammos(client);
-        }
-    }
-
-    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom) {
-        applyStatus(from, stat, value, skill_id, poison, duration, venom, true);
-    }
-
-    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom, boolean checkboss) {
-        if (canApplyStatus(from, stat, skill_id, venom, checkboss) && getBuff().update(stat, skill_id, value, (int) duration)) {
-            map.broadcastPacket(ResCMobPool.MobStatSet(this, skill_id));
-        }
     }
 
     // all statuses of one skill, sent in one MobStatSet
@@ -865,10 +781,6 @@ public class TacosMonster extends TacosMapObject {
         return stats.getSkills();
     }
 
-    public boolean hasSkill(int skillId, int level) {
-        return stats.hasSkill(skillId, level);
-    }
-
     public long getLastSkillUsed(int skillId) {
         if (usedSkills.containsKey(skillId)) {
             return usedSkills.get(skillId);
@@ -904,10 +816,6 @@ public class TacosMonster extends TacosMapObject {
         return stats.getBuffToGive();
     }
 
-    public TacosMonster getParent() {
-        return this;
-    }
-
     private static class AttackingMapleCharacter {
 
         private TacosCharacter attacker;
@@ -935,8 +843,6 @@ public class TacosMonster extends TacosMapObject {
         public void addDamage(TacosCharacter from, long damage, boolean updateAttackTime);
 
         public long getDamage();
-
-        public boolean contains(TacosCharacter chr);
 
         public void killedMob(TacosMap map, int baseExp, boolean mostDamage, int lastSkill);
     }
@@ -971,11 +877,6 @@ public class TacosMonster extends TacosMapObject {
             } else {
                 return Collections.emptyList();
             }
-        }
-
-        @Override
-        public boolean contains(TacosCharacter chr) {
-            return chrid == chr.getId();
         }
 
         @Override
@@ -1074,11 +975,6 @@ public class TacosMonster extends TacosMapObject {
                 }
             }
             return ret;
-        }
-
-        @Override
-        public boolean contains(TacosCharacter chr) {
-            return attackers.containsKey(chr.getId());
         }
 
         @Override
@@ -1266,44 +1162,16 @@ public class TacosMonster extends TacosMapObject {
         private int exp;
         private int mp;
 
-        public OverrideMonsterStats() {
-            hp = 0;
-            exp = 0;
-            mp = 0;
-        }
-
-        public OverrideMonsterStats(long hp, int mp, int exp, boolean change) {
-            this.hp = /*change ? (hp * 3L / 2L) : */ hp;
-            this.mp = mp;
-            this.exp = exp;
-        }
-
-        public OverrideMonsterStats(long hp, int mp, int exp) {
-            this(hp, mp, exp, true);
-        }
-
         public int getExp() {
             return exp;
-        }
-
-        public void setOExp(int exp) {
-            this.exp = exp;
         }
 
         public long getHp() {
             return hp;
         }
 
-        public void setOHp(long hp) {
-            this.hp = hp;
-        }
-
         public int getMp() {
             return mp;
-        }
-
-        public void setOMp(int mp) {
-            this.mp = mp;
         }
     }
 }

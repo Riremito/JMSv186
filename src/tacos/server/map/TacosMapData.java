@@ -210,10 +210,6 @@ public class TacosMapData {
         return this.footholds;
     }
 
-    public TacosFoothold findBelow(int x, int y) {
-        return findBelow(new Point(x, y));
-    }
-
     public TacosFoothold findBelow(Point pt) {
         TacosFoothold ground_fh = null;
         for (TacosFoothold foothold : getFootholds().values()) {
@@ -472,14 +468,6 @@ public class TacosMapData {
         return this.returnMapId;
     }
 
-    public long getCreateMobInterval() {
-        return this.createMobInterval;
-    }
-
-    public float getMonsterRate() {
-        return this.monsterRate;
-    }
-
     public boolean getEverlast() {
         return this.everlast;
     }
@@ -488,24 +476,8 @@ public class TacosMapData {
         return this.town;
     }
 
-    public boolean canSoar() {
-        return this.soaring;
-    }
-
     public boolean allowPersonalShop() {
         return this.personalShop;
-    }
-
-    public int getHPDec() {
-        return this.decHP;
-    }
-
-    public int getHPDecInterval() {
-        return this.decHPInterval;
-    }
-
-    public int getHPDecProtect() {
-        return this.protectItem;
     }
 
     public int getForcedReturnId() {
@@ -526,14 +498,6 @@ public class TacosMapData {
 
     public String getUserEnter() {
         return this.onUserEnter;
-    }
-
-    public float getRecoveryRate() {
-        return this.recoveryRate;
-    }
-
-    public int getFixedMob() {
-        return this.fixedMob;
     }
 
     public int getConsumeItemCoolTime() {

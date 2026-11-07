@@ -103,14 +103,6 @@ public class Alliance {
         return false;
     }
 
-    public boolean changeAllianceCapacity(int allianceid) {
-        MapleGuildAlliance mga = getAlliance(allianceid);
-        if (mga != null) {
-            return mga.setCapacity();
-        }
-        return false;
-    }
-
     public boolean disbandAlliance(int allianceid) {
         MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {

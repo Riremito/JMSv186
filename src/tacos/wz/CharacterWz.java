@@ -85,7 +85,6 @@ public class CharacterWz extends WzXML {
         private int incMMPr;
         private int cash;
         private int only;
-        private int tradeAvailable;
         private int tradeBlock;
         private int price;
         private int reqJob;
@@ -95,7 +94,6 @@ public class CharacterWz extends WzXML {
         private int reqINT;
         private int reqLUK;
         private int reqPOP;
-        private int charmEXP;
         private int slotMax;
         private int quest;
         private int accountSharable;

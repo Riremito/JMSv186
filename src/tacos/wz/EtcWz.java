@@ -276,14 +276,6 @@ public class EtcWz extends WzXML {
         return null;
     }
 
-    private MapleData getCashPackage() {
-        return getData("CashPackage.img");
-    }
-
-    private MapleData getSetItemInfo() {
-        return getData("SetItemInfo.img");
-    }
-
     private List<String> list_fn = null;
 
     private List<String> getFN() {
@@ -323,7 +315,6 @@ public class EtcWz extends WzXML {
         public int nMaplePoint = 0;
         public int nMeso = 0;
         public int bForPremiumUser = 0;
-        public int nReqLev = 0;
         public int nCommodityGender = 0;
         public int bOnSale = 0;
         public int nClass = 0;
@@ -331,10 +322,7 @@ public class EtcWz extends WzXML {
         public int nPbCash = 0;
         public int nPbPoint = 0;
         public int nPbGift = 0;
-        public int nDiscountRate = 0;
         public ArrayList<Integer> aPackageSN = new ArrayList<>();
-        public int aOriginalSN = 0;
-        public int nOriginalPrice = 0;
         public int dwModifiedFlag = 0;
     }
 

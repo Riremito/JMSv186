@@ -115,18 +115,4 @@ public class Property {
         }
         return true;
     }
-
-    public static Properties open(String path) {
-        try {
-            //FileReader fr = new FileReader(path);
-            Properties pr = new Properties();
-            //pr.load(fr);
-            pr.load(new InputStreamReader(new FileInputStream(path), "UTF8"));
-            return pr;
-        } catch (IOException e) {
-            // do nothing
-        }
-
-        return null;
-    }
 }

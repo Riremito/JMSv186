@@ -287,34 +287,6 @@ public class DQ_Accounts {
         return loginok;
     }
 
-    public static boolean checkLoginIP(TacosClient client) {
-        boolean ret = false;
-
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
-                ps.setInt(1, client.getId());
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String sessionIP = rs.getString("SessionIP");
-
-                        if (sessionIP != null) {
-                            ret = client.getIPAddress().equals(sessionIP.split(":")[0]);
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "checkLoginIP");
-        }
-
-        if (!ret) {
-            DebugLogger.ErrorLog("checkLoginIP");
-        }
-
-        return ret;
-    }
-
     public static boolean finishLogin(TacosClient client) {
         MapleClientState state = getLoginState(client);
         if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {

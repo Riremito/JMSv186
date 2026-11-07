@@ -83,10 +83,6 @@ public class MapleFamily {
         resetGens(); //set
     }
 
-    public int getGens() {
-        return generations;
-    }
-
     public void resetPedigree() {
         for (MapleFamilyCharacter mfc : members.values()) {
             mfc.resetPedigree(this);
@@ -154,10 +150,6 @@ public class MapleFamily {
 
     public String getLeaderName() {
         return leadername;
-    }
-
-    public void broadcast(ServerPacket packet, List<Integer> cids) {
-        broadcast(packet, -1, FCOp.NONE, cids);
     }
 
     public void broadcast(ServerPacket packet, int exception, List<Integer> cids) {

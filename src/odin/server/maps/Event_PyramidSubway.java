@@ -50,7 +50,6 @@ public class Event_PyramidSubway {
     private static final int SUBWAY_FAIL_MAP_ID = 910320001;
     private static final int PYRAMID_FIRST_MAP_ID = 926010100;
     private static final int PYRAMID_LAST_MAP_ID = 926013504;
-    private static final int PYRAMID_BONUS_MAP_ID = 926010010;
     private static final int PYRAMID_CLEAR_MAP_ID = 926020001;
     private static final int PYRAMID_FAIL_MAP_ID = 926010001;
     private static final int YETI_MOB_ID = 9300021;
@@ -309,40 +308,6 @@ public class Event_PyramidSubway {
             return false;
         }
         changeMap(player, map, 1, 200, 1); // any level because they could level
-        return true;
-    }
-
-    public static boolean warpStartPyramid(TacosCharacter player, int difficulty) {
-        int minLevel = 40;
-        int maxLevel = 60;
-        switch (difficulty) {
-            case 1:
-                minLevel = 45;
-                break;
-            case 2:
-                minLevel = 50;
-                break;
-            case 3:
-                minLevel = 61;
-                maxLevel = 200;
-                break;
-            default:
-                break;
-        }
-        TacosMap map = findEmptyMap(player, PYRAMID_FIRST_MAP_ID + (difficulty * 1000), 5);
-        if (map == null) {
-            return false;
-        }
-        changeMap(player, map, minLevel, maxLevel, 0);
-        return true;
-    }
-
-    public static boolean warpBonusPyramid(TacosCharacter player, int difficulty) {
-        TacosMap map = findEmptyMap(player, PYRAMID_BONUS_MAP_ID + (difficulty * 20), 20);
-        if (map == null) {
-            return false;
-        }
-        player.changeMapPortal(map, map.getPortal(0)); // solo
         return true;
     }
 

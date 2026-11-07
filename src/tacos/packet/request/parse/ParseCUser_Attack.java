@@ -50,7 +50,6 @@ public class ParseCUser_Attack {
     public int skill;
     public List<Integer> allMeso;
     public Point position;
-    public boolean real = true;
     public ClientPacketHeader header;
     public int CharacterId;
     public int X;

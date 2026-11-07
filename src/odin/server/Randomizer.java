@@ -14,24 +14,8 @@ public class Randomizer {
         return rand.nextInt(arg0);
     }
 
-    public static void nextBytes(byte[] bytes) {
-        rand.nextBytes(bytes);
-    }
-
     public static boolean nextBoolean() {
         return rand.nextBoolean();
-    }
-
-    public static double nextDouble() {
-        return rand.nextDouble();
-    }
-
-    public static float nextFloat() {
-        return rand.nextFloat();
-    }
-
-    public static long nextLong() {
-        return rand.nextLong();
     }
 
     public static int rand(int lbound, int ubound) {

@@ -80,14 +80,6 @@ public class TacosReactorSpawnPoint {
         return this.reactor;
     }
 
-    public TacosReactor getReactor() {
-        return this.reactor;
-    }
-
-    public void removeReactor() {
-        this.reactor = null;
-    }
-
     public long getLastRegenTime() {
         return this.last_regen_time;
     }

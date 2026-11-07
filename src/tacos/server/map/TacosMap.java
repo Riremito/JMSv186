@@ -38,11 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.handling.world.MapleParty.PartyOperation;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
@@ -108,8 +106,6 @@ public class TacosMap extends TacosMapData {
 
     protected int runningOid = 100000;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
-    protected boolean squadTimer = false;
-    protected String squad = "";
     protected ScheduledFuture<?> squadSchedule;
     protected MapleMapEffect mapEffect;
 
@@ -142,19 +138,7 @@ public class TacosMap extends TacosMapData {
         return this.environment;
     }
 
-    public MapleSquad getSquadBegin() {
-        if (this.squad.length() > 0) {
-            return TacosWorld.find(0).getChannelServer(this.channel).getMapleSquad(this.squad); // TODO : fix
-        }
-        return null;
-    }
-
-    public void setSquad(String squad) {
-        this.squad = squad;
-    }
-
     public void cancelSquadSchedule() {
-        this.squadTimer = false;
         if (this.squadSchedule != null) {
             this.squadSchedule.cancel(false);
             this.squadSchedule = null;
@@ -868,18 +852,6 @@ public class TacosMap extends TacosMapData {
         this.pets.remove(pet.getObjectId());
     }
 
-    public List<TacosPet> getAllPets() {
-        ArrayList<TacosPet> ret = new ArrayList<>();
-        for (TacosPet pet : this.pets.values()) {
-            ret.add(pet);
-        }
-        return ret;
-    }
-
-    public TacosPet getPetByOid(int object_id) {
-        return this.pets.get(object_id);
-    }
-
     // summon.
     private LinkedHashMap<Integer, TacosSummon> summons = new LinkedHashMap<>();
 
@@ -894,14 +866,6 @@ public class TacosMap extends TacosMapData {
     public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getObjectId());
         broadcastPacket(ResCSummonedPool.SummonedLeaveField(summon, true));
-    }
-
-    public List<TacosSummon> getAllSummons() {
-        ArrayList<TacosSummon> ret = new ArrayList<>();
-        for (TacosSummon summon : this.summons.values()) {
-            ret.add(summon);
-        }
-        return ret;
     }
 
     public TacosSummon getSummonByOid(int object_id) {
@@ -966,10 +930,6 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    // script.
-    public void setSpawns(boolean spawns) {
-    }
-
     public TacosMonster getMonsterById(int id) {
         for (TacosMonster monster : this.monsters.values()) {
             if (monster.getId() == id) {
@@ -990,10 +950,6 @@ public class TacosMap extends TacosMapData {
     }
 
     public int getNumMonsters() {
-        return this.monsters.size();
-    }
-
-    public int getSpawnedMonstersOnMap() {
         return this.monsters.size();
     }
 
@@ -1331,18 +1287,6 @@ public class TacosMap extends TacosMapData {
         return this.miniGames.remove(object_id) != null;
     }
 
-    public List<MapleMiniGame> getAllMiniGames() {
-        ArrayList<MapleMiniGame> ret = new ArrayList<>();
-        for (MapleMiniGame game : this.miniGames.values()) {
-            ret.add(game);
-        }
-        return ret;
-    }
-
-    public MapleMiniGame getMiniGameByOid(int object_id) {
-        return this.miniGames.get(object_id);
-    }
-
     // player shop.
     private LinkedHashMap<Integer, MaplePlayerShop> playerShops = new LinkedHashMap<>();
 
@@ -1354,14 +1298,6 @@ public class TacosMap extends TacosMapData {
 
     public boolean removePlayerShop(int object_id) {
         return this.playerShops.remove(object_id) != null;
-    }
-
-    public List<MaplePlayerShop> getAllPlayerShops() {
-        ArrayList<MaplePlayerShop> ret = new ArrayList<>();
-        for (MaplePlayerShop shop : this.playerShops.values()) {
-            ret.add(shop);
-        }
-        return ret;
     }
 
     public MaplePlayerShop getPlayerShopByOid(int object_id) {
@@ -1395,10 +1331,6 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public int getItemsSize() {
-        return this.drops.size();
-    }
-
     public void spawnMesoDrop(int meso, Point position, Point dropperPosition, TacosCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
         TacosDrop mdrop = new TacosDrop(null, meso, 0, droppos, owner.getId(), droptype, playerDrop);
@@ -1420,20 +1352,6 @@ public class TacosMap extends TacosMapData {
         mdrop.setDelay(delay);
         broadcastDropPacket(mdrop, ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         mdrop.setDelay(0);
-    }
-
-    public void spawnAutoDrop(int itemid, Point pos) {
-        Item idrop = null;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
-            idrop = ii.getEquipById(itemid);
-        } else {
-            idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
-        }
-        TacosDrop mdrop = new TacosDrop(idrop, 0, 0, pos, 0, (byte) 2, false);
-        addDrop(mdrop);
-        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
-        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
     }
 
     // mystic door.
@@ -1461,10 +1379,6 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public TacosMysticDoor getDoorByOid(int object_id) {
-        return this.doors.get(object_id);
-    }
-
     // dynamic portal.
     private LinkedHashMap<Integer, TacosDynamicPortal> dynamicPortals = new LinkedHashMap<>();
 
@@ -1472,22 +1386,6 @@ public class TacosMap extends TacosMapData {
         dynamic_portal.setObjectId();
         this.dynamicPortals.put(dynamic_portal.getObjectId(), dynamic_portal);
         splitSendPacket(dynamic_portal, Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
-    }
-
-    public boolean removeDynamicPortal(int object_id) {
-        return this.dynamicPortals.remove(object_id) != null;
-    }
-
-    public List<TacosDynamicPortal> getAllDynamicPortals() {
-        ArrayList<TacosDynamicPortal> ret = new ArrayList<>();
-        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
-            ret.add(dynamic_portal);
-        }
-        return ret;
-    }
-
-    public TacosDynamicPortal getDynamicPortalByOid(int object_id) {
-        return this.dynamicPortals.get(object_id);
     }
 
     public TacosDynamicPortal findDynamicPortal(int portal_id) {
@@ -1510,12 +1408,6 @@ public class TacosMap extends TacosMapData {
 
     // reactor.
     private LinkedHashMap<Integer, TacosReactor> reactors = new LinkedHashMap<>();
-
-    public void resetReactors() {
-        for (TacosReactor reactor : this.reactors.values()) {
-            reactor.forceHitReactor((byte) 0);
-        }
-    }
 
     public List<TacosReactor> getAllReactors() {
         ArrayList<TacosReactor> ret = new ArrayList<>();
@@ -1565,81 +1457,6 @@ public class TacosMap extends TacosMapData {
         for (TacosReactor reactor : this.reactors.values()) {
             reactor.forceHitReactor((byte) 1);
         }
-    }
-
-    // used by script
-    public void shuffleReactors() {
-        shuffleReactors(0, 9999999);
-    }
-
-    // used by script
-    public void shuffleReactors(int first, int last) {
-        List<Point> points = new ArrayList<>();
-        for (TacosReactor mr : this.reactors.values()) {
-            if (mr.getId() >= first && mr.getId() <= last) {
-                points.add(mr.getPosition());
-            }
-        }
-        Collections.shuffle(points);
-        for (TacosReactor mr : this.reactors.values()) {
-            if (mr.getId() >= first && mr.getId() <= last) {
-                mr.setPosition(points.remove(points.size() - 1));
-            }
-        }
-    }
-
-    public MapleSquad getSquadByMap() {
-        String zz = null;
-        switch (map_id) {
-            case 105100400:
-            case 105100300:
-                zz = "BossBalrog";
-                break;
-            case 280030000:
-                zz = "ZAK";
-                break;
-            case 280030001:
-                zz = "ChaosZak";
-                break;
-            case 240060200:
-                zz = "Horntail";
-                break;
-            case 240060201:
-                zz = "ChaosHT";
-                break;
-            case 270050100:
-                zz = "PinkBean";
-                break;
-            case 802000111:
-                zz = "nmm_squad";
-                break;
-            case 802000211:
-                zz = "VERGAMOT";
-                break;
-            case 802000311:
-                zz = "2095_tokyo";
-                break;
-            case 802000411:
-                zz = "Dunas";
-                break;
-            case 802000611:
-                zz = "Nibergen_squad";
-                break;
-            case 802000711:
-                zz = "dunas2";
-                break;
-            case 802000801:
-            case 802000802:
-            case 802000803:
-                zz = "Core_Blaze";
-                break;
-            case 802000821:
-                zz = "Aufheben";
-                break;
-            default:
-                return null;
-        }
-        return TacosWorld.find(0).getChannelServer(channel).getMapleSquad(zz);
     }
 
     // used by script
@@ -2031,19 +1848,6 @@ public class TacosMap extends TacosMapData {
                 mapEffect = null;
             }
         }, jukebox ? 300000 : 30000);
-    }
-
-    public void startExtendedMapEffect(String msg, int itemId) {
-        broadcastPacket(ResCField.BlowWeather(msg, itemId, true));
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                broadcastPacket(ResCField.BlowWeather(null, 0, false));
-                broadcastPacket(ResCField.BlowWeather(msg, itemId, false));
-                //dont remove mapeffect.
-            }
-        }, 60000);
     }
 
     public void startJukebox(String msg, int itemId) {

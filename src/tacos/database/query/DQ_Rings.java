@@ -19,7 +19,6 @@
 package tacos.database.query;
 
 import java.sql.Connection;
-import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,61 +52,6 @@ public class DQ_Rings {
         }
 
         return null;
-    }
-
-    public static boolean add(int itemid, TacosCharacter chr, String player, int id, int[] ringId) {
-        Connection con = DatabaseConnection.getConnection();
-
-        try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (ringId, itemid, partnerChrId, partnerName, partnerRingId) VALUES (?, ?, ?, ?, ?)")) {
-            ps.setInt(1, ringId[0]);
-            ps.setInt(2, itemid);
-            ps.setInt(3, chr.getId());
-            ps.setString(4, chr.getName());
-            ps.setInt(5, ringId[1]);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "add : 1");
-            return false;
-        }
-
-        try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (ringId, itemid, partnerChrId, partnerName, partnerRingId) VALUES (?, ?, ?, ?, ?)")) {
-            ps.setInt(1, ringId[1]);
-            ps.setInt(2, itemid);
-            ps.setInt(3, id);
-            ps.setString(4, player);
-            ps.setInt(5, ringId[0]);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "add : 2");
-            return false;
-        }
-
-        return true;
-    }
-
-    public static void remove(TacosCharacter player) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            int otherId;
-            int otherotherId;
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE partnerChrId = ?")) {
-                ps.setInt(1, player.getId());
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        return;
-                    }
-                    otherId = rs.getInt("partnerRingId");
-                    otherotherId = rs.getInt("ringId");
-                }
-            }
-            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE ringId = ? OR ringId = ?")) {
-                ps.setInt(1, otherotherId);
-                ps.setInt(2, otherId);
-                ps.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "remove");
-        }
     }
 
     public static int getMaxRingId() {

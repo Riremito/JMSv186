@@ -37,7 +37,6 @@ public class MapleGuildAlliance {
 
         NONE, DISBAND, NEWGUILD
     }
-    public static final int CHANGE_CAPACITY_COST = 10000000;
     private final int[] guilds = new int[5];
     private int allianceid;
     private int leaderid;
@@ -106,10 +105,6 @@ public class MapleGuildAlliance {
         broadcast(packet, -1, GAOp.NONE, false);
     }
 
-    public void broadcast(ServerPacket packet, int exception) {
-        broadcast(packet, exception, GAOp.NONE, false);
-    }
-
     public void broadcast(ServerPacket packet, int exceptionId, GAOp op, boolean expelled) {
         if (op == GAOp.DISBAND) {
             TacosWorld.find(0).getAlliance().setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
@@ -160,16 +155,6 @@ public class MapleGuildAlliance {
 
     public int getCapacity() {
         return this.capacity;
-    }
-
-    public boolean setCapacity() {
-        if (capacity >= 5) {
-            return false;
-        }
-        this.capacity += 1;
-        broadcast(ResCWvsContext.AllianceResult_UpdateAllianceInfo(this));
-        saveToDb();
-        return true;
     }
 
     public boolean addGuild(int guildid) {

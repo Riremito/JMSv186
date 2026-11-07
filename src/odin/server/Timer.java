@@ -67,13 +67,6 @@ public abstract class Timer {
         ses.shutdown();
     }
 
-    public ScheduledFuture<?> register(Runnable r, long repeatTime, long delay) {
-        if (ses == null) {
-            return null;
-        }
-        return ses.scheduleAtFixedRate(r, delay, repeatTime, TimeUnit.MILLISECONDS);
-    }
-
     public ScheduledFuture<?> register(Runnable r, long repeatTime) {
         if (ses == null) {
             return null;

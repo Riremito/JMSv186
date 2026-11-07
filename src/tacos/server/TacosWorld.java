@@ -85,10 +85,6 @@ public class TacosWorld {
         this.event_desc = event_desc; // BMS24 does not support this.
     }
 
-    public TacosWorld() {
-        // to do remove.
-    }
-
     public void broadcastPacket(ServerPacket packet) {
         for (TacosChannel ch_server : this.channels) {
             ch_server.broadcastPacket(packet);
@@ -103,10 +99,6 @@ public class TacosWorld {
 
     public int getId() {
         return this.id;
-    }
-
-    public int getFlag() {
-        return this.flag;
     }
 
     public String getName() {

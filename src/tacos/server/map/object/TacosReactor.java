@@ -40,7 +40,6 @@ public class TacosReactor extends TacosMapObject {
     private int bFlip = 0;
     private String name = "";
     private MapleReactorStats stats;
-    private boolean alive = true;
     private byte state;
     private TacosMap map;
     private boolean timerActive;
@@ -72,14 +71,6 @@ public class TacosReactor extends TacosMapObject {
 
     public MapleReactorStats getStats() {
         return this.stats;
-    }
-
-    public boolean isAlive() {
-        return this.alive;
-    }
-
-    public void setAlive(boolean alive) {
-        this.alive = alive;
     }
 
     public void setTimerActive(boolean active) {
@@ -202,10 +193,5 @@ public class TacosReactor extends TacosMapObject {
     // used by script
     public void delayedDestroyReactor(long delay) {
         this.map.removeReactor(this);
-    }
-
-    // used by script
-    public void delayedHitReactor(TacosClient client, long delay) {
-        hitReactor(client);
     }
 }

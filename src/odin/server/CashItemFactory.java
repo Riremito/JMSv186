@@ -3,15 +3,12 @@ package odin.server;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import odin.server.CashItemInfo.CashModInfo;
 import tacos.wz.WzXML;
 
 public class CashItemFactory {
 
     private final static CashItemFactory instance = new CashItemFactory();
-    private boolean initialized = false;
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<>();
-    private final Map<Integer, CashModInfo> itemMods = new HashMap<>();
 
     public static CashItemFactory getInstance() {
         return instance;

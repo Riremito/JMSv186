@@ -123,7 +123,6 @@ import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.WzDataStorage;
 import odin.client.inventory.MapleRing;
-import java.util.Deque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -146,7 +145,6 @@ import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.MapleCarnivalParty;
 import odin.server.maps.SavedLocationType;
-import odin.server.MapleCarnivalChallenge;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
 import tacos.script.npc.NpcShopMan;
@@ -176,8 +174,6 @@ public class TacosCharacter extends TacosPlayer {
     protected int dwPosMap;
     protected int nPortal;
     private TacosLastStat laststat = null;
-    private int viewRange = 1600;
-    private int viewRangeSq = 1600 * 1600;
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
@@ -245,31 +241,8 @@ public class TacosCharacter extends TacosPlayer {
         this.channel_id = channel;
     }
 
-    public int getViewRange() {
-        return this.viewRange;
-    }
-
-    public void setViewRange(int viewRange) {
-        this.viewRange = viewRange;
-        this.viewRangeSq = viewRange * viewRange;
-    }
-
-    public int getViewRangeSq() {
-        return this.viewRangeSq;
-    }
-
     public TacosForcedStat getForcedStat() {
         return this.forcedStat;
-    }
-
-    public void setForcedStatBalorg() {
-        int offset = 1 + (this.level - 90) / 20;
-        this.forcedStat.setSTR(this.stats.getTotalStr() / offset);
-        this.forcedStat.setDEX(this.stats.getTotalDex() / offset);
-        this.forcedStat.setINT(this.stats.getTotalInt() / offset);
-        this.forcedStat.setLUK(this.stats.getTotalLuk() / offset);
-        this.forcedStat.setPAD(this.stats.getTotalWatk() / offset);
-        this.forcedStat.setMAD(this.stats.getTotalMagic() / offset);
     }
 
     public void setForcedStatAran() {
@@ -286,10 +259,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public TacosKeyLayout getKeyLayout() {
         return this.keylayout;
-    }
-
-    public void setKeyLayout(TacosKeyLayout keylayout) {
-        this.keylayout = keylayout;
     }
 
     public void changeKeybinding(int key, byte type, int action) {
@@ -1155,10 +1124,6 @@ public class TacosCharacter extends TacosPlayer {
                 return cid;
             }
 
-            public void setVisible(boolean visible) {
-                this.visible = visible;
-            }
-
             public boolean isVisible() {
                 return visible;
             }
@@ -1169,14 +1134,6 @@ public class TacosCharacter extends TacosPlayer {
 
             public void setGroup(String group) {
                 this.group = group;
-            }
-
-            public int getLevel() {
-                return level;
-            }
-
-            public int getJob() {
-                return job;
             }
         }
     }
@@ -2296,7 +2253,6 @@ public class TacosCharacter extends TacosPlayer {
     private int pet_auto_cure_item_id = 0;
     private boolean smega;
     private boolean hasTutorialSummon = false;
-    private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleTrade trade;
     private transient IPlayerShop playerShop;
@@ -2337,7 +2293,6 @@ public class TacosCharacter extends TacosPlayer {
         wishlist = new int[10];
         rocks = new int[10];
         regrocks = new int[5];
-        pendingCarnivalRequests = new LinkedList<>();
         savedLocations = new int[SavedLocationType.values().length];
         for (int i = 0; i < SavedLocationType.values().length; i++) {
             savedLocations[i] = -1;
@@ -2646,11 +2601,6 @@ public class TacosCharacter extends TacosPlayer {
                 SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
         }
-    }
-
-    public void forceReAddItem_NoUpdate(Item item, MapleInventoryType type) {
-        getInventory(type).removeSlot(item.getPosition());
-        getInventory(type).addFromDB(item);
     }
 
     public void silentPartyUpdate() {
@@ -3022,10 +2972,6 @@ public class TacosCharacter extends TacosPlayer {
         //MapleFamily.setOfflineFamilyStatus(familyid, seniorid, junior1, junior2, currentrep, totalrep, id);
     }
 
-    public void modifyCSPoints(int type, int quantity) {
-        modifyCSPoints(type, quantity, false);
-    }
-
     public int getNexonPoint() {
         return nexonPoint;
     }
@@ -3089,10 +3035,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setLevel(int level) {
         this.level = level;
-    }
-
-    public void sendNote(String to, String msg) {
-        sendNote(to, msg, 0);
     }
 
     public void sendNote(String to, String msg, int fame) {
@@ -3281,10 +3223,6 @@ public class TacosCharacter extends TacosPlayer {
         this.playerShop = playerShop;
     }
 
-    public void setCarnivalParty(MapleCarnivalParty party) {
-        carnivalParty = party;
-    }
-
     public void addCP(int ammount) {
         totalCP += ammount;
         availableCP += ammount;
@@ -3304,10 +3242,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public int getEXPMod() {
         return stats.expMod;
-    }
-
-    public int getDropMod() {
-        return stats.dropMod;
     }
 
     public CashShop getCashInventory() {
@@ -3923,11 +3857,6 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // used by script
-    public int getDojoRecord() {
-        return dojoRecord;
-    }
-
-    // used by script
     public void setExp(int exp) {
         this.exp = exp;
     }
@@ -4106,15 +4035,6 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // used by script
-    public void resetAPSP() {
-        for (int i = 0; i < remainingSp.length; i++) {
-            this.remainingSp[i] = 0;
-        }
-        gainAp((short) -this.remainingAp);
-        sendStatChanged();
-    }
-
-    // used by script
     public void addHP(int delta) {
         if (stats.setHp(stats.getHp() + delta)) {
             sendStatChanged();
@@ -4209,11 +4129,6 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // used by script
-    public byte getMasterLevel(int skill) {
-        return getMasterLevel(WzXML.SKILL.getSkill().get(skill));
-    }
-
-    // used by script
     public byte getMasterLevel(Skill skill) {
         // 存在しないスキルID
         if (skill == null) {
@@ -4235,14 +4150,6 @@ public class TacosCharacter extends TacosPlayer {
     // used by script
     public MapleParty getParty() {
         return party;
-    }
-
-    // used by script
-    public MapleGuild getGuild() {
-        if (getGuildId() <= 0) {
-            return null;
-        }
-        return getWorld().getGuild().getGuild(getGuildId());
     }
 
     // used by script
@@ -4274,11 +4181,6 @@ public class TacosCharacter extends TacosPlayer {
             dropMessage(-1, "You have " + (quantity > 0 ? "gained " : "lost ") + quantity + (type == 1 ? " cash." : " maple points."));
             //SendPacket(MaplePacketCreator.showSpecialEffect(19));
         }
-    }
-
-    // used by script
-    public boolean hasEquipped(int item_id) {
-        return inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(item_id) >= 1;
     }
 
     // used by script
@@ -4328,36 +4230,6 @@ public class TacosCharacter extends TacosPlayer {
     // used by script
     public int getTotalCP() {
         return totalCP;
-    }
-
-    // used by script
-    public void addCarnivalRequest(MapleCarnivalChallenge request) {
-        pendingCarnivalRequests.add(request);
-    }
-
-    // used by script
-    public MapleCarnivalChallenge getNextCarnivalRequest() {
-        return pendingCarnivalRequests.pollLast();
-    }
-
-    // used by script
-    public void setPoints(int p) {
-        this.points = p;
-    }
-
-    // used by script
-    public int getPoints() {
-        return points;
-    }
-
-    // used by script
-    public void setVPoints(int p) {
-        this.vpoints = p;
-    }
-
-    // used by script
-    public int getVPoints() {
-        return vpoints;
     }
 
     // used by script
@@ -4446,18 +4318,6 @@ public class TacosCharacter extends TacosPlayer {
         }
 
         updateInfoQuest(questid, changed ? newQuest.toString().substring(0, newQuest.toString().length() - 1) : newQuest.toString());
-    }
-
-    // used by script
-    public void tryPartyQuest(int questid) {
-        try {
-            startPartyQuest(questid);
-            pqStartTime = System.currentTimeMillis();
-            updateOneInfo(questid, "try", String.valueOf(Integer.parseInt(getOneInfo(questid, "try")) + 1));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("tryPartyQuest error");
-        }
     }
 
     // used by script
@@ -4634,10 +4494,6 @@ public class TacosCharacter extends TacosPlayer {
 
         public int getTotalMagic() {
             return magic;
-        }
-
-        public int getTotalWatk() {
-            return watk;
         }
 
         public short getCurrentMaxHp() {

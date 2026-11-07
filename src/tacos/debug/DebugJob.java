@@ -190,40 +190,6 @@ public class DebugJob {
         chr.setExp(0);
     }
 
-    public static int getNextLevel(int job_id) {
-        switch (job_id) {
-            // 冒険家 1次
-            case 100:
-            case 300:
-            case 400:
-            case 500: {
-                return 10;
-            }
-            case 200: {
-                return 8;
-            }
-            // 冒険家 2次
-            case 110:
-            case 120:
-            case 130:
-            case 210:
-            case 220:
-            case 230:
-            case 310:
-            case 320:
-            case 410:
-            case 420:
-            case 510:
-            case 520: {
-                return 30;
-            }
-            default: {
-                break;
-            }
-        }
-        return 0;
-    }
-
     public static boolean addStat(TacosCharacter chr, PlayerStats player_stat, Stat stat_main) {
         int ability_point = chr.getRemainingAp();
         int def_stat_sub_point = 0;

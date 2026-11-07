@@ -43,10 +43,6 @@ public enum ContentState {
         set(val);
     }
 
-    ContentState(int val) {
-        setInt(val);
-    }
-
     ContentState() {
         this.value = 0;
     }
@@ -57,13 +53,5 @@ public enum ContentState {
 
     public void set(boolean val) {
         this.value = val ? 1 : 0;
-    }
-
-    public int getInt() {
-        return this.value;
-    }
-
-    public void setInt(int val) {
-        this.value = val;
     }
 }

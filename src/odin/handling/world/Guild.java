@@ -70,10 +70,6 @@ public class Guild {
         return null;
     }
 
-    public MapleGuild getGuild(TacosCharacter mc) {
-        return getGuild(mc.getGuildId());
-    }
-
     public void setGuildMemberOnline(MapleGuildCharacter mc, boolean bOnline, int channel) {
         MapleGuild g = getGuild(mc.getGuildId());
         if (g != null) {

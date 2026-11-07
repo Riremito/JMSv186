@@ -59,7 +59,6 @@ public class TacosServer {
     private IoServiceConfig server_service_config;
     private InetSocketAddress server_inet_socket_address = null;
     //private IoAcceptor server_io_acceptor = null;
-    private boolean finishedShutdown = true;
     private boolean adminOnly = false;
     private boolean server_status = false; // online or not.
     private TacosServerType server_type;
@@ -106,13 +105,6 @@ public class TacosServer {
 
     public int getPort() {
         return this.server_port;
-    }
-
-    public int getNumberOfSessions() {
-        if (!this.server_status) {
-            return 0;
-        }
-        return getIoAcceptor().getManagedSessions(this.server_inet_socket_address).size();
     }
 
     public boolean isShutdown() {

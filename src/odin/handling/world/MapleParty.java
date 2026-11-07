@@ -71,14 +71,6 @@ public class MapleParty {
         return null;
     }
 
-    public MaplePartyCharacter getMemberByIndex(int index) {
-        return members.get(index);
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setLeader(MaplePartyCharacter nLeader) {
         leader = nLeader;
     }

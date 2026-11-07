@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDoorSkill;
-import tacos.debug.DebugLogger;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -89,10 +88,6 @@ public class TacosMysticDoor extends TacosMapObject {
 
     public void setFieldPosition(Point position) {
         this.field_pos.setLocation(position);
-    }
-
-    public void setFieldPosition(int x, int y) {
-        this.field_pos.setLocation(x, y);
     }
 
     public int getFieldX() {

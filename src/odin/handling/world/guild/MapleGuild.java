@@ -26,7 +26,6 @@ import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
-import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import tacos.config.Region;
 import odin.handling.world.guild.MapleBBSThread.MapleBBSReply;
@@ -73,7 +72,6 @@ public class MapleGuild {
     private boolean bDirty = true;
     private boolean proper = true;
     private final Map<Integer, MapleBBSThread> bbs = new HashMap<>();
-    private boolean init = false;
 
     public MapleGuild(int guildid) {
         super();
@@ -169,10 +167,6 @@ public class MapleGuild {
 
     public int getLeaderId() {
         return leader;
-    }
-
-    public TacosCharacter getLeader(TacosClient client) {
-        return client.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
     public int getLogo() {
@@ -272,7 +266,6 @@ public class MapleGuild {
             }
         }
         bDirty = true; // member formation has changed, update notifications
-        init = true;
     }
 
     public void guildChat(String name, int cid, String msg) {
@@ -669,10 +662,6 @@ public class MapleGuild {
             this.ops = ops;
         }
 
-        public int getValue() {
-            return ops.get();
-        }
-
         // used by script
         public ServerPacket getPacket() {
             return ResCWvsContext.GuildResult(ops);
@@ -698,10 +687,6 @@ public class MapleGuild {
             allianceid = g.getAllianceId();
         }
 
-        public String getName() {
-            return name;
-        }
-
         public short getLogoBG() {
             return logoBG;
         }
@@ -716,10 +701,6 @@ public class MapleGuild {
 
         public byte getLogoColor() {
             return logoColor;
-        }
-
-        public int getAllianceId() {
-            return allianceid;
         }
     }
 }

@@ -93,10 +93,6 @@ public class Skill {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public MapleStatEffect getEffect(int level) {
         if (effects.size() < level) {
             if (!effects.isEmpty()) { //incAllskill
@@ -107,10 +103,6 @@ public class Skill {
             return effects.get(0);
         }
         return effects.get(level - 1);
-    }
-
-    public boolean getAction() {
-        return action;
     }
 
     public boolean isChargeSkill() {

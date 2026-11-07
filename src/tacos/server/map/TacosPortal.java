@@ -29,7 +29,6 @@ import tacos.script.portal.PortalMan;
  */
 public class TacosPortal {
 
-    public static final int MAP_PORTAL = 2;
     public static final int DOOR_PORTAL = 6;
 
     private int id;
@@ -51,10 +50,6 @@ public class TacosPortal {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getMysticDoorId() {
-        return 0x80 + this.id;
     }
 
     public String getName() {
@@ -85,10 +80,6 @@ public class TacosPortal {
         return this.type;
     }
 
-    public String getTarget() {
-        return this.target;
-    }
-
     public void setTarget(String target) {
         this.target = target;
     }
@@ -99,10 +90,6 @@ public class TacosPortal {
 
     public void setScriptName(String scriptName) {
         this.scriptName = scriptName;
-    }
-
-    public boolean getPortalState() {
-        return this.portalState;
     }
 
     public void setPortalState(boolean ps) {

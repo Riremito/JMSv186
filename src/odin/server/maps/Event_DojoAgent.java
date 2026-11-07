@@ -35,53 +35,9 @@ import tacos.wz.WzXML;
 
 public class Event_DojoAgent {
 
-    private final static int baseAgentMapId = 970030000; // 9500337 = mano
     private final static Point point1 = new Point(140, 0);
     private final static Point point2 = new Point(-193, 0);
     private final static Point point3 = new Point(355, 0);
-
-    public static boolean warpStartAgent(TacosCharacter player, boolean party) {
-        int stage = 1;
-        int mapid = baseAgentMapId + (stage * 100);
-        for (int i = mapid; i < mapid + 15; i++) {
-            TacosMap map = player.findMap(i);
-            if (map.getCharactersSize() == 0) {
-                clearMap(map, false);
-                player.changeMapPortal(map, map.getPortal(0));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean warpNextMap_Agent(TacosCharacter player, boolean fromResting) {
-        int currentmap = player.getMapId();
-        int thisStage = (currentmap - baseAgentMapId) / 100;
-
-        TacosMap map = player.getMap();
-        if (map.getNumMonsters() > 0) {
-            return false;
-        }
-        if (!fromResting) {
-            clearMap(map, true);
-            player.modifyCSPoints(1, 40, true);
-        }
-        if (currentmap >= 970032700 && currentmap <= 970032800) {
-            map = player.findMap(baseAgentMapId);
-            player.changeMapPortal(map, map.getPortal(0));
-            return true;
-        }
-        int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
-        for (int i = nextmapid; i < nextmapid + 7; i++) {
-            map = player.findMap(i);
-            if (map.getCharactersSize() == 0) {
-                clearMap(map, false);
-                player.changeMapPortal(map, map.getPortal(0));
-                return true;
-            }
-        }
-        return false;
-    }
 
     public static boolean warpStartDojo(TacosCharacter player, boolean party) {
         int stage = 1;

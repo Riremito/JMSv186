@@ -98,13 +98,6 @@ public class Family {
         }
     }
 
-    public void familyPacket(int gid, ServerPacket message, int cid) {
-        MapleFamily f = getFamily(gid);
-        if (f != null) {
-            f.broadcast(message, -1, f.getMFC(cid).getPedigree());
-        }
-    }
-
     public void disbandFamily(int gid) {
         MapleFamily g = getFamily(gid);
         if (g != null) {

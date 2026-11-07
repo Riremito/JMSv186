@@ -172,10 +172,6 @@ public class DQ_Dueyitems {
         return new LinkedHashMap<>();
     }
 
-    public static boolean save(int value, List<String> arg, List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Integer... id) {
-        return save(value, arg, items, DatabaseConnection.getConnection(), id);
-    }
-
     public static boolean save(int value, List<String> arg, List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Connection con, Integer... id) {
         try {
             List<Integer> lulz = Arrays.asList(id);

@@ -103,14 +103,6 @@ public class Property_World {
         return rate_drop;
     }
 
-    public static boolean getAdminOnly() {
-        return admin_only;
-    }
-
-    public static String getEvents() {
-        return events;
-    }
-
     public static boolean init() {
         Property conf0 = new Property("properties/tacos.properties");
         if (!conf0.open()) {

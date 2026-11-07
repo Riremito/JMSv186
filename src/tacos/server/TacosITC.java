@@ -33,7 +33,6 @@ public class TacosITC extends TacosServer {
     public static final int m_nCommissionBase = 0;
     public static final int m_nAuctionDurationMin = 24;
     public static final int m_nAuctionDurationMax = 168;
-    public static final int MIN_MTS = 110;
 
     private int world_id;
     private TacosOnlinePlayers onlines;

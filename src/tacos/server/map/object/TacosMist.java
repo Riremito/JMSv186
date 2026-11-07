@@ -106,10 +106,6 @@ public class TacosMist extends TacosMapObject {
         return this.skill;
     }
 
-    public MapleStatEffect getSource() {
-        return source;
-    }
-
     public boolean makeChanceResult() {
         return source.makeChanceResult();
     }

@@ -129,10 +129,6 @@ public class MapleQuestRequirement {
         }
     }
 
-    public MapleQuestRequirementType getType() {
-        return type;
-    }
-
     public enum MapleQuestRequirementType {
         UNDEFINED,
         job,

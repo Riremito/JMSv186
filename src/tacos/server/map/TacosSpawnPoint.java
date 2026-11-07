@@ -41,10 +41,8 @@ public class TacosSpawnPoint {
     private int hide;
     private int id;
     private int mobTime;
-    private String type;
     private int rx0;
     private int rx1;
-    private int team;
     private int x;
     private int y;
 

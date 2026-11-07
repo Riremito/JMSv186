@@ -338,10 +338,6 @@ public class MobSkill {
         return y;
     }
 
-    public long getDuration() {
-        return duration;
-    }
-
     public long getCoolTime() {
         return cooltime;
     }

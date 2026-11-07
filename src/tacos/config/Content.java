@@ -18,8 +18,6 @@
  */
 package tacos.config;
 
-import tacos.debug.DebugLogger;
-
 /**
  *
  * @author Riremito
@@ -85,12 +83,6 @@ public enum Content {
 
     private void setInt(int val) {
         this.value = val;
-    }
-
-    public static void showContentList() {
-        for (Content content : Content.values()) {
-            DebugLogger.InfoLog(content.toString() + " : " + content.get());
-        }
     }
 
     public static void init() {

@@ -25,7 +25,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.database.query.DQ_MtsCart;

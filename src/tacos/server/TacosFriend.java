@@ -31,9 +31,7 @@ public class TacosFriend {
     private String name;
     private int level;
     private int job;
-    private boolean hidden;
     private int channel;
-    private String tag;
     private boolean online;
     private TacosCharacter chr;
 
@@ -70,26 +68,6 @@ public class TacosFriend {
 
     public int getJob() {
         return this.job;
-    }
-
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
-    }
-
-    public boolean getHidden() {
-        return this.hidden;
-    }
-
-    public void setChannel(int channel) {
-        this.channel = channel;
-    }
-
-    public int getChannel() {
-        return this.channel;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public boolean getOnline() {

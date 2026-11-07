@@ -131,10 +131,6 @@ public class TacosMobBuff {
         return false;
     }
 
-    public ArrayList<Buff> getAll() {
-        return this.buffs;
-    }
-
     public boolean remove(int buff_id) {
         boolean removed = false;
         for (Buff buff : buffs) {

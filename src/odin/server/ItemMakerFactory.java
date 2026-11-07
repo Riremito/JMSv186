@@ -67,10 +67,6 @@ public class ItemMakerFactory {
             return reqRecipe;
         }
 
-        public int getReqLevel() {
-            return reqLevel;
-        }
-
         public int getReqSkillLevel() {
             return reqMakerLevel;
         }
@@ -117,10 +113,6 @@ public class ItemMakerFactory {
 
         public List<SimpleImmutableEntry<Integer, Integer>> getReqItems() {
             return reqItems;
-        }
-
-        public int getReqLevel() {
-            return reqLevel;
         }
 
         public byte getReqSkillLevel() {

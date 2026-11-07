@@ -105,14 +105,6 @@ public class TacosExpedition {
         return this.parties.get(party_index);
     }
 
-    public int getMemberCount() {
-        int count = 0;
-        for (List<Member> party : this.parties) {
-            count += party.size();
-        }
-        return count;
-    }
-
     public int findPartyIndex(int character_id) {
         for (int i = 0; i < PARTY_MAX; i++) {
             for (Member member : this.parties.get(i)) {

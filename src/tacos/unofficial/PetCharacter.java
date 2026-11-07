@@ -18,8 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
@@ -84,20 +82,6 @@ public class PetCharacter implements IPetEx {
 
         this.clone.update(move_path);
         SendPacket(ResCUserRemote.UserMove(this.clone, move_path));
-        return true;
-    }
-
-    public boolean changeEquip() {
-        if (this.clone == null) {
-            return false;
-        }
-
-        this.clone.getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (Item equip : this.character.getInventory(MapleInventoryType.EQUIPPED)) {
-            this.clone.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
-        }
-
-        SendPacket(ResCUserRemote.UserAvatarModified(this.clone, 1));
         return true;
     }
 }

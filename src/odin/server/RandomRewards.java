@@ -11,10 +11,6 @@ public class RandomRewards {
     private List<Integer> compiledGold = null;
     private List<Integer> compiledSilver = null;
     private List<Integer> compiledFishing = null;
-    private List<Integer> compiledEvent = null;
-    private List<Integer> compiledEventC = null;
-    private List<Integer> compiledEventB = null;
-    private List<Integer> compiledEventA = null;
 
     public static RandomRewards getInstance() {
         return instance;
@@ -47,25 +43,17 @@ public class RandomRewards {
 
         processRewards(returnArray, GameConstants.eventCommonReward);
 
-        compiledEventC = returnArray;
-
         returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventUncommonReward);
-
-        compiledEventB = returnArray;
 
         returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventRareReward);
 
-        compiledEventA = returnArray;
-
         returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventSuperReward);
-
-        compiledEvent = returnArray;
     }
 
     private void processRewards(List<Integer> returnArray, int[] list) {

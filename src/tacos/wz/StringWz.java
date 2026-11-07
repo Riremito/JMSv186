@@ -129,16 +129,8 @@ public class StringWz extends WzXML {
         return getData("Mob.img");
     }
 
-    public String getMobName(int mob_id, String def) {
-        return getMob().getString(mob_id + "/name", def);
-    }
-
     public MapleData getNpc() {
         return getData("Npc.img");
-    }
-
-    private String getNpcName(int npc_id) {
-        return getNpc().getString(npc_id + "/name", "MISSINGNO");
     }
 
     public MapleData getMap() {

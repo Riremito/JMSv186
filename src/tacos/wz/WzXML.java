@@ -279,10 +279,6 @@ public class WzXML {
             super(name, size, checksum, parent);
         }
 
-        public DirectoryEntry() {
-            super(null, 0, 0, null);
-        }
-
         public void addDirectory(MapleDataDirectoryEntry dir) {
             subdirs.add(dir);
             entries.put(dir.getName(), dir);
@@ -312,11 +308,6 @@ public class WzXML {
         @Override
         public List<MapleDataEntity> getFiles() {
             return Collections.unmodifiableList(files);
-        }
-
-        @Override
-        public MapleDataEntity getEntry(String name) {
-            return entries.get(name);
         }
     }
 

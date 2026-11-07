@@ -60,10 +60,6 @@ public class TacosDrop extends TacosMapObject {
         return this.meso;
     }
 
-    public int getQuestId() {
-        return this.quest_id;
-    }
-
     // quest item is only visible to the players who are doing the quest.
     public boolean isVisible(TacosCharacter chr) {
         return this.quest_id <= 0 || chr.getQuestStatus(this.quest_id) == 1;
@@ -71,10 +67,6 @@ public class TacosDrop extends TacosMapObject {
 
     public boolean isPlayerDrop() {
         return this.player_drop;
-    }
-
-    public void setPlayerDrop(boolean player_drop) {
-        this.player_drop = player_drop;
     }
 
     public int getDelay() {
@@ -87,25 +79,6 @@ public class TacosDrop extends TacosMapObject {
 
     public byte getDropType() {
         return this.type;
-    }
-
-    private DropEnterType enter_type = DropEnterType.NORMAL;
-    private DropLeaveType leave_type = DropLeaveType.EXPIRED;
-
-    public DropEnterType getET() {
-        return this.enter_type;
-    }
-
-    public void setET(DropEnterType enter_type) {
-        this.enter_type = enter_type;
-    }
-
-    public DropLeaveType getLT() {
-        return this.leave_type;
-    }
-
-    public void setLT(DropLeaveType leave_type) {
-        this.leave_type = leave_type;
     }
 
     public enum DropEnterType {

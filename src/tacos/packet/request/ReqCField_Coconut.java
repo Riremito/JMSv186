@@ -90,14 +90,6 @@ public class ReqCField_Coconut {
         public void fallCoconut() {
         }
 
-        public int getMapleScore() {
-            return 0;
-        }
-
-        public int getStoryScore() {
-            return 0;
-        }
-
         public void addMapleScore() {
         }
 

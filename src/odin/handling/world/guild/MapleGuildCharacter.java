@@ -106,11 +106,6 @@ public class MapleGuildCharacter { // alias for a character
     }
 
     // used by script
-    public int getChannel() {
-        return channel;
-    }
-
-    // used by script
     public int getJobId() {
         return jobid;
     }

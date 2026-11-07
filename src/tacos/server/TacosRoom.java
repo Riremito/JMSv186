@@ -53,14 +53,6 @@ public class TacosRoom {
         return this.players.get(player.getId()) != null;
     }
 
-    public boolean findPlayerById(int player_id) {
-        return this.players.get(player_id) != null;
-    }
-
-    public TacosMerchant getMerchant() {
-        return this.merchant;
-    }
-
     public void setMerchant(TacosMerchant merchant) {
         this.merchant = merchant;
     }

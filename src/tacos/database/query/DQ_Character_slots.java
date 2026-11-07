@@ -63,24 +63,4 @@ public class DQ_Character_slots {
 
         return false;
     }
-
-    public static boolean update(TacosClient client, int world_id) {
-        if (client.getCharSlots() >= 15) {
-            return false;
-        }
-        int charslots = client.getCharSlots() + 1;
-
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET charslots = ? WHERE worldid = ? AND accid = ?")) {
-            ps.setInt(1, charslots);
-            ps.setInt(2, world_id);
-            ps.setInt(3, client.getId());
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "gainCharacterSlot");
-        }
-
-        return false;
-    }
 }

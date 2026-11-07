@@ -497,9 +497,4 @@ public class ReqCCashShop {
 
         return true;
     }
-
-    private static void doCSPackets(TacosCharacter chr) {
-        chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
-        chr.getCashInventory().checkExpire(chr);
-    }
 }

@@ -33,6 +33,4 @@ public interface MapleDataDirectoryEntry extends MapleDataEntity {
     public MapleDataDirectoryEntry getSubDirectory(String path);
 
     public List<MapleDataEntity> getFiles();
-
-    public MapleDataEntity getEntry(String name);
 }

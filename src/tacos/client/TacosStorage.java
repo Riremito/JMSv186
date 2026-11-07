@@ -79,10 +79,6 @@ public class TacosStorage {
         return true;
     }
 
-    public ArrayList<Item> getItems() {
-        return this.items;
-    }
-
     public boolean load() {
         if (DQ_Storages.load(this)) {
             DebugLogger.DebugLog("storage is found.");
@@ -212,9 +208,5 @@ public class TacosStorage {
     public void putItem(Item item) {
         this.changed = true;
         this.items.add(item);
-    }
-
-    public boolean sortItem() {
-        return true;
     }
 }

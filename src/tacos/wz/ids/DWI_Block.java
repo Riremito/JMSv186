@@ -84,20 +84,4 @@ public class DWI_Block {
 
         return false;
     }
-
-    private static final int[] event_mobs = {
-        9400222 // ダンボールに入ったスイカ (JMS147)
-    };
-
-    public static boolean checkMob(int id) {
-        if (ContentState.CS_HIDE_EVENT_MOB.get()) {
-            for (int blocked_id : event_mobs) {
-                if (blocked_id == id) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }

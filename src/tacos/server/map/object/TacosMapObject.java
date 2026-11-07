@@ -47,11 +47,6 @@ public class TacosMapObject {
         setTimeCreated();
     }
 
-    public void setObjectId(int object_id) {
-        this.object_id = object_id;
-        setTimeCreated(); // TODO : move
-    }
-
     public long getTimeCreated() {
         return this.time_created;
     }

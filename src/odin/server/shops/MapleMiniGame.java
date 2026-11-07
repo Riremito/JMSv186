@@ -30,7 +30,6 @@ import tacos.client.TacosCharacter;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -66,7 +65,6 @@ public class MapleMiniGame implements IPlayerShop {
     private AtomicInteger meso = new AtomicInteger(0);
     private TacosCharacter[] chrs;
     private List<String> visitors = new LinkedList<>();
-    private List<BoughtItem> bought = new LinkedList<>();
     private List<MaplePlayerShopItem> items = new LinkedList<>();
 
     private final static int slots = 2; //change?!
@@ -102,10 +100,6 @@ public class MapleMiniGame implements IPlayerShop {
         this.exitAfter = new boolean[slots];
         this.ready = new boolean[slots];
         reset();
-    }
-
-    public Point getPosition() {
-        return new Point(position);
     }
 
     public void setPosition(Point position) {
@@ -225,14 +219,6 @@ public class MapleMiniGame implements IPlayerShop {
         return ownerName;
     }
 
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public int getOwnerAccId() {
-        return owneraccount;
-    }
-
     public String getDescription() {
         if (des == null) {
             return "";
@@ -256,10 +242,6 @@ public class MapleMiniGame implements IPlayerShop {
 
     public void addItem(MaplePlayerShopItem item) {
         items.add(item);
-    }
-
-    public boolean removeItem(int item) {
-        return false;
     }
 
     public void removeFromSlot(int slot) {
@@ -288,12 +270,6 @@ public class MapleMiniGame implements IPlayerShop {
             return "";
         }
         return pass;
-    }
-
-    public void sendDestroyData(TacosClient client) {
-    }
-
-    public void sendSpawnData(TacosClient client) {
     }
 
     public TacosCharacter getMCOwner() {
@@ -325,23 +301,7 @@ public class MapleMiniGame implements IPlayerShop {
         this.available = b;
     }
 
-    public List<BoughtItem> getBoughtItems() {
-        return bought;
-    }
-
     public static final class BoughtItem {
-
-        public int id;
-        public int quantity;
-        public int totalPrice;
-        public String buyer;
-
-        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
-            this.id = id;
-            this.quantity = quantity;
-            this.totalPrice = totalPrice;
-            this.buyer = buyer;
-        }
     }
 
     public void reset() {

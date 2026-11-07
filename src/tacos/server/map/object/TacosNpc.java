@@ -39,10 +39,6 @@ public class TacosNpc extends TacosMapObject {
         return this.id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getF() {
         return this.f;
     }
@@ -73,10 +69,6 @@ public class TacosNpc extends TacosMapObject {
 
     public void setHide(boolean hide) {
         this.hide = hide;
-    }
-
-    public int getCy() {
-        return this.cy;
     }
 
     public void setCy(int cy) {

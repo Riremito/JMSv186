@@ -150,14 +150,6 @@ public class TacosConstants {
     public static final int MOB_ID_CHAOS_ZAKUM = 8800102;
     public static final int MOB_ID_CHAOS_HORNTAIL = 8810122;
 
-    public static boolean is_park_or_roppongi(int map_id) {
-        // 802000300, 802000800
-        if ((map_id / 100) == 8020003 || (map_id / 100) == 8020008) {
-            return true;
-        }
-        return false;
-    }
-
     public static boolean is_aran_tutorial(int map_id) {
         if (map_id == 914000000) {
             return true;
@@ -214,9 +206,5 @@ public class TacosConstants {
 
     public static boolean is_mesp_explosion(int skill_id) {
         return OpsSkill_BB.find(skill_id) == OpsSkill_BB.THIEFMASTER_MESO_EXPLOSION;
-    }
-
-    public static boolean is_shadow_meso(int skill_id) {
-        return OpsSkill_BB.find(skill_id) == OpsSkill_BB.HERMIT_SHADOW_MESO;
     }
 }

@@ -56,8 +56,4 @@ public class Property_Java {
     public static String getDir_WzXml_JMS186() {
         return System.getProperty("user.dir") + "/wz_xml/xml_JMS_v186";
     }
-
-    public static String getDir_Scripts() {
-        return path_scripts;
-    }
 }

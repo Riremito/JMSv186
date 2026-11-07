@@ -49,10 +49,6 @@ public class Property_Dummy_World {
         return name;
     }
 
-    public static String getMessage() {
-        return message;
-    }
-
     public static String getEvent() {
         return event;
     }

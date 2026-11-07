@@ -91,10 +91,6 @@ public class MaplePlayerShop implements IPlayerShop {
         }
     }
 
-    public Point getPosition() {
-        return new Point(position);
-    }
-
     public void setPosition(Point position) {
         this.position.x = position.x;
         this.position.y = position.y;
@@ -212,14 +208,6 @@ public class MaplePlayerShop implements IPlayerShop {
         return ownerName;
     }
 
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public int getOwnerAccId() {
-        return owneraccount;
-    }
-
     public String getDescription() {
         if (des == null) {
             return "";
@@ -244,10 +232,6 @@ public class MaplePlayerShop implements IPlayerShop {
     public void addItem(MaplePlayerShopItem item) {
         items.add(item);
         hold.setItems(getStocks(items));
-    }
-
-    public boolean removeItem(int item) {
-        return false;
     }
 
     public void removeFromSlot(int slot) {
@@ -306,10 +290,6 @@ public class MaplePlayerShop implements IPlayerShop {
 
     public void setAvailable(boolean b) {
         this.available = b;
-    }
-
-    public List<BoughtItem> getBoughtItems() {
-        return bought;
     }
 
     public static final class BoughtItem {

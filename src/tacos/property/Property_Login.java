@@ -41,10 +41,6 @@ public class Property_Login {
         return user_limit;
     }
 
-    public static boolean getAntiCheat() {
-        return anti_cheat;
-    }
-
     public static boolean init() {
         Property conf = new Property("properties/tacos.properties");
         if (!conf.open()) {

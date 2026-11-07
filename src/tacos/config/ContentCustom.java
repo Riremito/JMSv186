@@ -36,10 +36,6 @@ public enum ContentCustom {
         set(val);
     }
 
-    ContentCustom(int val) {
-        setInt(val);
-    }
-
     ContentCustom() {
         this.value = 0;
     }
@@ -50,10 +46,6 @@ public enum ContentCustom {
 
     public void set(boolean val) {
         this.value = val ? 1 : 0;
-    }
-
-    public int getInt() {
-        return this.value;
     }
 
     public void setInt(int val) {

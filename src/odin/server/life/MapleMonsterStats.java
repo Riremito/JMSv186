@@ -45,10 +45,7 @@ public class MapleMonsterStats {
     private int mp;
     private int removeAfter;
     private int buffToGive;
-    private int fixedDamage;
     private int selfDestruction_hp;
-    private int dropItemPeriod;
-    private int point;
     private boolean boss;
     private boolean undead;
     private boolean ffaLoot;
@@ -114,7 +111,6 @@ public class MapleMonsterStats {
     }
 
     public void setFixedDamage(int damage) {
-        this.fixedDamage = damage;
     }
 
     public void setPhysicalDefense(short PhysicalDefense) {
@@ -127,10 +123,6 @@ public class MapleMonsterStats {
 
     public void setEva(short eva) {
         this.eva = eva;
-    }
-
-    public short getEva() {
-        return eva;
     }
 
     public void setOnlyNormalAttack(boolean onlyNormalAttack) {
@@ -251,15 +243,6 @@ public class MapleMonsterStats {
         return (byte) skills.size();
     }
 
-    public boolean hasSkill(int skillId, int level) {
-        for (SimpleImmutableEntry<Integer, Integer> skill : skills) {
-            if (skill.getKey() == skillId && skill.getValue() == level) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setFirstAttack(boolean firstAttack) {
         this.firstAttack = firstAttack;
     }
@@ -273,11 +256,6 @@ public class MapleMonsterStats {
     }
 
     public void setPoint(int cp) {
-        this.point = cp;
-    }
-
-    public int getPoint() {
-        return point;
     }
 
     public void setFriendly(boolean friendly) {
@@ -313,7 +291,6 @@ public class MapleMonsterStats {
     }
 
     public void setDropItemPeriod(int d) {
-        this.dropItemPeriod = d;
     }
 
     public enum Element {

@@ -40,7 +40,6 @@ public class MapleNodes {
     private List<SimpleImmutableEntry<Integer, Integer>> mobsToSpawn;
     private List<SimpleImmutableEntry<Point, Integer>> guardiansToSpawn;
     private int nodeStart = -1;
-    private int nodeEnd = -1;
     private int mapid;
     private boolean firstHighest = true;
 
@@ -60,7 +59,6 @@ public class MapleNodes {
     }
 
     public void setNodeEnd(int ns) {
-        this.nodeEnd = ns;
     }
 
     public static class MapleNodeInfo {
@@ -148,10 +146,6 @@ public class MapleNodes {
 
     public List<Rectangle> getAreas() {
         return new ArrayList<>(areas);
-    }
-
-    public Rectangle getArea(int index) {
-        return getAreas().get(index);
     }
 
     public static class MaplePlatform {
