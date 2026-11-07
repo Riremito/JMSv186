@@ -22,16 +22,18 @@ package tacos.script.npc;
  *
  * @author Riremito
  */
+// Npc.wz script : nihal_taxi (JMS146-302), lua_script_jp の nihal_taxi は中身がない
 public class Npc_Ariant_Camel extends NpcScriptMan {
 
     private final int cost = 1500;
+    private final int map_ariant = 260000000; // バーニングロード : アリアント (JMS302 の 9000090)
 
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
             case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (getMapId() == 260020000) {
+                if (getMapId() == 260020000 || getMapId() == this.map_ariant) {
                     nt.add("#b" + getNpcName() + "#kに乗って錬金術の村#b" + getMapName(261000000) + "#kに移動しますか。費用は" + this.cost + "メルです。");
                 } else {
                     // TODO : 文章
@@ -45,8 +47,8 @@ public class Npc_Ariant_Camel extends NpcScriptMan {
                     // not coded yet.
                     return false;
                 }
-                if (getMapId() == 260020000) {
-                    // 260020000 -> マガティア
+                if (getMapId() == 260020000 || getMapId() == this.map_ariant) {
+                    // 260020000 -> マガティア, JMS302 はアリアント -> マガティア
                     warp(261000000);
                 } else {
                     // 260020700 -> アリアント

@@ -18,6 +18,7 @@
  */
 package tacos.script.portal;
 
+import java.util.regex.Pattern;
 import tacos.client.TacosClient;
 import tacos.server.map.TacosPortal;
 
@@ -29,6 +30,27 @@ import tacos.server.map.TacosPortal;
 public class PortalMan {
 
     public static boolean enter(TacosClient client, TacosPortal portal) {
+        String script_name = portal.getScriptName();
+        // Meister ville out
+        if (script_name.equals("out_profession")) {
+            client.getPlayer().getArdentmillPortal().leave(client.getPlayer());
+            return true;
+        }
+        // Meister ville in
+        if (Pattern.compile("profession(\\d+)").matcher(script_name).matches()) {
+            client.getPlayer().getArdentmillPortal().enter(client.getPlayer(), portal);
+            return true;
+        }
+        // FM out
+        if (script_name.equals("market00")) {
+            client.getPlayer().getFreeMarketPortal().leave(client.getPlayer());
+            return true;
+        }
+        // FM in
+        if (Pattern.compile("market(J|)(\\d+)").matcher(script_name).matches()) {
+            client.getPlayer().getFreeMarketPortal().enter(client.getPlayer(), portal);
+            return true;
+        }
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {
             client.getPlayer().DebugMsg("Portal (not coded) : " + portal.getScriptName());
@@ -551,6 +573,10 @@ public class PortalMan {
             case "foxLaidy_map" -> {
                 // 222010300, 下町 : 狐の丘
                 return new Portal_Ludibrium_FoxLaidy_map();
+            }
+            case "for_beginner" -> {
+                // 60000, サウスペリ : サウスペリ
+                return new Portal_MapleIsland_For_beginner();
             }
             case "ghostgate_open" -> {
                 // 990000700,  : シャレン3世の墓
@@ -1256,6 +1282,11 @@ public class PortalMan {
                 // 220080000, ルディブリアム : 時計塔の奥
                 return new Portal_Ludibrium_Populatus00();
             }
+            case "portalNPC" -> {
+                // 211070000, 獅子王の城 : 謁見室前の廊下
+                // 211070100, 獅子王の城 : 謁見室
+                return new Portal_ElNath_PortalNPC();
+            }
             case "PPinkOut" -> {
                 // 270050300, 神殿の奥 : 黄昏の黎明の間
                 return new Portal_TimeTemple_PPinkOut();
@@ -1643,6 +1674,10 @@ public class PortalMan {
             case "Zakum05" -> {
                 // 211042300, エルナス : ジャクムへの門
                 return new Portal_ElNath_Zakum05();
+            }
+            case "Zakumgo" -> {
+                // 211042200, エルナス : 試練の洞窟3
+                return new Portal_ElNath_Zakumgo();
             }
             default -> {
                 return null;

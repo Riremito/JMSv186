@@ -44,6 +44,12 @@ public class NpcMan {
                 // 10000, メイプルロード : キノコの丘
                 npc_script = new Npc_MapleIsland_EventGuide();
             }
+            case 2100 -> {
+                // 2100, セーラ
+                // 0, メイプルアイランド : 冒険者講習所入口
+                // 1, メイプルアイランド : 冒険者講習所2階
+                npc_script = new Npc_MapleIsland_Sera();
+            }
             case 2101 -> {
                 // 2101, ヒナ
                 // 10000, メイプルロード : キノコの丘
@@ -76,6 +82,10 @@ public class NpcMan {
             case 12101 -> {
                 // 12101, レイン
                 npc_script = new Npc_MapleIsland_Rain();
+            }
+            case 20001 -> {
+                // 20001, バリ
+                npc_script = new Npc_MapleIsland_Bari();
             }
             case 22000 -> {
                 // 22000, シャンクス
@@ -508,6 +518,11 @@ public class NpcMan {
                 // 105090200, 中央ダンジョン : 別世界への扉
                 npc_script = new Npc_Sleepywood_InsignificantBeing();
             }
+            case 1061018 -> {
+                // 1061018, ムヨン
+                // 105100300, 105100400 (String.wz に名前なし)
+                npc_script = new Npc_Sleepywood_Muyoung();
+            }
             case 1061100 -> {
                 // 1061100, ホテルガイド
                 // 105040400, スリーピーホテルロビー
@@ -690,6 +705,10 @@ public class NpcMan {
                 // 130000000, エレヴ
                 npc_script = new Npc_Ereve_Shinsoo();
             }
+            case 1101008 -> {
+                // 1101008, シグネット
+                npc_script = new Npc_Ereve_SignetTutorial();
+            }
             case 1102001 -> {
                 // 1102001, キリコ
                 // 108000600, 隠れ道 : 第2訓練場
@@ -710,6 +729,15 @@ public class NpcMan {
                 // 1103005, ナインハート
                 // 913040006, オープニング : シグナス騎士団
                 npc_script = new Npc_Ereve_NineheartIntro();
+            }
+            case 1104002, 1104100, 1104101, 1104102, 1104103, 1104104 -> {
+                // 1104002, エレオノール
+                // 1104100, ミハエル(偽者)
+                // 1104101, オズ(偽者)
+                // 1104102, イリーナ(偽者)
+                // 1104103, イカルト(偽者)
+                // 1104104, ホークアイ(偽者)
+                npc_script = new Npc_Cygnus_DisguisedKnight();
             }
             case 1104200 -> {
                 // 1104200, 倒れた騎士
@@ -747,6 +775,12 @@ public class NpcMan {
                 // 1204001, フランシス
                 // 910510200, 隠れ道 : 人形使いの洞窟
                 npc_script = new Npc_Victoria_Francis();
+            }
+            case 1209000 -> {
+                // 1209000, ヘレナ
+                // 912020000, 隠れ道 : バトの部屋
+                // 914000100, ブラックロード : 避難準備中
+                npc_script = new Npc_Aran_HelenaPrologue();
             }
             case 1300014 -> {
                 // 1300014, セルフ
@@ -1489,6 +1523,10 @@ public class NpcMan {
                 // 2084000, ゴールドコンパス
                 npc_script = new Npc_Leafre_GoldCompass();
             }
+            case 2084001 -> {
+                // 2084001, ゴールドリッチ
+                npc_script = new Npc_Leafre_GoldRichie();
+            }
             case 2090004 -> {
                 // 2090004, チエル
                 // 250000000, 武陵
@@ -1789,10 +1827,13 @@ public class NpcMan {
                 // 926023500, 隠れ道 : ネトのピラミッド
                 npc_script = new Npc_Ariant_Duarte();
             }
-            case 2110005 -> {
+            case 2110005, 9000090 -> {
                 // 2110005, ラクダ
                 // 260020000, アリアント北門の外
                 // 260020700, サヘル地帯1
+                // 9000090, ラクダ (JMS302 の nihal_taxi)
+                // 260000000, バーニングロード : アリアント
+                // 261000000, サンセットロード : マガティア
                 npc_script = new Npc_Ariant_Camel();
             }
             case 2111000 -> {
@@ -2424,6 +2465,12 @@ public class NpcMan {
             case 9101100 -> {
                 // 9101100, 初心者ガイドのモニカ
                 npc_script = new Npc_MapleIsland_Robin();
+            }
+            case 9102100, 9102101 -> {
+                // 9102100, ?
+                // 9102101, ?
+                // 100000202, ヘネシス : ペットの散歩路
+                npc_script = new Npc_Henesys_PetWalkingRoadGrass();
             }
             case 9103000 -> {
                 // 9103000, ピエトル
