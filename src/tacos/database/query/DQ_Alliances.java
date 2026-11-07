@@ -174,5 +174,4 @@ public class DQ_Alliances {
             this.notice = notice;
         }
     }
-
 }

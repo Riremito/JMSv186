@@ -67,11 +67,11 @@ public enum OpsMobStat implements IPacketOps {
     UNKNOWN;
     private int value;
 
-    OpsMobStat(int value) {
+    private OpsMobStat(int value) {
         this.value = value;
     }
 
-    OpsMobStat() {
+    private OpsMobStat() {
         this.value = -1;
     }
 
@@ -91,15 +91,6 @@ public enum OpsMobStat implements IPacketOps {
 
     public int getNr() {
         return 1 << (this.value % 32);
-    }
-
-    public static OpsMobStat find(int val) {
-        for (OpsMobStat ops : OpsMobStat.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
     }
 
     public static void clear() {

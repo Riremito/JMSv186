@@ -51,5 +51,4 @@ public enum LazyDataNames {
     public LazyDataTypes getType() {
         return this.type;
     }
-
 }

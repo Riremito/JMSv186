@@ -18,6 +18,7 @@
  */
 package tacos.server.map;
 
+import tacos.server.TacosFieldSet;
 import tacos.server.map.object.TacosMapObject;
 import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.object.TacosMonster;
@@ -40,7 +41,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.handling.world.MapleParty.PartyOperation;
-import tacos.odin.OdinEventManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
@@ -76,7 +76,6 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_FieldEffect;
-import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
 import tacos.server.map.object.TacosDrop.DropEnterType;
@@ -368,6 +367,7 @@ public class TacosMap extends TacosMapData {
         updateAreaOnEnter(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
         checkMasterMonsterTime(chr);
+        checkTimeMob(chr);
         // no split.
         sendChangeBGM(chr);
         if (!getNodeInfo().getPlatforms().isEmpty()) {
@@ -382,6 +382,7 @@ public class TacosMap extends TacosMapData {
         if (0 < getTimeLimit()) {
             chr.SendPacket(ResCField.Clock((int) getTimer(System.currentTimeMillis())));
         }
+        TacosFieldSet.sendClock(chr);
         sendExpedition(chr, null);
 
         splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId()); // including pet for remote user. (JMS186)
@@ -468,7 +469,7 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+                setNpcOwner(npc);
             }
         }
         // hired merchant
@@ -547,6 +548,13 @@ public class TacosMap extends TacosMapData {
                 if (area_owner != null) {
                     area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
+            }
+        }
+        // npc
+        for (TacosNpc npc : this.npcs.values()) {
+            if (npc.getOwnerId() == chr.getId()) {
+                npc.setOwnerId(0);
+                setNpcOwner(npc);
             }
         }
 
@@ -628,10 +636,17 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+                setNpcOwner(npc);
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                // the client keeps a local npc until its control is released.
+                if (npc.getOwnerId() == chr.getId()) {
+                    removeNpcOwner(npc);
+                    chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                    setNpcOwner(npc);
+                } else {
+                    chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+                }
             }
         }
         // hired merchant
@@ -1096,6 +1111,18 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    // info/timeMob, 指定モンスターが存在するマップに入場した場合はメッセージを表示する
+    private boolean checkTimeMob(TacosCharacter chr) {
+        if (getTimeMobId() <= 0 || getTimeMobMessage() == null || getTimeMobMessage().isEmpty()) {
+            return false;
+        }
+        if (countMonsterById(getTimeMobId()) <= 0) {
+            return false;
+        }
+        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(getTimeMobMessage()).build()));
+        return true;
+    }
+
     private boolean checkMasterMonsterTime(TacosCharacter chr) {
         if (getBossSpawnPoint().isEmpty()) {
             return false;
@@ -1126,23 +1153,55 @@ public class TacosMap extends TacosMapData {
     // npc.
     private LinkedHashMap<Integer, TacosNpc> npcs = new LinkedHashMap<>();
 
-    public void addNPC(TacosNpc npc) {
+    public void addNpc(TacosNpc npc) {
         if (npc.getObjectId() == 0) {
             npc.setObjectId();
         }
         this.npcs.put(npc.getObjectId(), npc);
         broadcastPacket(ResCNpcPool.NpcEnterField(npc));
+        setNpcOwner(npc);
     }
 
-    public boolean removeNPC(TacosNpc npc) {
+    public boolean setNpcOwner(TacosNpc npc) {
+        if (npc.getOwnerId() != 0) {
+            return false;
+        }
+        int number = split.find(npc.getPosition());
+        if (split.getTotal() <= number) {
+            return false;
+        }
+        TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+        if (area_owner != null) {
+            npc.setOwnerId(area_owner.getId());
+            area_owner.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeNpcOwner(TacosNpc npc) {
+        if (npc.getOwnerId() == 0) {
+            return false;
+        }
+        TacosCharacter owner = getPlayerByOid(npc.getOwnerId());
+        npc.setOwnerId(0);
+        if (owner != null) {
+            owner.SendPacket(ResCNpcPool.NpcChangeController(npc, false));
+        }
+        return true;
+    }
+
+    public boolean removeNpc(TacosNpc npc) {
         this.npcs.remove(npc.getObjectId());
+        // the client does not remove a local npc by leave field only.
+        removeNpcOwner(npc);
         broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
-            TacosNpc npc_sp = sp.getNPC();
+            TacosNpc npc_sp = sp.getNpc();
             if (npc_sp != null) {
                 if (npc_sp.getObjectId() == npc.getObjectId()) {
-                    sp.removeNPC();
+                    sp.removeNpc();
                     return true;
                 }
             }
@@ -1151,7 +1210,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public List<TacosNpc> getAllNPCs() {
+    public List<TacosNpc> getAllNpcs() {
         ArrayList<TacosNpc> ret = new ArrayList<>();
         for (TacosNpc npc : this.npcs.values()) {
             ret.add(npc);
@@ -1159,7 +1218,7 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public boolean containsNPC(int npc_id) {
+    public boolean containsNpc(int npc_id) {
         for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return true;
@@ -1168,7 +1227,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public TacosNpc getNPCById(int npc_id) {
+    public TacosNpc getNpcById(int npc_id) {
         for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return npc;
@@ -1177,7 +1236,7 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public TacosNpc getNPCByOid(int object_id) {
+    public TacosNpc getNpcByOid(int object_id) {
         return this.npcs.get(object_id);
     }
 
@@ -1190,17 +1249,17 @@ public class TacosMap extends TacosMapData {
             npc.setRx0(pos.x + 50);
             npc.setRx1(pos.x - 50);
             npc.setFootholdId(findBelow(pos).getId());
-            addNPC(npc);
+            addNpc(npc);
         }
     }
 
-    public boolean removeNPCById(int npc_id) {
-        TacosNpc npc = getNPCById(npc_id);
+    public boolean removeNpcById(int npc_id) {
+        TacosNpc npc = getNpcById(npc_id);
         if (npc == null) {
             return false;
         }
 
-        removeNPC(npc);
+        removeNpc(npc);
         return true;
     }
 
@@ -1483,6 +1542,15 @@ public class TacosMap extends TacosMapData {
         return this.reactors.get(object_id);
     }
 
+    public TacosReactor getReactorById(int reactor_id) {
+        for (TacosReactor reactor : this.reactors.values()) {
+            if (reactor.getId() == reactor_id) {
+                return reactor;
+            }
+        }
+        return null;
+    }
+
     public TacosReactor getReactorByName(String name) {
         for (TacosReactor reactor : this.reactors.values()) {
             if (reactor.getName().equalsIgnoreCase(name)) {
@@ -1574,62 +1642,6 @@ public class TacosMap extends TacosMapData {
         return TacosWorld.find(0).getChannelServer(channel).getMapleSquad(zz);
     }
 
-    public OdinEventManager getEMByMap() {
-        String em = null;
-        switch (map_id) {
-            case 105100400:
-                em = "BossBalrog_EASY";
-                break;
-            case 105100300:
-                em = "BossBalrog_NORMAL";
-                break;
-            case 280030000:
-                em = "ZakumBattle";
-                break;
-            case 240060200:
-                em = "HorntailBattle";
-                break;
-            case 280030001:
-                em = "ChaosZakum";
-                break;
-            case 240060201:
-                em = "ChaosHorntail";
-                break;
-            case 270050100:
-                em = "PinkBeanBattle";
-                break;
-            case 802000111:
-                em = "NamelessMagicMonster";
-                break;
-            case 802000211:
-                em = "Vergamot";
-                break;
-            case 802000311:
-                em = "2095_tokyo";
-                break;
-            case 802000411:
-                em = "Dunas";
-                break;
-            case 802000611:
-                em = "Nibergen";
-                break;
-            case 802000711:
-                em = "Dunas2";
-                break;
-            case 802000801:
-            case 802000802:
-            case 802000803:
-                em = "CoreBlaze";
-                break;
-            case 802000821:
-                em = "Aufhaven";
-                break;
-            default:
-                return null;
-        }
-        return TacosScriptEvent.getInstance().getEventManager(em);
-    }
-
     // used by script
     public void resetFully() {
         resetFully(true);
@@ -1652,8 +1664,8 @@ public class TacosMap extends TacosMapData {
         for (TacosReactor reactor : getAllReactors()) {
             removeReactor(reactor);
         }
-        for (TacosNpc npc : getAllNPCs()) {
-            removeNPC(npc);
+        for (TacosNpc npc : getAllNpcs()) {
+            removeNpc(npc);
         }
         for (TacosDrop mmi : getAllDrops()) {
             removeDrop(mmi.getObjectId());
@@ -1716,9 +1728,17 @@ public class TacosMap extends TacosMapData {
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getMobTime() != -1 && sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
+                    boolean time_mob = 0 < getTimeMobId() && sp.getId() == getTimeMobId();
+                    // info/timeMob, 指定時間外は出現判定を行わない
+                    if (time_mob && !isTimeMobRegenTime()) {
+                        continue;
+                    }
                     TacosMonster monster = sp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
+                        if (time_mob && getTimeMobMessage() != null && !getTimeMobMessage().isEmpty()) {
+                            sendText(getTimeMobMessage());
+                        }
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
@@ -2041,8 +2061,12 @@ public class TacosMap extends TacosMapData {
                             removeDrop(drop.getObjectId());
                             broadcastPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
                             reactor.hitReactor(client);
-                            reactor.setTimerActive(false);
-                            reactor.forceHitReactor((byte) 0);
+                            // アイテムで反応した後に攻撃で破壊するタイプ (死んだ木の森の箱など) の場合は状態を戻さない
+                            int type = reactor.getReactorType();
+                            if (type < 0 || 100 <= type) {
+                                reactor.setTimerActive(false);
+                                reactor.forceHitReactor((byte) 0);
+                            }
                             reactor.setTimerActive(true);
                             return;
                         }

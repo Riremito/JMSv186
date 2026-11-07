@@ -66,6 +66,8 @@ public class MapWz extends WzXML {
         private int consumeItemCoolTime;
         private int timeMobId;
         private String timeMobMessage;
+        private int timeMobStartHour;
+        private int timeMobEndHour;
     }
 
     // foothold
@@ -413,6 +415,8 @@ public class MapWz extends WzXML {
         ret.consumeItemCoolTime = md_map.getInt("info/consumeItemCoolTime");
         ret.timeMobId = md_map.getInt("info/timeMob/id");
         ret.timeMobMessage = md_map.getString("info/timeMob/message", null);
+        ret.timeMobStartHour = md_map.getInt("info/timeMob/startHour", -1);
+        ret.timeMobEndHour = md_map.getInt("info/timeMob/endHour", -1);
         return ret;
     }
 }

@@ -20,25 +20,14 @@ package tacos.debug;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
+import tacos.script.npc.NpcScriptTag;
 import tacos.wz.WzDataStorage;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_CC extends DebugMan implements IDebugMan {
-
-    @Override
-    public boolean start(TacosCharacter chr) {
-        super.start(this, chr);
-        return true;
-    }
-
-    @Override
-    public boolean end(TacosCharacter chr) {
-        super.end(chr);
-        return true;
-    }
+public class DebugMan_CC extends DebugNpcScriptMan {
 
     private enum AvatarType {
         SKIN,
@@ -112,49 +101,49 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
     private int avatar_type = -1;
 
     @Override
-    public boolean action(TacosCharacter chr, int status, int answer) {
+    public boolean action(int status, int answer) {
         switch (status) {
             case 0: {
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 nt.addMenu(AvatarType.SKIN.ordinal(), "Skin");
                 nt.addMenu(AvatarType.FACE.ordinal(), "Face");
                 nt.addMenu(AvatarType.FACE_COLOR.ordinal(), "Face Color");
                 nt.addMenu(AvatarType.HAIR.ordinal(), "Hair");
                 nt.addMenu(AvatarType.HAIR_COLOR.ordinal(), "Hair Color");
-                super.askMenu(chr, nt);
+                askMenu(nt);
                 return true;
             }
             case 1: {
                 avatar_type = answer;
-                NpcTag nt = new NpcTag();
+                NpcScriptTag nt = new NpcScriptTag();
                 if (answer == AvatarType.SKIN.ordinal()) {
                     nt.add("Skin test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.FACE.ordinal()) {
                     nt.add("Face test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.FACE_COLOR.ordinal()) {
                     nt.add("Face Color test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.HAIR.ordinal()) {
                     nt.add("Hair test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 if (answer == AvatarType.HAIR_COLOR.ordinal()) {
                     nt.add("Hair Color test.");
-                    ids_selection = getIdsTest(chr, answer);
-                    super.askAvatar(chr, nt, ids_selection);
+                    ids_selection = getIdsTest(getPlayer(), answer);
+                    askAvatar(nt, ids_selection);
                     return true;
                 }
                 return false;
@@ -168,21 +157,21 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
                 }
                 int id = ids_selection.get(answer);
                 if (avatar_type == AvatarType.SKIN.ordinal()) {
-                    chr.DebugMsg("Skin : " + id);
-                    chr.setSkinColor((byte) id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Skin : " + id);
+                    getPlayer().setSkinColor((byte) id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.FACE.ordinal() || avatar_type == AvatarType.FACE_COLOR.ordinal()) {
-                    chr.DebugMsg("Face : " + id);
-                    chr.setFace(id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Face : " + id);
+                    getPlayer().setFace(id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.HAIR.ordinal() || avatar_type == AvatarType.HAIR_COLOR.ordinal()) {
-                    chr.DebugMsg("Hair : " + id);
-                    chr.setHair(id);
-                    chr.sendStatChanged(false);
+                    getPlayer().DebugMsg("Hair : " + id);
+                    getPlayer().setHair(id);
+                    getPlayer().sendStatChanged(false);
                     return false;
                 }
                 return false;

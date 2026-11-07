@@ -20,6 +20,7 @@ package tacos.packet.request;
 
 import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
+import tacos.packet.ops.OpsParcel;
 import tacos.packet.response.ResCParcelDlg;
 
 /**
@@ -28,50 +29,19 @@ import tacos.packet.response.ResCParcelDlg;
  */
 public class ReqCParcelDlg {
 
-    private enum Action {
-        SEND((byte) 0x03),
-        CLOSE((byte) 0x08),
-        UNKNOWN((byte) -1);
-
-        public static Action Find(byte b) {
-            for (Action o : Action.values()) {
-                if (o.Get() == b) {
-                    return o;
-                }
-            }
-
-            return UNKNOWN;
-        }
-
-        private byte value;
-
-        Action(byte b) {
-            value = b;
-        }
-
-        Action() {
-            value = -1;
-        }
-
-        public byte Get() {
-            return value;
-        }
-
-    };
-
     // 宅配
     public static boolean Accept(TacosCharacter chr, ClientPacket cp) {
         // 処理内容
         byte action = cp.Decode1();
-        switch (Action.Find(action)) {
+        switch (OpsParcel.find(action)) {
             // 配送
-            case SEND: {
+            case ParcelReq_Send: {
                 // parcels are not stored yet, the client waits for a result with the send button disabled.
                 chr.SendPacket(ResCParcelDlg.Parcel_Failed());
                 return true;
             }
             // 閉じる
-            case CLOSE: {
+            case ParcelReq_Close: {
                 // 厳密に宅配可能状態か判断する場合は宅配UIを開いた時に何らかのフラグをサーバー側で保持して閉じるパケットが送信されたフラグをオフにする必要がある
                 return true;
             }

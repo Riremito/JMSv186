@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import lombok.Getter;
 import tacos.server.map.object.TacosNpc;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapWz;
@@ -30,6 +31,7 @@ import tacos.wz.ids.DWI_Block;
  *
  * @author Riremito
  */
+@Getter
 public class TacosNPCSpawnPoint {
 
     private int node_id;
@@ -66,10 +68,6 @@ public class TacosNPCSpawnPoint {
         return true;
     }
 
-    public int getId() {
-        return this.id;
-    }
-
     private TacosNpc npc = null;
 
     public TacosNpc regen(TacosMap map) {
@@ -101,11 +99,7 @@ public class TacosNPCSpawnPoint {
         return this.npc;
     }
 
-    public TacosNpc getNPC() {
-        return this.npc;
-    }
-
-    public void removeNPC() {
+    public void removeNpc() {
         this.npc = null;
     }
 }

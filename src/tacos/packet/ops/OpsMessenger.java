@@ -36,11 +36,11 @@ public enum OpsMessenger implements IPacketOps {
 
     private int value;
 
-    OpsMessenger(int val) {
-        this.value = val;
+    private OpsMessenger(int value) {
+        this.value = value;
     }
 
-    OpsMessenger() {
+    private OpsMessenger() {
         this.value = -1;
     }
 
@@ -50,14 +50,14 @@ public enum OpsMessenger implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMessenger find(int val) {
+    public static OpsMessenger find(int value) {
         for (OpsMessenger ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }

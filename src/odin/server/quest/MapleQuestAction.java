@@ -189,7 +189,7 @@ public class MapleQuestAction {
 
     private void updateQuests(TacosCharacter chr) {
         for (SimpleImmutableEntry<Integer, Integer> q : info.getQuests()) {
-            chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(q.getKey()), (byte) (int) q.getValue()));
+            chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(q.getKey()), q.getValue(), 0));
         }
     }
 

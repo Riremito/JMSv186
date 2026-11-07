@@ -137,5 +137,4 @@ public class DQ_Families {
             this.notice = notice;
         }
     }
-
 }

@@ -21,6 +21,7 @@ package tacos.server.map;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -183,8 +184,8 @@ public class TacosMapData {
         this.screen.height = this.wall.bottom - this.wall.top;
 
         // split.
-        this.split.col = (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
-        this.split.row = (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
+        this.split.col = Math.max(1, (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH);
+        this.split.row = Math.max(1, (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT);
         this.split.total = this.split.col * this.split.row;
         return true;
     }
@@ -405,6 +406,8 @@ public class TacosMapData {
     private int consumeItemCoolTime;
     private int time_mob_id;
     private String time_mob_message;
+    private int time_mob_start_hour;
+    private int time_mob_end_hour;
 
     public boolean loadInfo(MapWz.MapInfo info) {
         this.clock = info.isClock();
@@ -434,7 +437,31 @@ public class TacosMapData {
 
         this.time_mob_id = info.getTimeMobId();
         this.time_mob_message = info.getTimeMobMessage();
+        this.time_mob_start_hour = info.getTimeMobStartHour();
+        this.time_mob_end_hour = info.getTimeMobEndHour();
         return true;
+    }
+
+    // info/timeMob
+    public int getTimeMobId() {
+        return this.time_mob_id;
+    }
+
+    public String getTimeMobMessage() {
+        return this.time_mob_message;
+    }
+
+    // startHour から endHour の直前までが出現判定 (regen) を行う時間帯, 時刻の指定が無い場合は常時
+    public boolean isTimeMobRegenTime() {
+        if (this.time_mob_start_hour < 0 || this.time_mob_end_hour < 0) {
+            return true;
+        }
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (this.time_mob_start_hour <= this.time_mob_end_hour) {
+            return this.time_mob_start_hour <= hour && hour < this.time_mob_end_hour;
+        }
+        // 日付をまたぐ (例 : 22 時から 14 時)
+        return this.time_mob_start_hour <= hour || hour < this.time_mob_end_hour;
     }
 
     public boolean hasClock() {

@@ -35,11 +35,11 @@ public enum OpsAttackIndex implements IPacketOps {
 
     private int value;
 
-    OpsAttackIndex(int val) {
-        this.value = val;
+    private OpsAttackIndex(int value) {
+        this.value = value;
     }
 
-    OpsAttackIndex() {
+    private OpsAttackIndex() {
         this.value = -1;
     }
 
@@ -49,14 +49,16 @@ public enum OpsAttackIndex implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsAttackIndex find(int val) {
+    public static OpsAttackIndex find(int value) {
         for (OpsAttackIndex ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

@@ -18,8 +18,6 @@
  */
 package tacos.packet.ops;
 
-import tacos.config.Config;
-
 /**
  *
  * @author Riremito
@@ -69,11 +67,11 @@ public enum OpsLogin implements IPacketOps {
 
     private int value;
 
-    OpsLogin(int val) {
-        this.value = val;
+    private OpsLogin(int value) {
+        this.value = value;
     }
 
-    OpsLogin() {
+    private OpsLogin() {
         this.value = -1;
     }
 
@@ -83,30 +81,18 @@ public enum OpsLogin implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsLogin find(int val) {
+    public static OpsLogin find(int value) {
         for (OpsLogin ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void clear() {
-        for (OpsLogin ops : values()) {
-            ops.set(UNKNOWN.get());
-        }
-    }
-
-    public static void init() {
-        if (Config.PostBB()) {
-            return;
-        }
     }
 }

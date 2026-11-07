@@ -32,11 +32,11 @@ public enum OpsCheckSPW implements IPacketOps {
 
     private int value;
 
-    OpsCheckSPW(int val) {
-        this.value = val;
+    private OpsCheckSPW(int value) {
+        this.value = value;
     }
 
-    OpsCheckSPW() {
+    private OpsCheckSPW() {
         this.value = -1;
     }
 
@@ -46,18 +46,7 @@ public enum OpsCheckSPW implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsCheckSPW find(int val) {
-        for (OpsCheckSPW ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
-                    return ops;
-                }
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

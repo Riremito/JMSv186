@@ -65,7 +65,7 @@ public class TacosShared {
     }
 
     public static boolean is_ignore_master_level_for_common(int skill_id) {
-        // JMS v302
+        // JMS302
         switch (skill_id) {
             case 1120012:
             case 1220013:
@@ -106,11 +106,11 @@ public class TacosShared {
     }
 
     public static boolean is_skill_need_master_level(int skill_id) {
-        // JMS v302
+        // JMS302
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return is_skill_need_master_level_302(skill_id);
         }
-        // JMS v188-v194
+        // JMS188-v194
         if (Config.PostBB()) {
             return is_skill_need_master_level_188(skill_id);
         }
@@ -231,7 +231,7 @@ public class TacosShared {
             return false;
         }
 
-        // JMS v302
+        // JMS302
         if (9200 <= job_id) {
             return false;
         }
@@ -294,7 +294,7 @@ public class TacosShared {
             }
             return false;
         }
-        // JMS v164
+        // JMS164
         if (2 <= (job_id % 10)) {
             return true;
         }

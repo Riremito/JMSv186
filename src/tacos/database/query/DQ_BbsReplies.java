@@ -91,5 +91,4 @@ public class DQ_BbsReplies {
 
         return false;
     }
-
 }

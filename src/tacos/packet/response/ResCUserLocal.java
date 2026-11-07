@@ -26,6 +26,8 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.ops.OpsChatType;
+import tacos.packet.ops.OpsQuestGuide;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.data.RD_CUser;
@@ -213,6 +215,25 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUserLocal::OnFieldFadeInOut, not tested.
+    public static ServerPacket FieldFadeInOut(int tFadeIn, int tDelay, int tFadeOut, int nAlpha) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldFadeInOut);
+
+        sp.Encode4(tFadeIn);
+        sp.Encode4(tDelay);
+        sp.Encode4(tFadeOut); // tFadeOut
+        sp.Encode4(nAlpha);
+        return sp;
+    }
+
+    // CUserLocal::OnFieldFadeOutForce, not tested.
+    public static ServerPacket FieldFadeOutForce(int tDuration) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldFadeOutForce);
+
+        sp.Encode4(tDuration);
+        return sp;
+    }
+
     // CUserLocal::OnQuestResult
     public static ServerPacket UserQuestResult(OpsQuest ops, int quest_id, int npc_id, int next_quest_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
@@ -229,6 +250,16 @@ public class ResCUserLocal {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyHPDecByField);
 
         sp.Encode4(nDamage);
+        return sp;
+    }
+
+    // CUserLocal::OnUserPetSkillChanged, not tested.
+    public static ServerPacket UserPetSkillChanged(long pet_sn, boolean add, int skill) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserPetSkillChanged);
+
+        sp.Encode8(pet_sn);
+        sp.Encode1(add ? 1 : 0);
+        sp.Encode2(skill);
         return sp;
     }
 
@@ -250,6 +281,55 @@ public class ResCUserLocal {
         sp.Encode2(width); // width
         sp.Encode2(height); // timeout (sec)
         sp.Encode1(1); // avatar oriented, no position
+        return sp;
+    }
+
+    // CUserLocal::OnPlayEventSound, not tested.
+    public static ServerPacket PlayEventSound(String sound) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayEventSound);
+
+        sp.EncodeStr(sound);
+        return sp;
+    }
+
+    // CUserLocal::OnPlayMinigameSound, not tested.
+    public static ServerPacket PlayMinigameSound(String sound) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayMinigameSound);
+
+        sp.EncodeStr(sound);
+        return sp;
+    }
+
+    // CUserLocal::OnMakerResult, not tested.
+    public static ServerPacket UserMakerResult(int nResult, int nTargetItem, int count) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMakerResult);
+
+        sp.Encode4(nResult); // nResult
+        sp.Encode4(3);
+        sp.Encode4(nTargetItem); // nTargetItem
+        sp.Encode4(count);
+        return sp;
+    }
+
+    // CUserLocal::OnOpenConsultBoard, not tested.
+    public static ServerPacket UserOpenConsultBoard() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenConsultBoard);
+
+        return sp;
+    }
+
+    // CUserLocal::OnOpenClassCompetitionPage, not tested.
+    public static ServerPacket UserOpenClassCompetitionPage() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenClassCompetitionPage);
+
+        return sp;
+    }
+
+    // CUserLocal::OnOpenUI, not tested.
+    public static ServerPacket UserOpenUI(int nUI) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUI);
+
+        sp.Encode1(nUI);
         return sp;
     }
 
@@ -345,6 +425,47 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // CUser::OnRandomEmotion, not tested.
+    public static ServerPacket UserRandomEmotion(int nItemID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserRandomEmotion);
+
+        sp.Encode4(nItemID);
+        return sp;
+    }
+
+    // CUserLocal::OnResignQuestReturn, not tested.
+    public static ServerPacket ResignQuestReturn(int usQuestID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ResignQuestReturn);
+
+        sp.Encode2(usQuestID);
+        return sp;
+    }
+
+    // CUserLocal::OnPassMateName, not tested.
+    public static ServerPacket PassMateName(int usQuestID, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PassMateName);
+
+        sp.Encode2(usQuestID);
+        sp.EncodeStr(name);
+        return sp;
+    }
+
+    // CUserLocal::OnRadioSchedule, not tested.
+    public static ServerPacket SetRadioSchedule(String file, int time) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetRadioSchedule);
+
+        sp.EncodeStr(file);
+        sp.Encode4(time);
+        return sp;
+    }
+
+    // CUserLocal::OnOpenSkillGuide, not tested.
+    public static ServerPacket UserOpenSkillGuide() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenSkillGuide);
+
+        return sp;
+    }
+
     // CUserLocal::OnNoticeMsg
     public static ServerPacket UserNoticeMsg(String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserNoticeMsg);
@@ -388,8 +509,44 @@ public class ResCUserLocal {
         0x0015  ドクロ拡声器
         0x0016  ハートバルーン拡声器
          */
-        sp.Encode2(11); // chat type
+        sp.Encode2(OpsChatType.CHAT_TYPE_ADMINCHAT.get()); // chat type
         sp.EncodeStr(msg);
+        return sp;
+    }
+
+    // CUserLocal::OnBuffzoneEffect, not tested.
+    public static ServerPacket UserBuffzoneEffect(int nItemID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserBuffzoneEffect);
+
+        sp.Encode4(nItemID);
+        return sp;
+    }
+
+    // CUserLocal::OnGoToCommoditySN, not tested.
+    public static ServerPacket UserGoToCommoditySN(int nCommoditySN) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserGoToCommoditySN);
+
+        sp.Encode4(nCommoditySN);
+        return sp;
+    }
+
+    // CUserLocal::OnDamageMeter, not tested.
+    public static ServerPacket UserDamageMeter(int time) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserDamageMeter);
+
+        sp.Encode4(time);
+        return sp;
+    }
+
+    // CUserLocal::OnTimeBombAttack, not tested.
+    public static ServerPacket UserTimeBombAttack(int nSkillID, int nTimeBombX, int nInvincible, int nUserImpactDeg, int nDamage) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTimeBombAttack);
+
+        sp.Encode4(nSkillID);
+        sp.Encode4(nTimeBombX);
+        sp.Encode4(nInvincible); // nInvincible
+        sp.Encode4(nUserImpactDeg); // nUserImpactDeg
+        sp.Encode4(nDamage);
         return sp;
     }
 
@@ -417,6 +574,49 @@ public class ResCUserLocal {
          */
         sp.Encode4(error); // 5 = canceled request.
         sp.Encode4(0); // character id
+        return sp;
+    }
+
+    // CUserLocal::OnVengeanceSkillApply, not tested.
+    public static ServerPacket UserRequestVengeance(int nSkillID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserRequestVengeance);
+
+        sp.Encode4(nSkillID);
+        return sp;
+    }
+
+    // CUserLocal::OnExJablinApply, not tested.
+    public static ServerPacket UserRequestExJablin() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserRequestExJablin);
+
+        return sp;
+    }
+
+    // CUserLocal::OnAskAPSPEvent, not tested.
+    public static ServerPacket UserAskAPSPEvent(int nEventSN, int nType) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserAskAPSPEvent);
+
+        sp.Encode4(nEventSN);
+        sp.Encode4(nType);
+        return sp;
+    }
+
+    // CUserLocal::OnQuestGuideResult, not tested.
+    public static ServerPacket QuestGuideResult(OpsQuestGuide mode, int usQuestID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestGuideResult);
+
+        sp.Encode1(mode.get());
+        sp.Encode2(usQuestID); // usQuestID
+        sp.Encode4(0); // count
+        return sp;
+    }
+
+    // CUserLocal::OnDeliveryQuest, not tested.
+    public static ServerPacket UserDeliveryQuest(int nQuestID, int nItemID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserDeliveryQuest);
+
+        sp.Encode4(nQuestID);
+        sp.Encode4(nItemID);
         return sp;
     }
 

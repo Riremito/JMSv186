@@ -61,24 +61,24 @@ public enum OpsDBCHAR {
 
     private long value;
 
-    OpsDBCHAR(long val) {
-        value = val;
+    private OpsDBCHAR(long value) {
+        this.value = value;
     }
 
-    OpsDBCHAR() {
-        value = -1;
+    private OpsDBCHAR() {
+        this.value = -1;
     }
 
     public long get() {
-        return value;
+        return this.value;
     }
 
-    public void set(long val) {
-        value = val;
+    public void set(long value) {
+        this.value = value;
     }
 
-    public boolean check(long mask) {
-        if ((mask & value) != 0) {
+    public boolean check(long value) {
+        if ((value & this.value) != 0) {
             return true;
         }
         return false;

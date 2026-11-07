@@ -122,6 +122,15 @@ public class TacosMobBuff {
         return ret;
     }
 
+    public boolean isActive(OpsMobStat ops) {
+        for (Buff buff : buffs) {
+            if (buff.ops == ops && buff.buff_id != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<Buff> getAll() {
         return this.buffs;
     }

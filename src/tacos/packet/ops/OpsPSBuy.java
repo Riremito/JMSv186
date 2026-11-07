@@ -23,7 +23,6 @@ package tacos.packet.ops;
  * @author Riremito
  */
 public enum OpsPSBuy implements IPacketOps {
-    // GMS v95, CPersonalShopDlg::OnBuyResult
     PSBuy_Success(0),
     PSBuy_NoStock(1),
     PSBuy_NoMoney(2),
@@ -43,11 +42,11 @@ public enum OpsPSBuy implements IPacketOps {
 
     private int value;
 
-    OpsPSBuy(int val) {
-        this.value = val;
+    private OpsPSBuy(int value) {
+        this.value = value;
     }
 
-    OpsPSBuy() {
+    private OpsPSBuy() {
         this.value = -1;
     }
 
@@ -57,16 +56,7 @@ public enum OpsPSBuy implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsPSBuy find(int val) {
-        for (OpsPSBuy ops : values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

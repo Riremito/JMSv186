@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTransferField implements IPacketOps {
-    // GMS v95
     TF_DONE(0),
     TF_DISABLED_PORTAL(1),
     TF_NOT_CONNECTED_AREA(2),
@@ -36,7 +35,6 @@ public enum OpsTransferField implements IPacketOps {
     TF_PARTY_ONLY(6),
     TF_EXPEDITION_ONLY(7),
     TF_NOT_AVAILABLE_SHOP(8),
-    // added for JMS302
     TF_NOT_ALLOWED_LEVEL_FOR_ASWAN,
     TF_PARTYBOSS_ONLY,
     TF_PARTYMEMBER_MIA,
@@ -46,11 +44,11 @@ public enum OpsTransferField implements IPacketOps {
 
     private int value;
 
-    OpsTransferField(int val) {
-        this.value = val;
+    private OpsTransferField(int value) {
+        this.value = value;
     }
 
-    OpsTransferField() {
+    private OpsTransferField() {
         this.value = -1;
     }
 
@@ -60,17 +58,8 @@ public enum OpsTransferField implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsTransferField find(int val) {
-        for (OpsTransferField ops : OpsTransferField.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

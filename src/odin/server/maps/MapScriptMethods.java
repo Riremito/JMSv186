@@ -37,8 +37,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import tacos.debug.DebugLogger;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
+import tacos.packet.request.ReqCUser;
 import tacos.wz.WzXML;
 
 public class MapScriptMethods {
@@ -388,7 +387,7 @@ public class MapScriptMethods {
                 break;
             }
             case shammos_Fenter: {
-                if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
+                if (chr.getMapId() >= 921120005 && chr.getMapId() < 921120500) {
                     TacosMonster shammos = WzXML.MOB.createMob(9300275);
                     map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
@@ -453,9 +452,7 @@ public class MapScriptMethods {
             case shammos_Enter: { //nothing to go on inside the map
                 chr.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((chr.getMapId() % 1000) / 100)));
                 if (chr.getMapId() == 921120500) {
-                    TacosScriptNPC.getInstance().dispose(chr.getClient());
-                    TacosScriptQuest.getInstance().dispose(chr.getClient());
-                    TacosScriptNPC.getInstance().start(chr.getClient(), 2022006);
+                    ReqCUser.OnUserSelectNpcInternal(chr, 2022006, 2022006);
                 }
                 break;
             }
@@ -763,7 +760,7 @@ public class MapScriptMethods {
         TacosMap map = chr.getMap();
         map.resetFully();
 
-        if (!map.containsNPC(2141000)) {
+        if (!map.containsNpc(2141000)) {
             map.spawnNpc(2141000, new Point(-190, -42));
         }
     }

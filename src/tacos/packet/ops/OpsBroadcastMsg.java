@@ -25,8 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsBroadcastMsg {
-    // GMS v95
+public enum OpsBroadcastMsg implements IPacketOps {
     BM_NOTICE(0), // 青文字, [告知事項]
     BM_ALERT(1),
     BM_SPEAKERCHANNEL(2),
@@ -48,37 +47,39 @@ public enum OpsBroadcastMsg {
     BM_CASHSHOPAD(18), // 体験用アバター獲得
     BM_HEARTSPEAKER(19),
     BM_SKULLSPEAKER(20),
-    // added for JMS
-    BM_JMS_UNKNOWN_0B, // JMS 11
-    BM_JMS_UNKNOWN_0F, // JMS 15, 青文字, 名前:アイテム名(xxxx個))
-    BM_JMS_UNKNOWN_11, // JMS 17, 青文字, アイテム表示
+    BM_JMS_UNKNOWN_0B,
+    BM_JMS_UNKNOWN_0F, // 青文字, 名前:アイテム名(xxxx個))
+    BM_JMS_UNKNOWN_11, // 青文字, アイテム表示
     UNKNOWN;
 
     private int value;
 
-    OpsBroadcastMsg(int v) {
-        value = v;
+    private OpsBroadcastMsg(int value) {
+        this.value = value;
     }
 
-    OpsBroadcastMsg() {
-        value = -1;
+    private OpsBroadcastMsg() {
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int v) {
-        value = v;
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsBroadcastMsg find(byte b) {
-        for (OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
-            if (o.get() == b) {
-                return o;
+    public static OpsBroadcastMsg find(int value) {
+        for (OpsBroadcastMsg ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
-
         return UNKNOWN;
     }
 

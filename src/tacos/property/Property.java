@@ -129,5 +129,4 @@ public class Property {
 
         return null;
     }
-
 }

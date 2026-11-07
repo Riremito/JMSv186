@@ -488,7 +488,7 @@ public class SkillWz extends WzXML {
         if (reqDataRoot != null) {
             for (MapleData reqData : reqDataRoot.getChildren()) {
                 ret.setRequiredSkill(Integer.parseInt(reqData.getName()));
-                ret.setLevel((byte) reqDataRoot.getInt(reqData.getName(), 1));
+                ret.setLevel(reqDataRoot.getInt(reqData.getName(), 1));
             }
         }
         int animationTime = 0;

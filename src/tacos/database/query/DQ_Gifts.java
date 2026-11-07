@@ -98,5 +98,4 @@ public class DQ_Gifts {
             this.message = message;
         }
     }
-
 }

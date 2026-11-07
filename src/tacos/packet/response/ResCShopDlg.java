@@ -18,16 +18,12 @@
  */
 package tacos.packet.response;
 
-import tacos.client.TacosClient;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedDate;
-import tacos.debug.DebugShop;
-import java.util.List;
+import tacos.script.npc.NpcShopMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsShop;
-import odin.server.MapleItemInformationProvider;
-import odin.server.MapleShop.MapleShopItem;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
@@ -38,47 +34,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCShopDlg {
 
     // CShopDlg::OnPacket
-    public static ServerPacket ShopResult(OpsShop ops, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
-
-        sp.Encode1(ops.get());
-
-        switch (ops) {
-            case ShopRes_SellSuccess: {
-                /*
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
-                    sp.Encode1(0);
-                    // CShopDlg::SetShopDlg
-                    sp.Encode4(0);
-                    sp.Encode4(9030000); // m_dwNpcTemplateID
-                    sp.Encode1(0); // 1 = 十字旅団
-                    //sp.Encode1(0);
-                    sp.Encode2(0);
-                }
-                 */
-                break;
-            }
-            case ShopRes_LimitLevel_Less:
-            case ShopRes_LimitLevel_More: {
-                sp.Encode4(level);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        return sp;
-    }
-
-    public static ServerPacket ShopResult(OpsShop ops) {
-        return ResCShopDlg.ShopResult(ops, 0);
-    }
-
-    // CShopDlg::OnPacket
-    public static ServerPacket OpenShopDlg(DebugShop ds) {
+    public static ServerPacket OpenShopDlg(NpcShopMan npc_shop) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
@@ -88,7 +44,7 @@ public class ResCShopDlg {
         }
 
         sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
+        sp.Encode4(npc_shop.getNpcId()); // m_dwNpcTemplateID
 
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             // none
@@ -96,9 +52,9 @@ public class ResCShopDlg {
             sp.Encode1(0);
         }
 
-        sp.Encode2(ds.getShopStocks().size()); // nCount
+        sp.Encode2(npc_shop.getShopStocks().size()); // nCount
 
-        for (DebugShop.ShopStock ss : ds.getShopStocks()) {
+        for (NpcShopMan.ShopStock ss : npc_shop.getShopStocks()) {
             sp.Encode4(ss.item_id); // nItemID
             sp.Encode4(ss.item_price); // nPrice
             sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 91)); // nDiscountRate
@@ -146,70 +102,43 @@ public class ResCShopDlg {
         return sp;
     }
 
-    public static ServerPacket OpenShopDlg(TacosClient client, int sid, List<MapleShopItem> items) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
+    public static ServerPacket ShopResult(OpsShop ops) {
+        return ResCShopDlg.ShopResult(ops, 0);
+    }
 
-        if (!Config.GreaterOrEqual(Region.EMS, 89)) {
-            // none
-        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            sp.Encode1(0);
-        }
+    // CShopDlg::OnPacket
+    public static ServerPacket ShopResult(OpsShop ops, int level) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
 
-        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-        sp.Encode4(sid); // m_dwNpcTemplateID
+        sp.Encode1(ops.get());
 
-        if (!Config.GreaterOrEqual(Region.EMS, 89)) {
-            // none
-        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            sp.Encode1(0);
-        }
-
-        sp.Encode2(items.size()); // item count
-        for (MapleShopItem item : items) {
-            sp.Encode4(item.getItemId());
-            sp.Encode4(item.getPrice());
-            sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 91)); // nDiscountRate
-
-            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                sp.Encode4(item.getReqItem()); // nTokenItemID
-                sp.Encode4(item.getReqItemQ()); // nTokenPrice
+        switch (ops) {
+            case ShopRes_SellSuccess: {
+                /*
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    sp.Encode1(0);
+                    // CShopDlg::SetShopDlg
+                    sp.Encode4(0);
+                    sp.Encode4(9030000); // m_dwNpcTemplateID
+                    sp.Encode1(0); // 1 = 十字旅団
+                    //sp.Encode1(0);
+                    sp.Encode2(0);
+                }
+                 */
+                break;
             }
-
-            sp.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nItemPeriod
-            sp.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nLevelLimited
-
-            if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                sp.Encode4(0);
-                sp.Encode1(0);
-                sp.Encode4(0);
+            case ShopRes_LimitLevel_Less:
+            case ShopRes_LimitLevel_More: {
+                sp.Encode4(level);
+                break;
             }
-
-            if (Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89)) {
-                sp.Encode4(0);
-                sp.Encode8(0);
-                sp.Encode8(TacosSharedDate.getMagicalExpirationDate());
-                sp.Encode4(0);
-                sp.Encode1(0);
-                sp.Encode4(0);
-            }
-
-            // 207 || 233
-            if (GameConstants.isRechargable(item.getItemId())) {
-                sp.EncodeDouble(ii.getPrice(item.getItemId()));
-            } else {
-                sp.Encode2(1); // nQuantity
-            }
-            sp.Encode2(ii.getSlotMax(item.getItemId()), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nMaxPerSlot
-            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
-            sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131));
-            if (Config.GreaterOrEqual(Region.GMS, 131)) {
-                sp.Encode4(0);
-                sp.Encode4(0);
-                sp.Encode4(0);
-                sp.EncodeZeroBytes(32);
+            default: {
+                break;
             }
         }
+
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
+        sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
         return sp;
     }
 }

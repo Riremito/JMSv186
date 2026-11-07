@@ -158,8 +158,8 @@ public class MapleTrade {
             tradeItem.setQuantity(item.getQuantity());
             MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item.getItemId()), item.getPosition(), item.getQuantity(), true);
         } else {
-            tradeItem.setQuantity((short) quantity);
-            MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item.getItemId()), item.getPosition(), (short) quantity, true);
+            tradeItem.setQuantity(quantity);
+            MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item.getItemId()), item.getPosition(), quantity, true);
         }
         if (targetSlot < 0) {
             targetSlot = (byte) target;

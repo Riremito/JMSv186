@@ -87,7 +87,6 @@ import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsTransferField;
-import tacos.packet.request.ReqCUser;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
@@ -143,7 +142,6 @@ import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
-import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.MapleCarnivalParty;
@@ -151,16 +149,14 @@ import odin.server.maps.SavedLocationType;
 import odin.server.MapleCarnivalChallenge;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
-import tacos.debug.DebugShop;
-import tacos.debug.IDebugMan;
+import tacos.script.npc.NpcShopMan;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
 import tacos.shared.TacosSharedDate;
 import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
+import tacos.script.npc.NpcScriptMan;
 
 /**
  *
@@ -433,10 +429,20 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean changeMapById(int map_id) {
+        return changeMapById(map_id, null);
+    }
+
+    public boolean changeMapById(int map_id, String portal_name) {
         if (WzDataStorage.MAP.check(map_id)) {
             TacosMap map_to = findMap(map_id);
             if (map_to != null) {
-                TacosPortal portal_to = map_to.getPortal(0);
+                TacosPortal portal_to = null;
+                if (portal_name != null) {
+                    portal_to = map_to.getPortal(portal_name);
+                }
+                if (portal_to == null) {
+                    portal_to = map_to.getPortal(0);
+                }
                 if (portal_to != null) {
                     changeMapPortal(map_to, portal_to);
                     return true;
@@ -1775,12 +1781,6 @@ public class TacosCharacter extends TacosPlayer {
         this.conv_state = conv_state;
     }
 
-    // script.
-    public boolean EnterPointShop() {
-        ReqCUser.OnUserMigrateToCashShopRequest(client, (TacosCharacter) this);
-        return true;
-    }
-
     // update task.
     private final TacosTask task_player = new TacosTask();
 
@@ -1939,7 +1939,7 @@ public class TacosCharacter extends TacosPlayer {
         for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.MiniRoom, this.id).values()) {
             Item item = mit.getKey();
             MapleInventory inv = getInventory(GameConstants.getInventoryType(item.getItemId()));
-            short slot = inv.getNextFreeSlot();
+            int slot = inv.getNextFreeSlot();
             if (slot < 0) {
                 no_slot.add(item);
                 continue;
@@ -2298,15 +2298,14 @@ public class TacosCharacter extends TacosPlayer {
     private boolean hasTutorialSummon = false;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
-    private transient MapleShop shop;
     private transient MapleTrade trade;
     private transient IPlayerShop playerShop;
     // items and meso put in a trade or a personal shop
     private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
     private TacosMerchant remoteStore = null;
-    private IDebugMan debugMan = null;
-    private DebugShop debugShop = null;
+    private NpcScriptMan npc_script = null;
+    private NpcShopMan npc_shop = null;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -2348,14 +2347,14 @@ public class TacosCharacter extends TacosPlayer {
 
     public MapleQuestStatus getQuest(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
-            return new MapleQuestStatus(quest, (byte) 0);
+            return new MapleQuestStatus(quest, 0, 0);
         }
         return quests.get(quest);
     }
 
     public void setQuestAdd(MapleQuest quest, byte status, String customData) {
         if (!quests.containsKey(quest)) {
-            MapleQuestStatus stat = new MapleQuestStatus(quest, status);
+            MapleQuestStatus stat = new MapleQuestStatus(quest, status, 0);
             stat.setCustomData(customData);
             quests.put(quest, stat);
         }
@@ -2363,7 +2362,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public MapleQuestStatus getQuestNAdd(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
-            MapleQuestStatus status = new MapleQuestStatus(quest, (byte) 0);
+            MapleQuestStatus status = new MapleQuestStatus(quest, 0, 0);
             quests.put(quest, status);
             return status;
         }
@@ -2381,7 +2380,7 @@ public class TacosCharacter extends TacosPlayer {
     public void updateQuest(MapleQuestStatus quest, boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
-            SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.find(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
             if (quest.getStatus() == 1 && !update) {
                 SendPacket(ResCUserLocal.UserQuestResult(OpsQuest.QuestRes_Act_Success, quest.getQuest().getId(), quest.getNpc(), 0));
             }
@@ -2658,14 +2657,6 @@ public class TacosCharacter extends TacosPlayer {
         if (party != null) {
             getWorld().getParty().updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
-    }
-
-    public MapleShop getShop() {
-        return shop;
-    }
-
-    public void setShop(MapleShop shop) {
-        this.shop = shop;
     }
 
     // 初期化用
@@ -3409,7 +3400,7 @@ public class TacosCharacter extends TacosPlayer {
         boolean ret = false;
         if (!quests.containsKey(MapleQuest.getInstance(questid)) || !questinfo.containsKey(questid)) {
             MapleQuestStatus status = getQuestNAdd(MapleQuest.getInstance(questid));
-            status.setStatus((byte) 1);
+            status.setStatus(1);
             updateQuest(status);
             switch (questid) {
                 case 1300:
@@ -3553,8 +3544,6 @@ public class TacosCharacter extends TacosPlayer {
                 playerShop.setOpen(true);
             }
         }
-        TacosScriptNPC.getInstance().dispose(client);
-        TacosScriptQuest.getInstance().dispose(client);
     }
 
     public boolean canUseFamilyBuff(MapleFamilyBuffEntry buff) {
@@ -3632,7 +3621,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // パチンコ
-    // CMS v72から流用
+    // CMS72から流用
     public void gainTama(int s) {
         this.tama += s;
         SendPacket(ResCWvsContext.PachinkoResult(this));
@@ -3743,27 +3732,27 @@ public class TacosCharacter extends TacosPlayer {
         return ret;
     }
 
-    public IDebugMan getDebugMan() {
-        return this.debugMan;
+    public NpcScriptMan getNpcScript() {
+        return this.npc_script;
     }
 
-    public boolean setDebugMan(IDebugMan debugMan) {
-        if (debugMan != null && this.debugMan != null) {
+    public boolean setNpcScript(NpcScriptMan npc_script) {
+        if (npc_script != null && this.npc_script != null) {
             return false;
         }
-        this.debugMan = debugMan;
+        this.npc_script = npc_script;
         return true;
     }
 
-    public DebugShop getDebugShop() {
-        return this.debugShop;
+    public NpcShopMan getNpcShop() {
+        return this.npc_shop;
     }
 
-    public boolean setDebugShop(DebugShop debugShop) {
-        if (debugShop != null && this.debugShop != null) {
+    public boolean setNpcShop(NpcShopMan npc_shop) {
+        if (npc_shop != null && this.npc_shop != null) {
             return false;
         }
-        this.debugShop = debugShop;
+        this.npc_shop = npc_shop;
         return true;
     }
 
@@ -3924,7 +3913,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // used by script
-    public byte getQuestStatus(int quest_id) {
+    public int getQuestStatus(int quest_id) {
         return getQuest(MapleQuest.getInstance(quest_id)).getStatus();
     }
 

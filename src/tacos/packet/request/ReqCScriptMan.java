@@ -18,15 +18,11 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
-import tacos.debug.DebugMan;
-import tacos.odin.OdinNPCConversationManager;
+import tacos.script.npc.NpcScriptMan;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
-import tacos.script.TacosScriptNPC;
-import tacos.script.TacosScriptQuest;
 
 /**
  *
@@ -41,6 +37,7 @@ public class ReqCScriptMan {
 
         int m_nSelect = -1;
         String m_sInputStr_Result = null;
+        long liCashItemSN = 0;
 
         OpsScriptMan ops = OpsScriptMan.find(nMsgType);
         if (action != 0) { // JMS is always 1, CMS104 is not 1.
@@ -51,6 +48,17 @@ public class ReqCScriptMan {
                 }
                 case SM_ASKTEXT: {
                     m_sInputStr_Result = cp.DecodeStr(); // m_sInputStr_Result
+                    break;
+                }
+                case SM_ASKNUMBER: {
+                    m_nSelect = cp.Decode4(); // m_nInputNo_Result
+                    break;
+                }
+                case SM_ASKPET: {
+                    // 2 = no pet
+                    if (action == 1) {
+                        liCashItemSN = cp.Decode8(); // liCashItemSN
+                    }
                     break;
                 }
                 case SM_ASKAVATAR: {
@@ -68,98 +76,11 @@ public class ReqCScriptMan {
         }
 
         // java coding.
-        if (chr.getDebugMan() != null) {
-            return DebugMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
+        if (chr.getNpcScript() != null) {
+            return NpcScriptMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect, m_sInputStr_Result, liCashItemSN);
         }
 
-        // js coding.
-        return OnOdinScript(chr, nMsgType, action, m_nSelect, m_sInputStr_Result);
-    }
-
-    public static boolean OnOdinScript(TacosCharacter chr, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result) {
-        TacosClient client = chr.getClient();
-        boolean is_npc_talk = false;
-        boolean is_quest_start = false;
-        boolean is_quest_end = false;
-        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(client); // check npc talk script.
-
-        if (cm != null) {
-            is_npc_talk = true;
-        }
-
-        if (!is_npc_talk) {
-            cm = TacosScriptQuest.getInstance().getCM(client); // check quest script.
-            if (cm != null) {
-                if (cm.getType() == 0) {
-                    is_quest_start = true;
-                }
-                if (cm.getType() == 1) {
-                    is_quest_end = true;
-                }
-            }
-        }
-
-        if (cm == null || (!is_npc_talk && !is_quest_start && !is_quest_end)) {
-            DebugLogger.ErrorLog("OnOdinScript : not found.");
-            return false;
-        }
-
-        if (chr.getConversation() == 0) {
-            DebugLogger.ErrorLog("OnOdinScript : getConversation = 0.");
-            return false;
-        }
-
-        if (cm.getLastMsg() != nMsgType) {
-            DebugLogger.ErrorLog("OnOdinScript : getLastMsg.");
-            return false;
-        }
-        cm.setLastMsg(-1);
-
-        // i cannot understand what odin script handling wanted to do.
-        OpsScriptMan ops = OpsScriptMan.find(nMsgType);
-        switch (ops) {
-            case SM_SAY:
-            case SM_SAYIMAGE:
-            case SM_ASKYESNO:
-            case SM_ASKMENU:
-            case SM_ASKAVATAR:
-            case SM_ASKACCEPT:
-            case SM_ASKSLIDEMENU: {
-                break;
-            }
-            case SM_ASKTEXT: {
-                cm.setGetText(m_sInputStr_Result);
-                if (action == 0) {
-                    cm.dispose();
-                    return true;
-                }
-                break;
-            }
-            default: {
-                DebugLogger.ErrorLog("OnOdinScript : not coded, nMsgType = " + nMsgType);
-                return false;
-            }
-        }
-
-        if (action == -1 || m_nSelect <= -2) {
-            cm.dispose();
-            return true;
-        }
-
-        if (is_npc_talk) {
-            TacosScriptNPC.getInstance().action(client, action, nMsgType, m_nSelect);
-            return true;
-        }
-        if (is_quest_start) {
-            TacosScriptQuest.getInstance().startQuest(client, action, nMsgType, m_nSelect);
-            return true;
-        }
-        if (is_quest_end) {
-            TacosScriptQuest.getInstance().endQuest(client, action, nMsgType, m_nSelect);
-            return true;
-        }
-
-        cm.dispose();
+        DebugLogger.ErrorLog("OnScriptMessageAnswer : no npc script.");
         return false;
     }
 }

@@ -41,7 +41,7 @@ import tacos.debug.DebugMan_Maker;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
-import tacos.debug.DebugShop;
+import tacos.debug.DebugNpcShopMan;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
@@ -134,26 +134,26 @@ public class TacosCommandDebug {
             }
             // debug shop.
             case "/ds" -> {
-                DebugShop ds = new DebugShop();
+                DebugNpcShopMan debug_npc_shop = new DebugNpcShopMan();
 
                 if (!dcmd.check(1)) {
-                    ds.setRandomItems(100);
-                    ds.setRechargeAll();
-                    ds.start(chr);
+                    debug_npc_shop.setRandomItems(100);
+                    debug_npc_shop.setRechargeAll();
+                    debug_npc_shop.start(chr);
                     return true;
                 }
 
                 int item_sub_type = dcmd.getInt(1);
                 if (item_sub_type == 207 || item_sub_type == 233) {
-                    ds.setRechargeAll();
+                    debug_npc_shop.setRechargeAll();
                 }
 
-                ds.setItemTest(item_sub_type);
-                ds.start(chr);
+                debug_npc_shop.setItemTest(item_sub_type);
+                debug_npc_shop.start(chr);
                 return true;
             }
             case "/ds2" -> {
-                DebugShop ds = new DebugShop();
+                DebugNpcShopMan debug_npc_shop = new DebugNpcShopMan();
 
                 if (!dcmd.check(1)) {
                     return true;
@@ -169,7 +169,7 @@ public class TacosCommandDebug {
 
                 int shop_item_count = 0;
                 for (WzName nd : WzNameStorage.ITEM.find(search_string)) {
-                    ds.addItem(nd.getId());
+                    debug_npc_shop.addItem(nd.getId());
                     shop_item_count++;
                     if (100 <= shop_item_count) {
                         chr.DebugMsg("item search hits over 100 item names.");
@@ -178,7 +178,7 @@ public class TacosCommandDebug {
                 }
 
                 chr.DebugMsg("search results = " + shop_item_count);
-                ds.start(chr);
+                debug_npc_shop.start(chr);
                 return true;
             }
             case "/maker" -> {
@@ -401,6 +401,12 @@ public class TacosCommandDebug {
                 } else {
                     dm.setMasterMonsters(); // Master Monster
                 }
+                dm.start(chr);
+                return true;
+            }
+            case "/antimacro" -> {
+                DebugMan_WarpBoss dm = new DebugMan_WarpBoss();
+                dm.setAntiMacorMonsters();// Anti Macro Monster
                 dm.start(chr);
                 return true;
             }

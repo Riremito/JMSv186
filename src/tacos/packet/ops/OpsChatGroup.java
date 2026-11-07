@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsChatGroup implements IPacketOps {
-    // GMS v95
     CG_Friend(0),
     CG_Party(1),
     CG_Guild(2),
@@ -38,11 +37,11 @@ public enum OpsChatGroup implements IPacketOps {
 
     private int value;
 
-    OpsChatGroup(int val) {
-        this.value = val;
+    private OpsChatGroup(int value) {
+        this.value = value;
     }
 
-    OpsChatGroup() {
+    private OpsChatGroup() {
         this.value = -1;
     }
 
@@ -52,14 +51,16 @@ public enum OpsChatGroup implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsChatGroup find(int val) {
-        for (OpsChatGroup ops : OpsChatGroup.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static OpsChatGroup find(int value) {
+        for (OpsChatGroup ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

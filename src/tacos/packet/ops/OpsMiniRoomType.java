@@ -34,11 +34,11 @@ public enum OpsMiniRoomType implements IPacketOps {
 
     private int value;
 
-    OpsMiniRoomType(int val) {
-        this.value = val;
+    private OpsMiniRoomType(int value) {
+        this.value = value;
     }
 
-    OpsMiniRoomType() {
+    private OpsMiniRoomType() {
         this.value = -1;
     }
 
@@ -48,19 +48,18 @@ public enum OpsMiniRoomType implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMiniRoomType find(int val) {
-        for (OpsMiniRoomType ops : OpsMiniRoomType.values()) {
-            if (ops.get() == val) {
-                return ops;
+    public static OpsMiniRoomType find(int value) {
+        for (OpsMiniRoomType ops : values()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void init() {
     }
 }

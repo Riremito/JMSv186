@@ -25,8 +25,7 @@ import tacos.config.Region;
  *
  * @author Riremito
  */
-public enum OpsMessage {
-    // GMS v95
+public enum OpsMessage implements IPacketOps {
     MS_DropPickUpMessage(0),
     MS_QuestRecordMessage(1),
     MS_CashItemExpireMessage(2),
@@ -108,7 +107,7 @@ public enum OpsMessage {
             OpsMessage.MS_JMS_Pachinko.set(16);
             return;
         }
-        // JMS v186
+        // JMS186
         if (Region.JMS.check()) {
             clear();
             OpsMessage.MS_DropPickUpMessage.set(0);
@@ -133,20 +132,21 @@ public enum OpsMessage {
 
     private int value;
 
-    OpsMessage(int flag) {
-        value = flag;
+    private OpsMessage(int value) {
+        this.value = value;
     }
 
-    OpsMessage() {
-        value = -1;
+    private OpsMessage() {
+        this.value = -1;
     }
 
-    public boolean set(int flag) {
-        value = flag;
-        return true;
-    }
-
+    @Override
     public int get() {
-        return value;
+        return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 }

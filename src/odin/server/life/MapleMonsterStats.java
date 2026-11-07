@@ -129,6 +129,10 @@ public class MapleMonsterStats {
         this.eva = eva;
     }
 
+    public short getEva() {
+        return eva;
+    }
+
     public void setOnlyNormalAttack(boolean onlyNormalAttack) {
         this.onlyNormalAttack = onlyNormalAttack;
     }

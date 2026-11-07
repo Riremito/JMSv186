@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsFieldEffect {
+public enum OpsFieldEffect implements IPacketOps {
     FieldEffect_Summon(0),
     FieldEffect_Tremble(1),
     FieldEffect_Object(2),
@@ -35,24 +35,21 @@ public enum OpsFieldEffect {
 
     private int value;
 
-    OpsFieldEffect(int flag) {
-        value = flag;
+    private OpsFieldEffect(int value) {
+        this.value = value;
     }
 
-    OpsFieldEffect() {
-        value = -1;
+    private OpsFieldEffect() {
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public static OpsFieldEffect find(int val) {
-        for (OpsFieldEffect o : OpsFieldEffect.values()) {
-            if (o.get() == val) {
-                return o;
-            }
-        }
-        return UNKNOWN;
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 }

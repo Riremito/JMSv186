@@ -68,8 +68,8 @@ public class Equip extends Item {
     private int nMaxMPr = 0;
     private int nAttackSpeed = 0; // 攻撃速度
 
-    public Equip(int id, short position, int uniqueid, byte flag) {
-        super(id, position, (short) 1, flag, uniqueid);
+    public Equip(int id, int position, int uniqueid, byte flag) {
+        super(id, position, 1, flag, uniqueid);
     }
 
     public TacosEnhancement getEnhancement() {
@@ -514,8 +514,8 @@ public class Equip extends Item {
     }
 
     @Override
-    public void setQuantity(short quantity) {
-        super.setQuantity((short) 1);
+    public void setQuantity(int quantity) {
+        super.setQuantity(1);
     }
 
     public int getHidden() {

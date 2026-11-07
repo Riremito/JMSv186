@@ -64,7 +64,7 @@ public class DQ_Pets {
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET name = ?, level = ?, closeness = ?, fullness = ?, seconds = ? WHERE petid = ?")) {
                 ps.setString(1, pet.getName());
                 ps.setByte(2, pet.getLevel());
-                ps.setShort(3, pet.getCloseness());
+                ps.setShort(3, (short) pet.getCloseness()); // TODO : cast
                 ps.setByte(4, pet.getFullness());
                 ps.setInt(5, pet.getSecondsLeft());
                 ps.setInt(6, pet.getUniqueId());

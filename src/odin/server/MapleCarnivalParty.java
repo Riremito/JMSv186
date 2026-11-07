@@ -95,5 +95,4 @@ public class MapleCarnivalParty {
     public boolean isWinner() {
         return winner;
     }
-
 }

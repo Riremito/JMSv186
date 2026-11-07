@@ -43,5 +43,4 @@ public class ResCField_ContiMove {
         sp.Encode1(0); // 0 or 1, CShip::AppearShip
         return sp;
     }
-
 }

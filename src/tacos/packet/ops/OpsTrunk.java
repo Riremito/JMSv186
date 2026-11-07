@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsTrunk implements IPacketOps {
-    // GMS v95
     TrunkReq_Load(0),
     TrunkReq_Save(1),
     TrunkReq_Close(2),
@@ -56,11 +55,11 @@ public enum OpsTrunk implements IPacketOps {
 
     private int value;
 
-    OpsTrunk(int val) {
-        this.value = val;
+    private OpsTrunk(int value) {
+        this.value = value;
     }
 
-    OpsTrunk() {
+    private OpsTrunk() {
         this.value = -1;
     }
 
@@ -70,23 +69,19 @@ public enum OpsTrunk implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsTrunk find(int val) {
+    public static OpsTrunk find(int value) {
         for (OpsTrunk ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
-    }
-
-    private static void reset() {
-        for (OpsTrunk ops : OpsTrunk.values()) {
-            ops.set(-1);
-        }
     }
 
     public static void clear() {
@@ -98,7 +93,6 @@ public enum OpsTrunk implements IPacketOps {
     public static void init() {
         if (Config.LessOrEqual(Region.KMS, 43)) {
             clear();
-            reset();
             TrunkRes_OpenTrunkDlg.set(19);
             return;
         }
@@ -227,5 +221,4 @@ public enum OpsTrunk implements IPacketOps {
         }
         // GMS95
     }
-
 }

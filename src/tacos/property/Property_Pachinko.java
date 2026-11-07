@@ -77,5 +77,4 @@ public class Property_Pachinko {
         tama_reward_unit = conf.getInt("ddjlfw");
         return true;
     }
-
 }

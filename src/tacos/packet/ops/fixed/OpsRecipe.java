@@ -49,7 +49,9 @@ public enum OpsRecipe implements IOpsFixed {
     public static OpsRecipe find(int value) {
         for (OpsRecipe ops : values()) {
             if (ops.get() == value) {
-                return ops;
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

@@ -29,5 +29,4 @@ public class FreeMarketPortal extends TacosSharedPortal {
     public FreeMarketPortal() {
         super(TacosConstants.MAP_ID_FREE_MARKET, TacosConstants.PORTAL_FREE_MARKET);
     }
-
 }

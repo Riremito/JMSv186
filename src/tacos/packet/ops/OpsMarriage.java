@@ -64,11 +64,11 @@ public enum OpsMarriage implements IPacketOps {
 
     private int value;
 
-    OpsMarriage(int val) {
-        this.value = val;
+    private OpsMarriage(int value) {
+        this.value = value;
     }
 
-    OpsMarriage() {
+    private OpsMarriage() {
         this.value = -1;
     }
 
@@ -78,14 +78,16 @@ public enum OpsMarriage implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMarriage find(int val) {
+    public static OpsMarriage find(int value) {
         for (OpsMarriage ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

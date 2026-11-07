@@ -47,11 +47,11 @@ public enum OpsCommodity implements IPacketOps {
 
     private int value;
 
-    OpsCommodity(int val) {
-        this.value = val;
+    private OpsCommodity(int value) {
+        this.value = value;
     }
 
-    OpsCommodity() {
+    private OpsCommodity() {
         this.value = -1;
     }
 
@@ -61,17 +61,7 @@ public enum OpsCommodity implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
-
-    public static OpsCommodity find(int val) {
-        for (OpsCommodity ops : OpsCommodity.values()) {
-            if (ops.get() == val) {
-                return ops;
-            }
-        }
-        return UNKNOWN;
-    }
-
 }

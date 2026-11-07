@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsTemporaryStat {
+public enum OpsTemporaryStat implements IPacketOps {
     TS_ENERGY_CHARGED(0),
     TS_DASH_SPEED(1),
     TS_DASH_JUMP(2),
@@ -33,17 +33,23 @@ public enum OpsTemporaryStat {
     _TS_NO(7),
     UNKNOWN;
 
-    int value;
+    private int value;
 
-    OpsTemporaryStat(int val) {
-        this.value = val;
+    private OpsTemporaryStat(int value) {
+        this.value = value;
     }
 
-    OpsTemporaryStat() {
+    private OpsTemporaryStat() {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
     }
 }

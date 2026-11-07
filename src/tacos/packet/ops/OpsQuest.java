@@ -48,11 +48,11 @@ public enum OpsQuest implements IPacketOps {
 
     private int value;
 
-    OpsQuest(int val) {
-        this.value = val;
+    private OpsQuest(int value) {
+        this.value = value;
     }
 
-    OpsQuest() {
+    private OpsQuest() {
         this.value = -1;
     }
 
@@ -62,14 +62,14 @@ public enum OpsQuest implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsQuest find(int val) {
+    public static OpsQuest find(int value) {
         for (OpsQuest ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }

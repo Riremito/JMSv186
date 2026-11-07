@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
+import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.server.map.TacosSpawnPoint;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
@@ -55,7 +56,11 @@ public class TacosCommandInfo {
                 return true;
             }
             // map.
-            case "/mapinfo" -> {
+            case "/splitinfo" -> {
+                chr.DebugMsg(String.format("splitinfo : total=%d, col=%d, row=%d", map.getSplit().getTotal(), map.getSplit().getCol(), map.getSplit().getRow()));
+                return true;
+            }
+            case "/mobinfo" -> {
                 for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
                     if (sp.getMobTime() <= -1) {
                         chr.DebugMsg(String.format("%d (%s) : map reset is required.", sp.getId(), WzNameStorage.MOB.get(sp.getId()).getName()));
@@ -63,6 +68,12 @@ public class TacosCommandInfo {
                         double interval = (double) sp.getMobTime() / 1000 / 3600;
                         chr.DebugMsg(String.format("%d (%s) : %.1f hours.", sp.getId(), WzNameStorage.MOB.get(sp.getId()).getName(), interval));
                     }
+                }
+                return true;
+            }
+            case "/npcinfo" -> {
+                for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
+                    chr.DebugMsg(String.format("%d (%s) : hide = %d", sp.getId(), WzNameStorage.NPC.get(sp.getId()).getName(), sp.getHide()) + ", object = " + (sp.getNpc() != null));
                 }
                 return true;
             }

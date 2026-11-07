@@ -47,7 +47,7 @@ public class DQ_Queststatus {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
-                        MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
+                        MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"), 0);
                         long cTime = rs.getLong("time");
                         if (cTime > -1) {
                             status.setCompletionTime(cTime * 1000);
@@ -142,6 +142,7 @@ public class DQ_Queststatus {
 
         return false;
     }
+
     public static boolean deleteByCharacterId(int character_id) {
         try {
             Connection con = DatabaseConnection.getConnection();

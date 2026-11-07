@@ -36,9 +36,9 @@ public class TacosPet extends TacosMapObject {
     private int secondsLeft = 0;
     private byte fullness = 100;
     private byte level = 1;
-    private short inventorypos = 0;
-    private short closeness = 0;
-    private short skill_mask = -1; // 0xFFFF
+    private int inventorypos = 0;
+    private int closeness = 0;
+    private int skill_mask = -1; // 0xFFFF
 
     private String name = "";
     private boolean summoned = false;
@@ -81,14 +81,14 @@ public class TacosPet extends TacosMapObject {
         return closeness_table[level - 1];
     }
 
-    private TacosPet(int petitemid, int uniqueid, short inventorypos) {
+    private TacosPet(int petitemid, int uniqueid, int inventorypos) {
         this.inventorypos = inventorypos;
 
         setUniqueId(uniqueid);
         setPetItemId(petitemid);
     }
 
-    public static TacosPet loadFromDb(int itemid, int petid, short inventorypos) {
+    public static TacosPet loadFromDb(int itemid, int petid, int inventorypos) {
         TacosPet ret = new TacosPet(itemid, petid, inventorypos);
         if (!DQ_Pets.load(ret, petid)) {
             return null;
@@ -112,7 +112,7 @@ public class TacosPet extends TacosMapObject {
             return null;
         }
 
-        TacosPet pet = new TacosPet(itemid, uniqueid, (short) 0);
+        TacosPet pet = new TacosPet(itemid, uniqueid, 0);
         pet.setName(name);
         pet.setLevel(level);
         pet.setFullness(fullness);
@@ -121,20 +121,20 @@ public class TacosPet extends TacosMapObject {
         return pet;
     }
 
-    public short getInventoryPosition() {
+    public int getInventoryPosition() {
         return inventorypos;
     }
 
-    public void setInventoryPosition(short inventorypos) {
+    public void setInventoryPosition(int inventorypos) {
         this.inventorypos = inventorypos;
     }
 
-    public short getCloseness() {
+    public int getCloseness() {
         return closeness;
     }
 
     public void setCloseness(int closeness) {
-        this.closeness = (short) closeness;
+        this.closeness = closeness;
     }
 
     public byte getLevel() {
@@ -161,7 +161,7 @@ public class TacosPet extends TacosMapObject {
         this.secondsLeft = sl;
     }
 
-    public short getFlags() {
+    public int getFlags() {
         return skill_mask;
     }
 
@@ -182,7 +182,7 @@ public class TacosPet extends TacosMapObject {
             this.closeness = 0;
         }
         if (0 < inc_closeness && pet_closeness_limit < (this.closeness + inc_closeness)) {
-            this.closeness = (short) pet_closeness_limit;
+            this.closeness = pet_closeness_limit;
         } else {
             this.closeness += inc_closeness;
         }

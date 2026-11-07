@@ -25,7 +25,7 @@ import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
-import tacos.script.TacosScriptReactor;
+import tacos.script.reactor.ReactorMan;
 
 /**
  *
@@ -52,11 +52,11 @@ public class ReqCReactorPool {
 
         switch (header) {
             case CP_ReactorHit: {
-                OnReactorHit(client, reactor, cp);
+                OnReactorHit(chr, reactor, cp);
                 return true;
             }
             case CP_ReactorTouch: {
-                OnReactorTouch(client, reactor, cp);
+                OnReactorTouch(chr, reactor, cp);
                 return true;
             }
             default: {
@@ -69,22 +69,22 @@ public class ReqCReactorPool {
 
     // CReactorPool::FindHitReactor, 0
     // CReactorPool::FindSkillReactor, 1
-    public static boolean OnReactorHit(TacosClient client, TacosReactor reactor, ClientPacket cp) {
+    public static boolean OnReactorHit(TacosCharacter chr, TacosReactor reactor, ClientPacket cp) {
         int type = Config.PostBB() ? cp.Decode4() : 0;
         int dwHitOption = cp.Decode4(); // dwHitOption, dwOption
         short tDelay = cp.Decode2(); // tDelay, tActionDelay
         int nSkillID = Config.PostBB() ? cp.Decode4() : 0;
 
-        reactor.hitReactor(dwHitOption, tDelay, client);
+        reactor.hitReactor(chr, dwHitOption, tDelay);
         return true;
     }
 
     // CReactorPool::FindTouchReactorAroundLocalUser
-    public static boolean OnReactorTouch(TacosClient client, TacosReactor reactor, ClientPacket cp) {
+    public static boolean OnReactorTouch(TacosCharacter chr, TacosReactor reactor, ClientPacket cp) {
         boolean is_in_rect = cp.Decode1() != 0;
 
         if (is_in_rect) {
-            TacosScriptReactor.getInstance().act(client, reactor);
+            ReactorMan.act(chr, reactor);
         }
 
         return true;

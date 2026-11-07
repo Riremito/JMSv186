@@ -80,5 +80,4 @@ public abstract class StatEffectData {
     protected int itemCon;
     protected int itemConNo;
     protected int moveTo;
-
 }

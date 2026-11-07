@@ -26,7 +26,6 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsAlliance implements IPacketOps {
-    // GMS v95
     AllianceReq_Create(0),
     AllianceReq_Load(1),
     AllianceReq_Withdraw(2),
@@ -62,11 +61,11 @@ public enum OpsAlliance implements IPacketOps {
 
     private int value;
 
-    OpsAlliance(int val) {
-        this.value = val;
+    private OpsAlliance(int value) {
+        this.value = value;
     }
 
-    OpsAlliance() {
+    private OpsAlliance() {
         this.value = -1;
     }
 
@@ -76,14 +75,16 @@ public enum OpsAlliance implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsAlliance find(int val) {
+    public static OpsAlliance find(int value) {
         for (OpsAlliance ops : values()) {
-            if (ops.get() == val && val != UNKNOWN.get()) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
@@ -96,7 +97,7 @@ public enum OpsAlliance implements IPacketOps {
     }
 
     public static void init() {
-        // JMS v164 - v187 : one more request after Destroy, every result is one higher than GMS v95 (CWvsContext::OnAllianceResult).
+        // JMS164-187 : one more request after Destroy, every result is one higher than GMS95 (CWvsContext::OnAllianceResult).
         if (Config.Between(Region.JMS, 164, 187)) {
             clear();
             AllianceReq_Create.set(0);

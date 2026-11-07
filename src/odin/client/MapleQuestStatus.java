@@ -30,28 +30,17 @@ import tacos.wz.WzXML;
 public class MapleQuestStatus {
 
     private MapleQuest quest;
-    private byte status;
+    private int status;
     private Map<Integer, Integer> killedMobs = null;
-    private int npc;
+    private int npc_id;
     private int forfeited = 0;
     private long completionTime;
     private String customData;
 
-    public MapleQuestStatus(MapleQuest quest, byte status) {
+    public MapleQuestStatus(MapleQuest quest, int status, int npc_id) {
         this.quest = quest;
-        this.setStatus(status);
-        this.completionTime = System.currentTimeMillis();
-        if (status == 1) { // Started
-            if (!quest.getRelevantMobs().isEmpty()) {
-                registerMobs();
-            }
-        }
-    }
-
-    public MapleQuestStatus(MapleQuest quest, byte status, int npc) {
-        this.quest = quest;
-        this.setStatus(status);
-        this.setNpc(npc);
+        this.status = status;
+        this.npc_id = npc_id;
         this.completionTime = System.currentTimeMillis();
         if (status == 1) { // Started
             if (!quest.getRelevantMobs().isEmpty()) {
@@ -61,83 +50,79 @@ public class MapleQuestStatus {
     }
 
     public MapleQuest getQuest() {
-        return quest;
+        return this.quest;
     }
 
-    public byte getStatus() {
-        return status;
+    public int getStatus() {
+        return this.status;
     }
 
-    public void setStatus(byte status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public void setNpc(int npc) {
-        this.npc = npc;
-    }
-
     public boolean isCustom() {
-        return GameConstants.isCustomQuest(quest.getId());
+        return GameConstants.isCustomQuest(this.quest.getId());
     }
 
     private void registerMobs() {
-        killedMobs = new LinkedHashMap<>();
-        for (int i : quest.getRelevantMobs().keySet()) {
-            killedMobs.put(i, 0);
+        this.killedMobs = new LinkedHashMap<>();
+        for (int i : this.quest.getRelevantMobs().keySet()) {
+            this.killedMobs.put(i, 0);
         }
     }
 
-    private int maxMob(int mobid) {
-        for (Map.Entry<Integer, Integer> qs : quest.getRelevantMobs().entrySet()) {
-            if (qs.getKey() == mobid) {
+    private int maxMob(int mob_id) {
+        for (Map.Entry<Integer, Integer> qs : this.quest.getRelevantMobs().entrySet()) {
+            if (qs.getKey() == mob_id) {
                 return qs.getValue();
             }
         }
         return 0;
     }
 
-    public boolean mobKilled(int id, int skillID) {
-        if (quest != null && quest.getSkillID() > 0 && quest.getSkillID() != skillID) {
+    public boolean mobKilled(int mob_id, int skill_id) {
+        if (this.quest != null && this.quest.getSkillID() > 0 && this.quest.getSkillID() != skill_id) {
             return false;
         }
-        Integer mob = killedMobs.get(id);
+        Integer mob = this.killedMobs.get(mob_id);
         if (mob != null) {
-            int mo = maxMob(id);
+            int mo = maxMob(mob_id);
             if (mob >= mo) {
                 return false; //nothing happened
             }
-            killedMobs.put(id, Math.min(mob + 1, mo));
+            this.killedMobs.put(mob_id, Math.min(mob + 1, mo));
             return true;
         }
-        for (Entry<Integer, Integer> mo : killedMobs.entrySet()) {
-            if (WzXML.MOB.checkQuestCountGroup(mo.getKey(), id)) {
+        for (Entry<Integer, Integer> mo : this.killedMobs.entrySet()) {
+            if (WzXML.MOB.checkQuestCountGroup(mo.getKey(), mob_id)) {
                 int mobb = maxMob(mo.getKey());
                 if (mo.getValue() >= mobb) {
                     return false; //nothing
                 }
-                killedMobs.put(mo.getKey(), Math.min(mo.getValue() + 1, mobb));
+                this.killedMobs.put(mo.getKey(), Math.min(mo.getValue() + 1, mobb));
                 return true;
             }
         }
         return false;
     }
 
-    public void setMobKills(int id, int count) {
-        if (killedMobs == null) {
+    public void setMobKills(int mob_id, int count) {
+        if (this.killedMobs == null) {
             registerMobs(); //lol
         }
-        killedMobs.put(id, count);
+        this.killedMobs.put(mob_id, count);
     }
 
     public boolean hasMobKills() {
-        if (killedMobs == null) {
+        if (this.killedMobs == null) {
             return false;
         }
-        return !killedMobs.isEmpty();
+        return !this.killedMobs.isEmpty();
     }
 
-    public int getMobKills(int id) {
-        Integer mob = killedMobs.get(id);
+    public int getMobKills(int mob_id) {
+        Integer mob = this.killedMobs.get(mob_id);
         if (mob == null) {
             return 0;
         }
@@ -145,29 +130,27 @@ public class MapleQuestStatus {
     }
 
     public Map<Integer, Integer> getMobKills() {
-        return killedMobs;
+        return this.killedMobs;
     }
 
     public int getForfeited() {
-        return forfeited;
+        return this.forfeited;
     }
 
     public void setForfeited(int forfeited) {
-        if (forfeited >= this.forfeited) {
+        if (this.forfeited <= forfeited) {
             this.forfeited = forfeited;
-        } else {
-            throw new IllegalArgumentException("Can't set forfeits to something lower than before.");
         }
     }
 
     // used by script
     public int getNpc() {
-        return npc;
+        return this.npc_id;
     }
 
     // used by script
     public long getCompletionTime() {
-        return completionTime;
+        return this.completionTime;
     }
 
     // used by script
@@ -182,7 +165,6 @@ public class MapleQuestStatus {
 
     // used by script
     public String getCustomData() {
-        return customData;
+        return this.customData;
     }
-
 }

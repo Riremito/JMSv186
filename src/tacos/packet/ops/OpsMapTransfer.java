@@ -39,11 +39,11 @@ public enum OpsMapTransfer implements IPacketOps {
 
     private int value;
 
-    OpsMapTransfer(int val) {
-        this.value = val;
+    private OpsMapTransfer(int value) {
+        this.value = value;
     }
 
-    OpsMapTransfer() {
+    private OpsMapTransfer() {
         this.value = -1;
     }
 
@@ -53,20 +53,18 @@ public enum OpsMapTransfer implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMapTransfer find(int val) {
+    public static OpsMapTransfer find(int value) {
         for (OpsMapTransfer ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
-    }
-
-    public static void init() {
-
     }
 }

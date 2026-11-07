@@ -79,17 +79,17 @@ public enum OpsMobSkill implements IPacketOps {
     private int value;
     private OpsSecondaryStat disease;
 
-    OpsMobSkill(int val) {
-        this.value = val;
+    private OpsMobSkill(int value) {
+        this.value = value;
         this.disease = OpsSecondaryStat.UNKNOWN;
     }
 
-    OpsMobSkill(int val, OpsSecondaryStat disease) {
-        this.value = val;
+    private OpsMobSkill(int value, OpsSecondaryStat disease) {
+        this.value = value;
         this.disease = disease;
     }
 
-    OpsMobSkill() {
+    private OpsMobSkill() {
         this.value = -1;
         this.disease = OpsSecondaryStat.UNKNOWN;
     }
@@ -104,14 +104,14 @@ public enum OpsMobSkill implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMobSkill find(int val) {
+    public static OpsMobSkill find(int value) {
         for (OpsMobSkill ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
                     return ops;
                 }
             }

@@ -35,11 +35,11 @@ public enum OpsViewAllChar implements IPacketOps {
 
     private int value;
 
-    OpsViewAllChar(int val) {
-        this.value = val;
+    private OpsViewAllChar(int value) {
+        this.value = value;
     }
 
-    OpsViewAllChar() {
+    private OpsViewAllChar() {
         this.value = -1;
     }
 
@@ -49,18 +49,7 @@ public enum OpsViewAllChar implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsViewAllChar find(int val) {
-        for (OpsViewAllChar ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
-                    return ops;
-                }
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

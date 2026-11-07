@@ -25,7 +25,7 @@ import tacos.config.Region;
  *
  * @author Bubbling
  */
-public enum OpsUserEffect {
+public enum OpsUserEffect implements IPacketOps {
     UserEffect_LevelUp(0),
     UserEffect_SkillUse(1),
     UserEffect_SkillAffected(2),
@@ -59,14 +59,13 @@ public enum OpsUserEffect {
     UserEffect_DeliveryQuestItemUse(30),
     UserEffect_RepeatEffectRemove(31),
     UserEffect_EvolRing(32),
-    // added for other versions
     UserEffect_Resist,
     UserEffect_IncDecHPRegenEffect,
     UserEffect_PvPRage,
     UserEffect_PvPChampion,
     UserEffect_PvPGradeUp,
     UserEffect_PvPRevive,
-    UserEffect_UNK_1, // For THMS v87
+    UserEffect_UNK_1,
     UNKNOWN;
 
     private int value;
@@ -79,10 +78,12 @@ public enum OpsUserEffect {
         this.value = -1;
     }
 
+    @Override
     public int get() {
         return this.value;
     }
 
+    @Override
     public void set(int value) {
         this.value = value;
     }
@@ -257,8 +258,8 @@ public enum OpsUserEffect {
             UserEffect_ItemMaker.set(17);
             UserEffect_ExpItemConsumed.set(18);
             UserEffect_ReservedEffect.set(19);
-            UserEffect_Buff.set(-1); // Not Exist in THMS v87
-            UserEffect_ConsumeEffect.set(-1); // Not Exist in THMS v87
+            UserEffect_Buff.set(-1);
+            UserEffect_ConsumeEffect.set(-1);
             UserEffect_UpgradeTombItemUse.set(20);
             UserEffect_BattlefieldItemUse.set(21);
             UserEffect_AvatarOriented.set(22);
@@ -266,9 +267,9 @@ public enum OpsUserEffect {
             UserEffect_PlaySoundWithMuteBGM.set(24);
             UserEffect_SoulStoneUse.set(25);
             UserEffect_IncDecHPEffect_EX.set(26);
-            UserEffect_DeliveryQuestItemUse.set(-1); // Not Exist in THMS v87
-            UserEffect_RepeatEffectRemove.set(-1); // Not Exist in THMS v87
-            UserEffect_EvolRing.set(-1); // Not Exist in THMS v87
+            UserEffect_DeliveryQuestItemUse.set(-1);
+            UserEffect_RepeatEffectRemove.set(-1);
+            UserEffect_EvolRing.set(-1);
             return;
         }
     }

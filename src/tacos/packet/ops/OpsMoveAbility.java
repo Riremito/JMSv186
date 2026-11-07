@@ -37,11 +37,11 @@ public enum OpsMoveAbility implements IPacketOps {
 
     private int value;
 
-    OpsMoveAbility(int val) {
-        this.value = val;
+    private OpsMoveAbility(int value) {
+        this.value = value;
     }
 
-    OpsMoveAbility() {
+    private OpsMoveAbility() {
         this.value = -1;
     }
 
@@ -51,8 +51,8 @@ public enum OpsMoveAbility implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
     public static void clear() {

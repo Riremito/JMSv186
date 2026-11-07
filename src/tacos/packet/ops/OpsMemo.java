@@ -36,11 +36,11 @@ public enum OpsMemo implements IPacketOps {
 
     private int value;
 
-    OpsMemo(int val) {
-        this.value = val;
+    private OpsMemo(int value) {
+        this.value = value;
     }
 
-    OpsMemo() {
+    private OpsMemo() {
         this.value = -1;
     }
 
@@ -50,14 +50,16 @@ public enum OpsMemo implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsMemo find(int val) {
+    public static OpsMemo find(int value) {
         for (OpsMemo ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

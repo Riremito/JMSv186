@@ -34,6 +34,8 @@ import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.ops.OpsMobSkill;
+import tacos.packet.ops.OpsMobStat;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
@@ -175,6 +177,10 @@ public class ReqCMobPool {
                 level = skillToUse.getValue();
                 // Skill ID and Level
                 MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
+                // banish is disabled while skills are sealed.
+                if (realskill == OpsMobSkill.MOBSKILL_BANMAP.get() && monster.getBuff().isActive(OpsMobStat.MS_SealSkill)) {
+                    mobSkill = null;
+                }
 
                 if (mobSkill != null) {
                     long now = System.currentTimeMillis();

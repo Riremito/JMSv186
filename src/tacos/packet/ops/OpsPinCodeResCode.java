@@ -33,11 +33,11 @@ public enum OpsPinCodeResCode implements IPacketOps {
 
     private int value;
 
-    OpsPinCodeResCode(int val) {
-        this.value = val;
+    private OpsPinCodeResCode(int value) {
+        this.value = value;
     }
 
-    OpsPinCodeResCode() {
+    private OpsPinCodeResCode() {
         this.value = -1;
     }
 
@@ -47,18 +47,7 @@ public enum OpsPinCodeResCode implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
-    }
-
-    public static OpsPinCodeResCode find(int val) {
-        for (OpsPinCodeResCode ops : values()) {
-            if (ops.get() == val) {
-                if (val != UNKNOWN.get()) {
-                    return ops;
-                }
-            }
-        }
-        return UNKNOWN;
+    public void set(int value) {
+        this.value = value;
     }
 }

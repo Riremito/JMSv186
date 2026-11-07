@@ -42,11 +42,11 @@ public enum OpsRPS implements IPacketOps {
 
     private int value;
 
-    OpsRPS(int val) {
-        this.value = val;
+    private OpsRPS(int value) {
+        this.value = value;
     }
 
-    OpsRPS() {
+    private OpsRPS() {
         this.value = -1;
     }
 
@@ -56,14 +56,16 @@ public enum OpsRPS implements IPacketOps {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
-    public static OpsRPS find(int val) {
+    public static OpsRPS find(int value) {
         for (OpsRPS ops : values()) {
-            if (ops.get() == val) {
-                return ops;
+            if (ops.get() == value) {
+                if (value != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;

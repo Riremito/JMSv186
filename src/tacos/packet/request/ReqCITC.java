@@ -190,7 +190,7 @@ public class ReqCITC {
                     return true;
                 }
 
-                short pos = MapleInventoryManipulator.addbyItem(chr, item, true);
+                int pos = MapleInventoryManipulator.addbyItem(chr, item, true);
                 if (pos < 0) {
                     PB_ITC pb = PB_ITC.builder()
                             .fail_reason(OpsITC.ITCFailReason_NoEmptyPos)

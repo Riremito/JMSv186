@@ -7,7 +7,7 @@ import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
-// CField_Pachinko (JMS), CMS v72から流用
+// CField_Pachinko (JMS), CMS72から流用
 public class Res_JMS_CField_Pachinko {
 
     // LP_JMS_PachinkoMessage
@@ -15,7 +15,6 @@ public class Res_JMS_CField_Pachinko {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoMessage);
 
         sp.Encode4(cid);
-        // JMS v186.1 fix
         sp.Encode1(x);
         sp.EncodeStr(message);
         return sp;
