@@ -327,8 +327,7 @@ public class TacosMapData {
             portal.setTarget(portal_data.getTn());
             portal.setTargetMapId(portal_data.getTm());
             portal.setPosition(new Point(portal_data.getX(), portal_data.getY()));
-            String script = portal_data.getScript();
-            portal.setScriptName(script.equals("") ? null : script);
+            portal.setScriptName(portal_data.getScript());
 
             if (portal.getType() == TacosPortal.DOOR_PORTAL) {
                 portal.setId(nextDoorPortal);

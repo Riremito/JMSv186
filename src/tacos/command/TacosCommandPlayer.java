@@ -37,7 +37,7 @@ import tacos.packet.request.ReqCUser;
  */
 public class TacosCommandPlayer {
 
-    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+    public static boolean executeCommand(TacosCommand dcmd, TacosCharacter chr) {
         TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {

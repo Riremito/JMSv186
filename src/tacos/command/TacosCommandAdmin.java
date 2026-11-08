@@ -58,7 +58,7 @@ import tacos.wz.WzDataStorage;
  */
 public class TacosCommandAdmin {
 
-    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+    public static boolean executeCommand(TacosCommand dcmd, TacosCharacter chr) {
         TacosClient client = chr.getClient();
         TacosMap map = chr.getMap();
 

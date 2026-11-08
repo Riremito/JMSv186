@@ -27,21 +27,18 @@ import tacos.client.TacosCharacter;
 public class TacosCommand {
 
     public static boolean executeCommand(TacosCharacter chr, String message) {
-        TacosCommander dcmd = new TacosCommander(message);
+        TacosCommand dcmd = new TacosCommand(message);
 
         if (!dcmd.checkPrefix()) {
             return false;
         }
-        if (TacosCommandAdmin.executeCommand(dcmd, chr)) {
-            return true;
-        }
         if (TacosCommandDebug.executeCommand(dcmd, chr)) {
             return true;
         }
-        if (TacosCommandTest.executeCommand(dcmd, chr)) {
+        if (TacosCommandInfo.executeCommand(dcmd, chr)) {
             return true;
         }
-        if (TacosCommandInfo.executeCommand(dcmd, chr)) {
+        if (TacosCommandAdmin.executeCommand(dcmd, chr)) {
             return true;
         }
         if (TacosCommandPlayer.executeCommand(dcmd, chr)) {
@@ -50,7 +47,68 @@ public class TacosCommand {
         if (TacosCommandCustom.executeCommand(dcmd, chr)) {
             return true;
         }
+        if (TacosCommandTest.executeCommand(dcmd, chr)) {
+            return true;
+        }
 
         return true;
+    }
+
+    private static final String COMMAND_PREFIX = "/@!";
+    private final String message;
+    private String[] splitted = null;
+
+    public TacosCommand(String message) {
+        this.message = message;
+    }
+
+    public boolean checkPrefix() {
+        if (this.message.length() == 0) {
+            return false;
+        }
+
+        char prefix = this.message.charAt(0);
+        if (COMMAND_PREFIX.indexOf(prefix) == -1) {
+            return false;
+        }
+
+        this.splitted = ('/' + this.message.substring(1)).split(" ");
+        this.splitted[0] = this.splitted[0].toLowerCase();
+        return true;
+    }
+
+    public int getLength() {
+        if (this.splitted == null) {
+            return 0;
+        }
+        return this.splitted.length;
+    }
+
+    public boolean check(int index) {
+        if (this.splitted == null) {
+            return false;
+        }
+
+        return (index + 1) <= this.splitted.length;
+    }
+
+    public String get(int index) {
+        if (!check(index)) {
+            return "";
+        }
+
+        return this.splitted[index];
+    }
+
+    public int getInt(int index) {
+        if (!check(index)) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(this.splitted[index]);
+        } catch (NumberFormatException e) {
+            // parse error.
+        }
+        return 0;
     }
 }

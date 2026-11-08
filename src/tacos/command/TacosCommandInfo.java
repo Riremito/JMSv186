@@ -34,7 +34,7 @@ import tacos.wz.WzNameStorage;
  */
 public class TacosCommandInfo {
 
-    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+    public static boolean executeCommand(TacosCommand dcmd, TacosCharacter chr) {
 
         TacosMap map = chr.getMap();
         switch (dcmd.get(0)) {
@@ -51,7 +51,7 @@ public class TacosCommandInfo {
                 chr.DebugMsg("MA : " + chr.getMoveAction());
                 return true;
             }
-            case "/cr" -> {
+            case "/critical" -> {
                 chr.DebugMsg(String.format("Critical : %d%%", chr.getCriticalRate().get()));
                 return true;
             }

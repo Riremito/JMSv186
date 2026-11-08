@@ -37,7 +37,7 @@ public class TacosPortal {
     private String target;
     private String scriptName;
     private Point position;
-    private int targetmap;
+    private int target_map_id;
     private boolean portalState = true;
 
     public TacosPortal(int type) {
@@ -69,15 +69,19 @@ public class TacosPortal {
     }
 
     public int getTargetMapId() {
-        return this.targetmap;
+        return this.target_map_id;
     }
 
-    public void setTargetMapId(int targetmapid) {
-        this.targetmap = targetmapid;
+    public void setTargetMapId(int target_map_id) {
+        this.target_map_id = target_map_id;
     }
 
     public int getType() {
         return this.type;
+    }
+
+    public String getTarget() {
+        return this.target;
     }
 
     public void setTarget(String target) {
@@ -97,35 +101,28 @@ public class TacosPortal {
     }
 
     public boolean enterPortal(TacosCharacter chr) {
-
         if (!this.portalState) {
             return false;
         }
-
         // script portal
-        if (this.scriptName != null) {
+        if (!this.scriptName.isEmpty()) {
             return PortalMan.enter(chr.getClient(), this);
         }
         // normal portal
-        if (this.scriptName == null) {
-            // undefiend
-            if (this.targetmap == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
-                return false;
-            }
-            TacosMap map_to = chr.findMap(this.targetmap);
-            TacosPortal portal_to = map_to.getPortal(this.target);
-            // find portal failed.
-            if (portal_to == null) {
-                portal_to = map_to.getPortal(0);
-            }
-            // never executed.
-            if (portal_to == null) {
-                return false;
-            }
-            chr.changeMapPortal(map_to, portal_to);
-            return true;
+        if (this.target_map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
+            return false;
         }
-
-        return false;
+        TacosMap map_to = chr.findMap(this.target_map_id);
+        TacosPortal portal_to = map_to.getPortal(this.target);
+        // find portal failed.
+        if (portal_to == null) {
+            portal_to = map_to.getPortal(0);
+        }
+        // never executed.
+        if (portal_to == null) {
+            return false;
+        }
+        chr.changeMapPortal(map_to, portal_to);
+        return true;
     }
 }

@@ -33,11 +33,11 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import tacos.client.TacosMonsterBook;
-import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugManTest;
 import tacos.debug.DebugMan_CC;
 import tacos.debug.DebugMan_Maker;
+import tacos.debug.DebugMan_MapPortal;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
@@ -48,7 +48,6 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosBossSpawnPoint;
 import tacos.server.map.TacosFoothold;
-import tacos.server.map.TacosPortal;
 import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzName;
@@ -62,7 +61,7 @@ import tacos.wz.ids.DWI_Random;
  */
 public class TacosCommandDebug {
 
-    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+    public static boolean executeCommand(TacosCommand dcmd, TacosCharacter chr) {
         TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
@@ -336,37 +335,8 @@ public class TacosCommandDebug {
                 chr.changeMapById(map_id);
                 return true;
             }
-            case "/portal" -> {
-                for (TacosPortal portal : map.getPortals()) {
-                    int map_id = portal.getTargetMapId();
-                    int type = portal.getType();
-                    if (map_id == map.getId() || (map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID && portal.getScriptName() == null)) {
-                        continue;
-                    }
-                    chr.DebugMsg(portal.getId() + " : " + map_id + "(" + type + "), " + portal.getScriptName());
-                }
-                return true;
-            }
-            case "/portals" -> {
-                ArrayList<Integer> map_ids = new ArrayList<>();
-
-                for (TacosPortal portal : map.getPortals()) {
-                    int map_id = portal.getTargetMapId();
-                    int type = portal.getType();
-
-                    if (map_id == map.getId() || (map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID && portal.getScriptName() == null)) {
-                        continue;
-                    }
-
-                    chr.DebugMsg(portal.getId() + " : " + map_id + "(" + type + "), " + portal.getScriptName());
-                    map_ids.add(map_id);
-                }
-                if (map_ids.isEmpty()) {
-                    map_ids.add(map.getId());
-                }
-
-                chr.DebugMsg("portals : " + map_ids.size());
-                DebugMan_Warp dm = new DebugMan_Warp(map_ids);
+            case "/dp" -> {
+                DebugMan_MapPortal dm = new DebugMan_MapPortal();
                 dm.start(chr);
                 return true;
             }
