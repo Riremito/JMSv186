@@ -78,14 +78,6 @@ public class TacosCommandPlayer {
                 chr.DebugMsg("autosp : " + skill_id);
                 return true;
             }
-            case "/wh" -> {
-                for (TacosCharacter player : chr.getChannelServer().getOnlinePlayers().get()) {
-                    if (player.getId() != chr.getId()) {
-                        player.changeMapWithCoordinate(map.getId(), chr.getX(), chr.getY());
-                    }
-                }
-                return true;
-            }
             // guild, no cost and no map check.
             case "/guildcreate" -> {
                 String guild_name = dcmd.get(1);

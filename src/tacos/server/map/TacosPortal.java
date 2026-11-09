@@ -22,6 +22,7 @@ import java.awt.Point;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 import tacos.script.portal.PortalMan;
+import tacos.wz.opt.PortalType;
 
 /**
  *
@@ -29,20 +30,15 @@ import tacos.script.portal.PortalMan;
  */
 public class TacosPortal {
 
-    public static final int DOOR_PORTAL = 6;
-
     private int id;
-    private int type;
+    private int town_portal_id = 0; // mystic door.
+    private PortalType type;
     private String name;
     private String target;
     private String scriptName;
     private Point position;
     private int target_map_id;
-    private boolean portalState = true;
-
-    public TacosPortal(int type) {
-        this.type = type;
-    }
+    private boolean disabled = false;
 
     public int getId() {
         return this.id;
@@ -50,6 +46,22 @@ public class TacosPortal {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getTownPortalId() {
+        return this.town_portal_id;
+    }
+
+    public void setTownPortalId(int town_portal_id) {
+        this.town_portal_id = town_portal_id;
+    }
+
+    public PortalType getType() {
+        return this.type;
+    }
+
+    public void setType(PortalType type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -76,10 +88,6 @@ public class TacosPortal {
         this.target_map_id = target_map_id;
     }
 
-    public int getType() {
-        return this.type;
-    }
-
     public String getTarget() {
         return this.target;
     }
@@ -96,27 +104,27 @@ public class TacosPortal {
         this.scriptName = scriptName;
     }
 
-    public void setPortalState(boolean ps) {
-        this.portalState = ps;
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     public boolean enterPortal(TacosCharacter chr) {
-        if (!this.portalState) {
+        if (this.disabled) {
             return false;
         }
         // script portal
         if (!this.scriptName.isEmpty()) {
-            return PortalMan.enter(chr.getClient(), this);
+            return PortalMan.enter(chr, this);
         }
         // normal portal
         if (this.target_map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
             return false;
         }
         TacosMap map_to = chr.findMap(this.target_map_id);
-        TacosPortal portal_to = map_to.getPortal(this.target);
+        TacosPortal portal_to = map_to.getPortalByName(this.target);
         // find portal failed.
         if (portal_to == null) {
-            portal_to = map_to.getPortal(0);
+            portal_to = map_to.getPortalById(0);
         }
         // never executed.
         if (portal_to == null) {
@@ -124,5 +132,9 @@ public class TacosPortal {
         }
         chr.changeMapPortal(map_to, portal_to);
         return true;
+    }
+
+    public boolean enterScriptPortal(TacosCharacter chr) {
+        return PortalMan.enter(chr, this);
     }
 }

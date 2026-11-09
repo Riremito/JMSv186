@@ -450,11 +450,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
-                // play portal SE before character tries entering portal.
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-                if (!OnUserPortalScriptRequest(chr, cp)) {
-                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
-                }
+                OnUserPortalScriptRequest(chr, cp);
                 return true;
             }
             case CP_UserPortalTeleportRequest: {
@@ -1563,7 +1559,7 @@ public class ReqCUser {
 
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, false));
         if (ops_res == OpsMapTransfer.MapTransferRes_Use) {
-            chr.changeMapPortal(target_map, target_map.getPortal(0));
+            chr.changeMapPortal(target_map, target_map.getPortalById(0));
             return true;
         }
         chr.sendStatChanged(true);
@@ -2476,7 +2472,17 @@ public class ReqCUser {
         short chr_x = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
         short chr_y = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
 
-        return chr.usePortalScript(portal_name);
+        TacosPortal portal = chr.getMap().getPortalByName(portal_name);
+        if (portal != null) {
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+            if (portal.enterScriptPortal(chr)) {
+                chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DONE));
+                return true;
+            }
+        }
+
+        chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+        return false;
     }
 
     public static boolean OnUserPortalTeleportRequest(TacosCharacter chr, ClientPacket cp) {

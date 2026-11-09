@@ -19,7 +19,7 @@
 package tacos.script.portal;
 
 import java.util.regex.Pattern;
-import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -29,35 +29,39 @@ import tacos.server.map.TacosPortal;
 // ポータルスクリプト (Map.wz の portal の script) の Java の実装
 public class PortalMan {
 
-    public static boolean enter(TacosClient client, TacosPortal portal) {
+    public static boolean enter(TacosCharacter chr, TacosPortal portal) {
         String script_name = portal.getScriptName();
         // Meister ville out
         if (script_name.equals("out_profession")) {
-            client.getPlayer().getArdentmillPortal().leave(client.getPlayer());
+            chr.DebugMsg("ArdentmillPortal : leave, " + portal.getScriptName());
+            chr.getArdentmillPortal().leave(chr);
             return true;
         }
         // Meister ville in
         if (Pattern.compile("profession(\\d+)").matcher(script_name).matches()) {
-            client.getPlayer().getArdentmillPortal().enter(client.getPlayer(), portal);
+            chr.DebugMsg("ArdentmillPortal : enter, " + portal.getScriptName());
+            chr.getArdentmillPortal().enter(chr, portal);
             return true;
         }
         // FM out
         if (script_name.equals("market00")) {
-            client.getPlayer().getFreeMarketPortal().leave(client.getPlayer());
+            chr.DebugMsg("FreeMarketPortal : leave, " + portal.getScriptName());
+            chr.getFreeMarketPortal().leave(chr);
             return true;
         }
         // FM in
         if (Pattern.compile("market(J|)(\\d+)").matcher(script_name).matches()) {
-            client.getPlayer().getFreeMarketPortal().enter(client.getPlayer(), portal);
+            chr.DebugMsg("FreeMarketPortal : enter, " + portal.getScriptName());
+            chr.getFreeMarketPortal().enter(chr, portal);
             return true;
         }
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {
-            client.getPlayer().DebugMsg("Portal (not coded) : " + portal.getScriptName());
+            chr.DebugMsg("PortalMan : not coded, " + portal.getScriptName());
             return false;
         }
-        client.getPlayer().DebugMsg("Portal (Java) : " + portal.getScriptName());
-        return portal_script.start(client, portal);
+        chr.DebugMsg("PortalMan : " + portal.getScriptName());
+        return portal_script.start(chr, portal);
     }
 
     private static PortalScriptMan create(String script_name) {

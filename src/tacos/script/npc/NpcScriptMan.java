@@ -454,7 +454,7 @@ public abstract class NpcScriptMan {
         if (reactor == null) {
             return false;
         }
-        reactor.forceStartReactor(this.chr.getClient());
+        reactor.forceStartReactor(this.chr);
         return true;
     }
 
@@ -625,11 +625,11 @@ public abstract class NpcScriptMan {
 
     // lua の field.enablePortal
     protected boolean enablePortal(String portal_name, boolean enable) {
-        TacosPortal portal = this.chr.getMap().getPortal(portal_name);
+        TacosPortal portal = this.chr.getMap().getPortalByName(portal_name);
         if (portal == null) {
             return false;
         }
-        portal.setPortalState(enable);
+        portal.setDisabled(!enable);
         return true;
     }
 

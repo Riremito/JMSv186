@@ -25,7 +25,6 @@ import java.awt.Rectangle;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
 import tacos.script.reactor.ReactorMan;
 import tacos.wz.WzXML;
@@ -108,7 +107,7 @@ public class TacosReactor extends TacosMapObject {
                         map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
                     // a reactor without a script drops the items of Reward.img.
-                    if (!ReactorMan.act(chr, this)) {
+                    if (!ReactorMan.start(chr, this)) {
                         TacosReward.getReactorReward(chr, this);
                     }
                 } else { //reactor not broken yet
@@ -117,12 +116,12 @@ public class TacosReactor extends TacosMapObject {
                     // 状態の変化 (Java のみ)
                     ReactorMan.changeState(chr, this, oldState);
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
-                        ReactorMan.act(chr, this);
+                        ReactorMan.start(chr, this);
                         done = true;
                     }
                     if (stats.getTimeOut(state) > 0) {
                         if (!done) {
-                            ReactorMan.act(chr, this);
+                            ReactorMan.start(chr, this);
                         }
                         scheduleSetState(state, oldState, stats.getTimeOut(state));
                     }
@@ -169,8 +168,8 @@ public class TacosReactor extends TacosMapObject {
     }
 
     // used by script
-    public void forceStartReactor(TacosClient client) {
-        ReactorMan.act(client.getPlayer(), this);
+    public void forceStartReactor(TacosCharacter chr) {
+        ReactorMan.start(chr, this);
     }
 
     // used by script
@@ -181,8 +180,8 @@ public class TacosReactor extends TacosMapObject {
     }
 
     // used by script
-    public void hitReactor(TacosClient client) {
-        hitReactor(client.getPlayer(), 0, (short) 0);
+    public void hitReactor(TacosCharacter chr) {
+        hitReactor(chr, 0, (short) 0);
     }
 
     // used by script

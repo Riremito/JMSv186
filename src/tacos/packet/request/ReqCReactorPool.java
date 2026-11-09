@@ -84,7 +84,7 @@ public class ReqCReactorPool {
         boolean is_in_rect = cp.Decode1() != 0;
 
         if (is_in_rect) {
-            ReactorMan.act(chr, reactor);
+            ReactorMan.start(chr, reactor);
         }
 
         return true;

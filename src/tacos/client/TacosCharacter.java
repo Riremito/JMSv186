@@ -155,6 +155,7 @@ import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
 import tacos.script.npc.NpcScriptMan;
+import tacos.wz.opt.PortalType;
 
 /**
  *
@@ -315,7 +316,7 @@ public class TacosCharacter extends TacosPlayer {
     public void updateMap(TacosMap map_to, TacosPortal portal_to) {
         setMap(map_to);
         setPosMap(map_to.getId());
-        setPortal(portal_to.getId()); // spawn point
+        setPortal(portal_to.getType() == PortalType.PORTALTYPE_TOWNPORTAL_POINT ? portal_to.getTownPortalId() : portal_to.getId()); // spawn point
         setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
         setFootholdId(0); // foothold id is 0 while character is in the air.
         setMoveAction(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
@@ -334,9 +335,9 @@ public class TacosCharacter extends TacosPlayer {
             map_to = findMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
             DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
         }
-        TacosPortal portal_to = map_to.getPortal(portal_id);
+        TacosPortal portal_to = map_to.getPortalById(portal_id);
         if (portal_to == null) {
-            portal_to = map_to.getPortal(0);
+            portal_to = map_to.getPortalById(0);
             DebugLogger.ErrorLog("updateMapById : invalid portal = " + portal_id);
         }
 
@@ -362,7 +363,7 @@ public class TacosCharacter extends TacosPlayer {
         }
         // use normal portal.
         if (isPortal) {
-            TacosPortal portal = map.getPortal(portal_name);
+            TacosPortal portal = map.getPortalByName(portal_name);
             if (portal == null) {
                 return false;
             }
@@ -382,7 +383,7 @@ public class TacosCharacter extends TacosPlayer {
             // revive
             if (map_id_to == 0) {
                 map_to = (revive_type > 0) ? getMap() : getMap().getReturnMap();
-                changeMapPortal(map_to, map_to.getPortal(0));
+                changeMapPortal(map_to, map_to.getPortalById(0));
                 getStat().setHp(getStat().getMaxHp());
                 getStat().setMp(getStat().getMaxMp());
                 sendStatChanged(true);
@@ -393,7 +394,7 @@ public class TacosCharacter extends TacosPlayer {
         }
         // direct map change.
         map_to = findMap(map_id_to);
-        changeMapPortal(map_to, map_to.getPortal(0));
+        changeMapPortal(map_to, map_to.getPortalById(0));
         return true;
     }
 
@@ -407,28 +408,15 @@ public class TacosCharacter extends TacosPlayer {
             if (map_to != null) {
                 TacosPortal portal_to = null;
                 if (portal_name != null) {
-                    portal_to = map_to.getPortal(portal_name);
+                    portal_to = map_to.getPortalByName(portal_name);
                 }
                 if (portal_to == null) {
-                    portal_to = map_to.getPortal(0);
+                    portal_to = map_to.getPortalById(0);
                 }
                 if (portal_to != null) {
                     changeMapPortal(map_to, portal_to);
                     return true;
                 }
-            }
-        }
-        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
-        return false;
-    }
-
-    public boolean changeMapWithCoordinate(int map_id, int x, int y) {
-        TacosMap map_to = findMap(map_id);
-        if (map_to != null) {
-            TacosPortal portal_to = map_to.findClosestSpawnpoint(new Point(x, y));
-            if (portal_to != null) {
-                changeMapPortal(map_to, portal_to);
-                return true;
             }
         }
         SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
@@ -443,7 +431,7 @@ public class TacosCharacter extends TacosPlayer {
     public void changeMapBanish(int mapid, String portal, String msg) {
         DebugMsg(msg);
         TacosMap map_to = findMap(mapid);
-        changeMapPortal(map_to, map_to.getPortal(portal));
+        changeMapPortal(map_to, map_to.getPortalByName(portal));
     }
 
     // mystic door : nPortal = 0x80 | party slot places the user on the door (CUserLocal::Init, town portal of PARTYDATA or LP_TownPortal).
@@ -451,10 +439,7 @@ public class TacosCharacter extends TacosPlayer {
         if (map_to == null) {
             return false;
         }
-        TacosPortal spawn = map_to.findClosestSpawnpoint(pos);
-        if (spawn == null) {
-            spawn = map_to.getPortal(0);
-        }
+        TacosPortal spawn = map_to.findSpawnPoint(pos);
         this.map.userLeaveField((TacosCharacter) this);
         updateMap(map_to, spawn);
         setPosition(pos);
@@ -480,7 +465,7 @@ public class TacosCharacter extends TacosPlayer {
         if (map_id_check) {
             TacosMap map_from = this.map;
             map_from.userLeaveField((TacosCharacter) this);
-            updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortal(0)); // for dynamic portal
+            updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortalById(0)); // for dynamic portal
             sendSetField(false);
             map_to.userEnterField((TacosCharacter) this);
         }
@@ -2157,12 +2142,11 @@ public class TacosCharacter extends TacosPlayer {
                 mapToSave = dwPosMap;
             }
 
-            byte spawnpointToSave;
+            int spawnpointToSave;
             if (map == null) {
-                spawnpointToSave = (byte) 0;
+                spawnpointToSave = 0;
             } else {
-                TacosPortal closest = map.findClosestSpawnpoint(getPosition());
-                spawnpointToSave = (byte) (closest != null ? closest.getId() : 0);
+                spawnpointToSave = map.findSpawnPoint(getPosition()).getId();
             }
 
             int[] pet_slots = {-1, -1, -1};
@@ -2183,7 +2167,7 @@ public class TacosCharacter extends TacosPlayer {
                     stats.getHp() < 1 ? 50 : stats.getHp(), stats.getMp(), stats.getMaxHp(), stats.getMaxMp(),
                     sp.substring(0, sp.length() - 1), remainingAp, (byte) gmLevel, (byte) skinColor, (byte) gender,
                     // the meso in a trade goes back to the character if the server stops.
-                    job, hair, face, mapToSave, meso + miniroom_inventory.getMeso(), hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
+                    job, hair, face, mapToSave, meso + miniroom_inventory.getMeso(), hpApUsed, (byte) spawnpointToSave, party != null ? party.getId() : -1,
                     (short) (byte) buddylist.getCapacity(), getMonsterBook().getCover(), dojo, dojoRecord,
                     petstring, subcategory, marriageId, currentrep, totalrep,
                     name, tama);

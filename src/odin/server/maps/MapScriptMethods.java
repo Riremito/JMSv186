@@ -389,7 +389,7 @@ public class MapScriptMethods {
             case shammos_Fenter: {
                 if (chr.getMapId() >= 921120005 && chr.getMapId() < 921120500) {
                     TacosMonster shammos = WzXML.MOB.createMob(9300275);
-                    map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
+                    map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortalById(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
                     chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));
 
@@ -559,7 +559,7 @@ public class MapScriptMethods {
                         chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         TacosMap mapto = chr.findMap(900010000);
-                        chr.changeMapPortal(mapto, mapto.getPortal(0));
+                        chr.changeMapPortal(mapto, mapto.getPortalById(0));
                         return;
                 }
                 showIntro(chr.getClient(), data);
@@ -680,7 +680,7 @@ public class MapScriptMethods {
             case check_count: {
                 if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
                     TacosMap mapp = chr.findMap(950101100); //exit Map
-                    chr.changeMapPortal(mapp, mapp.getPortal(0));
+                    chr.changeMapPortal(mapp, mapp.getPortalById(0));
                 }
                 break;
             }

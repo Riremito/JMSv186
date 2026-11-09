@@ -278,7 +278,7 @@ public class ReqCUser_Family {
             //whew lots of checks
             boolean accepted = cp.Decode1() > 0;
             if (accepted) {
-                chr.changeMapPortal(tt.getMap(), tt.getMap().getPortal(0));
+                chr.changeMapPortal(tt.getMap(), tt.getMap().getPortalById(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
                 tt.SendPacket(ResCWvsContext.FamilyFamousPointIncResult(-cost.rep, tt.getName()));
                 tt.useFamilyBuff(cost);
@@ -355,7 +355,7 @@ public class ReqCUser_Family {
             chr.SendPacket(ResCWvsContext.FamilyResult(OpsFamily.FamilyRes_Fail_Summon));
             return false;
         }
-        chr.changeMapPortal(target.getMap(), target.getMap().getPortal(0));
+        chr.changeMapPortal(target.getMap(), target.getMap().getPortalById(0));
         return true;
     }
 

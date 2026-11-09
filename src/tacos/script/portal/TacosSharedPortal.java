@@ -46,7 +46,7 @@ public class TacosSharedPortal {
         if (map_to == null) {
             return false;
         }
-        TacosPortal portal_to = portal_name.equals("") ? map_to.getPortal(0) : map_to.getPortal(portal_name);
+        TacosPortal portal_to = portal_name.equals("") ? map_to.getPortalById(0) : map_to.getPortalByName(portal_name);
         if (portal_to == null) {
             return false;
         }

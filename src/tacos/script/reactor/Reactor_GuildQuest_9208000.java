@@ -47,7 +47,7 @@ public class Reactor_GuildQuest_9208000 extends ReactorScriptMan {
             }
             TacosReactor reactor = map.getReactorByName("speargate");
             if (reactor != null) {
-                reactor.hitReactor(getPlayer().getClient());
+                reactor.hitReactor(getPlayer());
             }
         }
         // TODO : 像の順番 (9208000 - 9208002) の処理

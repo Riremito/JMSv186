@@ -54,7 +54,7 @@ public class TacosDynamicPortal extends TacosMapObject {
         }
 
         // no dynamic portal
-        TacosPortal spawn_point = map_to.getPortal(0);
+        TacosPortal spawn_point = map_to.getPortalById(0);
         chr.changeMapPortal(map_to, spawn_point);
         return true;
     }

@@ -19,10 +19,8 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
-import java.util.Comparator;
 import tacos.server.map.TacosMap;
 import java.util.ArrayList;
-import java.util.List;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDoorSkill;
 import tacos.server.map.TacosPortal;
@@ -108,16 +106,10 @@ public class TacosMysticDoor extends TacosMapObject {
 
     // CField::GetTownPortalPos, solo uses the first door portal and party members use the door portal of their party slot.
     public static TacosPortal getTownPortal(TacosMap map_town, int index) {
-        List<TacosPortal> door_portals = new ArrayList<>();
-        for (TacosPortal portal : map_town.getPortals()) {
-            if (portal.getType() == TacosPortal.DOOR_PORTAL) {
-                door_portals.add(portal);
-            }
-        }
-        if (door_portals.isEmpty()) {
+        ArrayList<TacosPortal> door_portals = map_town.getTownPortalPoints();
+        if (door_portals.isEmpty() || door_portals.size() < index) {
             return null;
         }
-        door_portals.sort(Comparator.comparingInt(TacosPortal::getId));
-        return door_portals.get((0 <= index && index < door_portals.size()) ? index : 0);
+        return door_portals.get(index);
     }
 }

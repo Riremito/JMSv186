@@ -563,7 +563,7 @@ public class MapleStatEffect {
             } else {
                 target = applyto.findMap(moveTo);
             }
-            applyto.changeMapPortal(target, target.getPortal(0));
+            applyto.changeMapPortal(target, target.getPortalById(0));
             return true;
         }
         return false;

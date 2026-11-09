@@ -300,7 +300,7 @@ public class TacosCommandDebug {
             case "/randommap" -> {
                 int mapid = WzDataStorage.MAP.getRandom();
                 TacosMap map_to = chr.findMap(mapid);
-                chr.changeMapPortal(map_to, map_to.getPortal(0));
+                chr.changeMapPortal(map_to, map_to.getPortalById(0));
 
                 chr.DebugMsg("randommap : " + map_to.getId());
                 DebugLogger.InfoLog("randommap : " + map_to.getId());

@@ -83,7 +83,6 @@ import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
 import tacos.wz.WzXML;
 import java.util.Collection;
-import tacos.client.TacosClient;
 import tacos.packet.ops.OpsUserEffect;
 import odin.server.MapleStatEffect;
 import odin.server.MapleCarnivalFactory;
@@ -1468,7 +1467,6 @@ public class TacosMap extends TacosMapData {
     public void resetFully(boolean respawn) {
         setChangeBGM("");
         cancelSquadSchedule();
-        resetPortals();
         environment.clear();
     }
 
@@ -1522,7 +1520,7 @@ public class TacosMap extends TacosMapData {
                 if (map_to == null) {
                     map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
                 }
-                player.changeMapPortal(map_to, map_to.getPortal(0));
+                player.changeMapPortal(map_to, map_to.getPortalById(0));
                 return true;
             }
         }
@@ -1854,7 +1852,7 @@ public class TacosMap extends TacosMapData {
         startMapEffect(msg, itemId, true);
     }
 
-    private void activateItemReactors(TacosDrop drop, TacosClient client) {
+    private void activateItemReactors(TacosDrop drop, TacosCharacter chr) {
         Item item = drop.getItem();
         for (TacosReactor reactor : getAllReactors()) {
             if (reactor.getReactorType() == 100) {
@@ -1864,7 +1862,7 @@ public class TacosMap extends TacosMapData {
                             // 5000 ms
                             removeDrop(drop.getObjectId());
                             broadcastPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
-                            reactor.hitReactor(client);
+                            reactor.hitReactor(chr);
                             // アイテムで反応した後に攻撃で破壊するタイプ (死んだ木の森の箱など) の場合は状態を戻さない
                             int type = reactor.getReactorType();
                             if (type < 0 || 100 <= type) {
@@ -2014,7 +2012,7 @@ public class TacosMap extends TacosMapData {
         addDrop(drop);
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
-        activateItemReactors(drop, owner.getClient());
+        activateItemReactors(drop, owner);
     }
 
     public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, int quest_id, boolean playerDrop) {

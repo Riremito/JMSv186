@@ -22,18 +22,17 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.Getter;
 import tacos.wz.MapWz;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzXML;
+import tacos.wz.opt.PortalType;
 
 /**
  *
@@ -191,10 +190,9 @@ public class TacosMapData {
     }
 
     protected int map_id;
-    private Map<Integer, TacosPortal> portals = new HashMap<>();
-    private ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
-    private ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
-    private ArrayList<TacosReactorSpawnPoint> reactor_spawn_point = new ArrayList<>();
+    private final ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
+    private final ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
+    private final ArrayList<TacosReactorSpawnPoint> reactor_spawn_point = new ArrayList<>();
 
     public TacosMapData(int mapid) {
         this.map_id = mapid;
@@ -321,19 +319,24 @@ public class TacosMapData {
     public boolean loadPortals(MapWz.MapImgInfo mapData) {
         int nextDoorPortal = 0x80;
         for (MapWz.PortalInfo portal_data : mapData.getPortals()) {
-            TacosPortal portal = new TacosPortal(portal_data.getPt());
-
+            TacosPortal portal = new TacosPortal();
+            portal.setId(portal_data.getId());
+            portal.setType(PortalType.find(portal_data.getPt()));
             portal.setName(portal_data.getPn());
             portal.setTarget(portal_data.getTn());
             portal.setTargetMapId(portal_data.getTm());
             portal.setPosition(new Point(portal_data.getX(), portal_data.getY()));
             portal.setScriptName(portal_data.getScript());
 
-            if (portal.getType() == TacosPortal.DOOR_PORTAL) {
-                portal.setId(nextDoorPortal);
-                nextDoorPortal++;
-            } else {
-                portal.setId(this.portals.size());
+            switch (portal.getType()) {
+                case PORTALTYPE_CHANGABLE, PORTALTYPE_CHANGABLE_INVISIBLE -> {
+                    portal.setDisabled(true);
+                }
+                case PORTALTYPE_TOWNPORTAL_POINT -> {
+                    portal.setTownPortalId(nextDoorPortal++);
+                }
+                default -> {
+                }
             }
 
             this.portals.put(portal.getId(), portal);
@@ -342,40 +345,54 @@ public class TacosMapData {
         return true;
     }
 
-    public TacosPortal getPortal(String portalname) {
-        for (TacosPortal port : this.portals.values()) {
-            if (port.getName().equals(portalname)) {
-                return port;
+    private final HashMap<Integer, TacosPortal> portals = new HashMap<>();
+
+    public ArrayList<TacosPortal> getPortals() {
+        return new ArrayList<>(this.portals.values());
+    }
+
+    public TacosPortal getPortalById(int portal_id) {
+        return this.portals.get(portal_id);
+    }
+
+    public TacosPortal getPortalByName(String portal_name) {
+        for (TacosPortal portal : this.portals.values()) {
+            if (portal.getName().equals(portal_name)) {
+                return portal;
             }
         }
         return null;
     }
 
-    public TacosPortal getPortal(int portal_id) {
-        return this.portals.get(portal_id);
-    }
-
-    public Collection<TacosPortal> getPortals() {
-        return Collections.unmodifiableCollection(this.portals.values());
-    }
-
-    public void resetPortals() {
+    private ArrayList<TacosPortal> getPortalsByType(PortalType portal_type) {
+        ArrayList<TacosPortal> ret = new ArrayList<>();
         for (TacosPortal portal : this.portals.values()) {
-            portal.setPortalState(true);
-        }
-    }
-
-    public TacosPortal findClosestSpawnpoint(Point from) {
-        TacosPortal closest = null;
-        double distance, shortestDistance = Double.POSITIVE_INFINITY;
-        for (TacosPortal portal : this.portals.values()) {
-            distance = portal.getPosition().distanceSq(from);
-            if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
-                closest = portal;
-                shortestDistance = distance;
+            if (portal.getType() == portal_type) {
+                ret.add(portal);
             }
         }
-        return closest;
+        return ret;
+    }
+
+    public ArrayList<TacosPortal> getSpawnPoint() {
+        return getPortalsByType(PortalType.PORTALTYPE_STARTPOINT);
+    }
+
+    public ArrayList<TacosPortal> getTownPortalPoints() {
+        return getPortalsByType(PortalType.PORTALTYPE_TOWNPORTAL_POINT);
+    }
+
+    public TacosPortal findSpawnPoint(Point object_pos) {
+        TacosPortal ret = this.portals.get(0);
+        double distance_shortest = ret.getPosition().distanceSq(object_pos);
+        for (TacosPortal portal : getSpawnPoint()) {
+            double distance = portal.getPosition().distanceSq(object_pos);
+            if (distance < distance_shortest) {
+                distance_shortest = distance;
+                ret = portal;
+            }
+        }
+        return ret;
     }
 
     // info node.

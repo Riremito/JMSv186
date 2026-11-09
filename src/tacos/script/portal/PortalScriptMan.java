@@ -39,7 +39,6 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
@@ -72,23 +71,19 @@ public abstract class PortalScriptMan {
 
     // lua の currentTime の形式
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yy/MM/dd/HH/mm");
-    private TacosClient client;
+    private TacosCharacter chr;
     private TacosPortal portal;
 
     public abstract boolean enter();
 
-    public boolean start(TacosClient client, TacosPortal portal) {
-        this.client = client;
+    public boolean start(TacosCharacter chr, TacosPortal portal) {
+        this.chr = chr;
         this.portal = portal;
         return enter();
     }
 
-    public TacosClient getClient() {
-        return this.client;
-    }
-
     public TacosCharacter getPlayer() {
-        return this.client.getPlayer();
+        return this.chr;
     }
 
     public TacosPortal getPortal() {
@@ -121,9 +116,9 @@ public abstract class PortalScriptMan {
     public boolean warp(int map_id) {
         TacosMap map = getMapById(map_id);
         try {
-            getPlayer().changeMapPortal(map, map.getPortal(Randomizer.nextInt(map.getPortals().size())));
+            getPlayer().changeMapPortal(map, map.getPortalById(Randomizer.nextInt(map.getPortals().size())));
         } catch (Exception e) {
-            getPlayer().changeMapPortal(map, map.getPortal(0));
+            getPlayer().changeMapPortal(map, map.getPortalById(0));
         }
         return true;
     }
@@ -132,11 +127,11 @@ public abstract class PortalScriptMan {
         TacosCharacter chr = getPlayer();
         TacosMap map = getMapById(map_id);
         // 同じマップの近くのポータルの場合は瞬間移動
-        if (portal != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortal(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.client.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
+        if (portal != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortalById(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
+            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
             return true;
         }
-        chr.changeMapPortal(map, map.getPortal(portal));
+        chr.changeMapPortal(map, map.getPortalById(portal));
         return true;
     }
 
@@ -147,17 +142,17 @@ public abstract class PortalScriptMan {
             portal = map.getSnowballPortal();
         }
         // 同じマップの近くのポータルの場合は瞬間移動
-        if (map_id == chr.getMapId() && new Point(chr.getMap().getPortal(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.client.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortal(portal).getId()));
+        if (map_id == chr.getMapId() && new Point(chr.getMap().getPortalByName(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
+            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortalByName(portal).getId()));
             return true;
         }
-        chr.changeMapPortal(map, map.getPortal(portal));
+        chr.changeMapPortal(map, map.getPortalByName(portal));
         return true;
     }
 
     public boolean warpS(int map_id, int portal) {
         TacosMap map = getMapById(map_id);
-        getPlayer().changeMapPortal(map, map.getPortal(portal));
+        getPlayer().changeMapPortal(map, map.getPortalById(portal));
         return true;
     }
 
@@ -166,13 +161,13 @@ public abstract class PortalScriptMan {
         if (map_id == 109060000 || map_id == 109060002 || map_id == 109060004) {
             portal = map.getSnowballPortal();
         }
-        getPlayer().changeMapPortal(map, map.getPortal(portal));
+        getPlayer().changeMapPortal(map, map.getPortalByName(portal));
         return true;
     }
 
     // 同じマップ内のポータルへ瞬間移動
     public boolean instantWarp(int portal) {
-        this.client.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
+        this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
         return true;
     }
 
@@ -186,7 +181,7 @@ public abstract class PortalScriptMan {
         for (MaplePartyCharacter mpc : party.getMembers()) {
             TacosCharacter member = getMap().getPlayerById(mpc.getId());
             if (member != null) {
-                member.changeMapPortal(map, map.getPortal(0));
+                member.changeMapPortal(map, map.getPortalById(0));
             }
         }
         return true;
@@ -209,19 +204,19 @@ public abstract class PortalScriptMan {
             // portal が負の値の場合はランダムなポータル
             if (portal < 0) {
                 try {
-                    member.changeMapPortal(map, map.getPortal(Randomizer.nextInt(map.getPortals().size())));
+                    member.changeMapPortal(map, map.getPortalById(Randomizer.nextInt(map.getPortals().size())));
                 } catch (Exception e) {
-                    member.changeMapPortal(map, map.getPortal(0));
+                    member.changeMapPortal(map, map.getPortalById(0));
                 }
             } else {
-                member.changeMapPortal(map, map.getPortal(portal));
+                member.changeMapPortal(map, map.getPortalById(portal));
             }
         }
         return true;
     }
 
     public boolean warpParty(int map_id, String portal_name) {
-        int portal_id = getMapById(map_id).getPortal(portal_name).getId();
+        int portal_id = getMapById(map_id).getPortalByName(portal_name).getId();
         return warpParty(map_id, portal_id);
     }
 
@@ -229,18 +224,18 @@ public abstract class PortalScriptMan {
     public boolean warpMapAll(int map_id, int portal) {
         TacosMap map = getMapById(map_id);
         for (TacosCharacter user : getMap().getAllPlayers()) {
-            user.changeMapPortal(map, map.getPortal(portal));
+            user.changeMapPortal(map, map.getPortalById(portal));
         }
         return true;
     }
 
     // ポータルに入ったキャラクターへのメッセージ
     public void playerMessage(String text) {
-        this.client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void playerMessage(int type, String text) {
-        this.client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
+        this.chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(text).build()));
     }
 
     // マップ全体へのメッセージ
@@ -463,12 +458,12 @@ public abstract class PortalScriptMan {
 
     // チュートリアルの吹き出しなど (UserEffect_AvatarOriented)
     public void avatarOriented(String path) {
-        this.client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(path).build()));
+        this.chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_AvatarOriented, PB_UserEffect.builder().path(path).build()));
     }
 
     // UserEffect_ReservedEffect
     public void reservedEffect(String path) {
-        this.client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(path).build()));
+        this.chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(path).build()));
     }
 
     // lua の field.effectScreen
@@ -488,11 +483,11 @@ public abstract class PortalScriptMan {
 
     // lua の field.enablePortal
     public boolean enablePortal(String portal_name, boolean enable) {
-        TacosPortal target = getMap().getPortal(portal_name);
+        TacosPortal target = getMap().getPortalByName(portal_name);
         if (target == null) {
             return false;
         }
-        target.setPortalState(enable);
+        target.setDisabled(!enable);
         return true;
     }
 
@@ -666,7 +661,7 @@ public abstract class PortalScriptMan {
         if (guild_id <= 0) {
             return;
         }
-        this.client.getWorld().getGuild().gainGP(guild_id, gp);
+        this.chr.getWorld().getGuild().gainGP(guild_id, gp);
     }
 
     // lua の target.getTeamForMCarnival, 0 = 赤チーム, 1 = 青チーム, チームに所属していない場合は -1
@@ -688,23 +683,23 @@ public abstract class PortalScriptMan {
     }
 
     public void evanTutorial(String path, int value) {
-        this.client.SendPacket(ResCScriptMan.getEvanTutorial(path));
+        this.chr.SendPacket(ResCScriptMan.getEvanTutorial(path));
     }
 
     public void movieClipIntroUI(boolean enabled) {
-        this.client.SendPacket(ResCUserLocal.SetStandAloneMode(enabled));
-        this.client.SendPacket(ResCUserLocal.SetDirectionMode(enabled));
+        this.chr.SendPacket(ResCUserLocal.SetStandAloneMode(enabled));
+        this.chr.SendPacket(ResCUserLocal.SetDirectionMode(enabled));
     }
 
     // チュートリアルのガイドの表示
     public void hireTutor(boolean summon) {
         getPlayer().setTutorialSummon(summon);
-        this.client.SendPacket(ResCUserLocal.UserHireTutor(summon));
+        this.chr.SendPacket(ResCUserLocal.UserHireTutor(summon));
     }
 
     public void useItem(int item_id) {
         MapleItemInformationProvider.getInstance().getItemEffect(item_id).applyTo(getPlayer());
-        this.client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(item_id).build()));
+        this.chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(item_id).build()));
     }
 
     // アイテムの効果 (変身など) の解除
@@ -721,14 +716,14 @@ public abstract class PortalScriptMan {
         if (!getPlayer().hasTutorialSummon()) {
             hireTutor(true);
         }
-        this.client.SendPacket(ResCUserLocal.UserTutorMsg(type));
+        this.chr.SendPacket(ResCUserLocal.UserTutorMsg(type));
     }
 
     public void summonMsg(String text) {
         if (!getPlayer().hasTutorialSummon()) {
             hireTutor(true);
         }
-        this.client.SendPacket(ResCUserLocal.UserTutorMsg(text));
+        this.chr.SendPacket(ResCUserLocal.UserTutorMsg(text));
     }
 
     // 現在のマップのモンスターの数
@@ -751,22 +746,22 @@ public abstract class PortalScriptMan {
         if (reactor == null) {
             return;
         }
-        reactor.hitReactor(this.client);
+        reactor.hitReactor(chr);
     }
 
     // 自分だけにマップエフェクトを表示
     public void showMapEffect(String path) {
-        this.client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(path).build()));
+        this.chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(path).build()));
     }
 
     // 上部に表示されるクエストメッセージ
     public void showQuestMsg(String text) {
-        this.client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str(text).build()));
+        this.chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str(text).build()));
     }
 
     // アランのチュートリアルの吹き出し音
     public void aranStart() {
-        this.client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Aran/balloon").build()));
+        this.chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Aran/balloon").build()));
     }
 
     // 経験値倍率を適用した経験値
@@ -835,8 +830,8 @@ public abstract class PortalScriptMan {
     // 武陵道場の上の階へ移動
     public void dojoGetUp() {
         // TODO : 武陵道場の記録 (Odin の処理の値をそのまま利用)
-        this.client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) 1207).str("pt=1;min=4;belt=1;tuto=1").build()));
-        this.client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-        this.client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
+        this.chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) 1207).str("pt=1;min=4;belt=1;tuto=1").build()));
+        this.chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+        this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
 }

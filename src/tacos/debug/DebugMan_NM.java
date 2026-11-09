@@ -67,7 +67,7 @@ public class DebugMan_NM extends DebugNpcScriptMan {
             }
             case 2: {
                 TacosMap map = getPlayer().findMap(target_map_id);
-                getPlayer().changeMapPortal(map, map.getPortal(0));
+                getPlayer().changeMapPortal(map, map.getPortalById(0));
                 return false;
             }
             default: {

@@ -87,6 +87,7 @@ public class MapWz extends WzXML {
     @Getter
     public class PortalInfo {
 
+        private int id;
         private int pt;
         private String pn;
         private String tn;
@@ -240,6 +241,7 @@ public class MapWz extends WzXML {
 
         for (MapleData md_portal : md_map.getChildByPath("portal")) {
             PortalInfo portal = new PortalInfo();
+            portal.id = Integer.parseInt(md_portal.getName());
             portal.pt = md_portal.getInt("pt");
             portal.pn = md_portal.getString("pn");
             portal.tn = md_portal.getString("tn");

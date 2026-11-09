@@ -27,20 +27,13 @@ import tacos.server.map.object.TacosReactor;
  */
 public class ReactorMan {
 
-    public static boolean act(TacosCharacter chr, TacosReactor reactor) {
-        if (start(chr, reactor)) {
-            chr.DebugMsg("ReactorMan : " + reactor.getId());
-            return true;
-        }
-        chr.DebugMsg("ReactorMan (not coded) : " + reactor.getId());
-        return false;
-    }
-
     public static boolean start(TacosCharacter chr, TacosReactor reactor) {
         ReactorScriptMan reactor_script = create(reactor.getId());
         if (reactor_script == null) {
+            chr.DebugMsg("ReactorMan : not coded, " + reactor.getId());
             return false;
         }
+        chr.DebugMsg("ReactorMan : " + reactor.getId());
         reactor_script.start(chr, reactor);
         return true;
     }
@@ -49,8 +42,10 @@ public class ReactorMan {
     public static boolean changeState(TacosCharacter chr, TacosReactor reactor, int old_state) {
         ReactorScriptMan reactor_script = create(reactor.getId());
         if (reactor_script == null) {
+            chr.DebugMsg("ReactorMan : not coded, " + reactor.getId());
             return false;
         }
+        chr.DebugMsg("ReactorMan : " + reactor.getId());
         reactor_script.startChangeState(chr, reactor, old_state);
         return true;
     }

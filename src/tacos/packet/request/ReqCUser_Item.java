@@ -74,7 +74,7 @@ public class ReqCUser_Item {
             return;
         }
         TacosMap mapp = chr.findMap(map);
-        chr.changeMapPortal(mapp, mapp.getPortal(0));
+        chr.changeMapPortal(mapp, mapp.getPortalById(0));
         visitOwlMerchant(chr, findOwlMerchant(mapp, id));
     }
 
@@ -214,7 +214,7 @@ public class ReqCUser_Item {
         for (int i = 390001000; i <= 390001004; i++) {
             TacosMap map = chr.findMap(i);
             if (map.getCharactersSize() == 0) {
-                chr.changeMapPortal(map, map.getPortal(0));
+                chr.changeMapPortal(map, map.getPortalById(0));
                 MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, 2430008, 1, false, false); // Removal of gold compass
                 return;
             }
@@ -293,11 +293,7 @@ public class ReqCUser_Item {
                     return false;
                 }
                 item_use.run();
-                if (action == 0) {
-                    chr.changeMapById(map_id);
-                } else {
-                    chr.changeMapWithCoordinate(map_id, chr.getPosition().x, chr.getPosition().y);
-                }
+                chr.changeMapById(map_id);
                 return true;
             }
             case 506: {
