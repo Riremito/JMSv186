@@ -27,7 +27,6 @@ public class Portal_MonsterCarnival_AriantMout extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(980010020);
-        return true;
+        return warp(980010020);
     }
 }

@@ -41,23 +41,7 @@ public class TacosSharedPortal {
         this.target_portal_name = target_portal_name;
     }
 
-    private boolean usePortal(TacosCharacter chr, int map_id, String portal_name) {
-        TacosMap map_to = chr.findMap(map_id);
-        if (map_to == null) {
-            return false;
-        }
-        TacosPortal portal_to = portal_name.equals("") ? map_to.getPortalById(0) : map_to.getPortalByName(portal_name);
-        if (portal_to == null) {
-            return false;
-        }
-        chr.changeMapPortal(map_to, portal_to);
-        return true;
-    }
-
     public boolean enter(TacosCharacter chr, TacosPortal portal_from) {
-        if (chr == null) {
-            return false;
-        }
         TacosMap map_from = chr.getMap();
         if (map_from == null) {
             return false;
@@ -65,17 +49,13 @@ public class TacosSharedPortal {
         if (portal_from == null) {
             return false;
         }
-
         this.return_map_id = map_from.getId();
         this.return_portal_name = portal_from.getName();
-        return usePortal(chr, this.target_map_id, this.target_portal_name);
+        return chr.changeMap(this.target_map_id, this.target_portal_name);
     }
 
     public boolean leave(TacosCharacter chr) {
-        if (chr == null) {
-            return false;
-        }
-        return usePortal(chr, this.return_map_id, this.return_portal_name);
+        return chr.changeMap(this.return_map_id, this.return_portal_name);
     }
 
     public int getReturnMapId() {

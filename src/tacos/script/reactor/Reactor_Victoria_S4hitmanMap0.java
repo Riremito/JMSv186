@@ -31,6 +31,6 @@ public class Reactor_Victoria_S4hitmanMap0 extends ReactorScriptMan {
     @Override
     public void action() {
         // s4hitmanMap0 = 1, s4hitmanMap1 = 2, s4hitmanMap2 = 3
-        warpS(this.map_hitman, getReactorId() - this.reactor_hitman_map0 + 1);
+        warp(this.map_hitman, getReactorId() - this.reactor_hitman_map0 + 1);
     }
 }

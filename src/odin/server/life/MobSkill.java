@@ -186,10 +186,10 @@ public class MobSkill {
                     if (info != null) {
                         if (lt != null && rb != null && skill && player != null) {
                             for (TacosCharacter chr : getPlayersInRange(monster, player)) {
-                                chr.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
+                                chr.mapBan(info.getField(), info.getPortal(), info.getBanMsg());
                             }
                         } else if (player != null) {
-                            player.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
+                            player.mapBan(info.getField(), info.getPortal(), info.getBanMsg());
                         }
                     }
                 }

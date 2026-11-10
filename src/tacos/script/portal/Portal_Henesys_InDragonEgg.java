@@ -28,10 +28,8 @@ public class Portal_Henesys_InDragonEgg extends PortalScriptMan {
     @Override
     public boolean enter() {
         if (isQuestActive(22005)) {
-            warp(900020100);
-        } else {
-            warp(100030301);
+            return warp(900020100);
         }
-        return true;
+        return warp(100030301);
     }
 }

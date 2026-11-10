@@ -112,57 +112,27 @@ public abstract class PortalScriptMan {
         return getPlayer().findMap(map_id);
     }
 
-    // ランダムなポータルへ移動
     public boolean warp(int map_id) {
-        TacosMap map = getMapById(map_id);
-        try {
-            getPlayer().changeMapPortal(map, map.getPortalById(Randomizer.nextInt(map.getPortals().size())));
-        } catch (Exception e) {
-            getPlayer().changeMapPortal(map, map.getPortalById(0));
-        }
-        return true;
+        return getPlayer().changeMap(map_id);
     }
 
-    public boolean warp(int map_id, int portal) {
+    public boolean warp(int map_id, int portal_id) {
         TacosCharacter chr = getPlayer();
         TacosMap map = getMapById(map_id);
         // 同じマップの近くのポータルの場合は瞬間移動
-        if (portal != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortalById(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
+        if (portal_id != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortalById(portal_id).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
+            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal_id));
             return true;
         }
-        chr.changeMapPortal(map, map.getPortalById(portal));
+        chr.changeMap(map_id, portal_id);
         return true;
     }
 
-    public boolean warp(int map_id, String portal) {
-        TacosCharacter chr = getPlayer();
-        TacosMap map = getMapById(map_id);
+    public boolean warp(int map_id, String portal_name) {
         if (map_id == 109060000 || map_id == 109060002 || map_id == 109060004) {
-            portal = map.getSnowballPortal();
+            return chr.changeMap(map_id, getMapById(map_id).getSnowballPortal());
         }
-        // 同じマップの近くのポータルの場合は瞬間移動
-        if (map_id == chr.getMapId() && new Point(chr.getMap().getPortalByName(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortalByName(portal).getId()));
-            return true;
-        }
-        chr.changeMapPortal(map, map.getPortalByName(portal));
-        return true;
-    }
-
-    public boolean warpS(int map_id, int portal) {
-        TacosMap map = getMapById(map_id);
-        getPlayer().changeMapPortal(map, map.getPortalById(portal));
-        return true;
-    }
-
-    public boolean warpS(int map_id, String portal) {
-        TacosMap map = getMapById(map_id);
-        if (map_id == 109060000 || map_id == 109060002 || map_id == 109060004) {
-            portal = map.getSnowballPortal();
-        }
-        getPlayer().changeMapPortal(map, map.getPortalByName(portal));
-        return true;
+        return chr.changeMap(map_id, portal_name);
     }
 
     // 同じマップ内のポータルへ瞬間移動
@@ -171,7 +141,6 @@ public abstract class PortalScriptMan {
         return true;
     }
 
-    // パーティーメンバーを移動 (パーティーがない場合は本人のみ)
     public boolean warpParty(int map_id) {
         MapleParty party = getPlayer().getParty();
         if (party == null || party.getMembers().size() == 1) {
@@ -181,7 +150,7 @@ public abstract class PortalScriptMan {
         for (MaplePartyCharacter mpc : party.getMembers()) {
             TacosCharacter member = getMap().getPlayerById(mpc.getId());
             if (member != null) {
-                member.changeMapPortal(map, map.getPortalById(0));
+                member.changeMap(map_id, 0);
             }
         }
         return true;
@@ -203,13 +172,9 @@ public abstract class PortalScriptMan {
             }
             // portal が負の値の場合はランダムなポータル
             if (portal < 0) {
-                try {
-                    member.changeMapPortal(map, map.getPortalById(Randomizer.nextInt(map.getPortals().size())));
-                } catch (Exception e) {
-                    member.changeMapPortal(map, map.getPortalById(0));
-                }
+                member.changeMap(map_id);
             } else {
-                member.changeMapPortal(map, map.getPortalById(portal));
+                member.changeMap(map_id, portal);
             }
         }
         return true;
@@ -220,11 +185,9 @@ public abstract class PortalScriptMan {
         return warpParty(map_id, portal_id);
     }
 
-    // マップにいる全てのキャラクターを移動
     public boolean warpMapAll(int map_id, int portal) {
-        TacosMap map = getMapById(map_id);
         for (TacosCharacter user : getMap().getAllPlayers()) {
-            user.changeMapPortal(map, map.getPortalById(portal));
+            user.changeMap(map_id, portal);
         }
         return true;
     }
@@ -385,7 +348,7 @@ public abstract class PortalScriptMan {
     // lua の target.transferParty (同じマップにいるパーティーメンバーを移動させる)
     public boolean transferParty(int map_id, String portal_name) {
         for (TacosCharacter member : TacosFieldSet.getPartyMembers(getPlayer())) {
-            member.changeMapById(map_id, portal_name);
+            member.changeMap(map_id, portal_name);
         }
         return true;
     }
@@ -501,13 +464,16 @@ public abstract class PortalScriptMan {
         if (map_id == -1) {
             map_id = getMapId();
         }
-        return getPlayer().changeMapById(map_id, portal_name.isEmpty() ? null : portal_name);
+        if (portal_name.isEmpty()) {
+            return getPlayer().changeMap(map_id);
+        }
+        return getPlayer().changeMap(map_id, portal_name);
     }
 
     // lua の field.transferFieldAll (同じマップにいるキャラクターを全員移動させる)
     public boolean transferFieldAll(int map_id, String portal_name) {
         for (TacosCharacter user : getMap().getAllPlayers()) {
-            user.changeMapById(map_id, portal_name.isEmpty() ? null : portal_name);
+            user.changeMap(map_id, portal_name);
         }
         return true;
     }

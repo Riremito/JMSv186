@@ -558,8 +558,7 @@ public class MapScriptMethods {
                         chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                         chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
-                        TacosMap mapto = chr.findMap(900010000);
-                        chr.changeMapPortal(mapto, mapto.getPortalById(0));
+                        chr.changeMap(900010000);
                         return;
                 }
                 showIntro(chr.getClient(), data);
@@ -579,7 +578,7 @@ public class MapScriptMethods {
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
-                // fall through
+            // fall through
             case go20000:
             case go30000:
             case go40000:
@@ -679,8 +678,7 @@ public class MapScriptMethods {
             }
             case check_count: {
                 if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
-                    TacosMap mapp = chr.findMap(950101100); //exit Map
-                    chr.changeMapPortal(mapp, mapp.getPortalById(0));
+                    chr.changeMap(950101100);
                 }
                 break;
             }

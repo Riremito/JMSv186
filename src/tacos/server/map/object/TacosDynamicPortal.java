@@ -18,7 +18,6 @@
  */
 package tacos.server.map.object;
 
-import tacos.server.map.TacosPortal;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 
@@ -53,9 +52,7 @@ public class TacosDynamicPortal extends TacosMapObject {
             return false;
         }
 
-        // no dynamic portal
-        TacosPortal spawn_point = map_to.getPortalById(0);
-        chr.changeMapPortal(map_to, spawn_point);
+        chr.changeMap(this.map_id);
         return true;
     }
 

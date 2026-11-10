@@ -19,7 +19,6 @@
 package tacos.debug;
 
 import tacos.wz.ids.DWI_Random;
-import tacos.server.map.TacosMap;
 import tacos.script.npc.NpcScriptTag;
 
 /**
@@ -35,46 +34,43 @@ public class DebugMan_NM extends DebugNpcScriptMan {
     @Override
     public boolean action(int status, int answer) {
         switch (status) {
-            case 0: {
+            case 0 -> {
                 NpcScriptTag nt = new NpcScriptTag();
                 int current_map_id = getPlayer().getMap().getId();
                 int map_index = DWI_Random.getMapIndex(current_map_id);
-                maps = new int[number_of_maps * 2 + 1];
+                this.maps = new int[this.number_of_maps * 2 + 1];
 
-                for (int i = 0; i < number_of_maps * 2 + 1; i++) {
-                    maps[i] = DWI_Random.getMapByIndex(map_index + i - number_of_maps);
-                    if (maps[i] == -1) {
+                for (int i = 0; i < this.number_of_maps * 2 + 1; i++) {
+                    this.maps[i] = DWI_Random.getMapByIndex(map_index + i - this.number_of_maps);
+                    if (this.maps[i] == -1) {
                         continue;
                     }
                     if (maps[i] == current_map_id) {
-                        nt.addMenuRed(i, maps[i] + " : #m" + maps[i] + "#");
+                        nt.addMenuRed(i, this.maps[i] + " : #m" + this.maps[i] + "#");
                     } else {
-                        nt.addMenu(i, maps[i] + " : #m" + maps[i] + "#");
+                        nt.addMenu(i, this.maps[i] + " : #m" + this.maps[i] + "#");
                     }
                 }
                 askMenu(nt);
                 return true;
             }
-            case 1: {
+            case 1 -> {
                 NpcScriptTag nt = new NpcScriptTag();
-                if (answer < number_of_maps * 2 + 1) {
-                    nt.add("go to " + maps[answer] + " : #m" + maps[answer] + "#");
-                    target_map_id = maps[answer];
+                if (answer < this.number_of_maps * 2 + 1) {
+                    nt.add("go to " + this.maps[answer] + " : #m" + this.maps[answer] + "#");
+                    this.target_map_id = maps[answer];
                     say(nt, true, false);
                     return true;
                 }
                 return false;
             }
-            case 2: {
-                TacosMap map = getPlayer().findMap(target_map_id);
-                getPlayer().changeMapPortal(map, map.getPortalById(0));
+            case 2 -> {
+                getPlayer().changeMap(this.target_map_id);
                 return false;
             }
-            default: {
-                break;
+            default -> {
             }
         }
-
         return false;
     }
 }

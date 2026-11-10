@@ -39,8 +39,10 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.property.Property_Dummy_World;
 import tacos.server.map.TacosNPCSpawnPoint;
+import tacos.server.map.TacosPortal;
 import tacos.server.map.TacosReactorSpawnPoint;
 import tacos.server.map.TacosSpawnPoint;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -107,9 +109,12 @@ public class TacosChannel extends TacosServer {
     }
 
     // map.
-    private Map<Integer, TacosMap> maps = new HashMap<>();
+    private final Map<Integer, TacosMap> maps = new HashMap<>();
 
     public TacosMap findMap(int map_id) {
+        if (!WzDataStorage.MAP.check(map_id)) {
+            return null;
+        }
         TacosMap map = this.maps.get(map_id);
         if (map != null) {
             return map;
@@ -179,6 +184,54 @@ public class TacosChannel extends TacosServer {
         this.dropRate = dropRate;
     }
 
+    // user.
+    public boolean changeMap(TacosCharacter chr, int map_id) {
+        return changeMap(chr, map_id, null);
+    }
+
+    public boolean changeMap(TacosCharacter chr, int map_id, int portal_id) {
+        TacosMap map_to = findMap(map_id);
+        if (map_to == null) {
+            DebugLogger.ErrorLog("changeMap : invalid map id, " + map_id);
+            return false;
+        }
+        TacosPortal portal_to = map_to.getPortalById(portal_id);
+        if (portal_to == null) {
+            DebugLogger.ErrorLog("changeMap : invalid portal id, " + map_id + ", " + portal_id);
+            portal_to = map_to.getSpawnPoint();
+        }
+        changeMap(chr, map_to, portal_to);
+        return true;
+    }
+
+    public boolean changeMap(TacosCharacter chr, int map_id, String portal_name) {
+        TacosMap map_to = findMap(map_id);
+        if (map_to == null) {
+            DebugLogger.ErrorLog("changeMap : invalid map id, " + map_id);
+            return false;
+        }
+        TacosPortal portal_to;
+        if (portal_name != null) {
+            portal_to = map_to.getPortalByName(portal_name);
+            if (portal_to == null) {
+                DebugLogger.ErrorLog("changeMap : invalid portal name, " + map_id + ", " + portal_name);
+                portal_to = map_to.getSpawnPoint();
+            }
+        } else {
+            portal_to = map_to.getSpawnPoint();
+        }
+        changeMap(chr, map_to, portal_to);
+        return true;
+    }
+
+    private void changeMap(TacosCharacter chr, TacosMap map_to, TacosPortal portal_to) {
+        chr.getMap().userLeaveField(chr);
+        chr.updateMap(map_to, portal_to);
+        chr.sendSetField(false);
+        map_to.userEnterField(chr);
+        chr.saveToDB(false);
+    }
+
     // merch
     private int running_MerchantID = 0;
     private Map<Integer, TacosMerchant> merchants = new HashMap<>();
@@ -222,7 +275,6 @@ public class TacosChannel extends TacosServer {
     }
 
     // 遠征隊
-
     // init
     public static void init() {
         TacosWorld world = TacosWorld.find(0);

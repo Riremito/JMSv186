@@ -27,7 +27,6 @@ public class Portal_Henesys_ContactDragon extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(900090100);
-        return true;
+        return warp(900090100);
     }
 }

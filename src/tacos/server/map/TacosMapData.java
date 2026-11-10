@@ -353,7 +353,11 @@ public class TacosMapData {
     }
 
     public TacosPortal getPortalById(int portal_id) {
-        return this.portals.get(portal_id);
+        TacosPortal portal = this.portals.get(portal_id);
+        if (portal != null) {
+            return portal;
+        }
+        return null;
     }
 
     public TacosPortal getPortalByName(String portal_name) {

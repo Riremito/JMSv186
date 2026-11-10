@@ -153,7 +153,7 @@ public class TacosCommandAdmin {
                     return true;
                 }
 
-                chr.changeMapById(map_id);
+                chr.changeMap(map_id);
                 return true;
             }
             case "/npctalk" -> {

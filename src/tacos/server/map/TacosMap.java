@@ -1516,11 +1516,9 @@ public class TacosMap extends TacosMapData {
         // clock.
         if (0 < getTimeLimit()) {
             if (getTimer(time_current) <= 0) {
-                TacosMap map_to = player.getChannelServer().findMap(getForcedReturnId());
-                if (map_to == null) {
-                    map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
+                if (!player.changeMap(getForcedReturnId())) {
+                    player.changeMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
                 }
-                player.changeMapPortal(map_to, map_to.getPortalById(0));
                 return true;
             }
         }

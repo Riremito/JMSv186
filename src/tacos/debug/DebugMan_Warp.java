@@ -62,7 +62,7 @@ public class DebugMan_Warp extends DebugNpcScriptMan {
                 return false;
             }
             case 2: {
-                getPlayer().changeMapById(this.target_map_id);
+                getPlayer().changeMap(this.target_map_id);
                 return false;
             }
             default: {

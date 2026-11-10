@@ -798,17 +798,16 @@ public class ReqCUser {
         }
         // revive.
         if (isRevive) {
-            TacosMap map_to = (revive_type > 0) ? chr.getMap() : chr.getMap().getReturnMap();
+            int return_map_id = (revive_type > 0) ? chr.getMap().getId() : chr.getMap().getReturnMap().getId();
             chr.getStat().setHp(chr.getStat().getMaxHp());
             chr.getStat().setMp(chr.getStat().getMaxMp());
             chr.sendStatChanged(true);
-            chr.changeMapPortal(map_to, map_to.getSpawnPoint());
+            chr.changeMap(return_map_id);
             return true;
         }
         // direct map teleport, map command.
         if (isMapCommand) {
-            TacosMap map_to = chr.findMap(map_id_to);
-            chr.changeMapPortal(map_to, map_to.getSpawnPoint());
+            chr.changeMap(map_id_to);
             return true;
         }
         return false;
@@ -1553,41 +1552,32 @@ public class ReqCUser {
         int item_id = cp.Decode4();
         byte cmd = cp.Decode1();
 
-        TacosMap target_map = null;
+        int target_map_id = 0;
         OpsMapTransfer ops_res = OpsMapTransfer.MapTransferRes_Unknown;
         // shared with cash item teleport rock, CWvsContext::RunMapTransferItem
         switch (cmd) {
-            case 0: {
-                int target_map_id = cp.Decode4();
+            case 0 -> {
+                target_map_id = cp.Decode4();
                 for (int map_id : chr.getRegRocks()) {
                     if (map_id == target_map_id) {
-                        target_map = chr.findMap(target_map_id);
-                        if (target_map != null) {
-                            ops_res = OpsMapTransfer.MapTransferRes_Use;
+                        if (chr.changeMap(target_map_id)) {
+                            return true;
                         }
-                        break;
                     }
                 }
-                break;
             }
-            case 1: {
+            case 1 -> {
                 String target_name = cp.DecodeStr();
                 ops_res = OpsMapTransfer.MapTransferRes_TargetNotExist;
                 // not coded.
-                break;
             }
-            default: {
+            default -> {
                 DebugLogger.ErrorLog("OnUserMapTransferItemUseRequest : not coded " + cmd);
-                break;
             }
         }
         int timestamp = cp.Decode4();
 
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, false));
-        if (ops_res == OpsMapTransfer.MapTransferRes_Use) {
-            chr.changeMapPortal(target_map, target_map.getPortalById(0));
-            return true;
-        }
         chr.sendStatChanged(true);
         return false;
     }
@@ -3606,7 +3596,7 @@ public class ReqCUser {
                     return false;
                 }
                 TacosPortal portal_to = TacosMysticDoor.getTownPortal(map_to, (owner != null) ? owner.getDoorSlot() : 0);
-                chr.changeMapPortal(map_to, (portal_to != null) ? portal_to : door.getTownPortal());
+                chr.changeMap(map_to.getId(), (portal_to != null) ? portal_to.getId() : door.getTownPortal().getId());
                 return true;
             }
         }

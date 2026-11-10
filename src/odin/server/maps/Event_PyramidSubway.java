@@ -292,7 +292,7 @@ public class Event_PyramidSubway {
         if (map == null) {
             return false;
         }
-        player.changeMapPortal(map, map.getPortalById(0)); // solo
+        player.changeMap(map.getId(), 0); // solo
         return true;
     }
 
@@ -343,7 +343,7 @@ public class Event_PyramidSubway {
         } else if (clear == 2) {
             screenEffect(chr, "killing/fail");
         }
-        chr.changeMapPortal(map, map.getPortalById(0));
+        chr.changeMap(map.getId(), 0);
     }
 
     private static void clearMap(TacosMap map, boolean check) {

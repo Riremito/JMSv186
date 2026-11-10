@@ -86,10 +86,8 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill_BB;
-import tacos.packet.ops.OpsTransferField;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCClientSocket;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -316,9 +314,9 @@ public class TacosCharacter extends TacosPlayer {
     public void updateMap(TacosMap map_to, TacosPortal portal_to) {
         setMap(map_to);
         setPosMap(map_to.getId());
-        setPortal(portal_to.getType() == PortalType.PORTALTYPE_TOWNPORTAL_POINT ? portal_to.getTownPortalId() : portal_to.getId()); // spawn point
-        setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
-        setFootholdId(0); // foothold id is 0 while character is in the air.
+        setPortal(portal_to.getType() == PortalType.PORTALTYPE_TOWNPORTAL_POINT ? portal_to.getTownPortalId() : portal_to.getId());
+        setPosition(portal_to.getPosition());
+        setFootholdId(0);
         setMoveAction(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
     }
 
@@ -344,40 +342,27 @@ public class TacosCharacter extends TacosPlayer {
         updateMap(map_to, portal_to);
     }
 
-    public boolean changeMapById(int map_id) {
-        return changeMapById(map_id, null);
-    }
-
-    public boolean changeMapById(int map_id, String portal_name) {
-        if (WzDataStorage.MAP.check(map_id)) {
-            TacosMap map_to = findMap(map_id);
-            if (map_to != null) {
-                TacosPortal portal_to = null;
-                if (portal_name != null) {
-                    portal_to = map_to.getPortalByName(portal_name);
-                }
-                if (portal_to == null) {
-                    portal_to = map_to.getPortalById(0);
-                }
-                if (portal_to != null) {
-                    changeMapPortal(map_to, portal_to);
-                    return true;
-                }
-            }
-        }
-        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
-        return false;
-    }
-
     // unofficial usage.
-    public void changeMapDynamicPortal(TacosMap to, Point pos) {
-        changeMapPortal(to, null);
+    public void changeMapDynamicPortal(TacosMap map_to, Point pos) {
+        changeMap(map_to.getId());
     }
 
-    public void changeMapBanish(int mapid, String portal, String msg) {
-        DebugMsg(msg);
-        TacosMap map_to = findMap(mapid);
-        changeMapPortal(map_to, map_to.getPortalByName(portal));
+    public void mapBan(int map_id, String portal_name, String message) {
+        DebugMsg(message);
+        changeMap(map_id, portal_name);
+    }
+
+    public boolean changeMap(int map_id) {
+        return getChannelServer().changeMap(this, map_id);
+    }
+
+    // TODO : remove.
+    public boolean changeMap(int map_id, int portal_id) {
+        return getChannelServer().changeMap(this, map_id, portal_id);
+    }
+
+    public boolean changeMap(int map_id, String portal_name) {
+        return getChannelServer().changeMap(this, map_id, portal_name);
     }
 
     // mystic door : nPortal = 0x80 | party slot places the user on the door (CUserLocal::Init, town portal of PARTYDATA or LP_TownPortal).
@@ -393,17 +378,6 @@ public class TacosCharacter extends TacosPlayer {
         sendSetField(false);
         setPortal(spawn.getId());
         map_to.userEnterField(this);
-        saveToDB(false);
-        return true;
-    }
-
-    public boolean changeMapPortal(TacosMap map_to, TacosPortal portal_to) {
-        TacosMap map_from = this.map;
-        map_from.userLeaveField(this);
-        updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortalById(0)); // for dynamic portal
-        sendSetField(false);
-        map_to.userEnterField(this);
-        // マップ移動時にDBへ反映する
         saveToDB(false);
         return true;
     }

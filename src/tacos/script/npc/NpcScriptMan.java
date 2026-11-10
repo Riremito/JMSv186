@@ -485,11 +485,11 @@ public abstract class NpcScriptMan {
     }
 
     protected boolean warp(int map_id) {
-        return this.chr.changeMapById(map_id);
+        return this.chr.changeMap(map_id);
     }
 
     protected boolean warp(int map_id, String portal_name) {
-        return this.chr.changeMapById(map_id, portal_name);
+        return this.chr.changeMap(map_id, portal_name);
     }
 
     // lua の target.isPartyBoss
@@ -501,7 +501,7 @@ public abstract class NpcScriptMan {
     // lua の target.transferParty (同じマップにいるパーティーメンバーを移動させる)
     protected void transferParty(int map_id, String portal_name) {
         for (TacosCharacter member : TacosFieldSet.getPartyMembers(this.chr)) {
-            member.changeMapById(map_id, portal_name);
+            member.changeMap(map_id, portal_name);
         }
     }
 
@@ -662,7 +662,7 @@ public abstract class NpcScriptMan {
     // lua の field.transferFieldAll (同じマップにいるユーザーを全員移動させる)
     protected void transferFieldAll(int map_id, String portal_name) {
         for (TacosCharacter user : this.chr.getMap().getAllPlayers()) {
-            user.changeMapById(map_id, portal_name);
+            user.changeMap(map_id, portal_name);
         }
     }
 

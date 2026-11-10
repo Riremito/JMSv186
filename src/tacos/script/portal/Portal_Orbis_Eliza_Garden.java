@@ -27,7 +27,6 @@ public class Portal_Orbis_Eliza_Garden extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(920020000);
-        return true;
+        return warp(920020000);
     }
 }

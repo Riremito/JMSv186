@@ -29,6 +29,6 @@ public class Reactor_Victoria_S4berserkMap0 extends ReactorScriptMan {
     public void action() {
         // TODO : 文章 (js の英文を翻訳, 原文 : You were sent out of the map due to an unknown force.)
         playerMessage("正体不明の力によってマップの外へ追い出されました。");
-        warp(105090200, 0);
+        warp(105090200);
     }
 }

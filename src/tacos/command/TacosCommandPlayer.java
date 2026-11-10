@@ -54,19 +54,19 @@ public class TacosCommandPlayer {
             // player command.
             case "/fm" -> {
                 chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
-                chr.changeMapById(910000000);
+                chr.changeMap(910000000);
                 return true;
             }
             case "/henesys" -> {
-                chr.changeMapById(100000000);
+                chr.changeMap(100000000);
                 return true;
             }
             case "/leafre" -> {
-                chr.changeMapById(240000000);
+                chr.changeMap(240000000);
                 return true;
             }
             case "/magatia" -> {
-                chr.changeMapById(261000000);
+                chr.changeMap(261000000);
                 return true;
             }
             case "/autosp" -> {

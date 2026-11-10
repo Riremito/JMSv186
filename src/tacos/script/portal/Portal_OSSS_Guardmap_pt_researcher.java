@@ -27,7 +27,6 @@ public class Portal_OSSS_Guardmap_pt_researcher extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(502010000);
-        return true;
+        return warp(502010000);
     }
 }

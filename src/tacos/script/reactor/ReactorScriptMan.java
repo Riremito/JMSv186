@@ -26,7 +26,6 @@ import odin.server.life.MobSkill;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsMobSkill;
-import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosFieldSet;
@@ -224,49 +223,25 @@ public abstract class ReactorScriptMan {
     }
 
     public void warp(int map_id) {
-        TacosMap map = getMapById(map_id);
-        try {
-            getPlayer().changeMapPortal(map, map.getPortalById(Randomizer.nextInt(map.getPortals().size())));
-        } catch (Exception e) {
-            getPlayer().changeMapPortal(map, map.getPortalById(0));
-        }
+        this.chr.changeMap(map_id);
     }
 
-    public void warp(int map_id, int portal) {
-        TacosCharacter chr = getPlayer();
-        TacosMap map = getMapById(map_id);
-        // 同じマップの近くのポータルの場合は瞬間移動
-        if (portal != 0 && map_id == chr.getMapId() && new Point(chr.getMap().getPortalById(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) portal));
-            return;
-        }
-        chr.changeMapPortal(map, map.getPortalById(portal));
+    public void warp(int map_id, int portal_id) {
+        this.chr.changeMap(map_id, portal_id);
     }
 
-    public void warp(int map_id, String portal) {
-        TacosCharacter chr = getPlayer();
-        TacosMap map = getMapById(map_id);
+    public void warp(int map_id, String portal_name) {
+        TacosMap map_to = getMapById(map_id);
         if (map_id == 109060000 || map_id == 109060002 || map_id == 109060004) {
-            portal = map.getSnowballPortal();
-        }
-        // 同じマップの近くのポータルの場合は瞬間移動
-        if (map_id == chr.getMapId() && new Point(chr.getMap().getPortalByName(portal).getPosition()).distanceSq(chr.getPosition()) < 90000.0) {
-            this.chr.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortalByName(portal).getId()));
+            this.chr.changeMap(map_id, map_to.getSnowballPortal());
             return;
         }
-        chr.changeMapPortal(map, map.getPortalByName(portal));
+        this.chr.changeMap(map_id, portal_name);
     }
 
-    public void warpS(int map_id, int portal) {
-        TacosMap map = getMapById(map_id);
-        getPlayer().changeMapPortal(map, map.getPortalById(portal));
-    }
-
-    // マップにいる全てのキャラクターを移動
     public void warpMapAll(int map_id, int portal) {
-        TacosMap map = getMapById(map_id);
-        for (TacosCharacter user : getPlayer().getMap().getAllPlayers()) {
-            user.changeMapPortal(map, map.getPortalById(portal));
+        for (TacosCharacter player : this.chr.getMap().getAllPlayers()) {
+            player.changeMap(map_id, portal);
         }
     }
 

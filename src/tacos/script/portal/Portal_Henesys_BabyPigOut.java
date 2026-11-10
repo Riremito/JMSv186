@@ -27,7 +27,6 @@ public class Portal_Henesys_BabyPigOut extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(100030300);
-        return true;
+        return warp(100030300);
     }
 }

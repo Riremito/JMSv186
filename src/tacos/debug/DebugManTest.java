@@ -19,7 +19,6 @@
 package tacos.debug;
 
 import tacos.script.npc.NpcScriptTag;
-import tacos.server.map.TacosMap;
 
 /**
  *
@@ -78,8 +77,7 @@ public class DebugManTest extends DebugNpcScriptMan {
                 return false;
             }
             case 2 -> {
-                TacosMap map = getPlayer().findMap(this.target_map_id);
-                getPlayer().changeMapPortal(map, map.getPortalById(0));
+                getPlayer().changeMap(this.target_map_id);
                 return false;
             }
             default -> {

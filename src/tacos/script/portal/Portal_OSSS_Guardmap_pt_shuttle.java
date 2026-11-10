@@ -27,7 +27,6 @@ public class Portal_OSSS_Guardmap_pt_shuttle extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(502010700);
-        return true;
+        return warp(502010700);
     }
 }

@@ -27,7 +27,6 @@ public class Portal_MonsterCarnival_TH_Out extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(100000000);
-        return true;
+        return warp(100000000);
     }
 }

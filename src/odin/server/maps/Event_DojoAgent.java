@@ -69,11 +69,11 @@ public class Event_DojoAgent {
                 for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                     TacosCharacter chr = mapidd.getPlayerById(mem.getId());
                     if (chr != null) {
-                        chr.changeMapPortal(map, map.getPortalById(0));
+                        chr.changeMap(map.getId(), 0);
                     }
                 }
             } else {
-                player.changeMapPortal(map, map.getPortalById(0));
+                player.changeMap(map.getId(), 0);
             }
             spawnMonster(map, stage);
         }
@@ -108,13 +108,13 @@ public class Event_DojoAgent {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            chr.changeMapPortal(map, map.getPortalById(1));
+                            chr.changeMap(map.getId(), 1);
                             chr.modifyCSPoints(1, 5000, true);
                         }
                     }
                 } else {
                     player.modifyCSPoints(1, 5000, true);
-                    player.changeMapPortal(map, map.getPortalById(1));
+                    player.changeMap(map.getId(), 1);
                 }
                 return true;
             }
@@ -166,11 +166,11 @@ public class Event_DojoAgent {
             for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                 TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                 if (chr != null) {
-                    chr.changeMapPortal(map, map.getPortalById(0));
+                    chr.changeMap(map.getId(), 0);
                 }
             }
         } else {
-            player.changeMapPortal(map, map.getPortalById(0));
+            player.changeMap(map.getId(), 0);
         }
         spawnMonster(map, stage);
     }

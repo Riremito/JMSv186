@@ -23,6 +23,7 @@ import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.constants.TacosConstants;
 import tacos.wz.StatEffectData;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -557,14 +558,7 @@ public class MapleStatEffect {
 
     public boolean applyReturnScroll(TacosCharacter applyto) {
         if (moveTo != -1) {
-            TacosMap target;
-            if (moveTo == 999999999) {
-                target = applyto.getMap().getReturnMap();
-            } else {
-                target = applyto.findMap(moveTo);
-            }
-            applyto.changeMapPortal(target, target.getPortalById(0));
-            return true;
+            return applyto.changeMap(this.moveTo == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID ? applyto.getMap().getReturnMapId() : this.moveTo);
         }
         return false;
     }

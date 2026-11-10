@@ -298,12 +298,10 @@ public class TacosCommandDebug {
                 return true;
             }
             case "/randommap" -> {
-                int mapid = WzDataStorage.MAP.getRandom();
-                TacosMap map_to = chr.findMap(mapid);
-                chr.changeMapPortal(map_to, map_to.getPortalById(0));
-
-                chr.DebugMsg("randommap : " + map_to.getId());
-                DebugLogger.InfoLog("randommap : " + map_to.getId());
+                int map_id = WzDataStorage.MAP.getRandom();
+                chr.changeMap(map_id);
+                chr.DebugMsg("randommap : " + map_id);
+                DebugLogger.InfoLog("randommap : " + map_id);
                 return true;
             }
             case "/randombgm" -> {
@@ -321,7 +319,7 @@ public class TacosCommandDebug {
                     return true;
                 }
 
-                chr.changeMapById(map_id);
+                chr.changeMap(map_id);
                 return true;
             }
             case "/nextmap" -> {
@@ -332,7 +330,7 @@ public class TacosCommandDebug {
                     return true;
                 }
 
-                chr.changeMapById(map_id);
+                chr.changeMap(map_id);
                 return true;
             }
             case "/dp" -> {
@@ -388,7 +386,7 @@ public class TacosCommandDebug {
             case "/regen" -> {
                 int map_id = map.getId();
                 chr.getChannelServer().removeMap(map_id);
-                chr.changeMapById(map_id);
+                chr.changeMap(map_id);
                 return true;
             }
             case "/addmm" -> {

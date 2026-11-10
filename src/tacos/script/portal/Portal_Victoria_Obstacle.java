@@ -29,7 +29,7 @@ public class Portal_Victoria_Obstacle extends PortalScriptMan {
     public boolean enter() {
         if (isQuestFinished(2318)) {
             if (!haveItem(2430014)) {
-                warp(106020400);
+                return warp(106020400);
             } else {
                 // TODO : 文章 (js の英文を翻訳, 原文 : First, use the Killer Mushroom Spores to remove the barrier.)
                 playerMessage("まずは殺キノコスプレーを使って結界を取り除こう。");

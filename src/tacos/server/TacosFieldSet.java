@@ -90,8 +90,8 @@ public class TacosFieldSet {
         if (map_id == 0) {
             map_id = chr.getMap().getForcedReturnId();
         }
-        if (!chr.changeMapById(map_id)) {
-            chr.changeMapById(chr.getMap().getReturnMapId());
+        if (!chr.changeMap(map_id)) {
+            chr.changeMap(chr.getMap().getReturnMapId());
         }
         return true;
     }
@@ -220,7 +220,7 @@ public class TacosFieldSet {
             this.time_start = System.currentTimeMillis();
         }
         for (TacosCharacter member : members) {
-            member.changeMapById(field_id);
+            member.changeMap(field_id);
         }
         return ENTER_SUCCESS;
     }
@@ -325,7 +325,7 @@ public class TacosFieldSet {
 
     public synchronized void transferFieldAll(int field_id, String portal_name) {
         for (TacosCharacter user : getUsers()) {
-            user.changeMapById(field_id, portal_name);
+            user.changeMap(field_id, portal_name);
         }
     }
 

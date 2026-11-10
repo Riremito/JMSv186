@@ -68,20 +68,20 @@ public class ReqCUser_Item {
     // owl.
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
-    public static void OnShopLinkRequest(TacosCharacter chr, int id, int map) {
+    public static void OnShopLinkRequest(TacosCharacter chr, int id, int map_id) {
         chr.updateInv();
-        if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.getPlayerShop() != null || map < 910000001 || map > 910000022) {
+        if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.getPlayerShop() != null || map_id < 910000001 || map_id > 910000022) {
             return;
         }
-        TacosMap mapp = chr.findMap(map);
-        chr.changeMapPortal(mapp, mapp.getPortalById(0));
-        visitOwlMerchant(chr, findOwlMerchant(mapp, id));
+        TacosMap map = chr.findMap(map_id);
+        chr.changeMap(map_id);
+        visitOwlMerchant(chr, findOwlMerchant(map, id));
     }
 
-    private static TacosMerchant findOwlMerchant(TacosMap mapp, int id) {
+    private static TacosMerchant findOwlMerchant(TacosMap map, int id) {
         switch (OWL_ID) {
             case 0: {
-                for (TacosMerchant merch : mapp.getAllMerchants()) {
+                for (TacosMerchant merch : map.getAllMerchants()) {
                     if (merch.getOwnerId() == id) {
                         return merch;
                     }
@@ -89,7 +89,7 @@ public class ReqCUser_Item {
                 return null;
             }
             case 1: {
-                for (TacosMerchant merch : mapp.getAllMerchants()) {
+                for (TacosMerchant merch : map.getAllMerchants()) {
                     if (merch.getStoreId() == id) {
                         return merch;
                     }
@@ -97,7 +97,7 @@ public class ReqCUser_Item {
                 return null;
             }
             default: {
-                return mapp.getMerchantByOid(id);
+                return map.getMerchantByOid(id);
             }
         }
     }
@@ -214,7 +214,7 @@ public class ReqCUser_Item {
         for (int i = 390001000; i <= 390001004; i++) {
             TacosMap map = chr.findMap(i);
             if (map.getCharactersSize() == 0) {
-                chr.changeMapPortal(map, map.getPortalById(0));
+                chr.changeMap(i);
                 MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, 2430008, 1, false, false); // Removal of gold compass
                 return;
             }
@@ -293,7 +293,7 @@ public class ReqCUser_Item {
                     return false;
                 }
                 item_use.run();
-                chr.changeMapById(map_id);
+                chr.changeMap(map_id);
                 return true;
             }
             case 506: {

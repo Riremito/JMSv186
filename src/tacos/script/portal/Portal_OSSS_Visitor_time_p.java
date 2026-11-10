@@ -27,7 +27,6 @@ public class Portal_OSSS_Visitor_time_p extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        warp(502010030);
-        return true;
+        return warp(502010030);
     }
 }

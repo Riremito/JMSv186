@@ -111,14 +111,7 @@ public class TacosPortal {
         if (this.disabled) {
             return false;
         }
-        TacosMap map_to = chr.findMap(this.target_map_id);
-        TacosPortal portal_to = map_to.getPortalByName(this.target);
-        // find portal failed.
-        if (portal_to == null) {
-            portal_to = map_to.getPortalById(0);
-        }
-        chr.changeMapPortal(map_to, portal_to);
-        return true;
+        return chr.getChannelServer().changeMap(chr, this.target_map_id, this.target);
     }
 
     public boolean enterScriptPortal(TacosCharacter chr) {

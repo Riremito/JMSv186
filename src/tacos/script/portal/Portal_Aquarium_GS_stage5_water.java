@@ -27,6 +27,6 @@ public class Portal_Aquarium_GS_stage5_water extends PortalScriptMan {
 
     @Override
     public boolean enter() {
-        return warpS(getMapId(), "st00");
+        return warp(getMapId(), "st00");
     }
 }
