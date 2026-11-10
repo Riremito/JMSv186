@@ -62,7 +62,11 @@ public class DebugMan_MapPortal extends DebugNpcScriptMan {
                 if (portal == null) {
                     return false;
                 }
-                getPlayer().mapChangePortal(true, portal.getTargetMapId(), portal.getName(), 0);
+                if (portal.getScriptName().isEmpty()) {
+                    portal.enterPortal(getPlayer());
+                } else {
+                    portal.enterScriptPortal(getPlayer());
+                }
                 return false;
             }
             default -> {

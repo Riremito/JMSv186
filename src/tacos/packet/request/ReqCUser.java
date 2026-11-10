@@ -147,9 +147,7 @@ public class ReqCUser {
         }
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                if (!OnUserTransferFieldRequest(chr, cp)) {
-                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
-                }
+                OnUserTransferFieldRequest(chr, cp);
                 return true;
             }
             case CP_UserTransferChannelRequest: {
@@ -778,14 +776,42 @@ public class ReqCUser {
         int map_id_to = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
         int gms111_checksum = Config.GreaterOrEqual(Region.GMS, 111) ? cp.Decode4() : 0;
         String portal_name = cp.DecodeStr();
-        boolean isPortal = !portal_name.equals("");
+        boolean isRevive = map_id_to == 0 && !chr.isAlive();
+        boolean isPortal = !portal_name.isEmpty();
+        boolean isMapCommand = !isRevive && !isPortal;
         short x = isPortal ? cp.Decode2() : 0;
         short y = isPortal ? cp.Decode2() : 0;
         byte unk3 = cp.Decode1();
         byte revive_type = cp.Decode1(); // revive_type -> JMS302 = 4 bytes
 
-        // map_id is -1. (in JMS.)
-        return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
+        // use portal.
+        if (isPortal) {
+            TacosPortal portal = chr.getMap().getPortalByName(portal_name);
+            if (portal != null) {
+                if (portal.enterPortal(chr)) {
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DONE));
+                    return true;
+                }
+            }
+            chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+            return false;
+        }
+        // revive.
+        if (isRevive) {
+            TacosMap map_to = (revive_type > 0) ? chr.getMap() : chr.getMap().getReturnMap();
+            chr.getStat().setHp(chr.getStat().getMaxHp());
+            chr.getStat().setMp(chr.getStat().getMaxMp());
+            chr.sendStatChanged(true);
+            chr.changeMapPortal(map_to, map_to.getSpawnPoint());
+            return true;
+        }
+        // direct map teleport, map command.
+        if (isMapCommand) {
+            TacosMap map_to = chr.findMap(map_id_to);
+            chr.changeMapPortal(map_to, map_to.getSpawnPoint());
+            return true;
+        }
+        return false;
     }
 
     // CCashShop::SendTransferFieldPacket, CField::SendTransferFieldRequest, CITC::SendTransferFieldPacket
@@ -2492,8 +2518,7 @@ public class ReqCUser {
         short chr_y = cp.Decode2();
         short portal_to_x = cp.Decode2();
         short portal_to_y = cp.Decode2();
-
-        return chr.usePortalTeleport(portal_name);
+        return true;
     }
 
     // CWvsContext::SendMapTransferRequest

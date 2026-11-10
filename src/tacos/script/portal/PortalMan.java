@@ -31,6 +31,9 @@ public class PortalMan {
 
     public static boolean enter(TacosCharacter chr, TacosPortal portal) {
         String script_name = portal.getScriptName();
+        if (script_name.isEmpty()) {
+            return false;
+        }
         // Meister ville out
         if (script_name.equals("out_profession")) {
             chr.DebugMsg("ArdentmillPortal : leave, " + portal.getScriptName());

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import lombok.Getter;
+import odin.server.Randomizer;
 import tacos.wz.MapWz;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
@@ -374,7 +375,7 @@ public class TacosMapData {
         return ret;
     }
 
-    public ArrayList<TacosPortal> getSpawnPoint() {
+    private ArrayList<TacosPortal> getSpawnPoints() {
         return getPortalsByType(PortalType.PORTALTYPE_STARTPOINT);
     }
 
@@ -382,10 +383,15 @@ public class TacosMapData {
         return getPortalsByType(PortalType.PORTALTYPE_TOWNPORTAL_POINT);
     }
 
+    public TacosPortal getSpawnPoint() {
+        ArrayList<TacosPortal> spwan_points = getSpawnPoints();
+        return spwan_points.get(Randomizer.nextInt(spwan_points.size()));
+    }
+
     public TacosPortal findSpawnPoint(Point object_pos) {
         TacosPortal ret = this.portals.get(0);
         double distance_shortest = ret.getPosition().distanceSq(object_pos);
-        for (TacosPortal portal : getSpawnPoint()) {
+        for (TacosPortal portal : getSpawnPoints()) {
             double distance = portal.getPosition().distanceSq(object_pos);
             if (distance < distance_shortest) {
                 distance_shortest = distance;

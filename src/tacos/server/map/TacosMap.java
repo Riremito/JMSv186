@@ -1060,7 +1060,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void addMasterMonster() {
-        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster((TacosMap) this);
+        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster(this);
         if (bsp != null) {
             getBossSpawnPoint().add(bsp);
         }
@@ -1548,7 +1548,7 @@ public class TacosMap extends TacosMapData {
                     if (time_mob && !isTimeMobRegenTime()) {
                         continue;
                     }
-                    TacosMonster monster = sp.regen((TacosMap) this);
+                    TacosMonster monster = sp.regen(this);
                     if (monster != null) {
                         addMonster(monster);
                         if (time_mob && getTimeMobMessage() != null && !getTimeMobMessage().isEmpty()) {
@@ -1572,7 +1572,7 @@ public class TacosMap extends TacosMapData {
         if (this.task_boss_regen.check(time_current, 7000)) {
             for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
                 if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
-                    TacosMonster monster = bsp.regen((TacosMap) this);
+                    TacosMonster monster = bsp.regen(this);
                     if (monster != null) {
                         addMonster(monster);
                         if (!bsp.getMessage().isEmpty()) {
@@ -1597,7 +1597,7 @@ public class TacosMap extends TacosMapData {
             for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
                 if (1 <= sp.getReactorTime()) {
                     if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
-                        TacosReactor reactor = sp.regen((TacosMap) this);
+                        TacosReactor reactor = sp.regen(this);
                         if (reactor != null) {
                             addReactor(reactor);
                         }

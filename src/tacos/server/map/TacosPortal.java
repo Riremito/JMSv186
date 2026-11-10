@@ -20,7 +20,6 @@ package tacos.server.map;
 
 import java.awt.Point;
 import tacos.client.TacosCharacter;
-import tacos.constants.TacosConstants;
 import tacos.script.portal.PortalMan;
 import tacos.wz.opt.PortalType;
 
@@ -112,29 +111,20 @@ public class TacosPortal {
         if (this.disabled) {
             return false;
         }
-        // script portal
-        if (!this.scriptName.isEmpty()) {
-            return PortalMan.enter(chr, this);
-        }
-        // normal portal
-        if (this.target_map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
-            return false;
-        }
         TacosMap map_to = chr.findMap(this.target_map_id);
         TacosPortal portal_to = map_to.getPortalByName(this.target);
         // find portal failed.
         if (portal_to == null) {
             portal_to = map_to.getPortalById(0);
         }
-        // never executed.
-        if (portal_to == null) {
-            return false;
-        }
         chr.changeMapPortal(map_to, portal_to);
         return true;
     }
 
     public boolean enterScriptPortal(TacosCharacter chr) {
+        if (this.disabled) {
+            return false;
+        }
         return PortalMan.enter(chr, this);
     }
 }

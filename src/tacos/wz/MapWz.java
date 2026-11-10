@@ -23,6 +23,7 @@ import java.util.List;
 import lombok.Getter;
 import tacos.config.Content;
 import tacos.constants.TacosConstants;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -241,7 +242,12 @@ public class MapWz extends WzXML {
 
         for (MapleData md_portal : md_map.getChildByPath("portal")) {
             PortalInfo portal = new PortalInfo();
-            portal.id = Integer.parseInt(md_portal.getName());
+            int node_id = Integer.parseInt(md_portal.getName()); // unused.
+            portal.id = ret.portals.size();
+            // ポータルは本当の順序で読み込まれるのでspawn pointを指定する際は実際の登録順でidを割り振る必要がある
+            if (node_id != portal.id) {
+                DebugLogger.ErrorLog("portal : node_id = " + node_id + ", order = " + portal.id);
+            }
             portal.pt = md_portal.getInt("pt");
             portal.pn = md_portal.getString("pn");
             portal.tn = md_portal.getString("tn");

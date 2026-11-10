@@ -276,12 +276,12 @@ public class TacosCharacter extends TacosPlayer {
             getCalcDamage().setSeed(getCalcDamage().random(), getCalcDamage().random(), getCalcDamage().random());
         }
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            SendPacket(ResCStage.SetField_JMS302((TacosCharacter) this, 1, bCharacterData, 0));
-            SendPacket(ResCStage.SetField_JMS302((TacosCharacter) this, 2, bCharacterData, -1));
+            SendPacket(ResCStage.SetField_JMS302(this, 1, bCharacterData, 0));
+            SendPacket(ResCStage.SetField_JMS302(this, 2, bCharacterData, -1));
             return;
         }
 
-        SendPacket(ResCStage.SetField((TacosCharacter) this, bCharacterData));
+        SendPacket(ResCStage.SetField(this, bCharacterData));
     }
 
     public TacosMap getMap() {
@@ -344,60 +344,6 @@ public class TacosCharacter extends TacosPlayer {
         updateMap(map_to, portal_to);
     }
 
-    public boolean usePortal(boolean isPortal, int map_id_to, String portal_name, int revive_type) {
-        return mapChangePortal(isPortal, map_id_to, portal_name, revive_type);
-    }
-
-    public boolean usePortalScript(String portal_name) {
-        return mapChangePortal(true, -1, portal_name, 0);
-    }
-
-    public boolean usePortalTeleport(String portal_name) {
-        // not coded.
-        return true;
-    }
-
-    public boolean mapChangePortal(boolean isPortal, int map_id_to, String portal_name, int revive_type) {
-        if (map == null) {
-            return false;
-        }
-        // use normal portal.
-        if (isPortal) {
-            TacosPortal portal = map.getPortalByName(portal_name);
-            if (portal == null) {
-                return false;
-            }
-            DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
-            if (!portal.enterPortal(this)) {
-                return false;
-            }
-            return true;
-        }
-        if (map_id_to == 0) {
-            if (!isAlive()) {
-
-            }
-        }
-        TacosMap map_to = null;
-        if (!isAlive()) {
-            // revive
-            if (map_id_to == 0) {
-                map_to = (revive_type > 0) ? getMap() : getMap().getReturnMap();
-                changeMapPortal(map_to, map_to.getPortalById(0));
-                getStat().setHp(getStat().getMaxHp());
-                getStat().setMp(getStat().getMaxMp());
-                sendStatChanged(true);
-                return true;
-            }
-            // hack?
-            return false;
-        }
-        // direct map change.
-        map_to = findMap(map_id_to);
-        changeMapPortal(map_to, map_to.getPortalById(0));
-        return true;
-    }
-
     public boolean changeMapById(int map_id) {
         return changeMapById(map_id, null);
     }
@@ -440,42 +386,23 @@ public class TacosCharacter extends TacosPlayer {
             return false;
         }
         TacosPortal spawn = map_to.findSpawnPoint(pos);
-        this.map.userLeaveField((TacosCharacter) this);
+        this.map.userLeaveField(this);
         updateMap(map_to, spawn);
         setPosition(pos);
         setPortal(0x80 | slot);
         sendSetField(false);
         setPortal(spawn.getId());
-        map_to.userEnterField((TacosCharacter) this);
-        if (getPyramidSubway() != null) {
-            getPyramidSubway().onChangeMap((TacosCharacter) this, map_to.getId());
-        }
+        map_to.userEnterField(this);
         saveToDB(false);
         return true;
     }
 
     public boolean changeMapPortal(TacosMap map_to, TacosPortal portal_to) {
-        if (map_to == null) {
-            return false;
-        }
-
-        int map_id_prev = this.map.getId();
-        boolean map_id_check = this.map.getId() == map_id_prev;
-
-        if (map_id_check) {
-            TacosMap map_from = this.map;
-            map_from.userLeaveField((TacosCharacter) this);
-            updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortalById(0)); // for dynamic portal
-            sendSetField(false);
-            map_to.userEnterField((TacosCharacter) this);
-        }
-
-        if (getPyramidSubway() != null) {
-            if (getPyramidSubway() != null) {
-                getPyramidSubway().onChangeMap((TacosCharacter) this, map_to.getId());
-            }
-        }
-
+        TacosMap map_from = this.map;
+        map_from.userLeaveField(this);
+        updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortalById(0)); // for dynamic portal
+        sendSetField(false);
+        map_to.userEnterField(this);
         // マップ移動時にDBへ反映する
         saveToDB(false);
         return true;
@@ -1459,17 +1386,17 @@ public class TacosCharacter extends TacosPlayer {
     private int fishing_hit_interval = 30000;
 
     public boolean fishingHit() {
-        if (((TacosCharacter) this).getChair() != 3011000) {
+        if (getChair() != 3011000) {
             return false;
         }
         int bait_level = 0;
         // 高級餌を消費
-        if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300001, 1, false, true)) {
+        if (bait_level < 2 && haveItem(2300001, 1, false, true)) {
             bait_level = 2;
             MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300001, 1, false, false);
         }
         // 餌を消費
-        if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300000, 1, false, true)) {
+        if (bait_level < 2 && haveItem(2300000, 1, false, true)) {
             bait_level = 1;
             MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300000, 1, false, false);
         }
@@ -1483,7 +1410,7 @@ public class TacosCharacter extends TacosPlayer {
             case 0 -> // Meso
             {
                 int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
-                ((TacosCharacter) this).gainMeso(caught_meso, true);
+                gainMeso(caught_meso, true);
                 SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 1, caught_meso));
             }
             case 1 -> // EXP
@@ -1493,7 +1420,7 @@ public class TacosCharacter extends TacosPlayer {
                 if (caught_exp == 0) {
                     caught_exp += 1;
                 }
-                ((TacosCharacter) this).gainExp(caught_exp, true, false, true);
+                gainExp(caught_exp, true, false, true);
                 SendPacket(ResCWvsContext.Fishing_BoardUpdate((byte) 2, caught_exp));
             }
             default -> {
@@ -1523,7 +1450,7 @@ public class TacosCharacter extends TacosPlayer {
         }
 
         this.fishing_hit_interval = (fishing_rod_id == 5340001) ? 10000 : 30000;
-        this.fishing_chair_id = ((TacosCharacter) this).getChair();
+        this.fishing_chair_id = getChair();
         this.task_fishing.reset();
         return true;
     }
@@ -1549,7 +1476,7 @@ public class TacosCharacter extends TacosPlayer {
 
         int combo_level = this.m_nCombo / 10;
         if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
-            if (combo_level <= ((TacosCharacter) this).getSkillLevel(OpsSkill_BB.ARAN_COMBO_ABILITY.get())) {
+            if (combo_level <= getSkillLevel(OpsSkill_BB.ARAN_COMBO_ABILITY.get())) {
                 // buff.
             }
         }
@@ -1816,7 +1743,7 @@ public class TacosCharacter extends TacosPlayer {
         if (!addNewCharacterData()) {
             return false;
         }
-        if (!DQ_Queststatus.add((TacosCharacter) this)) {
+        if (!DQ_Queststatus.add(this)) {
             return false;
         }
         return true;
