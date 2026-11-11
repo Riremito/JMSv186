@@ -283,7 +283,7 @@ public class ReqCUser_Item {
                     map_id = cp.Decode4();
                 } else {
                     String target_name = cp.DecodeStr();
-                    target_chr = chr.getClient().getChannelServer().getOnlinePlayers().findByName(target_name);
+                    target_chr = chr.getChannelServer().getOnlinePlayers().findByName(target_name);
                     if (target_chr == null) {
                         return false;
                     }
@@ -536,7 +536,6 @@ public class ReqCUser_Item {
     }
 
     public static boolean cashItem507_Megaphone(TacosCharacter chr, int cash_item_id, ClientPacket cp) {
-        byte channel = (byte) chr.getClient().getChannelId();
         switch (cash_item_id) {
             // メガホン
             case 5070000: {

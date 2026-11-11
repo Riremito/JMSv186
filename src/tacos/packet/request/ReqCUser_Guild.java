@@ -74,7 +74,7 @@ public class ReqCUser_Guild {
                 chr.setGuildRank((byte) 1);
                 chr.saveGuildStatus();
                 chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
-                world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
+                world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getChannelId());
                 chr.Alert("You have successfully created a guild.");
                 return;
             }

@@ -21,7 +21,6 @@ package tacos.packet.request;
 import java.util.Random;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacket;
@@ -63,7 +62,6 @@ public class ReqCRPSGameDlg {
 
     // CRPSGameDlg::SendSelection
     public static boolean OnRPSGame(TacosCharacter chr, ClientPacket cp) {
-        TacosClient client = chr.getClient();
         int tax = 1000;
         int refund = 500;
 

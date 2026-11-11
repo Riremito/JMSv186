@@ -40,7 +40,7 @@ public class ResCStage {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
 
         sp.EncodeBuffer(RD_CStage.ClientOptMan_EncodeOpt(), Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.EMS, 89)); // 2 bytes
-        sp.Encode4(chr.getClient().getChannelId() - 1); // m_nChannelID
+        sp.Encode4(chr.getChannelId() - 1); // m_nChannelID
         sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         sp.Encode1(1, Config.GreaterOrEqual(Region.EMS, 89)); // Supreme/Ibara World
         sp.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // m_dwOldDriverID
@@ -108,7 +108,7 @@ public class ResCStage {
         if (part == 1) {
             // 008ABA10
             sp.EncodeBuffer(RD_CStage.ClientOptMan_EncodeOpt());
-            sp.Encode4(chr.getClient().getChannelId() - 1);
+            sp.Encode4(chr.getChannelId() - 1);
             sp.Encode1(0);
             sp.Encode1(0);
             sp.Encode4(0);

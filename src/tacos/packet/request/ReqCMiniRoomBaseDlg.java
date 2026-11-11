@@ -233,7 +233,7 @@ public class ReqCMiniRoomBaseDlg {
                     room.removePlayer(chr);
                 }
                 if (chr.getTrade() != null) {
-                    MapleTrade.cancelTrade(chr.getTrade(), chr.getClient());
+                    MapleTrade.cancelTrade(chr.getTrade(), chr);
                     return true;
                 }
                 IPlayerShop ips = chr.getPlayerShop();

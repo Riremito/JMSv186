@@ -255,7 +255,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         this.des = desc;
         this.pass = "";
         this.map = owner.getMapId();
-        this.channel = owner.getClient().getChannelId();
+        this.channel = owner.getChannelId();
         this.item_sub_type = itemId % 100;
         this.foothold_id = owner.getFootholdId();
         start = System.currentTimeMillis();

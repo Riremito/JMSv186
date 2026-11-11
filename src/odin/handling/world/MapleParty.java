@@ -114,7 +114,7 @@ public class MapleParty {
         public MaplePartyCharacter(TacosCharacter maplechar) {
             this.name = maplechar.getName();
             this.level = maplechar.getLevel();
-            this.channel = maplechar.getClient().getChannelId();
+            this.channel = maplechar.getChannelId();
             this.id = maplechar.getId();
             this.jobid = maplechar.getJob();
             this.mapid = maplechar.getMapId();

@@ -242,7 +242,6 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(TacosCharacter chr, TacosDrop mapitem, int pet_index) {
-        TacosClient client = chr.getClient();
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }

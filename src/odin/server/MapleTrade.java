@@ -9,7 +9,6 @@ import java.util.List;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -226,8 +225,8 @@ public class MapleTrade {
         }
     }
 
-    public static void cancelTrade(MapleTrade Localtrade, TacosClient client) {
-        Localtrade.cancel(client.getPlayer());
+    public static void cancelTrade(MapleTrade Localtrade, TacosCharacter player) {
+        Localtrade.cancel(player);
 
         MapleTrade partner = Localtrade.getPartner();
         if (partner != null) {
@@ -264,7 +263,7 @@ public class MapleTrade {
             player2.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Invite(player1, player1.getTrade().isPointTrade()));
         } else {
             player1.Notice("The other player is already trading with someone else.");
-            cancelTrade(player1.getTrade(), player1.getClient());
+            cancelTrade(player1.getTrade(), player1);
         }
     }
 

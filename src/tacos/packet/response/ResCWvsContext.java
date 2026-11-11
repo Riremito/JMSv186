@@ -1432,7 +1432,7 @@ public class ResCWvsContext {
         }
         for (int i = 0; i < TacosExpedition.MEMBER_MAX; i++) {
             TacosCharacter member = (i < members.size()) ? expedition.findOnline(members.get(i)) : null;
-            data.Encode4((member != null) ? member.getClient().getChannelId() - 1 : -2); // anChannelID
+            data.Encode4((member != null) ? member.getChannelId() - 1 : -2); // anChannelID
         }
         data.Encode4(expedition.getBossId(party_index)); // dwPartyBossCharacterID
         return data.getBytes();
@@ -1490,7 +1490,7 @@ public class ResCWvsContext {
             case BM_SKULLSPEAKER: // 5074000, ドクロ拡声器
             {
                 String text = pb.chr.getPlayerNameWithMedal() + " : " + pb.message;
-                int channel = pb.chr.getClient().getChannelId() - 1;
+                int channel = pb.chr.getChannelId() - 1;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
                 sp.Encode1(pb.ear);
@@ -1499,7 +1499,7 @@ public class ResCWvsContext {
             case BM_ITEMSPEAKER: // 5076000, アイテム拡声器
             {
                 String text = pb.chr.getPlayerNameWithMedal() + " : " + pb.message;
-                int channel = pb.chr.getClient().getChannelId() - 1;
+                int channel = pb.chr.getChannelId() - 1;
                 boolean show_item = pb.item != null;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
@@ -1513,7 +1513,7 @@ public class ResCWvsContext {
             case BM_ARTSPEAKERWORLD: // 5077000, 三連拡声器
             {
                 String name = pb.chr.getPlayerNameWithMedal();
-                int channel = pb.chr.getClient().getChannelId() - 1;
+                int channel = pb.chr.getChannelId() - 1;
                 String text1 = pb.messages.get(0); // ?_?
 
                 sp.EncodeStr(name + " : " + text1);

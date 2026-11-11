@@ -258,7 +258,7 @@ public class TacosMap extends TacosMapData {
             return false;
         }
         chr.silentPartyUpdate();
-        chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
+        chr.SendPacket(ResCWvsContext.PartyResult(chr.getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
         return true;
     }
 

@@ -18,11 +18,11 @@
  */
 package tacos.packet.response.data;
 
-import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import tacos.shared.TacosSharedDate;
 import tacos.packet.ServerPacket;
 import odin.server.CashItemFactory;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -31,11 +31,11 @@ import odin.server.CashItemFactory;
 public class RD_CCashShop {
 
     // buffer.
-    public static byte[] GW_CashItemInfo_Encode(Item item, TacosClient client) {
+    public static byte[] GW_CashItemInfo_Encode(Item item, TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode8(item.getUniqueId());
-        data.Encode8(client.getId());
+        data.Encode8(chr.getId());
         data.Encode4(item.getItemId());
         data.Encode4(0); // first?
         data.Encode2(item.getQuantity());

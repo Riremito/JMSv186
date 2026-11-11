@@ -3352,7 +3352,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void changeRemoval(boolean dc) {
         if (getTrade() != null) {
-            MapleTrade.cancelTrade(getTrade(), client);
+            MapleTrade.cancelTrade(getTrade(), this);
         }
         if (getPyramidSubway() != null) {
             getPyramidSubway().dispose(this);

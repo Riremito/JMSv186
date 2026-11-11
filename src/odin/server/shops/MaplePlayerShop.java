@@ -84,7 +84,7 @@ public class MaplePlayerShop implements IPlayerShop {
         this.des = desc;
         this.pass = "";
         this.map = owner.getMapId();
-        this.channel = owner.getClient().getChannelId();
+        this.channel = owner.getChannelId();
         chrs = new TacosCharacter[3];
         for (int i = 0; i < chrs.length; i++) {
             chrs[i] = null;

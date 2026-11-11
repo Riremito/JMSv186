@@ -26,7 +26,6 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
-import tacos.client.TacosClient;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
@@ -183,8 +182,8 @@ public class MapScriptMethods {
                 int temp = (chr.getMapId() - 925000000) / 100;
                 int stage = temp % 100;
 
-                sendDojoClock(chr.getClient(), getTiming(stage) * 60);
-                sendDojoStart(chr.getClient(), stage - getDojoStageDec(stage));
+                sendDojoClock(chr, getTiming(stage) * 60);
+                sendDojoStart(chr, stage - getDojoStageDec(stage));
                 break;
             }
             case PinkBeen_before: {
@@ -446,7 +445,7 @@ public class MapScriptMethods {
         switch (UserEnterScript.fromString(scriptName)) {
             case cygnusTest:
             case cygnusJobTutorial: {
-                showIntro(chr.getClient(), "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
+                showIntro(chr, "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
@@ -525,20 +524,20 @@ public class MapScriptMethods {
             }
             case goAdventure: {
                 // BUG in MSEA v.91, so let's skip this part.
-                showIntro(chr.getClient(), "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case crash_Dragon:
-                showIntro(chr.getClient(), "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case getDragonEgg:
-                showIntro(chr.getClient(), "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case meetWithDragon:
-                showIntro(chr.getClient(), "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case PromiseDragon:
-                showIntro(chr.getClient(), "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case evanPromotion:
                 switch (chr.getMapId()) {
@@ -561,7 +560,7 @@ public class MapScriptMethods {
                         chr.changeMap(900010000);
                         return;
                 }
-                showIntro(chr.getClient(), data);
+                showIntro(chr, data);
                 break;
             case TD_MC_title: {
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
@@ -594,35 +593,35 @@ public class MapScriptMethods {
                 break;
             }
             case goArcher: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goPirate: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goRogue: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goMagician: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goSwordman: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goLith: {
-                showIntro(chr.getClient(), "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
+                showIntro(chr, "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case TD_MC_Openning: {
-                showIntro(chr.getClient(), "Effect/Direction2.img/open");
+                showIntro(chr, "Effect/Direction2.img/open");
                 break;
             }
             case TD_MC_gasi: {
-                showIntro(chr.getClient(), "Effect/Direction2.img/gasi");
+                showIntro(chr, "Effect/Direction2.img/gasi");
                 break;
             }
             case aranDirection: {
@@ -646,7 +645,7 @@ public class MapScriptMethods {
                         data = "Effect/Direction1.img/aranTutorial/Maha";
                         break;
                 }
-                showIntro(chr.getClient(), data);
+                showIntro(chr, data);
                 break;
             }
             case iceCave: {
@@ -737,21 +736,21 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static void showIntro(TacosClient client, String data) {
-        client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
-        client.SendPacket(ResCUserLocal.SetDirectionMode(true));
-        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
+    private static void showIntro(TacosCharacter chr, String data) {
+        chr.SendPacket(ResCUserLocal.SetStandAloneMode(true));
+        chr.SendPacket(ResCUserLocal.SetDirectionMode(true));
+        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ReservedEffect, PB_UserEffect.builder().path(data).build()));
     }
 
-    private static void sendDojoClock(TacosClient client, int time) {
-        client.SendPacket(ResCField.Clock(time));
+    private static void sendDojoClock(TacosCharacter chr, int time) {
+        chr.SendPacket(ResCField.Clock(time));
     }
 
-    private static void sendDojoStart(TacosClient client, int stage) {
-        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/start").build()));
-        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/stage").build()));
-        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/number/" + stage).build()));
-        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Tremble, PB_FieldEffect.builder().type(0).delay(1).build()));
+    private static void sendDojoStart(TacosCharacter chr, int stage) {
+        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/start").build()));
+        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/stage").build()));
+        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/number/" + stage).build()));
+        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Tremble, PB_FieldEffect.builder().type(0).delay(1).build()));
     }
 
     private static void handlePinkBeanStart(TacosCharacter chr) {

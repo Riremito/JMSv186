@@ -92,7 +92,7 @@ public class Party {
                 } else {
                     chr.setParty(party);
                 }
-                chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
+                chr.SendPacket(ResCWvsContext.PartyResult(chr.getChannelId(), party, operation, target));
             }
         }
         switch (operation) {
@@ -100,7 +100,7 @@ public class Party {
             case EXPEL: {
                 TacosCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
                 if (chr != null) {
-                    chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
+                    chr.SendPacket(ResCWvsContext.PartyResult(chr.getChannelId(), party, operation, target));
                     chr.setParty(null);
                 }
                 break;

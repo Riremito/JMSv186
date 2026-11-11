@@ -49,7 +49,7 @@ public class MapleFamilyCharacter {
         name = chr.getName();
         level = chr.getLevel();
         id = chr.getId();
-        channel = chr.getClient().getChannelId();
+        channel = chr.getChannelId();
         jobid = chr.getJob();
         familyid = fid;
         junior1 = j1;

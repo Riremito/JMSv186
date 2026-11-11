@@ -34,7 +34,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.Item;
 import odin.client.Skill;
 import odin.client.inventory.MapleInventoryType;
-import tacos.client.TacosClient;
 import tacos.packet.ops.OpsMobStat;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
@@ -631,20 +630,20 @@ public class TacosMonster extends TacosMapObject {
     public void switchShammosController(TacosCharacter newController, boolean immediateAggro) {
         if (getId() == 9300275 && map.getId() >= 921120005 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
-                resetShammos(newController.getClient());
+                resetShammos(newController);
             } else {
                 setLastNodeController(newController.getId());
             }
         }
     }
 
-    public void resetShammos(TacosClient client) {
+    public void resetShammos(TacosCharacter chr) {
         map.killAllMonsters(true);
         map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
-        for (TacosCharacter chr : map.getAllPlayers()) {
-            chr.changeMap(chr.getMap().getId(), 0); // start pos.
+        for (TacosCharacter player : map.getAllPlayers()) {
+            player.changeMap(player.getMap().getId(), 0); // start pos.
         }
-        MapScriptMethods.startScript_FirstUser(client.getPlayer(), "shammos_Fenter");
+        MapScriptMethods.startScript_FirstUser(chr, "shammos_Fenter");
     }
 
     // all statuses of one skill, sent in one MobStatSet

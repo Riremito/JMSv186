@@ -636,7 +636,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
-                if (!OnUserMigrateToITCRequest(client, chr)) {
+                if (!OnUserMigrateToITCRequest(chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_ITCSVR_DISCONNECTED));
                 }
                 return true;
@@ -1325,7 +1325,6 @@ public class ReqCUser {
         short x = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
         short y = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
 
-        TacosClient client = chr.getClient();
         TacosMap map = chr.getMap();
         TacosNpc npc = map.getNpcByOid(m_dwNpcId);
         if (npc == null) {
@@ -1342,7 +1341,6 @@ public class ReqCUser {
     }
 
     public static boolean OnUserSelectNpcInternal(TacosCharacter chr, int npc_script_id, int npc_id) {
-        TacosClient client = chr.getClient();
         // npc shop from server img.
         if (TacosNpcShop.startNpcShop(chr, npc_script_id, npc_id)) {
             chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc_script_id);
@@ -2562,9 +2560,6 @@ public class ReqCUser {
 
     // CQuest::StartQuest
     public static boolean OnUserQuestRequest(TacosCharacter chr, ClientPacket cp) {
-        TacosClient client = chr.getClient();
-        TacosMap map = chr.getMap();
-
         byte action = cp.Decode1();
         short m_usQuestID = cp.Decode2();
 
@@ -3608,7 +3603,6 @@ public class ReqCUser {
     // CWvsContext::SendSendInvitaionRequest
     // CWvsContext::SendInvitationQuery
     public static boolean OnMarriageRequest(TacosCharacter chr, ClientPacket cp) {
-        TacosClient client = chr.getClient();
         byte mode = cp.Decode1();
 
         switch (OpsMarriage.find(mode)) {
@@ -3639,7 +3633,7 @@ public class ReqCUser {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetAlreadyEngaged, 0, null, null));
                     return true;
                 }
-                if (!MapleInventoryManipulator.checkSpace(client.getPlayer(), ring_id, 1, "")) {
+                if (!MapleInventoryManipulator.checkSpace(chr, ring_id, 1, "")) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterNoEmptySlot, 0, null, null));
                     return true;
                 }
@@ -3672,11 +3666,11 @@ public class ReqCUser {
                     return true;
                 }
                 int ring_id = 1112300 + (player.getMarriageItemId() - 2240004);
-                if (!MapleInventoryManipulator.checkSpace(client.getPlayer(), ring_id, 1, "") || !MapleInventoryManipulator.checkSpace(player, ring_id, 1, "")) {
+                if (!MapleInventoryManipulator.checkSpace(chr, ring_id, 1, "") || !MapleInventoryManipulator.checkSpace(player, ring_id, 1, "")) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetNoEmptySlot, 0, null, null));
                     return true;
                 }
-                MapleInventoryManipulator.addById(client.getPlayer(), ring_id, (short) 1);
+                MapleInventoryManipulator.addById(chr, ring_id, (short) 1);
                 MapleInventoryManipulator.removeById(player, MapleInventoryType.USE, player.getMarriageItemId(), 1, false, false);
                 MapleInventoryManipulator.addById(player, ring_id, (short) 1);
                 player.setMarriageId(chr.getId());
@@ -3689,7 +3683,7 @@ public class ReqCUser {
                 MapleInventoryType type = GameConstants.getInventoryType(item_id);
                 Item item = chr.getInventory(type).findById(item_id);
                 if (item != null && type == MapleInventoryType.ETC && item_id / 10000 == 421) {
-                    MapleInventoryManipulator.drop(client.getPlayer(), type, item.getPosition(), item.getQuantity());
+                    MapleInventoryManipulator.drop(chr, type, item.getPosition(), item.getQuantity());
                 }
                 return true;
             }
@@ -3703,7 +3697,7 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendMigrateToITCRequest
-    public static boolean OnUserMigrateToITCRequest(TacosClient client, TacosCharacter chr) {
+    public static boolean OnUserMigrateToITCRequest(TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;

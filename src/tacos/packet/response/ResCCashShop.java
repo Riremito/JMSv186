@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -161,13 +160,12 @@ public class ResCCashShop {
 
     }
 
-    public static ServerPacket CashItemResult(OpsCashItem ops, TacosClient client) {
-        return CashItemResult(ops, client, null);
+    public static ServerPacket CashItemResult(OpsCashItem ops, TacosCharacter chr) {
+        return CashItemResult(ops, chr, null);
     }
 
     // CCashShop::OnCashItemResult
-    public static ServerPacket CashItemResult(OpsCashItem ops, TacosClient client, CashItemStruct cis) {
-        TacosCharacter chr = client.getPlayer();
+    public static ServerPacket CashItemResult(OpsCashItem ops, TacosCharacter chr, CashItemStruct cis) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(ops.get());
@@ -178,20 +176,20 @@ public class ResCCashShop {
 
                 sp.Encode2(csi.getItemsSize()); // cash item count
                 for (Item item : csi.getInventory()) {
-                    sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
+                    sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, chr));
                 }
                 sp.Encode2(chr.getStorage().getSlot()); // m_nTrunkCount
-                sp.Encode2(client.getCharSlots()); // m_nCharacterSlotCount
+                sp.Encode2(chr.getClient().getCharSlots()); // m_nCharacterSlotCount
                 // JMS147 does not have these.
                 sp.Encode2(0, !Config.LessOrEqual(Region.JMS, 147)); // m_nBuyCharacterCount
-                sp.Encode2(client.getCharaterCount(), !Config.LessOrEqual(Region.JMS, 147)); // m_nCharacterCount
+                sp.Encode2(chr.getClient().getCharaterCount(), !Config.LessOrEqual(Region.JMS, 147)); // m_nCharacterCount
                 break;
             }
             // showBoughtCSItem
             // CCashShop::OnCashItemResBuyDone
             case CashItemRes_Buy_Done:
             case CashItemRes_FreeCashItem_Done: {
-                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, client));
+                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, chr));
                 break;
             }
             case CashItemRes_UseCoupon_Done: {
@@ -201,7 +199,7 @@ public class ResCCashShop {
                 if (0 < cash_item_count) {
                     // buffer 55 bytes
                     for (Item item : cis.coupon_items_cash) {
-                        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
+                        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, chr));
                     }
                 }
                 sp.Encode4(cis.coupon_maple_point);
@@ -239,7 +237,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResMoveStoLDone
             case CashItemRes_MoveStoL_Done: {
-                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, client));
+                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, chr));
                 break;
             }
             // CCashShop::OnCashItemResDestroyDone
@@ -398,13 +396,13 @@ public class ResCCashShop {
 
     // アバターランダムボックス
     // CCashShop::OnCashItemGachaponResult
-    public static ServerPacket CashShopCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
+    public static ServerPacket CashShopCashItemGachaponResult(Item box_item, Item item, TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
         sp.Encode8(box_item.getUniqueId());
         sp.Encode4(0); // nNumber
-        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
+        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, chr));
         // CUICashItemGachapon::OnCashItemGachaponResult
         {
             sp.Encode4(item.getItemId()); // m_nSelectedItemID

@@ -90,7 +90,7 @@ public class MapleMiniGame implements IPlayerShop {
         this.des = description;
         this.pass = pass;
         this.map = owner.getMapId();
-        this.channel = owner.getClient().getChannelId();
+        this.channel = owner.getChannelId();
         chrs = new TacosCharacter[slots - 1];
         for (int i = 0; i < chrs.length; i++) {
             chrs[i] = null;

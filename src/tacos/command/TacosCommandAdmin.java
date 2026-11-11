@@ -24,7 +24,6 @@ import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
-import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
@@ -59,7 +58,6 @@ import tacos.wz.WzDataStorage;
 public class TacosCommandAdmin {
 
     public static boolean executeCommand(TacosCommand dcmd, TacosCharacter chr) {
-        TacosClient client = chr.getClient();
         TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {

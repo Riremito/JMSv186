@@ -100,7 +100,7 @@ public class TacosCommandPlayer {
                 chr.setGuildRank((byte) 1);
                 chr.saveGuildStatus();
                 chr.SendPacket(ResCWvsContext.GuildResult_LoadGuild_Done(chr));
-                world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
+                world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getChannelId());
                 chr.DebugMsg("guildcreate : " + guild_name);
                 return true;
             }

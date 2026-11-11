@@ -125,7 +125,7 @@ public class ResCField {
                     }
                     // different channel
                     sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
-                    sp.Encode4(chr_to.getClient().getChannelId());
+                    sp.Encode4(chr_to.getChannelId());
                     break;
                 }
                 break;
