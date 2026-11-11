@@ -18,16 +18,17 @@
  */
 package tacos.script.portal;
 
-import tacos.constants.TacosConstants;
-
 /**
  *
  * @author Riremito
  */
 public class ArdentmillPortal extends TacosSharedPortal {
 
+    private static final int MAP_ID_MEISTER_VILLE = 910001000;
+    private static final String PORTAL_MEISTER_VILLE = "st00";
+
     //  meister ville, not a beer
     public ArdentmillPortal() {
-        super(TacosConstants.MAP_ID_MEISTER_VILLE, TacosConstants.PORTAL_MEISTER_VILLE);
+        super(MAP_ID_MEISTER_VILLE, PORTAL_MEISTER_VILLE);
     }
 }

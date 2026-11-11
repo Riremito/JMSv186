@@ -28,6 +28,8 @@ public enum LazyDataNames {
     PET_ITEM_CURE("pet_cure", LazyDataTypes.TYPE_INT),
     RETURN_MAP_FREEMARKET("return_map_fm", LazyDataTypes.TYPE_INT),
     RETURN_PORTAL_FREEMARKET("return_portal_fm", LazyDataTypes.TYPE_STR),
+    RETURN_MAP_PACHINKO("return_map_pachinko", LazyDataTypes.TYPE_INT),
+    RETURN_PORTAL_PACHINKO("return_portal_pachinko", LazyDataTypes.TYPE_STR),
     RETURN_MAP_ARDENTMILL("return_map_am", LazyDataTypes.TYPE_INT),
     RETURN_PORTAL_ARDENTMILL("return_portal_am", LazyDataTypes.TYPE_STR),
     UNKNOWN;

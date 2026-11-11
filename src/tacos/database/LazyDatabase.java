@@ -69,6 +69,14 @@ public class LazyDatabase {
                     chr.getFreeMarketPortal().setReturnPortalName(ld.getStr());
                     break;
                 }
+                case RETURN_MAP_PACHINKO: {
+                    chr.getPachinkoPortal().setReturnMapId(ld.getInt());
+                    break;
+                }
+                case RETURN_PORTAL_PACHINKO: {
+                    chr.getPachinkoPortal().setReturnPortalName(ld.getStr());
+                    break;
+                }
                 case RETURN_MAP_ARDENTMILL: {
                     chr.getArdentmillPortal().setReturnMapId(ld.getInt());
                     break;
@@ -111,6 +119,14 @@ public class LazyDatabase {
                 }
                 case RETURN_PORTAL_FREEMARKET: {
                     value_str = chr.getFreeMarketPortal().getReturnPortalName();
+                    break;
+                }
+                case RETURN_MAP_PACHINKO: {
+                    value_int = chr.getPachinkoPortal().getReturnMapId();
+                    break;
+                }
+                case RETURN_PORTAL_PACHINKO: {
+                    value_str = chr.getPachinkoPortal().getReturnPortalName();
                     break;
                 }
                 case RETURN_MAP_ARDENTMILL: {

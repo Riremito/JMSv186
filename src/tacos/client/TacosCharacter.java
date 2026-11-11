@@ -153,6 +153,7 @@ import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
 import tacos.script.npc.NpcScriptMan;
+import tacos.script.portal.PachinkoPortal;
 import tacos.wz.opt.PortalType;
 
 /**
@@ -175,8 +176,9 @@ public class TacosCharacter extends TacosPlayer {
     private TacosLastStat laststat = null;
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
-    private FreeMarketPortal portal_fm = new FreeMarketPortal();
-    private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
+    private final FreeMarketPortal portal_fm = new FreeMarketPortal();
+    private final PachinkoPortal portal_pachinko = new PachinkoPortal();
+    private final ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
 
     public void SendPacket(ServerPacket packet) {
@@ -899,6 +901,10 @@ public class TacosCharacter extends TacosPlayer {
 
     public FreeMarketPortal getFreeMarketPortal() {
         return this.portal_fm;
+    }
+
+    public PachinkoPortal getPachinkoPortal() {
+        return this.portal_pachinko;
     }
 
     public ArdentmillPortal getArdentmillPortal() {

@@ -58,6 +58,18 @@ public class PortalMan {
             chr.getFreeMarketPortal().enter(chr, portal);
             return true;
         }
+        // Pachinko out
+        if (script_name.equals("pachinko")) {
+            chr.DebugMsg("PachinkoPortal : leave, " + portal.getScriptName());
+            chr.getPachinkoPortal().leave(chr);
+            return true;
+        }
+        // Pachinko in
+        if (Pattern.compile("pachinko(0*\\d+|Enter)").matcher(script_name).matches()) {
+            chr.DebugMsg("PachinkoPortal : enter, " + portal.getScriptName());
+            chr.getPachinkoPortal().enter(chr, portal);
+            return true;
+        }
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {
             chr.DebugMsg("PortalMan : not coded, " + portal.getScriptName());
@@ -1111,15 +1123,6 @@ public class PortalMan {
             case "outTemple" -> {
                 // 270000100, タイムロード : 時間の神殿
                 return new Portal_TimeTemple_OutTemple();
-            }
-            case "pachinko" -> {
-                // 809030000,  : パチンコ屋
-                return new Portal_Zipangu_Pachinko();
-            }
-            case "pachinkoEnter" -> {
-                // 801000300, ジパング : ショーワ町通り
-                // 810000000, ルディブリアム : パチンコ屋入口
-                return new Portal_Zipangu_PachinkoEnter();
             }
             case "party3_gardenin" -> {
                 // 920010800, 女神の塔 : 庭園

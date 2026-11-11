@@ -18,15 +18,16 @@
  */
 package tacos.script.portal;
 
-import tacos.constants.TacosConstants;
-
 /**
  *
  * @author Riremito
  */
 public class FreeMarketPortal extends TacosSharedPortal {
 
+    private static final int MAP_ID_FREE_MARKET = 910000000;
+    private static final String PORTAL_FREE_MARKET = "out00";
+
     public FreeMarketPortal() {
-        super(TacosConstants.MAP_ID_FREE_MARKET, TacosConstants.PORTAL_FREE_MARKET);
+        super(MAP_ID_FREE_MARKET, PORTAL_FREE_MARKET);
     }
 }

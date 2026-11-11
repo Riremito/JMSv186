@@ -22,20 +22,12 @@ package tacos.script.portal;
  *
  * @author Riremito
  */
-// Map.wz portal script : pachinko (JMS186), js の処理を利用
-// パチンコ屋から元のマップへ戻る
-public class Portal_Zipangu_Pachinko extends PortalScriptMan {
+public class PachinkoPortal extends TacosSharedPortal {
 
-    private final int map_pachinko_entrance = 810000000; // ルディブリアム : パチンコ屋入口
-    private final int map_showa_street = 801000300; // ジパング : ショーワ町通り
+    private static final int MAP_ID_PACHINKO_HALL = 809030000;
+    private static final String PORTAL_PACHINKO_HALL = "out00";
 
-    @Override
-    public boolean enter() {
-        int map_return = getSavedLocation("MULUNG_TC");
-        clearSavedLocation("MULUNG_TC");
-        if (map_return == this.map_pachinko_entrance || map_return == this.map_showa_street) {
-            return warp(map_return, "in00");
-        }
-        return warp(map_return);
+    public PachinkoPortal() {
+        super(MAP_ID_PACHINKO_HALL, PORTAL_PACHINKO_HALL);
     }
 }
