@@ -29,17 +29,6 @@ import tacos.server.map.TacosPortal;
 public class PortalMan {
 
     public static boolean enter(TacosCharacter chr, TacosPortal portal) {
-        String script_name = portal.getScriptName();
-        if (script_name.isEmpty()) {
-            return false;
-        }
-        for (TacosSharedPortal shared_portal : chr.getSharedPortals().values()) {
-            // 正規表現でenter側にleaveの名前が含まれてしまうのでleaveを優先して処理する, enter側から除外すれば並び替えても問題ない
-            if (shared_portal.leave(chr, portal) || shared_portal.enter(chr, portal)) {
-                chr.DebugMsg("SharedPortal : " + portal.getScriptName());
-                return true;
-            }
-        }
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {
             chr.DebugMsg("PortalMan : not coded, " + portal.getScriptName());

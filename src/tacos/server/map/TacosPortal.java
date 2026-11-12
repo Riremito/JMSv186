@@ -21,6 +21,7 @@ package tacos.server.map;
 import java.awt.Point;
 import tacos.client.TacosCharacter;
 import tacos.script.portal.PortalMan;
+import tacos.script.portal.TacosSharedPortal;
 import tacos.wz.opt.PortalType;
 
 /**
@@ -111,12 +112,18 @@ public class TacosPortal {
         if (this.disabled) {
             return false;
         }
-        return chr.getChannelServer().changeMap(chr, this.target_map_id, this.target);
+        return chr.changeMap(this.target_map_id, this.target);
     }
 
     public boolean enterScriptPortal(TacosCharacter chr) {
         if (this.disabled) {
             return false;
+        }
+        if (this.scriptName.isEmpty()) {
+            return false;
+        }
+        if (TacosSharedPortal.use(chr, this)) {
+            return true;
         }
         return PortalMan.enter(chr, this);
     }

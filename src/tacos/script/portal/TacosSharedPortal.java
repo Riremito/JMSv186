@@ -36,6 +36,21 @@ public class TacosSharedPortal {
         UNKNOWN;
     }
 
+    public static boolean use(TacosCharacter chr, TacosPortal portal) {
+        for (TacosSharedPortal shared_portal : chr.getSharedPortals().values()) {
+            // 正規表現でenter側にleaveの名前が含まれてしまうのでleaveを優先して処理する, enter側から除外すれば並び替えても問題ない
+            if (shared_portal.leave(chr, portal)) {
+                chr.DebugMsg("SharedPortal : " + shared_portal.getType().name() + ", leave (" + shared_portal.getReturnMapId() + ", " + shared_portal.getReturnPortalName() + ")");
+                return true;
+            }
+            if (shared_portal.enter(chr, portal)) {
+                chr.DebugMsg("SharedPortal : " + shared_portal.getType().name() + ", enter (" + shared_portal.getReturnMapId() + ", " + shared_portal.getReturnPortalName() + ")");
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static HashMap<SharedPortalType, TacosSharedPortal> load() {
         HashMap<SharedPortalType, TacosSharedPortal> ret = new HashMap<>();
         for (SharedPortalType type : SharedPortalType.values()) {
@@ -99,7 +114,7 @@ public class TacosSharedPortal {
         this.return_portal_name = portal_name;
     }
 
-    public boolean enter(TacosCharacter chr, TacosPortal portal) {
+    private boolean enter(TacosCharacter chr, TacosPortal portal) {
         if (!this.enter_script_pattern.matcher(portal.getScriptName()).matches()) {
             return false;
         }
@@ -108,7 +123,7 @@ public class TacosSharedPortal {
         return chr.changeMap(this.target_map_id, this.target_portal_name);
     }
 
-    public boolean leave(TacosCharacter chr, TacosPortal portal) {
+    private boolean leave(TacosCharacter chr, TacosPortal portal) {
         if (!this.leave_script_name.equals(portal.getScriptName())) {
             return false;
         }
