@@ -18,7 +18,6 @@
  */
 package tacos.script.portal;
 
-import java.util.regex.Pattern;
 import tacos.client.TacosCharacter;
 import tacos.server.map.TacosPortal;
 
@@ -34,41 +33,12 @@ public class PortalMan {
         if (script_name.isEmpty()) {
             return false;
         }
-        // Meister ville out
-        if (script_name.equals("out_profession")) {
-            chr.DebugMsg("ArdentmillPortal : leave, " + portal.getScriptName());
-            chr.getArdentmillPortal().leave(chr);
-            return true;
-        }
-        // Meister ville in
-        if (Pattern.compile("profession(\\d+)").matcher(script_name).matches()) {
-            chr.DebugMsg("ArdentmillPortal : enter, " + portal.getScriptName());
-            chr.getArdentmillPortal().enter(chr, portal);
-            return true;
-        }
-        // FM out
-        if (script_name.equals("market00")) {
-            chr.DebugMsg("FreeMarketPortal : leave, " + portal.getScriptName());
-            chr.getFreeMarketPortal().leave(chr);
-            return true;
-        }
-        // FM in
-        if (Pattern.compile("market(J|)(\\d+)").matcher(script_name).matches()) {
-            chr.DebugMsg("FreeMarketPortal : enter, " + portal.getScriptName());
-            chr.getFreeMarketPortal().enter(chr, portal);
-            return true;
-        }
-        // Pachinko out
-        if (script_name.equals("pachinko")) {
-            chr.DebugMsg("PachinkoPortal : leave, " + portal.getScriptName());
-            chr.getPachinkoPortal().leave(chr);
-            return true;
-        }
-        // Pachinko in
-        if (Pattern.compile("pachinko(0*\\d+|Enter)").matcher(script_name).matches()) {
-            chr.DebugMsg("PachinkoPortal : enter, " + portal.getScriptName());
-            chr.getPachinkoPortal().enter(chr, portal);
-            return true;
+        for (TacosSharedPortal shared_portal : chr.getSharedPortals().values()) {
+            // 正規表現でenter側にleaveの名前が含まれてしまうのでleaveを優先して処理する, enter側から除外すれば並び替えても問題ない
+            if (shared_portal.leave(chr, portal) || shared_portal.enter(chr, portal)) {
+                chr.DebugMsg("SharedPortal : " + portal.getScriptName());
+                return true;
+            }
         }
         PortalScriptMan portal_script = create(portal.getScriptName());
         if (portal_script == null) {

@@ -22,6 +22,7 @@ import tacos.database.query.DQ_Root;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
+import tacos.script.portal.TacosSharedPortal.SharedPortalType;
 
 /**
  *
@@ -49,44 +50,46 @@ public class LazyDatabase {
             }
             DebugLogger.DebugLog("LazyDB load : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
             switch (ld.getDataName()) {
-                case PET_ITEM_HP: {
+                case PET_ITEM_HP -> {
                     chr.setPetAutoHPItem(ld.getInt());
-                    break;
                 }
-                case PET_ITEM_MP: {
+                case PET_ITEM_MP -> {
                     chr.setPetAutoMPItem(ld.getInt());
-                    break;
                 }
-                case PET_ITEM_CURE: {
+                case PET_ITEM_CURE -> {
                     chr.setPetAutoCureItem(ld.getInt());
-                    break;
                 }
-                case RETURN_MAP_FREEMARKET: {
-                    chr.getFreeMarketPortal().setReturnMapId(ld.getInt());
-                    break;
+                case RETURN_MAP_FREEMARKET -> {
+                    if (ld.getInt() != 0) {
+                        chr.getSharedPortal(SharedPortalType.FREE_MARKET).setReturnMapId(ld.getInt());
+                    }
                 }
-                case RETURN_PORTAL_FREEMARKET: {
-                    chr.getFreeMarketPortal().setReturnPortalName(ld.getStr());
-                    break;
+                case RETURN_PORTAL_FREEMARKET -> {
+                    if (!ld.getStr().isEmpty()) {
+                        chr.getSharedPortal(SharedPortalType.FREE_MARKET).setReturnPortalName(ld.getStr());
+                    }
                 }
-                case RETURN_MAP_PACHINKO: {
-                    chr.getPachinkoPortal().setReturnMapId(ld.getInt());
-                    break;
+                case RETURN_MAP_PACHINKO -> {
+                    if (ld.getInt() != 0) {
+                        chr.getSharedPortal(SharedPortalType.PACHINKO_HALL).setReturnMapId(ld.getInt());
+                    }
                 }
-                case RETURN_PORTAL_PACHINKO: {
-                    chr.getPachinkoPortal().setReturnPortalName(ld.getStr());
-                    break;
+                case RETURN_PORTAL_PACHINKO -> {
+                    if (!ld.getStr().isEmpty()) {
+                        chr.getSharedPortal(SharedPortalType.PACHINKO_HALL).setReturnPortalName(ld.getStr());
+                    }
                 }
-                case RETURN_MAP_ARDENTMILL: {
-                    chr.getArdentmillPortal().setReturnMapId(ld.getInt());
-                    break;
+                case RETURN_MAP_ARDENTMILL -> {
+                    if (ld.getInt() != 0) {
+                        chr.getSharedPortal(SharedPortalType.MEISTER_VILLE).setReturnMapId(ld.getInt());
+                    }
                 }
-                case RETURN_PORTAL_ARDENTMILL: {
-                    chr.getArdentmillPortal().setReturnPortalName(ld.getStr());
-                    break;
+                case RETURN_PORTAL_ARDENTMILL -> {
+                    if (!ld.getStr().isEmpty()) {
+                        chr.getSharedPortal(SharedPortalType.MEISTER_VILLE).setReturnPortalName(ld.getStr());
+                    }
                 }
-                default: {
-                    break;
+                default -> {
                 }
             }
         }
@@ -101,48 +104,38 @@ public class LazyDatabase {
             int value_int = 0;
             String value_str = "";
             switch (ld.getDataName()) {
-                case PET_ITEM_HP: {
+                case PET_ITEM_HP -> {
                     value_int = chr.getPetAutoHPItem();
-                    break;
                 }
-                case PET_ITEM_MP: {
+                case PET_ITEM_MP -> {
                     value_int = chr.getPetAutoMPItem();
-                    break;
                 }
-                case PET_ITEM_CURE: {
+                case PET_ITEM_CURE -> {
                     value_int = chr.getPetAutoCureItem();
-                    break;
                 }
-                case RETURN_MAP_FREEMARKET: {
-                    value_int = chr.getFreeMarketPortal().getReturnMapId();
-                    break;
+                case RETURN_MAP_FREEMARKET -> {
+                    value_int = chr.getSharedPortal(SharedPortalType.FREE_MARKET).getReturnMapId();
                 }
-                case RETURN_PORTAL_FREEMARKET: {
-                    value_str = chr.getFreeMarketPortal().getReturnPortalName();
-                    break;
+                case RETURN_PORTAL_FREEMARKET -> {
+                    value_str = chr.getSharedPortal(SharedPortalType.FREE_MARKET).getReturnPortalName();
                 }
-                case RETURN_MAP_PACHINKO: {
-                    value_int = chr.getPachinkoPortal().getReturnMapId();
-                    break;
+                case RETURN_MAP_PACHINKO -> {
+                    value_int = chr.getSharedPortal(SharedPortalType.PACHINKO_HALL).getReturnMapId();
                 }
-                case RETURN_PORTAL_PACHINKO: {
-                    value_str = chr.getPachinkoPortal().getReturnPortalName();
-                    break;
+                case RETURN_PORTAL_PACHINKO -> {
+                    value_str = chr.getSharedPortal(SharedPortalType.PACHINKO_HALL).getReturnPortalName();
                 }
-                case RETURN_MAP_ARDENTMILL: {
-                    value_int = chr.getArdentmillPortal().getReturnMapId();
-                    break;
+                case RETURN_MAP_ARDENTMILL -> {
+                    value_int = chr.getSharedPortal(SharedPortalType.MEISTER_VILLE).getReturnMapId();
                 }
-                case RETURN_PORTAL_ARDENTMILL: {
-                    value_str = chr.getArdentmillPortal().getReturnPortalName();
-                    break;
+                case RETURN_PORTAL_ARDENTMILL -> {
+                    value_str = chr.getSharedPortal(SharedPortalType.MEISTER_VILLE).getReturnPortalName();
                 }
-                default: {
-                    break;
+                default -> {
                 }
             }
             switch (ld.getDataName().getType()) {
-                case TYPE_INT: {
+                case TYPE_INT -> {
                     if (ld.getInt() != value_int) {
                         ld.setInt(value_int);
                         DebugLogger.DebugLog("LazyDB save : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
@@ -153,9 +146,8 @@ public class LazyDatabase {
                             ld.setOk(true);
                         }
                     }
-                    break;
                 }
-                case TYPE_STR: {
+                case TYPE_STR -> {
                     if (!ld.getStr().equals(value_str)) {
                         ld.setStr(value_str);
                         DebugLogger.DebugLog("LazyDB save : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
@@ -166,10 +158,8 @@ public class LazyDatabase {
                             ld.setOk(true);
                         }
                     }
-                    break;
                 }
-                default: {
-                    break;
+                default -> {
                 }
             }
         }

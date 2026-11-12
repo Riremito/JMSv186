@@ -18,8 +18,8 @@
  */
 package tacos.script.portal;
 
-import tacos.constants.TacosConstants;
-import tacos.server.map.TacosMap;
+import java.util.HashMap;
+import java.util.regex.Pattern;
 import tacos.client.TacosCharacter;
 import tacos.server.map.TacosPortal;
 
@@ -29,32 +29,89 @@ import tacos.server.map.TacosPortal;
  */
 public class TacosSharedPortal {
 
+    public enum SharedPortalType {
+        FREE_MARKET,
+        PACHINKO_HALL,
+        MEISTER_VILLE,
+        UNKNOWN;
+    }
+
+    public static HashMap<SharedPortalType, TacosSharedPortal> load() {
+        HashMap<SharedPortalType, TacosSharedPortal> ret = new HashMap<>();
+        for (SharedPortalType type : SharedPortalType.values()) {
+            TacosSharedPortal portal = new TacosSharedPortal();
+            switch (type) {
+                case FREE_MARKET -> {
+                    portal.setEnter("market(J|)\\d+", 910000000, "out00");
+                    portal.setLeave("market00", 102000000, "market00"); // Perion.
+                }
+                case PACHINKO_HALL -> {
+                    portal.setEnter("pachinko(0*\\d+|Enter)", 809030000, "out00");
+                    portal.setLeave("pachinko", 801000300, "in00"); // Showa Market.
+                }
+                case MEISTER_VILLE -> {
+                    portal.setEnter("profession\\d+", 910001000, "st00");
+                    portal.setLeave("out_profession", 100000000, "profession"); // Henesys.
+                }
+                default -> {
+                    continue;
+                }
+            }
+            portal.setType(type);
+            ret.put(type, portal);
+        }
+        return ret;
+    }
+
+    private SharedPortalType type;
     // enter
+    private Pattern enter_script_pattern;
     private int target_map_id;
     private String target_portal_name;
     // leave
-    private int return_map_id = TacosConstants.MAP_ID_PERION; // PerionFM!
-    private String return_portal_name = "";
+    private String leave_script_name;
+    private int return_map_id;
+    private String return_portal_name;
 
-    public TacosSharedPortal(int target_map_id, String target_portal_name) {
-        this.target_map_id = target_map_id;
-        this.target_portal_name = target_portal_name;
+    private SharedPortalType getType() {
+        return this.type;
     }
 
-    public boolean enter(TacosCharacter chr, TacosPortal portal_from) {
-        TacosMap map_from = chr.getMap();
-        if (map_from == null) {
+    private void setType(SharedPortalType type) {
+        this.type = type;
+    }
+
+    private void setEnter(String script_name, int map_id, String portal_name) {
+        this.enter_script_pattern = Pattern.compile(script_name);
+        this.target_map_id = map_id;
+        this.target_portal_name = portal_name;
+    }
+
+    private void setLeave(String script_name) {
+        this.leave_script_name = script_name;
+        this.return_map_id = 100000000;
+        this.return_portal_name = "";
+    }
+
+    private void setLeave(String script_name, int map_id, String portal_name) {
+        this.leave_script_name = script_name;
+        this.return_map_id = map_id;
+        this.return_portal_name = portal_name;
+    }
+
+    public boolean enter(TacosCharacter chr, TacosPortal portal) {
+        if (!this.enter_script_pattern.matcher(portal.getScriptName()).matches()) {
             return false;
         }
-        if (portal_from == null) {
-            return false;
-        }
-        this.return_map_id = map_from.getId();
-        this.return_portal_name = portal_from.getName();
+        this.return_map_id = chr.getMap().getId();
+        this.return_portal_name = portal.getName();
         return chr.changeMap(this.target_map_id, this.target_portal_name);
     }
 
-    public boolean leave(TacosCharacter chr) {
+    public boolean leave(TacosCharacter chr, TacosPortal portal) {
+        if (!this.leave_script_name.equals(portal.getScriptName())) {
+            return false;
+        }
         return chr.changeMap(this.return_map_id, this.return_portal_name);
     }
 

@@ -102,8 +102,6 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
 import tacos.packet.response.builder.PB_InvOp;
-import tacos.script.portal.ArdentmillPortal;
-import tacos.script.portal.FreeMarketPortal;
 import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
@@ -123,6 +121,7 @@ import tacos.wz.WzDataStorage;
 import odin.client.inventory.MapleRing;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.MapleParty.PartyOperation;
@@ -153,7 +152,8 @@ import tacos.wz.CharacterWz;
 import tacos.wz.CharacterWz.EquipInfoLevel;
 import tacos.wz.opt.FieldOpt;
 import tacos.script.npc.NpcScriptMan;
-import tacos.script.portal.PachinkoPortal;
+import tacos.script.portal.TacosSharedPortal;
+import tacos.script.portal.TacosSharedPortal.SharedPortalType;
 import tacos.wz.opt.PortalType;
 
 /**
@@ -176,9 +176,6 @@ public class TacosCharacter extends TacosPlayer {
     private TacosLastStat laststat = null;
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
-    private final FreeMarketPortal portal_fm = new FreeMarketPortal();
-    private final PachinkoPortal portal_pachinko = new PachinkoPortal();
-    private final ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
 
     public void SendPacket(ServerPacket packet) {
@@ -899,16 +896,17 @@ public class TacosCharacter extends TacosPlayer {
         SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ALERT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
-    public FreeMarketPortal getFreeMarketPortal() {
-        return this.portal_fm;
+    private HashMap<SharedPortalType, TacosSharedPortal> shared_portals = null;
+
+    public HashMap<SharedPortalType, TacosSharedPortal> getSharedPortals() {
+        if (this.shared_portals == null) {
+            this.shared_portals = TacosSharedPortal.load();
+        }
+        return this.shared_portals;
     }
 
-    public PachinkoPortal getPachinkoPortal() {
-        return this.portal_pachinko;
-    }
-
-    public ArdentmillPortal getArdentmillPortal() {
-        return this.portal_ardentmill;
+    public TacosSharedPortal getSharedPortal(SharedPortalType type) {
+        return getSharedPortals().get(type);
     }
 
     public ArrayList<LazyData> getLazyDataList() {
