@@ -39,6 +39,7 @@ import tacos.debug.DebugMan_CC;
 import tacos.debug.DebugMan_Maker;
 import tacos.debug.DebugMan_MapPortal;
 import tacos.debug.DebugMan_NM;
+import tacos.debug.DebugMan_Quest;
 import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugMan_WarpBoss;
 import tacos.debug.DebugNpcShopMan;
@@ -406,6 +407,11 @@ public class TacosCommandDebug {
                 bsp.setId(mob_id);
                 bsp.setMobTime(1000);
                 map.getBossSpawnPoint().add(bsp);
+                return true;
+            }
+            case "/quest" -> {
+                DebugMan_Quest dm = new DebugMan_Quest();
+                dm.start(chr);
                 return true;
             }
             // others.

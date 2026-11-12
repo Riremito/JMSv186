@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import lombok.Getter;
 import odin.server.quest.MapleQuestAction.MapleQuestActionType;
 import odin.server.quest.MapleQuestRequirement.MapleQuestRequirementType;
@@ -56,6 +57,41 @@ public class QuestWz extends WzXML {
 
     private MapleData getPQuestImg() {
         return getData("PQuest.img");
+    }
+
+    @Getter
+    public class QuestInfoData {
+
+        // QuestInfo
+        private int id;
+        private String name;
+        // Check
+        private int npc;
+    }
+
+    public TreeMap<Integer, QuestInfoData> getAllQuests() {
+        TreeMap<Integer, QuestInfoData> ret = new TreeMap<>();
+        MapleData quest_info_img = getQuestInfoImg();
+        if (quest_info_img != null) {
+            for (MapleData data : quest_info_img.getChildren()) {
+                QuestInfoData qid = new QuestInfoData();
+                int quest_id = Integer.parseInt(data.getName());
+                qid.id = quest_id;
+                qid.name = data.getString("name");
+                ret.put(quest_id, qid);
+            }
+        }
+        MapleData check_img = getCheckImg();
+        if (check_img != null) {
+            for (MapleData data : check_img.getChildren()) {
+                int quest_id = Integer.parseInt(data.getName());
+                QuestInfoData qid = ret.get(quest_id);
+                if (qid != null) {
+                    qid.npc = data.getInt("0/npc", 1012003);
+                }
+            }
+        }
+        return ret;
     }
 
     @Getter
