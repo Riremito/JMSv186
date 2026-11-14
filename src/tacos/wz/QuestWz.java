@@ -32,6 +32,7 @@ import odin.server.quest.MapleQuestRequirement.MapleQuestRequirementType;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.config.Region;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -67,6 +68,19 @@ public class QuestWz extends WzXML {
         private String name;
         // Check
         private int npc;
+        private String start;
+        private String end;
+        private int interval;
+        // node1.
+        private ArrayList<Node1_Item> node1_items = new ArrayList<>();
+        private int node1_npc;
+    }
+
+    @Getter
+    public class Node1_Item {
+
+        private int count;
+        private int id;
     }
 
     public TreeMap<Integer, QuestInfoData> getAllQuests() {
@@ -85,9 +99,34 @@ public class QuestWz extends WzXML {
         if (check_img != null) {
             for (MapleData data : check_img.getChildren()) {
                 int quest_id = Integer.parseInt(data.getName());
+                if (data.getChildByPath("job") != null || data.getChildByPath("quest") != null
+                        || data.getChildByPath("start") != null || data.getChildByPath("end") != null) {
+                    ret.remove(quest_id); // unused.
+                    continue;
+                }
                 QuestInfoData qid = ret.get(quest_id);
                 if (qid != null) {
                     qid.npc = data.getInt("0/npc", 1012003);
+                    MapleData node1 = data.getChildByPath("1");
+                    if (node1 != null) {
+                        qid.node1_npc = data.getInt("1/npc", 1012003);
+                        MapleData node1_item = data.getChildByPath("1/item");
+                        if (node1_item != null) {
+                            for (MapleData node1_item_data : node1_item.getChildren()) {
+                                Node1_Item n1i = new Node1_Item();
+                                n1i.count = node1_item_data.getInt("count");
+                                n1i.id = node1_item_data.getInt("id");
+                                if (n1i.count <= 0) {
+                                    continue;
+                                }
+                                if (!WzDataStorage.ITEM.check(n1i.id)) {
+                                    DebugLogger.ErrorLog("Quest : quest id = " + quest_id + ", invalid item = " + n1i.id);
+                                    continue;
+                                }
+                                qid.node1_items.add(n1i);
+                            }
+                        }
+                    }
                 }
             }
         }

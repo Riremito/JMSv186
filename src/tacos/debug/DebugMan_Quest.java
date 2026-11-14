@@ -19,8 +19,14 @@
 package tacos.debug;
 
 import java.util.HashMap;
+import java.util.List;
+import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
 import tacos.script.npc.NpcScriptTag;
+import tacos.server.map.TacosMap;
+import tacos.server.map.TacosPortal;
+import tacos.server.map.object.TacosNpc;
+import tacos.wz.QuestWz.Node1_Item;
 import tacos.wz.QuestWz.QuestInfoData;
 import tacos.wz.WzXML;
 
@@ -31,6 +37,8 @@ import tacos.wz.WzXML;
 public class DebugMan_Quest extends DebugNpcScriptMan {
 
     private final HashMap<Integer, QuestInfoData> quest_list = new HashMap<>();
+    private List<Integer> npc_location_map_ids;
+    private int npc_id = 0;
 
     @Override
     public boolean action(int status, int answer) {
@@ -54,15 +62,48 @@ public class DebugMan_Quest extends DebugNpcScriptMan {
                 return true;
             }
             case 1 -> {
-                int npc_id = 1012003;
                 QuestInfoData quest = this.quest_list.get(answer);
                 if (quest == null) {
                     return false;
                 }
 
                 MapleQuest mq = MapleQuest.getInstance(quest.getId());
+                getPlayer().DebugMsg("quest id : " + quest.getId());
                 mq.forceStart(getPlayer(), quest.getNpc(), null);
+                if (!quest.getNode1_items().isEmpty()) {
+                    for (Node1_Item n1i : quest.getNode1_items()) {
+                        MapleInventoryManipulator.addById(getPlayer(), n1i.getId(), n1i.getCount());
+                    }
+                }
+                this.npc_id = quest.getNode1_npc();
+                this.npc_location_map_ids = WzXML.ETC.getNpcLocationMapIds(quest.getNode1_npc());
+                if (this.npc_location_map_ids.isEmpty()) {
+                    getPlayer().DebugMsg("npc id : " + quest.getNode1_npc() + ", not found in NpcLocation");
+                    return false;
+                }
+                NpcScriptTag nt = new NpcScriptTag();
+                for (int index = 0; index < this.npc_location_map_ids.size(); index++) {
+                    nt.add("teleport to npc location?");
+                    nt.addMenu(index, this.npc_location_map_ids.get(index) + " : #m" + this.npc_location_map_ids.get(index) + "#");
+                }
+                askMenu(nt);
                 //QuestMan.start(getPlayer(), npc_id, quest_id, true, false);
+                return true;
+            }
+            case 2 -> {
+                if (answer < 0 || this.npc_location_map_ids.size() <= answer) {
+                    return false;
+                }
+                TacosMap map = findMap(this.npc_location_map_ids.get(answer));
+                if (map != null) {
+                    TacosNpc npc = map.getNpcById(this.npc_id);
+                    if (npc != null) {
+                        TacosPortal portal = map.findSpawnPoint(npc.getPosition());
+                        warp(this.npc_location_map_ids.get(answer), portal.getName());
+                    } else {
+                        warp(this.npc_location_map_ids.get(answer));
+                    }
+                }
                 return false;
             }
             default -> {
