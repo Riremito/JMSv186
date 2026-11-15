@@ -20,12 +20,18 @@ package tacos.debug;
 
 import java.util.HashMap;
 import java.util.List;
+import odin.client.MapleQuestStatus;
 import odin.server.MapleInventoryManipulator;
 import odin.server.quest.MapleQuest;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_Message;
 import tacos.script.npc.NpcScriptTag;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosPortal;
 import tacos.wz.QuestWz.Node1_Item;
+import tacos.wz.QuestWz.Node1_Mob;
 import tacos.wz.QuestWz.QuestInfoData;
 import tacos.wz.WzXML;
 
@@ -47,9 +53,9 @@ public class DebugMan_Quest extends DebugNpcScriptMan {
                 int index = 0;
                 for (QuestInfoData quest_data : WzXML.QUEST.getAllQuests().values()) {
                     this.quest_list.put(index, quest_data);
-                    nt.addMenu(index, quest_data.getId() + " : " + quest_data.getName());
+                    nt.addMenu(index, index + ") " + quest_data.getId() + " : " + quest_data.getName());
                     index++;
-                    if (120 < index) {
+                    if (255 < index) {
                         break;
                     }
                 }
@@ -72,6 +78,22 @@ public class DebugMan_Quest extends DebugNpcScriptMan {
                 if (!quest.getNode1_items().isEmpty()) {
                     for (Node1_Item n1i : quest.getNode1_items()) {
                         MapleInventoryManipulator.addById(getPlayer(), n1i.getId(), n1i.getCount());
+                    }
+                }
+                if (!quest.getNode1_mobs().isEmpty()) {
+                    MapleQuestStatus quest_status = getPlayer().getQuest(mq);
+                    if (quest_status != null) {
+                        for (Node1_Mob n1m : quest.getNode1_mobs()) {
+                            quest_status.getMobKills().put(n1m.getId(), n1m.getCount());
+                        }
+                        String quest_value = "";
+                        for (int kills : quest_status.getMobKills().values()) {
+                            quest_value += String.format("%03d", kills);
+                        }
+                        getPlayer().SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest_status.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(quest_value).build()));
+                        if (quest_status.getQuest().canComplete(getPlayer(), null)) {
+                            getPlayer().SendPacket(ResCWvsContext.QuestClear(quest_status.getQuest().getId()));
+                        }
                     }
                 }
                 this.npc_id = quest.getNode1_npc();

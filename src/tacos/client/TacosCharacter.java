@@ -2527,12 +2527,12 @@ public class TacosCharacter extends TacosPlayer {
         return true;
     }
 
-    public void mobKilled(int id, int skillID) {
+    public void checkMobKillQuest(int mob_id, int skill_id) {
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() != 1 || !q.hasMobKills()) {
                 continue;
             }
-            if (q.mobKilled(id, skillID)) {
+            if (q.mobKilled(mob_id, skill_id)) {
                 {
                     StringBuilder sb = new StringBuilder();
                     for (int kills : q.getMobKills().values()) {

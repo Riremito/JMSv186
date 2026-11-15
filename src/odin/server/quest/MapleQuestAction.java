@@ -265,7 +265,7 @@ public class MapleQuestAction {
     private void run(TacosCharacter chr, Integer extSelection) {
         switch (type) {
             case exp: {
-                chr.gainExp(info.getValue() * GameConstants.getExpRate_Quest(chr.getLevel()), true, true, true);
+                chr.gainExp(info.getValue(), true, true, true);
                 break;
             }
             case item: {

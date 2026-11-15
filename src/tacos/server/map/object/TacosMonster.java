@@ -472,7 +472,7 @@ public class TacosMonster extends TacosMapObject {
 
             attacker.gainExpMonster(exp, true, highestDamage, pty, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP);
         }
-        attacker.mobKilled(getId(), lastskillID);
+        attacker.checkMobKillQuest(getId(), lastskillID);
     }
 
     public int killBy(TacosCharacter killer, int lastSkill) {

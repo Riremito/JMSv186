@@ -814,10 +814,6 @@ public class GameConstants {
         return itemId / 100000 != 19 && itemId / 100000 != 16; //no mech/taming/dragon
     }
 
-    public static int getExpRate_Quest(int level) {
-        return (level >= 30 ? (level >= 70 ? (level >= 120 ? 4 : 3) : 2) : 1);
-    }
-
     public static boolean isCustomReactItem(int rid, int iid, int original) {
         if (rid == 2008006) { //orbis pq LOL
             return iid == (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 4001055);

@@ -73,11 +73,19 @@ public class QuestWz extends WzXML {
         private int interval;
         // node1.
         private ArrayList<Node1_Item> node1_items = new ArrayList<>();
+        private ArrayList<Node1_Mob> node1_mobs = new ArrayList<>();
         private int node1_npc;
     }
 
     @Getter
     public class Node1_Item {
+
+        private int count;
+        private int id;
+    }
+
+    @Getter
+    public class Node1_Mob {
 
         private int count;
         private int id;
@@ -124,6 +132,22 @@ public class QuestWz extends WzXML {
                                     continue;
                                 }
                                 qid.node1_items.add(n1i);
+                            }
+                        }
+                        MapleData node1_mob = data.getChildByPath("1/mob");
+                        if (node1_mob != null) {
+                            for (MapleData node1_mob_data : node1_mob.getChildren()) {
+                                Node1_Mob n1m = new Node1_Mob();
+                                n1m.count = node1_mob_data.getInt("count");
+                                n1m.id = node1_mob_data.getInt("id");
+                                if (n1m.count <= 0) {
+                                    continue;
+                                }
+                                if (!WzDataStorage.MOB.check(n1m.id)) {
+                                    DebugLogger.ErrorLog("Quest : quest id = " + quest_id + ", invalid mob = " + n1m.id);
+                                    continue;
+                                }
+                                qid.node1_mobs.add(n1m);
                             }
                         }
                     }
