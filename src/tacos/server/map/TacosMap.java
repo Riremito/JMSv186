@@ -1218,6 +1218,24 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
+    public TacosPortal findPortalByNpcId(int npc_id) {
+        TacosNpc npc = getNpcById(npc_id);
+        TacosPortal ret = getSpawnPoint();
+        if (npc == null) {
+            DebugLogger.ErrorLog("findPortalByNpcId : not found, " + getId() + ", " + npc_id);
+            return ret;
+        }
+        double distance_shortest = ret.getPosition().distanceSq(npc.getPosition());
+        for (TacosPortal portal : getPortals()) {
+            double distance = portal.getPosition().distanceSq(npc.getPosition());
+            if (distance < distance_shortest) {
+                distance_shortest = distance;
+                ret = portal;
+            }
+        }
+        return ret;
+    }
+
     // mist.
     private LinkedHashMap<Integer, TacosMist> mists = new LinkedHashMap<>();
 

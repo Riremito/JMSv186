@@ -25,7 +25,6 @@ import odin.server.quest.MapleQuest;
 import tacos.script.npc.NpcScriptTag;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosPortal;
-import tacos.server.map.object.TacosNpc;
 import tacos.wz.QuestWz.Node1_Item;
 import tacos.wz.QuestWz.QuestInfoData;
 import tacos.wz.WzXML;
@@ -96,13 +95,8 @@ public class DebugMan_Quest extends DebugNpcScriptMan {
                 }
                 TacosMap map = findMap(this.npc_location_map_ids.get(answer));
                 if (map != null) {
-                    TacosNpc npc = map.getNpcById(this.npc_id);
-                    if (npc != null) {
-                        TacosPortal portal = map.findSpawnPoint(npc.getPosition());
-                        warp(this.npc_location_map_ids.get(answer), portal.getName());
-                    } else {
-                        warp(this.npc_location_map_ids.get(answer));
-                    }
+                    TacosPortal portal = map.findPortalByNpcId(this.npc_id);
+                    warp(this.npc_location_map_ids.get(answer), portal.getName());
                 }
                 return false;
             }
