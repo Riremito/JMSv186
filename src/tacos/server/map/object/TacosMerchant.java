@@ -26,13 +26,13 @@ import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.InvTypeDB;
 import tacos.client.TacosStoreBank;
 import tacos.client.TacosHoldInventory;
-import odin.server.shops.IPlayerShop;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMRLeave;
+import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosRoom;
 import odin.client.inventory.Item;
@@ -48,7 +48,7 @@ import tacos.database.query.DQ_Hiredmerch;
  *
  * @author Riremito
  */
-public class TacosMerchant extends TacosMapObject implements IPlayerShop {
+public class TacosMerchant extends TacosMapObject {
 
     private boolean open = false;
     private final TacosCharacter[] visitors = new TacosCharacter[4];
@@ -65,7 +65,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         if (getOwnerId() == visitor.getId()) {
             setOpen(false);
             removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
-            visitor.setPlayerShop(this);
+            visitor.setMerchant(this);
             visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
             return OpsMREnterResult.MREnterResult_Success;
         }
@@ -78,7 +78,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         if (isInBlackList(visitor.getName())) {
             return OpsMREnterResult.MREnterResult_OnBlockedList;
         }
-        visitor.setPlayerShop(this);
+        visitor.setMerchant(this);
         addVisitor(visitor);
         visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_EntrustedShop(visitor, this, false));
         return OpsMREnterResult.MREnterResult_Success;
@@ -87,10 +87,10 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     public boolean leave(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(true);
-            visitor.setPlayerShop(null);
+            visitor.setMerchant(null);
             return true;
         }
-        visitor.setPlayerShop(null);
+        visitor.setMerchant(null);
         removeVisitor(visitor);
         return true;
     }
@@ -117,11 +117,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         for (TacosCharacter visitor : getAllVisitors()) {
             visitor.SendPacket(packet);
         }
-    }
-
-    // merge
-    public void broadcastToVisitors(ServerPacket packet) {
-        SendPacket(packet);
     }
 
     public int getMaxSize() {
@@ -177,7 +172,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
                     visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1, error));
                 }
                 SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1));
-                visitor.setPlayerShop(null);
+                visitor.setMerchant(null);
             }
         }
     }
@@ -221,15 +216,8 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_ESP_DeliverVisitList(visitors_names));
     }
 
-    public final static byte HIRED_MERCHANT = 1;
-    public final static byte PLAYER_SHOP = 2;
-    public final static byte OMOK = 3;
-    public final static byte MATCH_CARD = 4;
-
-    protected boolean available = false;
     protected String ownerName;
     protected String des;
-    protected String pass;
     protected int owneraccount;
     protected int itemId;
     protected int channel;
@@ -243,7 +231,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     private int item_sub_type;
     private long start;
 
-    @SuppressWarnings("unchecked")
     public TacosMerchant(TacosCharacter owner, int itemId, String desc) {
         TacosRoom room = owner.getWorld().createRoom();
         room.setMerchant(this);
@@ -253,7 +240,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         this.owneraccount = owner.getAccountId();
         this.itemId = itemId;
         this.des = desc;
-        this.pass = "";
         this.map = owner.getMapId();
         this.channel = owner.getChannelId();
         this.item_sub_type = itemId % 100;
@@ -316,40 +302,13 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
         return chr.getId() == getOwnerId() && chr.getName().equals(ownerName);
     }
 
-    public String getPassword() {
-        if (pass == null) {
-            return "";
-        }
-        return pass;
-    }
-
-    public TacosCharacter getMCOwner() {
-        return getMap().getPlayerById(getOwnerId());
-    }
-
     public TacosMap getMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
+    // m_nMiniRoomType
     public int getGameType() {
-        if (getShopType() == HIRED_MERCHANT) { //hiredmerch
-            return 5;
-        } else if (getShopType() == PLAYER_SHOP) { //shop lol
-            return 4;
-        } else if (getShopType() == OMOK) { //omok
-            return 1;
-        } else if (getShopType() == MATCH_CARD) { //matchcard
-            return 2;
-        }
-        return 0;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean b) {
-        this.available = b;
+        return OpsMiniRoomType.MR_EntrustedShop.get();
     }
 
     public List<BoughtItem> getBoughtItems() {
@@ -384,10 +343,6 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
 
     public int getItemSubType() {
         return this.item_sub_type;
-    }
-
-    public byte getShopType() {
-        return HIRED_MERCHANT;
     }
 
     public void setStoreid(int storeid) {
@@ -456,8 +411,8 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     }
 
     // the owner is offline or disconnected while managing the shop, the goods go to the store bank.
-    public void closeShop(boolean saveItems, boolean remove, int reason) {
-        remove(remove, reason);
+    public void closeShop(boolean remove_from_channel, int reason) {
+        remove(remove_from_channel, reason);
         storeGoods();
     }
 
@@ -465,8 +420,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
     public void open(TacosCharacter owner) {
         setStoreid(owner.getChannelServer().addMerchant(this));
         setOpen(true);
-        setAvailable(true);
-        owner.setPlayerShop(null);
+        owner.setMerchant(null);
         getMap().addMerchant(this);
     }
 
@@ -516,7 +470,7 @@ public class TacosMerchant extends TacosMapObject implements IPlayerShop {
             owner.saveToDB(false);
         }
         storeGoods();
-        owner.setPlayerShop(null);
+        owner.setMerchant(null);
         owner.setRemoteStore(null);
         return result;
     }

@@ -238,7 +238,7 @@ public class TacosChannel extends TacosServer {
 
     public void closeAllMerchant() {
         for (TacosMerchant hm : this.merchants.values()) {
-            hm.closeShop(true, false, 0);
+            hm.closeShop(false, 0);
         }
         this.merchants.clear();
     }

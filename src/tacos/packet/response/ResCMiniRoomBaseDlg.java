@@ -21,7 +21,7 @@ package tacos.packet.response;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsESWithdrawAll;
 import tacos.packet.ops.OpsPSBuy;
-import odin.server.shops.IPlayerShop;
+import odin.server.shops.MaplePlayerShop;
 import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.object.TacosMerchant;
@@ -93,11 +93,12 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_EnterResult : CMiniRoomBaseDlg::OnEnterResultBase, CTradingRoomDlg::OnEnterResult
-    public static ServerPacket MiniRoom_MRP_EnterResult_TradingRoom(TacosCharacter chr, MapleTrade trade, byte number, boolean isPointTrade) {
+    public static ServerPacket MiniRoom_MRP_EnterResult_TradingRoom(TacosCharacter chr, MapleTrade trade) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
+        int number = trade.getSlot();
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
-        sp.Encode1(isPointTrade ? OpsMiniRoomType.MR_CashTradingRoom.get() : OpsMiniRoomType.MR_TradingRoom.get()); // nMiniRoomType
+        sp.Encode1(trade.isPointTrade() ?OpsMiniRoomType.MR_CashTradingRoom.get() : OpsMiniRoomType.MR_TradingRoom.get()); // nMiniRoomType
         sp.Encode1(2); // m_nMaxUsers
         sp.Encode1(number); // m_nMyPosition
         if (number == 1) {
@@ -116,18 +117,17 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_EnterResult : CMiniRoomBaseDlg::OnEnterResultBase, CPersonalShopDlg::OnEnterResult
-    public static ServerPacket MiniRoom_MRP_EnterResult_PersonalShop(TacosCharacter chr) {
+    public static ServerPacket MiniRoom_MRP_EnterResult_PersonalShop(TacosCharacter chr, MaplePlayerShop ips) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        IPlayerShop ips = chr.getPlayerShop();
-        TacosCharacter owner = ips.getMCOwner();
+        TacosCharacter owner = ips.getOwner();
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
-        sp.Encode1(OpsMiniRoomType.MR_PersonalShop.get()); // nMiniRoomType
-        sp.Encode1(4); // m_nMaxUsers
-        sp.Encode1(ips.getVisitorSlot(chr)); // m_nMyPosition
+        sp.Encode1(ips.getMiniRoomType().get()); // nMiniRoomType
+        sp.Encode1(ips.getMaxUsers()); // m_nMaxUsers
+        sp.Encode1(ips.getSlot(chr)); // m_nMyPosition
         sp.Encode1(0); // slot (owner)
         sp.EncodeBuffer(RD_AvatarLook.Encode(owner)); // CMiniRoomBaseDlg::DecodeAvatar
-        sp.EncodeStr(ips.getOwnerName()); // m_asUserID[i]
+        sp.EncodeStr(owner.getName()); // m_asUserID[i]
         sp.Encode2(owner.getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87)); // m_anJobCode[i]
         for (SimpleImmutableEntry<Byte, TacosCharacter> visitor : ips.getVisitors()) {
             sp.Encode1(visitor.getKey()); // slot
@@ -138,15 +138,9 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(-1); // end of users
         // CPersonalShopDlg::OnEnterResult
         sp.EncodeStr(ips.getDescription()); // m_sTitle
-        sp.Encode1(10); // m_nItemMaxCount
+        sp.Encode1(ips.getMaxItems()); // m_nItemMaxCount
         // CPersonalShopDlg::OnRefresh
-        sp.Encode1(ips.getItems().size());
-        for (MaplePlayerShopItem item : ips.getItems()) {
-            sp.Encode2(item.bundles); // nNumber
-            sp.Encode2(item.item.getQuantity()); // nSet
-            sp.Encode4(item.price); // nPrice
-            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
-        }
+        sp.EncodeBuffer(ShopItems_Encode(ips.getItems()));
         return sp;
     }
 
@@ -191,13 +185,7 @@ public class ResCMiniRoomBaseDlg {
         // CEntrustedShopDlg::OnRefresh
         sp.Encode4(merch.getMeso()); // m_nMoney
         // CPersonalShopDlg::OnRefresh
-        sp.Encode1(merch.getItems().size());
-        for (MaplePlayerShopItem item : merch.getItems()) {
-            sp.Encode2(item.bundles); // nNumber
-            sp.Encode2(item.item.getQuantity()); // nSet
-            sp.Encode4(item.price); // nPrice
-            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
-        }
+        sp.EncodeBuffer(ShopItems_Encode(merch.getItems()));
         return sp;
     }
 
@@ -206,13 +194,13 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
-        sp.Encode1(game.getGameType()); // nMiniRoomType
-        sp.Encode1(game.getMaxSize()); // m_nMaxUsers
-        sp.Encode1(game.getVisitorSlot(chr)); // m_nMyPosition
+        sp.Encode1(game.getMiniRoomType().get()); // nMiniRoomType
+        sp.Encode1(game.getMaxUsers()); // m_nMaxUsers
+        sp.Encode1(game.getSlot(chr)); // m_nMyPosition
         sp.Encode1(0); // slot (owner)
-        sp.EncodeBuffer(RD_AvatarLook.Encode(game.getMCOwner())); // CMiniRoomBaseDlg::DecodeAvatar
-        sp.EncodeStr(game.getOwnerName()); // m_asUserID[i]
-        sp.Encode2(game.getMCOwner().getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87)); // m_anJobCode[i]
+        sp.EncodeBuffer(RD_AvatarLook.Encode(game.getOwner())); // CMiniRoomBaseDlg::DecodeAvatar
+        sp.EncodeStr(game.getOwner().getName()); // m_asUserID[i]
+        sp.Encode2(game.getOwner().getJob(),Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87)); // m_anJobCode[i]
         for (SimpleImmutableEntry<Byte, TacosCharacter> visitor : game.getVisitors()) {
             sp.Encode1(visitor.getKey()); // slot
             sp.EncodeBuffer(RD_AvatarLook.Encode(visitor.getValue())); // CMiniRoomBaseDlg::DecodeAvatar
@@ -222,14 +210,14 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(-1); // end of users
         // COmokDlg::OnEnterResult
         sp.Encode1(0); // slot (owner)
-        sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getMCOwner(), game));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getOwner(), game));
         for (SimpleImmutableEntry<Byte, TacosCharacter> visitor : game.getVisitors()) {
             sp.Encode1(visitor.getKey()); // slot
             sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitor.getValue(), game));
         }
         sp.Encode1(-1); // end of records
         sp.EncodeStr(game.getDescription()); // m_sTitle
-        sp.Encode2(game.getPieceType()); // m_nGameKind, m_bTournament
+        sp.Encode2(game.getGameKind()); // m_nGameKind, m_bTournament
         return sp;
     }
 
@@ -427,24 +415,39 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    // PSP_Refresh : CPersonalShopDlg::OnRefresh, CEntrustedShopDlg::OnRefresh
-    public static ServerPacket MiniRoom_PSP_Refresh(IPlayerShop shop) {
+    // PSP_Refresh : CPersonalShopDlg::OnRefresh
+    public static ServerPacket MiniRoom_PSP_Refresh(List<MaplePlayerShopItem> items) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+
+        sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
+        sp.EncodeBuffer(ShopItems_Encode(items));
+        return sp;
+    }
+
+    // PSP_Refresh : CEntrustedShopDlg::OnRefresh
+    public static ServerPacket MiniRoom_PSP_Refresh_EntrustedShop(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
         // CEntrustedShopDlg::OnRefresh
-        if (shop.getShopType() == 1) {
-            sp.Encode4(shop.getMeso()); // m_nMoney
-        }
+        sp.Encode4(merchant.getMeso()); // m_nMoney
         // CPersonalShopDlg::OnRefresh
-        sp.Encode1(shop.getItems().size());
-        for (MaplePlayerShopItem item : shop.getItems()) {
-            sp.Encode2(item.bundles); // nNumber
-            sp.Encode2(item.item.getQuantity()); // nSet
-            sp.Encode4(item.price); // nPrice
-            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
-        }
+        sp.EncodeBuffer(ShopItems_Encode(merchant.getItems()));
         return sp;
+    }
+
+    // CPersonalShopDlg::OnRefresh
+    private static byte[] ShopItems_Encode(List<MaplePlayerShopItem> items) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(items.size());
+        for (MaplePlayerShopItem item : items) {
+            data.Encode2(item.bundles); // nNumber
+            data.Encode2(item.item.getQuantity()); // nSet
+            data.Encode4(item.price); // nPrice
+            data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
+        }
+        return data.getBytes();
     }
 
     // ESP_ArrangeItem : CEntrustedShopDlg::OnArrangeItemResult, the client removes the sold out items.
@@ -533,16 +536,16 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MGRP_Start : COmokDlg::OnUserStart, CMemoryGameDlg::OnUserStart
-    public static ServerPacket MiniRoom_MGRP_Start(MapleMiniGame game, int loser) {
+    // cards = null for omok
+    public static ServerPacket MiniRoom_MGRP_Start(int first_turn, List<Integer> cards) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MGRP_Start.get());
-        sp.Encode1(loser == 1 ? 0 : 1); // first turn
-        if (game.getGameType() == OpsMiniRoomType.MR_MemoryGameRoom.get()) {
-            int count = game.getPieceType() == 1 ? 20 : (game.getPieceType() == 2 ? 30 : 12);
-            sp.Encode1(count); // m_nCount
-            for (int i = 1; i <= count; i++) {
-                sp.Encode4(game.getCardId(i)); // m_anShuffle
+        sp.Encode1(first_turn == 0 ? 1 : 0); // the slot that does not play first
+        if (cards != null) {
+            sp.Encode1(cards.size()); // m_nCount
+            for (int card : cards) {
+                sp.Encode4(card); // m_anShuffle
             }
         }
         return sp;
@@ -557,7 +560,7 @@ public class ResCMiniRoomBaseDlg {
         if (type != 1) {
             sp.Encode1(type == 0 ? (x == 1 ? 0 : 1) : x); // m_nWinnerIdx
         }
-        sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getMCOwner(), game));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getOwner(), game));
         for (SimpleImmutableEntry<Byte, TacosCharacter> visitor : game.getVisitors()) {
             sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitor.getValue(), game));
         }
@@ -602,7 +605,7 @@ public class ResCMiniRoomBaseDlg {
     public static byte[] GW_MiniGameRecord_Encode(TacosCharacter chr, MapleMiniGame game) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(game.getGameType());
+        data.Encode4(game.getMiniRoomType().get());
         data.Encode4(game.getWins(chr));
         data.Encode4(game.getTies(chr));
         data.Encode4(game.getLosses(chr));

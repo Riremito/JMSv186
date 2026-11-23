@@ -18,8 +18,8 @@
  */
 package tacos.packet.response.data;
 
+import odin.server.shops.MapleMiniRoom;
 import tacos.client.TacosCharacter;
-import odin.server.shops.IPlayerShop;
 import tacos.packet.ServerPacket;
 
 /**
@@ -28,36 +28,23 @@ import tacos.packet.ServerPacket;
  */
 public class RD_Structure {
 
-    // addAnnounceBox
+    // addAnnounceBox, the mini room shown over the character.
     public static byte[] AnnounceBox(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (chr.getBalloonShop() != null) {
-            data.EncodeBuffer(Interaction(chr.getBalloonShop()));
-        } else {
-            data.Encode1(0);
+        MapleMiniRoom room = chr.getBalloonRoom();
+        if (room == null) {
+            data.Encode1(0); // m_nMiniRoomType
+            return data.getBytes();
         }
-
-        return data.getBytes();
-    }
-
-    // addInteraction
-    public static byte[] Interaction(IPlayerShop shop) {
-        ServerPacket data = new ServerPacket();
-
-        data.Encode1(shop.getGameType());
-        data.Encode4(shop.getObjectId());
-        data.EncodeStr(shop.getDescription());
-        if (shop.getShopType() != 1) {
-            data.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
-        }
-        data.Encode1(shop.getItemId() % 10);
-        data.Encode1(shop.getSize()); //current size
-        data.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
-        if (shop.getShopType() != 1) {
-            data.Encode1(shop.isOpen() ? 0 : 1);
-        }
-
+        data.Encode1(room.getMiniRoomType().get()); // m_nMiniRoomType
+        data.Encode4(room.getObjectId()); // m_dwMiniRoomSN
+        data.EncodeStr(room.getDescription()); // m_sMiniRoomTitle
+        data.Encode1(room.isPrivate() ? 1 : 0); // m_bPrivate
+        data.Encode1(room.getItemId() % 10); // m_nGameKind
+        data.Encode1(room.getUserCount()); // m_nCurUsers
+        data.Encode1(room.getMaxUsers()); // m_nMaxUsers
+        data.Encode1(room.isGameOn() ? 1 : 0); // m_bGameOn
         return data.getBytes();
     }
 }

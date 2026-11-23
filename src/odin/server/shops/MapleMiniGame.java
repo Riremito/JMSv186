@@ -1,613 +1,314 @@
 /*
-This file is part of the ZeroFusion MapleStory Server
-Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-ZeroFusion organized by "RMZero213" <RMZero213@hotmail.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
 package odin.server.shops;
 
-import java.util.ArrayList;
-import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
-import tacos.packet.ops.OpsMRLeave;
-import tacos.packet.ops.OpsMiniRoomType;
-import tacos.server.map.TacosMap;
-import tacos.client.TacosCharacter;
-import java.util.Collections;
 import java.util.List;
-import java.util.LinkedList;
 import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
-import tacos.packet.response.ResCMiniRoomBaseDlg;
-import java.awt.Point;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
-import tacos.server.TacosWorld;
+import tacos.packet.ops.OpsMREnterResult;
+import tacos.packet.ops.OpsMRLeave;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
-public class MapleMiniGame implements IPlayerShop {
+/**
+ * The common part of the mini games (MGRP_), the owner plays against one
+ * visitor. MapleOmok handles ORP_ and MapleMemoryGame handles MGP_.
+ *
+ * @author Riremito
+ */
+public abstract class MapleMiniGame extends MapleMiniRoom {
 
-    public final static byte HIRED_MERCHANT = 1;
-    public final static byte PLAYER_SHOP = 2;
-    public final static byte OMOK = 3;
-    public final static byte MATCH_CARD = 4;
-    // the win, tie and lose counts are kept in the custom data of these quests as "losses,ties,wins"
-    private static final int OMOK_RECORD_QUEST_ID = 122200;
-    private static final int MATCH_CARD_RECORD_QUEST_ID = 122210;
+    // m_nGameResultType
+    public static final int RESULT_LOSE = 0;
+    public static final int RESULT_TIE = 1;
+    public static final int RESULT_WIN = 2;
 
-    private Point position = new Point();
-    private int objectId;
+    private final String password;
+    private final int gameKind;
+    private final boolean[] exitAfter = new boolean[2];
+    private boolean playing = false;
+    private boolean visitorReady = false;
+    private int tieRequestSlot = -1;
+    private int firstTurn = 0;
 
-    private boolean open = false;
-    private boolean available = false;
-    private String ownerName;
-    private String des;
-    private String pass;
-    private int ownerId;
-    private int owneraccount;
-    private int itemId;
-    private int channel;
-    private int map;
-    private AtomicInteger meso = new AtomicInteger(0);
-    private TacosCharacter[] chrs;
-    private List<String> visitors = new LinkedList<>();
-    private List<MaplePlayerShopItem> items = new LinkedList<>();
+    protected MapleMiniGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
+        super(owner, itemId, description, 1);
+        this.password = (password != null) ? password : "";
+        this.gameKind = gameKind;
+    }
 
-    private final static int slots = 2; //change?!
-    private boolean[] exitAfter;
-    private boolean[] ready;
-    private int[] points;
-    private int GameType = 0;
-    private int[][] piece = new int[15][15];
-    private List<Integer> matchcards = new ArrayList<>();
-    int loser = 0;
-    int turn = 1;
-    int piecetype = 0;
-    int firstslot = 0;
-    int tie = -1;
+    // the win, tie and lose counts are kept in the custom data of this quest as "losses,ties,wins"
+    protected abstract int getRecordQuestId();
 
-    @SuppressWarnings("unchecked")
-    public MapleMiniGame(TacosCharacter owner, int itemId, String description, String pass, int GameType) {
-        this.setPosition(owner.getPosition());
-        this.ownerName = owner.getName();
-        this.ownerId = owner.getId();
-        this.owneraccount = owner.getAccountId();
-        this.itemId = itemId;
-        this.des = description;
-        this.pass = pass;
-        this.map = owner.getMapId();
-        this.channel = owner.getChannelId();
-        chrs = new TacosCharacter[slots - 1];
-        for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = null;
+    // the board is cleared, returns the shuffled cards or null.
+    protected abstract List<Integer> resetBoard();
+
+    @Override
+    public boolean isPrivate() {
+        return !this.password.isEmpty();
+    }
+
+    @Override
+    public boolean isGameOn() {
+        return this.playing;
+    }
+
+    @Override
+    protected void detach(TacosCharacter chr) {
+        chr.setMiniGame(null);
+    }
+
+    @Override
+    protected ServerPacket getEnterPacket(int slot, TacosCharacter visitor) {
+        return ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(slot, visitor, this);
+    }
+
+    // m_nGameKind, the piece of omok or the number of cards of the memory game
+    public int getGameKind() {
+        return this.gameKind;
+    }
+
+    public boolean isPlaying() {
+        return this.playing;
+    }
+
+    // the room is created and shown over the owner.
+    public void create() {
+        getOwner().setMiniGame(this);
+        getMap().addMiniGame(this);
+        getOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_MiniGame(getOwner(), this));
+        updateBalloon();
+    }
+
+    // MRP_Enter from a visitor.
+    public OpsMREnterResult enter(TacosCharacter visitor, String password) {
+        if (this.playing) {
+            return OpsMREnterResult.MGEnterResult_AlreadyPlaying;
         }
-        this.GameType = GameType;
-        this.points = new int[slots];
-        this.exitAfter = new boolean[slots];
-        this.ready = new boolean[slots];
-        reset();
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    public int getMaxSize() {
-        return chrs.length + 1;
-    }
-
-    public int getSize() {
-        return getFreeSlot() == -1 ? getMaxSize() : getFreeSlot();
-    }
-
-    public void broadcastToVisitors(ServerPacket packet) {
-        broadcastToVisitors(packet, true);
-    }
-
-    public void broadcastToVisitors(ServerPacket packet, boolean owner) {
-        for (TacosCharacter chr : chrs) {
-            if (chr != null) {
-                chr.SendPacket(packet);
-            }
+        if (isPrivate() && !this.password.equals(password)) {
+            return OpsMREnterResult.MGEnterResult_InvalidPassword;
         }
-        if (getShopType() != HIRED_MERCHANT && owner && getMCOwner() != null) {
-            getMCOwner().SendPacket(packet);
+        if (isFull()) {
+            return OpsMREnterResult.MREnterResult_Full;
         }
+        visitor.setMiniGame(this);
+        addVisitor(visitor);
+        this.visitorReady = false;
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_MiniGame(visitor, this));
+        updateBalloon();
+        return OpsMREnterResult.MREnterResult_Success;
     }
 
-    public void broadcastToVisitors(ServerPacket packet, int exception) {
-        for (TacosCharacter chr : chrs) {
-            if (chr != null && getVisitorSlot(chr) != exception) {
-                chr.SendPacket(packet);
-            }
+    // MRP_Leave, the dialog is already closed. a game being played is lost.
+    public void leave(TacosCharacter chr) {
+        if (this.playing && getSlot(chr) != -1) {
+            this.exitAfter[0] = false;
+            this.exitAfter[1] = false;
+            finishGame(RESULT_LOSE, getSlot(chr));
         }
-        if (getShopType() != HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
-            getMCOwner().SendPacket(packet);
-        }
-    }
-
-    public int getMeso() {
-        return meso.get();
-    }
-
-    public void setMeso(int meso) {
-        this.meso.set(meso);
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
-    }
-
-    public boolean isOpen() {
-        return open;
-    }
-
-    public TacosCharacter getVisitor(int num) {
-        return chrs[num];
-    }
-
-    public void addVisitor(TacosCharacter visitor) {
-        int i = getFreeSlot();
-        if (i > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor, this));
-            chrs[i - 1] = visitor;
-            if (!isOwner(visitor)) {
-                visitors.add(visitor.getName());
-            }
-        }
-    }
-
-    public void removeVisitor(TacosCharacter visitor) {
-        byte slot = getVisitorSlot(visitor);
-        boolean shouldUpdate = getFreeSlot() == -1;
-        if (slot > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot), slot);
-            chrs[slot - 1] = null;
-        }
-    }
-
-    public byte getVisitorSlot(TacosCharacter visitor) {
-        for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] != null && chrs[i].getId() == visitor.getId()) {
-                return (byte) (i + 1);
-            }
-        }
-        if (visitor.getId() == ownerId) { //can visit own store in merch, otherwise not.
-            return 0;
-        }
-        return -1;
-    }
-
-    public void removeAllVisitors(int error, int type) {
-        for (int i = 0; i < chrs.length; i++) {
-            TacosCharacter visitor = getVisitor(i);
-            if (visitor != null) {
-                if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(type, error));
-                }
-                broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
-                visitor.setPlayerShop(null);
-                chrs[i] = null;
-            }
-        }
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public String getDescription() {
-        if (des == null) {
-            return "";
-        }
-        return des;
-    }
-
-    public List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors() {
-        List<SimpleImmutableEntry<Byte, TacosCharacter>> chrz = new LinkedList<>();
-        for (byte i = 0; i < chrs.length; i++) { //include owner or no
-            if (chrs[i] != null) {
-                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i]));
-            }
-        }
-        return chrz;
-    }
-
-    public List<MaplePlayerShopItem> getItems() {
-        return items;
-    }
-
-    public void addItem(MaplePlayerShopItem item) {
-        items.add(item);
-    }
-
-    public void removeFromSlot(int slot) {
-        items.remove(slot);
-    }
-
-    public byte getFreeSlot() {
-        for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] == null) {
-                return (byte) (i + 1);
-            }
-        }
-        return -1;
-    }
-
-    public int getItemId() {
-        return itemId;
-    }
-
-    public boolean isOwner(TacosCharacter chr) {
-        return chr.getId() == ownerId && chr.getName().equals(ownerName);
-    }
-
-    public String getPassword() {
-        if (pass == null) {
-            return "";
-        }
-        return pass;
-    }
-
-    public TacosCharacter getMCOwner() {
-        return getMap().getPlayerById(ownerId);
-    }
-
-    public TacosMap getMap() {
-        return TacosWorld.find(0).getChannelServer(channel).findMap(map);
-    }
-
-    public int getGameType() {
-        if (getShopType() == HIRED_MERCHANT) { //hiredmerch
-            return OpsMiniRoomType.MR_EntrustedShop.get();
-        } else if (getShopType() == PLAYER_SHOP) { //shop lol
-            return OpsMiniRoomType.MR_PersonalShop.get();
-        } else if (getShopType() == OMOK) { //omok
-            return OpsMiniRoomType.MR_OmokRoom.get();
-        } else if (getShopType() == MATCH_CARD) { //matchcard
-            return OpsMiniRoomType.MR_MemoryGameRoom.get();
-        }
-        return 0;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean b) {
-        this.available = b;
-    }
-
-    public static final class BoughtItem {
-    }
-
-    public void reset() {
-        for (int i = 0; i < slots; i++) {
-            points[i] = 0;
-            exitAfter[i] = false;
-            ready[i] = false;
-        }
-    }
-
-    public void setFirstSlot(int type) {
-        firstslot = type;
-    }
-
-    public int getFirstSlot() {
-        return firstslot;
-    }
-
-    public void setPoints(int slot) {
-        points[slot]++;
-        checkWin();
-    }
-
-    public int getPoints() {
-        int ret = 0;
-        for (int i = 0; i < slots; i++) {
-            ret += points[i];
-        }
-        return ret;
-    }
-
-    public void checkWin() {
-        if (getPoints() >= getMatchesToWin() && isOpen()) {
-            int x = 0;
-            int highest = 0;
-            boolean tie = false;
-            for (int i = 0; i < slots; i++) {
-                if (points[i] > highest) {
-                    x = i;
-                    highest = points[i];
-                    tie = false;
-                } else if (points[i] == highest) {
-                    tie = true;
-                }
-                points[i] = 0;
-            }
-            setGameResult(tie ? 1 : 2, x);
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, tie ? 1 : 2, x));
-            this.setOpen(true);
-            checkExitAfterGame();
-        }
-    }
-
-    public void setPieceType(int type) {
-        piecetype = type;
-    }
-
-    public int getPieceType() {
-        return piecetype;
-    }
-
-    public void setGameType() {
-        if (GameType == 2) { //omok = 1
-            matchcards.clear();
-            for (int i = 0; i < getMatchesToWin(); i++) {
-                matchcards.add(i);
-                matchcards.add(i);
-            }
-        }
-    }
-
-    public void shuffleList() {
-        if (GameType == 2) {
-            Collections.shuffle(matchcards);
-        } else {
-            piece = new int[15][15];
-        }
-    }
-
-    public int getCardId(int slot) {
-        return matchcards.get(slot - 1);
-    }
-
-    public int getMatchesToWin() {
-        return (getPieceType() == 0 ? 6 : (getPieceType() == 1 ? 10 : 15));
-    }
-
-    public int getLoser() {
-        return loser;
-    }
-
-    public void send(TacosCharacter chr) {
-        if (getMCOwner() == null) {
-            closeShop(false, false, 0);
+        if (isOwner(chr)) {
+            close();
             return;
         }
-        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_MiniGame(chr, this));
+        removeVisitor(chr);
+        this.visitorReady = false;
+        updateBalloon();
     }
 
-    public void setReady(int slot) {
-        ready[slot] = !ready[slot];
+    // the owner left, the visitor is sent out.
+    public void close() {
+        kickAllVisitors(OpsMRLeave.MRLeave_HostOut);
+        getMap().removeMiniGame(getObjectId());
+        detach(getOwner());
+        updateBalloon();
     }
 
-    public boolean isReady(int slot) {
-        return ready[slot];
-    }
-
-    public void setPiece(int move1, int move2, int type, TacosCharacter chr) {
-        if (piece[move1][move2] == 0 && isOpen()) {
-            piece[move1][move2] = type;
-            // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
-            this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_ORP_PutStoneChecker(move1, move2, type));
-            boolean found = false;
-            for (int y = 0; y < 15; y++) {
-                for (int x = 0; x < 15; x++) {
-                    if (!found && searchCombo(x, y, type)) {
-                        setGameResult(2, getVisitorSlot(chr));
-                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, 2, getVisitorSlot(chr)));
-                        this.setOpen(true);
-                        checkExitAfterGame();
-                        found = true;
-                    }
-                }
-            }
-            nextLoser();
+    // MGRP_Ready, MGRP_CancelReady from the visitor.
+    public void setReady(TacosCharacter chr, boolean ready) {
+        if (this.playing || getSlot(chr) <= 0) {
+            return;
         }
+        this.visitorReady = ready;
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_Ready(ready));
     }
 
-    public void nextLoser() { //lol
-        loser++;
-        if (loser > slots - 1) {
-            loser = 0;
+    // MGRP_Start from the owner.
+    public void start(TacosCharacter chr) {
+        if (this.playing || !isOwner(chr) || getUser(1) == null || !this.visitorReady) {
+            return;
         }
+        this.playing = true;
+        this.tieRequestSlot = -1;
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_Start(this.firstTurn, resetBoard()));
+        updateBalloon();
     }
 
-    public void exit(TacosCharacter player) {
-        player.setPlayerShop(null);
-        if (isOwner(player)) {
-            removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
+    // MGRP_Ban, the owner sends the visitor out before the game.
+    public void ban(TacosCharacter chr) {
+        if (this.playing || !isOwner(chr) || getUser(1) == null) {
+            return;
+        }
+        kickVisitor(getUser(1), OpsMRLeave.MRLeave_Kicked);
+        this.visitorReady = false;
+        updateBalloon();
+    }
+
+    // MGRP_TieRequest, asks the opponent.
+    public void requestTie(TacosCharacter chr) {
+        int slot = getSlot(chr);
+        TacosCharacter opponent = getUser(getOpponentSlot(slot));
+        if (!this.playing || slot < 0 || opponent == null) {
+            return;
+        }
+        this.tieRequestSlot = slot;
+        opponent.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieRequest());
+    }
+
+    // MGRP_TieResult, the answer of the opponent.
+    public void answerTie(TacosCharacter chr, boolean accepted) {
+        int slot = getSlot(chr);
+        if (!this.playing || this.tieRequestSlot < 0 || this.tieRequestSlot == slot) {
+            return;
+        }
+        int request_slot = this.tieRequestSlot;
+        this.tieRequestSlot = -1;
+        if (accepted) {
+            finishGame(RESULT_TIE, request_slot);
+            return;
+        }
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TieResult());
+    }
+
+    // MGRP_GiveUpRequest
+    public void giveUp(TacosCharacter chr) {
+        int slot = getSlot(chr);
+        if (!this.playing || slot < 0) {
+            return;
+        }
+        finishGame(RESULT_LOSE, slot);
+    }
+
+    // MGRP_LeaveEngage, MGRP_LeaveEngageCancel, the user leaves after the game.
+    public void setExitAfter(TacosCharacter chr, boolean exit) {
+        int slot = getSlot(chr);
+        if (!this.playing || slot < 0) {
+            return;
+        }
+        this.exitAfter[slot] = exit;
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_LeaveEngage(exit));
+    }
+
+    // MGRP_TimeOver
+    public void timeOver(TacosCharacter chr) {
+        int slot = getSlot(chr);
+        if (!this.playing || slot < 0) {
+            return;
+        }
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_TimeOver(slot));
+    }
+
+    protected static int getOpponentSlot(int slot) {
+        return (slot == 0) ? 1 : 0;
+    }
+
+    // the result of the user in the slot, the opponent gets the opposite result.
+    protected void finishGame(int result, int slot) {
+        if (!this.playing) {
+            return;
+        }
+        this.playing = false;
+        this.visitorReady = false;
+        this.tieRequestSlot = -1;
+        int opponent_slot = getOpponentSlot(slot);
+        addRecord(getUser(slot), result);
+        addRecord(getUser(opponent_slot), RESULT_WIN - result);
+        // the loser plays first in the next game.
+        if (result == RESULT_LOSE) {
+            this.firstTurn = slot;
+        } else if (result == RESULT_WIN) {
+            this.firstTurn = opponent_slot;
         } else {
-            removeVisitor(player);
+            this.firstTurn = getOpponentSlot(this.firstTurn);
+        }
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_MGRP_GameResult(this, result, slot));
+        updateBalloon();
+        checkExitAfterGame();
+    }
+
+    private void checkExitAfterGame() {
+        boolean owner_exit = this.exitAfter[0];
+        TacosCharacter visitor = getUser(1);
+        if (this.exitAfter[1] && visitor != null) {
+            kickVisitor(visitor, OpsMRLeave.MGLeave_UserRequest);
+            updateBalloon();
+        }
+        this.exitAfter[0] = false;
+        this.exitAfter[1] = false;
+        if (owner_exit) {
+            getOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, OpsMRLeave.MGLeave_UserRequest));
+            close();
         }
     }
 
-    public boolean isExitAfter(TacosCharacter player) {
-        if (getVisitorSlot(player) > -1) {
-            return this.exitAfter[getVisitorSlot(player)];
+    // records.
+    private MapleQuestStatus getRecord(TacosCharacter chr) {
+        MapleQuestStatus record = chr.getQuestNAdd(MapleQuest.getInstance(getRecordQuestId()));
+        String data = record.getCustomData();
+        if (data == null || data.split(",").length != 3) {
+            record.setCustomData("0,0,0");
         }
-        return false;
+        return record;
     }
 
-    public void setExitAfter(TacosCharacter player) {
-        if (getVisitorSlot(player) > -1) {
-            this.exitAfter[getVisitorSlot(player)] = !this.exitAfter[getVisitorSlot(player)];
-        }
-    }
-
-    public void checkExitAfterGame() {
-        for (int i = 0; i < slots; i++) {
-            if (exitAfter[i]) {
-                exitAfter[i] = false;
-                exit(i == 0 ? getMCOwner() : chrs[i - 1]);
-            }
+    // RESULT_LOSE = losses, RESULT_TIE = ties, RESULT_WIN = wins
+    private int getRecord(TacosCharacter chr, int result) {
+        try {
+            return Integer.parseInt(getRecord(chr).getCustomData().split(",")[result]);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 
-    public boolean searchCombo(int x, int y, int type) {
-        boolean ret = false;
-        if (!ret && x < 11) {
-            ret = true;
-            for (int i = 0; i < 5; i++) {
-                if (piece[x + i][y] != type) {
-                    ret = false;
-                    break;
-                }
-            }
+    private void addRecord(TacosCharacter chr, int result) {
+        if (chr == null) {
+            return;
         }
-        if (!ret && y < 11) {
-            ret = true;
-            for (int i = 0; i < 5; i++) {
-                if (piece[x][y + i] != type) {
-                    ret = false;
-                    break;
-                }
-            }
-        }
-        if (!ret && x < 11 && y < 11) {
-            ret = true;
-            for (int i = 0; i < 5; i++) {
-                if (piece[x + i][y + i] != type) {
-                    ret = false;
-                    break;
-                }
-            }
-        }
-        if (!ret && x > 3 && y < 11) {
-            ret = true;
-            for (int i = 0; i < 5; i++) {
-                if (piece[x - i][y + i] != type) {
-                    ret = false;
-                    break;
-                }
-            }
-        }
-        return ret;
+        String[] data = getRecord(chr).getCustomData().split(",");
+        data[result] = String.valueOf(getRecord(chr, result) + 1);
+        getRecord(chr).setCustomData(String.join(",", data));
     }
 
-    public int getScore(TacosCharacter chr) {
-        //TODO: Fix formula
-        int score = 2000;
-        int wins = getWins(chr);
-        int ties = getTies(chr);
-        int losses = getLosses(chr);
-        if (wins + ties + losses > 0) {
-            score += wins * 2;
-            score += ties;
-            score -= losses * 2;
-        }
-        return score;
-    }
-
-    public byte getShopType() {
-        return GameType == 1 ? OMOK : MATCH_CARD;
-    }
-
-    //questids:
-    //omok - win = 122200
-    //matchcard - win = 122210
-    //TODO: record points
     public int getWins(TacosCharacter chr) {
-        return Integer.parseInt(getData(chr).split(",")[2]);
+        return getRecord(chr, RESULT_WIN);
     }
 
     public int getTies(TacosCharacter chr) {
-        return Integer.parseInt(getData(chr).split(",")[1]);
+        return getRecord(chr, RESULT_TIE);
     }
 
     public int getLosses(TacosCharacter chr) {
-        return Integer.parseInt(getData(chr).split(",")[0]);
+        return getRecord(chr, RESULT_LOSE);
     }
 
-    // updates the records before sending MGRP_GameResult
-    public void setGameResult(int type, int x) {
-        setPoints(x, type);
-        if (type != 0) {
-            setPoints(x == 1 ? 0 : 1, type == 2 ? 0 : 1);
-        }
-    }
-
-    public void setPoints(int i, int type) { //lose = 0, tie = 1, win = 2
-        TacosCharacter z;
-        if (i == 0) {
-            z = getMCOwner();
-        } else {
-            z = getVisitor(i - 1);
-        }
-        if (z != null) {
-            String[] data = getData(z).split(",");
-            data[type] = String.valueOf(Integer.parseInt(data[type]) + 1);
-            z.getQuestNAdd(getRecordQuest()).setCustomData(String.join(",", data));
-        }
-    }
-
-    private MapleQuest getRecordQuest() {
-        return MapleQuest.getInstance(GameType == 1 ? OMOK_RECORD_QUEST_ID : MATCH_CARD_RECORD_QUEST_ID);
-    }
-
-    public String getData(TacosCharacter chr) {
-        MapleQuest quest = getRecordQuest();
-        MapleQuestStatus record;
-        if (chr.getQuestNoAdd(quest) == null) {
-            record = chr.getQuestNAdd(quest);
-            record.setCustomData("0,0,0");
-        } else {
-            record = chr.getQuestNoAdd(quest);
-            if (record.getCustomData() == null || record.getCustomData().length() < 5 || record.getCustomData().indexOf(",") == -1) {
-                record.setCustomData("0,0,0"); //refresh
-            }
-        }
-        return record.getCustomData();
-    }
-
-    public int getRequestedTie() {
-        return tie;
-    }
-
-    public void setRequestedTie(int t) {
-        this.tie = t;
-    }
-
-    public int getTurn() {
-        return turn;
-    }
-
-    public void setTurn(int t) {
-        this.turn = t;
-    }
-
-    public void closeShop(boolean s, boolean z, int reason) {
-        removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
-        if (getMCOwner() != null) {
-            getMCOwner().setPlayerShop(null);
-        }
-        getMap().removeMiniGame(this.getObjectId());
-    }
-
-    public void buy(TacosCharacter chr, int z, int i) {
+    //TODO: Fix formula
+    public int getScore(TacosCharacter chr) {
+        return 2000 + getWins(chr) * 2 + getTies(chr) - getLosses(chr) * 2;
     }
 }

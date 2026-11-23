@@ -2696,7 +2696,7 @@ public class ReqCUser {
 
     // CWvsContext::SendChangeSlotPositionRequest
     public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, int slot_from, int slot_to, int quantity) {
-        if (chr.getPlayerShop() != null || chr.getTrade() != null) {
+        if (chr.isInMiniRoom()) {
             return false;
         }
 

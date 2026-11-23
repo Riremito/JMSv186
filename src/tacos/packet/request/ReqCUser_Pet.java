@@ -242,6 +242,10 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(TacosCharacter chr, TacosDrop mapitem, int pet_index) {
+        // the items and meso in a trade or an own personal shop need the room in the inventory.
+        if (chr.isItemGainLocked()) {
+            return;
+        }
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
@@ -261,7 +265,7 @@ public class ReqCUser_Pet {
                 int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
                     TacosCharacter player = map.getPlayerById(z.getId());
-                    if (player != null && player.getId() != chr.getId()) {
+                    if (player != null && player.getId() != chr.getId() && !player.isItemGainLocked()) {
                         toGive.add(player);
                     }
                 }

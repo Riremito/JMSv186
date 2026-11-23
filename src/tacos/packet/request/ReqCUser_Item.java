@@ -70,7 +70,7 @@ public class ReqCUser_Item {
 
     public static void OnShopLinkRequest(TacosCharacter chr, int id, int map_id) {
         chr.updateInv();
-        if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.getPlayerShop() != null || map_id < 910000001 || map_id > 910000022) {
+        if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.isInMiniRoom() || map_id < 910000001 || map_id > 910000022) {
             return;
         }
         TacosMap map = chr.findMap(map_id);
@@ -107,7 +107,7 @@ public class ReqCUser_Item {
             chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_NoRoom));
             return;
         }
-        if (chr.getPlayerShop() != null || chr.getTrade() != null) {
+        if (chr.isInMiniRoom()) {
             chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_Failed(OpsMREnterResult.MREnterResult_Busy));
             return;
         }

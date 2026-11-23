@@ -1,6 +1,6 @@
 /*
 This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
+Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc>
 Matthias Butz <matze@odinms.de>
 Jan Christian Meyer <vimes@odinms.de>
 
@@ -21,419 +21,243 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
-import tacos.packet.response.ResCUser;
-import tacos.packet.ops.OpsMREnterResult;
-import odin.server.MapleItemInformationProvider;
-import tacos.packet.ops.OpsPSBuy;
-import tacos.client.TacosHoldInventory;
-import tacos.packet.ops.OpsMRLeave;
-import tacos.server.map.TacosMap;
-import tacos.client.TacosCharacter;
 import java.util.List;
-import java.util.LinkedList;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
+import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
 import odin.server.MapleInventoryManipulator;
+import odin.server.MapleItemInformationProvider;
+import tacos.client.TacosCharacter;
+import tacos.client.TacosHoldInventory;
+import tacos.packet.ops.OpsMREnterResult;
+import tacos.packet.ops.OpsMRLeave;
+import tacos.packet.ops.OpsMiniRoomType;
+import tacos.packet.ops.OpsPSBuy;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import java.awt.Point;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.packet.ServerPacket;
-import tacos.server.TacosWorld;
 
-public class MaplePlayerShop implements IPlayerShop {
+/**
+ * 個人商店 (PSP_)
+ *
+ * The items are put while the shop is being set up, they are out of the
+ * owner's inventory until the shop closes. After the shop is opened the items
+ * can not be put or taken back.
+ *
+ * @author Riremito
+ */
+public class MaplePlayerShop extends MapleMiniRoom {
 
-    public final static byte HIRED_MERCHANT = 1;
-    public final static byte PLAYER_SHOP = 2;
-    public final static byte OMOK = 3;
-    public final static byte MATCH_CARD = 4;
-
-    private Point position = new Point();
-    private int objectId;
-
-    private boolean open = false;
-    private boolean available = false;
-    private final TacosCharacter owner;
-    // the items in this shop, they are out of the owner's inventory until the shop closes.
+    private static final int MAX_VISITORS = 3;
+    private static final int MAX_ITEMS = 10;
+    // the items in this shop, saved with the owner while the shop is opened.
     private final TacosHoldInventory hold;
-    private String ownerName;
-    private String des;
-    private String pass;
-    private int ownerId;
-    private int owneraccount;
-    private int itemId;
-    private int channel;
-    private int map;
-    private AtomicInteger meso = new AtomicInteger(0);
-    private TacosCharacter[] chrs;
-    private List<String> visitors = new LinkedList<>();
-    private List<BoughtItem> bought = new LinkedList<>();
-    private List<MaplePlayerShopItem> items = new LinkedList<>();
+    private final List<MaplePlayerShopItem> items = new ArrayList<>();
+    private final List<String> blackList = new ArrayList<>();
+    private boolean open = false;
 
-    private List<String> bannedList = new ArrayList<>();
-
-    @SuppressWarnings("unchecked")
-    public MaplePlayerShop(TacosCharacter owner, int itemId, String desc) {
-        this.setPosition(owner.getPosition());
-        this.owner = owner;
+    public MaplePlayerShop(TacosCharacter owner, int itemId, String description) {
+        super(owner, itemId, description, MAX_VISITORS);
         this.hold = owner.getMiniRoomInventory();
-        this.ownerName = owner.getName();
-        this.ownerId = owner.getId();
-        this.owneraccount = owner.getAccountId();
-        this.itemId = itemId;
-        this.des = desc;
-        this.pass = "";
-        this.map = owner.getMapId();
-        this.channel = owner.getChannelId();
-        chrs = new TacosCharacter[3];
-        for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = null;
-        }
     }
 
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
+    @Override
+    public OpsMiniRoomType getMiniRoomType() {
+        return OpsMiniRoomType.MR_PersonalShop;
     }
 
-    public int getObjectId() {
-        return objectId;
+    @Override
+    public boolean isPrivate() {
+        return false;
     }
 
-    public void setObjectId(int id) {
-        this.objectId = id;
+    @Override
+    public boolean isGameOn() {
+        return false;
     }
 
-    public int getMaxSize() {
-        return chrs.length + 1;
-    }
-
-    public int getSize() {
-        return getFreeSlot() == -1 ? getMaxSize() : getFreeSlot();
-    }
-
-    public void broadcastToVisitors(ServerPacket packet) {
-        broadcastToVisitors(packet, true);
-    }
-
-    public void broadcastToVisitors(ServerPacket packet, boolean owner) {
-        for (TacosCharacter chr : chrs) {
-            if (chr != null) {
-                chr.SendPacket(packet);
-            }
-        }
-        if (getShopType() != HIRED_MERCHANT && owner && getMCOwner() != null) {
-            getMCOwner().SendPacket(packet);
-        }
-    }
-
-    public void broadcastToVisitors(ServerPacket packet, int exception) {
-        for (TacosCharacter chr : chrs) {
-            if (chr != null && getVisitorSlot(chr) != exception) {
-                chr.SendPacket(packet);
-            }
-        }
-        if (getShopType() != HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
-            getMCOwner().SendPacket(packet);
-        }
-    }
-
-    public int getMeso() {
-        return meso.get();
-    }
-
-    public void setMeso(int meso) {
-        this.meso.set(meso);
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
+    @Override
+    protected void detach(TacosCharacter chr) {
+        chr.setPlayerShop(null);
     }
 
     public boolean isOpen() {
-        return open;
-    }
-
-    public TacosCharacter getVisitor(int num) {
-        return chrs[num];
-    }
-
-    public void addVisitor(TacosCharacter visitor) {
-        int i = getFreeSlot();
-        if (i > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Enter(i, visitor));
-            chrs[i - 1] = visitor;
-            if (!isOwner(visitor)) {
-                visitors.add(visitor.getName());
-            }
-        }
-    }
-
-    public void removeVisitor(TacosCharacter visitor) {
-        byte slot = getVisitorSlot(visitor);
-        boolean shouldUpdate = getFreeSlot() == -1;
-        if (slot > 0) {
-            broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot), slot);
-            chrs[slot - 1] = null;
-        }
-    }
-
-    public byte getVisitorSlot(TacosCharacter visitor) {
-        for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] != null && chrs[i].getId() == visitor.getId()) {
-                return (byte) (i + 1);
-            }
-        }
-        if (visitor.getId() == ownerId) { //can visit own store in merch, otherwise not.
-            return 0;
-        }
-        return -1;
-    }
-
-    public void removeAllVisitors(int error, int type) {
-        for (int i = 0; i < chrs.length; i++) {
-            TacosCharacter visitor = getVisitor(i);
-            if (visitor != null) {
-                if (type != -1) {
-                    visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(i + 1, error)); // the reason is read only for the own slot
-                }
-                broadcastToVisitors(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
-                visitor.setPlayerShop(null);
-                chrs[i] = null;
-            }
-        }
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public String getDescription() {
-        if (des == null) {
-            return "";
-        }
-        return des;
-    }
-
-    public List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors() {
-        List<SimpleImmutableEntry<Byte, TacosCharacter>> chrz = new LinkedList<>();
-        for (byte i = 0; i < chrs.length; i++) { //include owner or no
-            if (chrs[i] != null) {
-                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i]));
-            }
-        }
-        return chrz;
+        return this.open;
     }
 
     public List<MaplePlayerShopItem> getItems() {
-        return items;
+        return this.items;
     }
 
-    public void addItem(MaplePlayerShopItem item) {
-        items.add(item);
-        hold.setItems(getStocks(items));
+    public int getMaxItems() {
+        return MAX_ITEMS;
     }
 
-    public void removeFromSlot(int slot) {
-        items.remove(slot);
-        hold.setItems(getStocks(items));
+    private void updateHold() {
+        this.hold.setItems(getStocks(this.items));
     }
 
-    public byte getFreeSlot() {
-        for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] == null) {
-                return (byte) (i + 1);
+    // MRP_Create, the dialog for the setup is opened.
+    public void create() {
+        getOwner().setPlayerShop(this);
+        getMap().addPlayerShop(this);
+        getOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(getOwner(), this));
+    }
+
+    // MRP_Balloon, the shop is opened and shown over the owner.
+    public void open() {
+        if (this.open) {
+            return;
+        }
+        this.open = true;
+        updateBalloon();
+    }
+
+    // PSP_PutItem, only while the shop is being set up.
+    public void putItem(TacosCharacter chr, MapleInventoryType type, short slot, short bundles, short per_bundle, int price) {
+        if (this.open || !isOwner(chr) || MAX_ITEMS <= this.items.size()) {
+            chr.updateStat();
+            return;
+        }
+        MaplePlayerShopItem item = MaplePlayerShopItem.takeFromInventory(chr, type, slot, bundles, per_bundle, price);
+        if (item == null) {
+            return;
+        }
+        this.items.add(item);
+        updateHold();
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(this.items));
+    }
+
+    // PSP_MoveItemToInventory, only while the shop is being set up.
+    public void moveItemToInventory(TacosCharacter chr, int index) {
+        if (!this.open && isOwner(chr) && 0 <= index && index < this.items.size() && this.items.get(index).returnTo(chr)) {
+            this.items.remove(index);
+            updateHold();
+        }
+        chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(this.items));
+        chr.updateStat(); // CWvsContext::SetExclRequestSent
+    }
+
+    // MRP_Enter from a visitor.
+    public OpsMREnterResult enter(TacosCharacter visitor) {
+        if (!this.open) {
+            return OpsMREnterResult.MREnterResult_NoRoom;
+        }
+        if (this.blackList.contains(visitor.getName())) {
+            return OpsMREnterResult.MREnterResult_OnBlockedList;
+        }
+        if (isFull()) {
+            return OpsMREnterResult.MREnterResult_Full;
+        }
+        visitor.setPlayerShop(this);
+        addVisitor(visitor);
+        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(visitor, this));
+        updateBalloon();
+        return OpsMREnterResult.MREnterResult_Success;
+    }
+
+    // MRP_Leave, the dialog is already closed. the owner closes the shop.
+    public void leave(TacosCharacter chr) {
+        if (isOwner(chr)) {
+            close(OpsMRLeave.MRLeave_HostOut);
+            return;
+        }
+        removeVisitor(chr);
+        updateBalloon();
+    }
+
+    // the owner closed the shop, logged out or every item is sold, the items go back to the owner.
+    public void close(OpsMRLeave reason) {
+        kickAllVisitors(reason);
+        getMap().removePlayerShop(getObjectId());
+        // what does not fit stays in the hold and is saved with the owner.
+        updateHold();
+        this.items.clear();
+        this.hold.returnTo(getOwner());
+        getOwner().SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, reason));
+        detach(getOwner());
+        updateBalloon();
+    }
+
+    // PSP_Ban, the visitor can not enter again.
+    public void ban(TacosCharacter chr, String name) {
+        if (!isOwner(chr)) {
+            return;
+        }
+        for (int slot = 1; slot < getMaxUsers(); slot++) {
+            TacosCharacter visitor = getUser(slot);
+            if (visitor != null && visitor.getName().equals(name)) {
+                kickVisitor(visitor, OpsMRLeave.MRLeave_Kicked);
+                addBlackList(chr, name);
+                updateBalloon();
+                return;
             }
         }
-        return -1;
     }
 
-    public int getItemId() {
-        return itemId;
-    }
-
-    public boolean isOwner(TacosCharacter chr) {
-        return chr.getId() == ownerId && chr.getName().equals(ownerName);
-    }
-
-    public String getPassword() {
-        if (pass == null) {
-            return "";
-        }
-        return pass;
-    }
-
-    public TacosCharacter getMCOwner() {
-        return getMap().getPlayerById(ownerId);
-    }
-
-    public TacosMap getMap() {
-        return TacosWorld.find(0).getChannelServer(channel).findMap(map);
-    }
-
-    public int getGameType() {
-        if (getShopType() == HIRED_MERCHANT) { //hiredmerch
-            return 5;
-        } else if (getShopType() == PLAYER_SHOP) { //shop lol
-            return 4;
-        } else if (getShopType() == OMOK) { //omok
-            return 1;
-        } else if (getShopType() == MATCH_CARD) { //matchcard
-            return 2;
-        }
-        return 0;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean b) {
-        this.available = b;
-    }
-
-    public static final class BoughtItem {
-
-        public int id;
-        public int quantity;
-        public int totalPrice;
-        public String buyer;
-
-        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
-            this.id = id;
-            this.quantity = quantity;
-            this.totalPrice = totalPrice;
-            this.buyer = buyer;
+    // PSP_DeliverBlackList, PSP_AddBlackList, the black list of the client config.
+    public void addBlackList(TacosCharacter chr, String name) {
+        if (isOwner(chr) && !this.blackList.contains(name)) {
+            this.blackList.add(name);
         }
     }
 
-    public void buy(TacosCharacter chr, int item, int quantity) {
-        OpsPSBuy result = buyItem(chr, item, quantity);
+    // PSP_DeleteBlackList
+    public void deleteBlackList(TacosCharacter chr, String name) {
+        if (isOwner(chr)) {
+            this.blackList.remove(name);
+        }
+    }
+
+    // PSP_BuyItem from a visitor.
+    public void buy(TacosCharacter chr, int index, short quantity) {
+        OpsPSBuy result = buyItem(chr, index, quantity);
         // CWvsContext::SetExclRequestSent is cleared by the stat update.
         chr.updateStat();
         if (result != OpsPSBuy.PSBuy_Success) {
             chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_BuyResult(result));
             return;
         }
-        for (MaplePlayerShopItem shop_item : items) {
-            if (0 < shop_item.bundles) {
+        broadcast(ResCMiniRoomBaseDlg.MiniRoom_PSP_Refresh(this.items));
+        for (MaplePlayerShopItem item : this.items) {
+            if (0 < item.bundles) {
                 return;
             }
         }
-        closeShop(false, true, OpsMRLeave.PSLeave_NoMoreItem.get());
+        close(OpsMRLeave.PSLeave_NoMoreItem);
     }
 
-    private OpsPSBuy buyItem(TacosCharacter chr, int item, int quantity) {
-        MaplePlayerShopItem pItem = items.get(item);
-        if (pItem.bundles < quantity) {
+    private OpsPSBuy buyItem(TacosCharacter chr, int index, short quantity) {
+        TacosCharacter owner = getOwner();
+        if (!this.open || getSlot(chr) <= 0 || index < 0 || this.items.size() <= index) {
+            return OpsPSBuy.PSBuy_Unknown;
+        }
+        if (this.items.get(index).bundles < quantity) {
             return OpsPSBuy.PSBuy_NoStock;
         }
-        Item newItem = pItem.item.copy();
-        newItem.setQuantity((short) (quantity * newItem.getQuantity()));
-        byte flag = newItem.getFlag();
-
-        if (ItemFlag.KARMA_EQ.check(flag)) {
-            newItem.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-        } else if (ItemFlag.KARMA_USE.check(flag)) {
-            newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
+        if (!MaplePlayerShopItem.isValidBuy(this.items, index, quantity)) {
+            return OpsPSBuy.PSBuy_Unknown;
         }
-        int price = pItem.price * quantity;
+        MaplePlayerShopItem shop_item = this.items.get(index);
+        int price = shop_item.price * quantity;
         if (chr.getMeso() < price) {
             return OpsPSBuy.PSBuy_NoMoney;
         }
         if (owner.getMeso() + price < 0) {
             return OpsPSBuy.PSBuy_HostTooMuchMoney;
         }
-        if (MapleItemInformationProvider.getInstance().isPickupRestricted(newItem.getItemId()) && chr.haveItem(newItem.getItemId(), 1, true, false)) {
+        Item new_item = shop_item.getSoldItem(quantity);
+        if (MapleItemInformationProvider.getInstance().isPickupRestricted(new_item.getItemId()) && chr.haveItem(new_item.getItemId(), 1, true, false)) {
             return OpsPSBuy.PSBuy_OnlyItem;
         }
-        if (!MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) || !MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
+        if (!MapleInventoryManipulator.checkSpace(chr, new_item.getItemId(), new_item.getQuantity(), new_item.getOwner()) || !MapleInventoryManipulator.addFromDrop(chr, new_item, false)) {
             return OpsPSBuy.PSBuy_NoSlot;
         }
-        pItem.bundles -= quantity;
-        hold.setItems(getStocks(items));
-        bought.add(new BoughtItem(newItem.getItemId(), quantity, price, chr.getName()));
+        shop_item.bundles -= quantity;
+        updateHold();
         chr.gainMeso(-price, false);
         owner.gainMeso(price, false);
-        owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_AddSoldItem(item, quantity, chr.getName()));
+        owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_PSP_AddSoldItem(index, quantity, chr.getName()));
         return OpsPSBuy.PSBuy_Success;
-    }
-
-    public byte getShopType() {
-        return PLAYER_SHOP;
-    }
-
-    public void closeShop(boolean saveItems, boolean remove, int reason) {
-        removeAllVisitors(reason, 1);
-        getMap().removePlayerShop(this.getObjectId());
-
-        // what does not fit stays in the hold and is saved with the character.
-        hold.setItems(getStocks(items));
-        items.clear();
-        hold.returnTo(owner);
-
-        owner.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(0, reason));
-        owner.setPlayerShop(null);
-        updateBalloon();
-    }
-
-    // the number of users, or no balloon after the shop is closed.
-    private void updateBalloon() {
-        getMap().splitSendPacket(owner, ResCUser.UserMiniRoomBalloon(owner));
-    }
-
-    // MRP_Enter from a visitor.
-    public OpsMREnterResult enter(TacosCharacter visitor) {
-        if (!isOpen() || !isAvailable()) {
-            return OpsMREnterResult.MREnterResult_NoRoom;
-        }
-        if (isBanned(visitor.getName())) {
-            return OpsMREnterResult.MREnterResult_OnBlockedList;
-        }
-        if (getFreeSlot() == -1) {
-            return OpsMREnterResult.MREnterResult_Full;
-        }
-        visitor.setPlayerShop(this);
-        addVisitor(visitor);
-        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_PersonalShop(visitor));
-        updateBalloon();
-        return OpsMREnterResult.MREnterResult_Success;
-    }
-
-    // MRP_Leave from a visitor, the visitor's dialog is already closed.
-    public void leave(TacosCharacter visitor) {
-        removeVisitor(visitor);
-        visitor.setPlayerShop(null);
-        updateBalloon();
-    }
-
-    // PSP_Ban, the visitor can not enter again.
-    public void ban(TacosCharacter visitor) {
-        byte slot = getVisitorSlot(visitor);
-        if (slot <= 0) {
-            return;
-        }
-        visitor.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Leave(slot, OpsMRLeave.MRLeave_Kicked));
-        leave(visitor);
-        if (!bannedList.contains(visitor.getName())) {
-            bannedList.add(visitor.getName());
-        }
-    }
-
-    // PSP_DeliverBlackList, the owner's black list from the client config.
-    public void setBlackList(List<String> names) {
-        for (String name : names) {
-            if (!bannedList.contains(name)) {
-                bannedList.add(name);
-            }
-        }
-    }
-
-    public boolean isBanned(String name) {
-        if (bannedList.contains(name)) {
-            return true;
-        }
-        return false;
     }
 
     // the items left in the shop, one item per listing.
@@ -447,6 +271,7 @@ public class MaplePlayerShop implements IPlayerShop {
         return ret;
     }
 
+    // a listing of a personal shop or a hired merchant.
     public static class MaplePlayerShopItem {
 
         public Item item;
@@ -463,6 +288,76 @@ public class MaplePlayerShop implements IPlayerShop {
             Item stock = item.copy();
             stock.setQuantity((short) (item.getQuantity() * bundles));
             return stock;
+        }
+
+        // the item for the buyer, the karma flag is removed.
+        public Item getSoldItem(short quantity) {
+            Item sold = item.copy();
+            sold.setQuantity((short) (quantity * item.getQuantity()));
+            byte flag = sold.getFlag();
+            if (ItemFlag.KARMA_EQ.check(flag)) {
+                sold.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
+            } else if (ItemFlag.KARMA_USE.check(flag)) {
+                sold.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
+            }
+            return sold;
+        }
+
+        // PSP_BuyItem, ESP_BuyItem
+        public static boolean isValidBuy(List<MaplePlayerShopItem> items, int index, short quantity) {
+            if (index < 0 || items.size() <= index || quantity <= 0) {
+                return false;
+            }
+            MaplePlayerShopItem item = items.get(index);
+            long total_quantity = (long) item.item.getQuantity() * quantity;
+            long price = (long) item.price * quantity;
+            return quantity <= item.bundles && total_quantity <= Short.MAX_VALUE && price <= Integer.MAX_VALUE;
+        }
+
+        // PSP_PutItem, ESP_PutItem, the item is taken out of the inventory.
+        public static MaplePlayerShopItem takeFromInventory(TacosCharacter chr, MapleInventoryType type, short slot, short bundles, short per_bundle, int price) {
+            if (type == null || price <= 0 || bundles <= 0 || per_bundle <= 0) {
+                return null;
+            }
+            Item inv_item = chr.getInventory(type).getItem(slot);
+            int total_quantity = bundles * per_bundle;
+            if (inv_item == null || Short.MAX_VALUE < total_quantity || inv_item.getQuantity() < total_quantity) {
+                return null;
+            }
+            byte flag = inv_item.getFlag();
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
+                chr.updateStat();
+                return null;
+            }
+            if ((ii.isDropRestricted(inv_item.getItemId()) || ii.isAccountShared(inv_item.getItemId())) && !(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
+                chr.updateStat();
+                return null;
+            }
+            Item sell_item = inv_item.copy();
+            // throwing stars and bullets are sold as one bundle.
+            if (GameConstants.isThrowingStar(inv_item.getItemId()) || GameConstants.isBullet(inv_item.getItemId())) {
+                MapleInventoryManipulator.removeFromSlot(chr, type, slot, inv_item.getQuantity(), true);
+                return new MaplePlayerShopItem(sell_item, (short) 1, price);
+            }
+            MapleInventoryManipulator.removeFromSlot(chr, type, slot, (short) total_quantity, true);
+            sell_item.setQuantity(per_bundle);
+            return new MaplePlayerShopItem(sell_item, bundles, price);
+        }
+
+        // PSP_MoveItemToInventory, ESP_MoveItemToInventory, the stock goes back to the inventory.
+        public boolean returnTo(TacosCharacter chr) {
+            int quantity = bundles * item.getQuantity();
+            if (bundles <= 0 || quantity <= 0 || Short.MAX_VALUE < quantity) {
+                return false;
+            }
+            if (!MapleInventoryManipulator.checkSpace(chr, item.getItemId(), quantity, item.getOwner())) {
+                return false;
+            }
+            item.setQuantity((short) quantity);
+            MapleInventoryManipulator.addFromDrop(chr, item, false);
+            bundles = 0;
+            return true;
         }
     }
 }

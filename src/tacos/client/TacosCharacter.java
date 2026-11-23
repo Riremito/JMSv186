@@ -21,7 +21,8 @@ package tacos.client;
 import tacos.packet.ops.OpsMRLeave;
 import odin.server.shops.MaplePlayerShop;
 import odin.handling.channel.handler.PachinkoHandler;
-import odin.server.shops.IPlayerShop;
+import odin.server.shops.MapleMiniGame;
+import odin.server.shops.MapleMiniRoom;
 import tacos.server.map.object.TacosDragon;
 import tacos.wz.WzXML;
 import tacos.server.map.object.TacosMerchant;
@@ -2144,7 +2145,10 @@ public class TacosCharacter extends TacosPlayer {
     private boolean hasTutorialSummon = false;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleTrade trade;
-    private transient IPlayerShop playerShop;
+    private transient MapleMiniGame miniGame;
+    private transient MaplePlayerShop playerShop;
+    // the hired merchant visited or managed by this character
+    private transient TacosMerchant merchant;
     // items and meso put in a trade or a personal shop
     private final TacosHoldInventory miniroom_inventory = new TacosHoldInventory();
     // 雇用商人
@@ -3085,31 +3089,55 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // the mini room shown over its owner, a hired merchant has a balloon of its own.
-    public IPlayerShop getBalloonShop() {
-        if (playerShop == null || !playerShop.isOwner(this) || playerShop.getShopType() == 1 || !playerShop.isAvailable()) {
-            return null;
+    public MapleMiniRoom getBalloonRoom() {
+        if (this.miniGame != null && this.miniGame.isOwner(this)) {
+            return this.miniGame;
         }
-        return playerShop;
+        if (this.playerShop != null && this.playerShop.isOwner(this) && this.playerShop.isOpen()) {
+            return this.playerShop;
+        }
+        return null;
     }
 
-    public IPlayerShop getPlayerShop() {
-        return playerShop;
+    // a trade, a mini game, a personal shop or a hired merchant.
+    public boolean isInMiniRoom() {
+        return this.trade != null || this.miniGame != null || this.playerShop != null || this.merchant != null;
+    }
+
+    // the items and meso in a trade or an own personal shop are out of the inventory, new ones can not be gained until it ends.
+    public boolean isItemGainLocked() {
+        return (this.trade != null && this.trade.isEntered()) || (this.playerShop != null && this.playerShop.isOwner(this));
+    }
+
+    public MapleMiniGame getMiniGame() {
+        return this.miniGame;
+    }
+
+    public void setMiniGame(MapleMiniGame miniGame) {
+        this.miniGame = miniGame;
+    }
+
+    public MaplePlayerShop getPlayerShop() {
+        return this.playerShop;
+    }
+
+    public void setPlayerShop(MaplePlayerShop playerShop) {
+        this.playerShop = playerShop;
+    }
+
+    public TacosMerchant getMerchant() {
+        return this.merchant;
+    }
+
+    public void setMerchant(TacosMerchant merchant) {
+        this.merchant = merchant;
     }
 
     public TacosMerchant getMyHiredMerchant() {
-        if (!(playerShop instanceof TacosMerchant)) {
+        if (this.merchant == null || !this.merchant.isOwner(this)) {
             return null;
         }
-        TacosMerchant merchant = (TacosMerchant) playerShop;
-        if (!merchant.isOwner(this)) {
-            return null;
-        }
-
-        return merchant;
-    }
-
-    public void setPlayerShop(IPlayerShop playerShop) {
-        this.playerShop = playerShop;
+        return this.merchant;
     }
 
     public void addCP(int ammount) {
@@ -3355,16 +3383,34 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public void changeRemoval(boolean dc) {
-        if (getTrade() != null) {
-            MapleTrade.cancelTrade(getTrade(), this);
-        }
         if (getPyramidSubway() != null) {
             getPyramidSubway().dispose(this);
         }
-        if (playerShop != null && !dc) {
-            playerShop.removeVisitor(this);
-            if (playerShop.isOwner(this)) {
-                playerShop.setOpen(true);
+        leaveMiniRoom(dc);
+    }
+
+    // the character leaves the field or the server (dc), the trade fails and the own personal shop and mini game are closed.
+    private void leaveMiniRoom(boolean dc) {
+        if (this.trade != null) {
+            this.trade.cancel();
+        }
+        if (this.miniGame != null) {
+            this.miniGame.leave(this);
+        }
+        if (this.playerShop != null) {
+            if (this.playerShop.isOwner(this)) {
+                this.playerShop.close(dc ? OpsMRLeave.MRLeave_OpenTimeOver : OpsMRLeave.MRLeave_HostOut);
+            } else {
+                this.playerShop.leave(this);
+            }
+        }
+        if (this.merchant != null) {
+            // the owner is disconnected while managing the hired merchant, the goods go to the store bank.
+            if (dc && this.merchant.isOwner(this)) {
+                this.merchant.closeShop(true, OpsMRLeave.MRLeave_OpenTimeOver.get());
+                this.merchant = null;
+            } else {
+                this.merchant.leave(this);
             }
         }
     }
@@ -3630,17 +3676,6 @@ public class TacosCharacter extends TacosPlayer {
             this.changeRemoval(true);
             if (map != null) {
                 map.userLeaveField(this);
-            }
-
-            IPlayerShop shop = this.getPlayerShop();
-            if (shop instanceof MaplePlayerShop && !shop.isOwner(this)) {
-                ((MaplePlayerShop) shop).leave(this);
-            } else if (shop != null) {
-                shop.removeVisitor(this);
-                // a personal shop gives the items back, a hired merchant being managed goes to the store bank.
-                if (shop.isOwner(this)) {
-                    shop.closeShop(true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
-                }
             }
         } catch (Throwable e) {
             DebugLogger.ErrorLog("removalTask");

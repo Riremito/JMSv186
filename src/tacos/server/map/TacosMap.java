@@ -1304,6 +1304,10 @@ public class TacosMap extends TacosMapData {
         return this.miniGames.remove(object_id) != null;
     }
 
+    public MapleMiniGame getMiniGameByOid(int object_id) {
+        return this.miniGames.get(object_id);
+    }
+
     // player shop.
     private LinkedHashMap<Integer, MaplePlayerShop> playerShops = new LinkedHashMap<>();
 

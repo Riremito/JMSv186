@@ -86,6 +86,11 @@ public class ReqCDropPool {
 
     // CWvsContext::SendDropPickUpRequest
     public static boolean OnDropPickUpRequest(TacosCharacter chr, int object_id) {
+        // the items and meso in a trade or an own personal shop need the room in the inventory.
+        if (chr.isItemGainLocked()) {
+            DebugLogger.ErrorLog("PickUp : mini room");
+            return false;
+        }
         TacosMap map = chr.getMap();
         TacosDrop mapitem = map.getDropByOid(object_id);
         if (mapitem == null) {
@@ -111,7 +116,7 @@ public class ReqCDropPool {
                 List<TacosCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
                     TacosCharacter player = map.getPlayerById(z.getId());
-                    if (player != null) {
+                    if (player != null && !player.isItemGainLocked()) {
                         toGive.add(player);
                     }
                 }

@@ -49,6 +49,11 @@ public class ReqCShopDlg {
                 int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
 
+                // the items and meso in a trade or an own personal shop need the room in the inventory.
+                if (chr.isItemGainLocked()) {
+                    chr.updateStat();
+                    return true;
+                }
                 npc_shop.buy(chr, item_id, quantity);
                 return true;
             }

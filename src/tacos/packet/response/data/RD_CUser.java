@@ -19,7 +19,6 @@
 package tacos.packet.response.data;
 
 import odin.client.inventory.MapleInventoryType;
-import odin.server.shops.IPlayerShop;
 import tacos.client.TacosCharacter;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
@@ -74,7 +73,6 @@ public class RD_CUser {
     public static byte[] CUserRemote_Init(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        IPlayerShop shop = chr.getBalloonShop();
         MapleGuild guild = null;
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
@@ -133,16 +131,7 @@ public class RD_CUser {
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
         data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
         // miniroom.
-        data.Encode1((shop != null) ? shop.getGameType() : 0); // m_nMiniRoomType
-        if (shop != null && shop.getGameType() != 0) {
-            data.Encode4(shop.getObjectId()); // m_dwMiniRoomSN
-            data.EncodeStr(shop.getDescription()); // m_sMiniRoomTitle
-            data.Encode1((shop.getPassword().length() != 0) ? 1 : 0); // m_bPrivate
-            data.Encode1(shop.getItemId() % 10); // m_nGameKind
-            data.Encode1(shop.getSize()); // m_nCurUsers
-            data.Encode1(shop.getMaxSize()); // m_nMaxUsers
-            data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
-        }
+        data.EncodeBuffer(RD_Structure.AnnounceBox(chr)); // m_nMiniRoomType
         // adboard.
         boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
@@ -194,7 +183,6 @@ public class RD_CUser {
 
     public static byte[] CUserRemote_Init_JMS302(TacosCharacter chr) {
         MapleGuild guild = null;
-        IPlayerShop shop = chr.getBalloonShop();
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
@@ -266,17 +254,7 @@ public class RD_CUser {
         data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
         data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
-        data.Encode1((shop != null) ? shop.getGameType() : 0); // m_nMiniRoomType
-        if (shop != null && shop.getGameType() != 0) {
-            // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(shop.getObjectId()); // m_dwMiniRoomSN
-            data.EncodeStr(shop.getDescription()); // m_sMiniRoomTitle
-            data.Encode1((shop.getPassword().length() != 0) ? 1 : 0); // m_bPrivate
-            data.Encode1(shop.getItemId() % 10); // m_nGameKind
-            data.Encode1(shop.getSize()); // m_nCurUsers
-            data.Encode1(shop.getMaxSize()); // m_nMaxUsers
-            data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
-        }
+        data.EncodeBuffer(RD_Structure.AnnounceBox(chr)); // m_nMiniRoomType
         boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
         if (is_adboard) {
