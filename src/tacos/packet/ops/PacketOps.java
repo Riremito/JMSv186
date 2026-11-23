@@ -47,6 +47,7 @@ public class PacketOps {
         OpsMiniRoomProtocol.init();
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
+        OpsMRLeave.init();
         OpsBodyPart.init();
         OpsUI.init();
         OpsMoveAbility.init();

@@ -18,6 +18,9 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
@@ -66,5 +69,62 @@ public enum OpsMRLeave implements IPacketOps {
     @Override
     public void set(int value) {
         this.value = value;
+    }
+
+    public static void clear() {
+        for (OpsMRLeave ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
+    public static void init() {
+        // JMS146, JMS147, JMS164 : CTradingRoomDlg::OnLeave, CPersonalShopDlg::OnLeave, CEntrustedShopDlg::OnLeave
+        // no OpenTimeOver, TradeFail_Expired, TradeFail_Denied and ItemCRCFailed
+        if (Config.LessOrEqual(Region.JMS, 164)) {
+            clear();
+            MRLeave_UserRequest.set(0);
+            MRLeave_WrongPosition.set(1);
+            MRLeave_Closed.set(2);
+            MRLeave_HostOut.set(3);
+            MRLeave_Booked.set(4);
+            MRLeave_Kicked.set(5);
+            TRLeave_TradeDone.set(6);
+            TRLeave_TradeFail.set(7);
+            TRLeave_TradeFail_OnlyItem.set(8);
+            TRLeave_FieldError.set(9);
+            PSLeave_NoMoreItem.set(10);
+            PSLeave_KickedTimeOver.set(11);
+            ESLeave_Open.set(12);
+            ESLeave_StartManage.set(13);
+            ESLeave_ClosedTimeOver.set(14);
+            ESLeave_EndManage.set(15);
+            ESLeave_DestoryByAdmin.set(16);
+            MGLeave_UserRequest.set(17); // not checked
+            return;
+        }
+        // JMS165 : no TradeFail_Expired, TradeFail_Denied and ItemCRCFailed
+        if (Config.LessOrEqual(Region.JMS, 165)) {
+            clear();
+            MRLeave_UserRequest.set(0);
+            MRLeave_WrongPosition.set(1);
+            MRLeave_Closed.set(2);
+            MRLeave_HostOut.set(3);
+            MRLeave_Booked.set(4);
+            MRLeave_Kicked.set(5);
+            MRLeave_OpenTimeOver.set(6);
+            TRLeave_TradeDone.set(7);
+            TRLeave_TradeFail.set(8);
+            TRLeave_TradeFail_OnlyItem.set(9);
+            TRLeave_FieldError.set(10);
+            PSLeave_NoMoreItem.set(11);
+            PSLeave_KickedTimeOver.set(12);
+            ESLeave_Open.set(13);
+            ESLeave_StartManage.set(14);
+            ESLeave_ClosedTimeOver.set(15);
+            ESLeave_EndManage.set(16);
+            ESLeave_DestoryByAdmin.set(17);
+            MGLeave_UserRequest.set(18); // not checked
+            return;
+        }
     }
 }

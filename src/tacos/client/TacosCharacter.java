@@ -3391,6 +3391,8 @@ public class TacosCharacter extends TacosPlayer {
 
     // the character leaves the field or the server (dc), the trade fails and the own personal shop and mini game are closed.
     private void leaveMiniRoom(boolean dc) {
+        // old versions have no OpenTimeOver.
+        OpsMRLeave reason = (dc && OpsMRLeave.MRLeave_OpenTimeOver.get() != -1) ? OpsMRLeave.MRLeave_OpenTimeOver : OpsMRLeave.MRLeave_HostOut;
         if (this.trade != null) {
             this.trade.cancel();
         }
@@ -3399,7 +3401,7 @@ public class TacosCharacter extends TacosPlayer {
         }
         if (this.playerShop != null) {
             if (this.playerShop.isOwner(this)) {
-                this.playerShop.close(dc ? OpsMRLeave.MRLeave_OpenTimeOver : OpsMRLeave.MRLeave_HostOut);
+                this.playerShop.close(reason);
             } else {
                 this.playerShop.leave(this);
             }
@@ -3407,7 +3409,7 @@ public class TacosCharacter extends TacosPlayer {
         if (this.merchant != null) {
             // the owner is disconnected while managing the hired merchant, the goods go to the store bank.
             if (dc && this.merchant.isOwner(this)) {
-                this.merchant.closeShop(true, OpsMRLeave.MRLeave_OpenTimeOver.get());
+                this.merchant.closeShop(true, reason.get());
                 this.merchant = null;
             } else {
                 this.merchant.leave(this);
