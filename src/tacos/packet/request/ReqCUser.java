@@ -3289,7 +3289,9 @@ public class ReqCUser {
                     return false;
                 }
 
-                chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_InviteParty_Sent, invited));
+                if (OpsParty.PartyRes_InviteParty_Sent.get() != -1) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_InviteParty_Sent, invited));
+                }
                 invited.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyReq_InviteParty, chr));
                 return true;
             }

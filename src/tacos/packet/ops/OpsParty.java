@@ -268,6 +268,11 @@ public enum OpsParty implements IPacketOps {
             PartyRes_UserMigration.set(33);
             PartyRes_ChangeLevelOrJob.set(34);
             PartyInfo_TownPortalChanged.set(35);
+            // JMS147 : CWvsContext::OnPartyResult has no InviteParty_Sent, 20 shows the default error message (JoinParty_Unknown).
+            if (Config.Equal(Region.JMS, 147)) {
+                PartyRes_JoinParty_Unknown.set(20);
+                PartyRes_InviteParty_Sent.set(-1);
+            }
             return;
         }
     }

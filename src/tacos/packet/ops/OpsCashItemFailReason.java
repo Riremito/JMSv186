@@ -206,13 +206,14 @@ public enum OpsCashItemFailReason implements IPacketOps {
         CashItemFailReason_PurchaseLimitOver.set(160);
         CashItemFailReason_NoRemainMeso.set(161);
         CashItemFailReason_InvalidPassportID.set(162);
-        CashItemFailReason_IncorrectSSN2.set(163);
-        CashItemFailReason_ForNoPurchaseExpUsersOnly.set(164);
+        CashItemFailReason_ForNoPurchaseExpUsersOnly.set(163); // 当該クーポンアイテムはポイントアイテム新規購入者のみ使用可能です。
+        CashItemFailReason_AlreadyApplied.set(164); // 既に応募されました。
         CashItemFailReason_GachaponLimitOver.set(169);
         CashItemFailReason_CouponLimitError.set(172);
-        CashItemFailReason_Account_Age_limit.set(174);
-        CashItemFailReason_GiftNoMoney.set(175);
-        CashItemFailReason_ExceedLimit.set(177);
+        CashItemFailReason_LevelLimit_20.set(174); // 20レベル以上のみワールド変更できます。
+        CashItemFailReason_TransferWorldFailed_InvalidWorld_SameWorld.set(175); // 同じワールドにワールド変更することはできません。
+        CashItemFailReason_TransferWorldFailed_InvalidWorld_NewWorld.set(176); // 最新のワールドにワールド変更することはできません。
+        CashItemFailReason_TransferWorldFailed_MaxCharacter.set(177); // すでに3つキャラクターが存在しているワールドにはワールド変更ができません。
         CashItemFailReason_UnknownError.set(179); // default message
     }
 }
