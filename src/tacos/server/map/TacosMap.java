@@ -44,8 +44,8 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MaplePlayerShop;
+import tacos.miniroom.MiniGame;
+import tacos.miniroom.StorePermit;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosDragon;
 import tacos.server.map.object.TacosSkillPet;
@@ -1292,9 +1292,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // mini game.
-    private LinkedHashMap<Integer, MapleMiniGame> miniGames = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, MiniGame> miniGames = new LinkedHashMap<>();
 
-    public void addMiniGame(MapleMiniGame game) {
+    public void addMiniGame(MiniGame game) {
         this.runningOid++;
         game.setObjectId(this.runningOid);
         this.miniGames.put(game.getObjectId(), game);
@@ -1304,14 +1304,14 @@ public class TacosMap extends TacosMapData {
         return this.miniGames.remove(object_id) != null;
     }
 
-    public MapleMiniGame getMiniGameByOid(int object_id) {
+    public MiniGame getMiniGameByOid(int object_id) {
         return this.miniGames.get(object_id);
     }
 
     // player shop.
-    private LinkedHashMap<Integer, MaplePlayerShop> playerShops = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, StorePermit> playerShops = new LinkedHashMap<>();
 
-    public void addPlayerShop(MaplePlayerShop shop) {
+    public void addPlayerShop(StorePermit shop) {
         this.runningOid++;
         shop.setObjectId(this.runningOid);
         this.playerShops.put(shop.getObjectId(), shop);
@@ -1321,7 +1321,7 @@ public class TacosMap extends TacosMapData {
         return this.playerShops.remove(object_id) != null;
     }
 
-    public MaplePlayerShop getPlayerShopByOid(int object_id) {
+    public StorePermit getPlayerShopByOid(int object_id) {
         return this.playerShops.get(object_id);
     }
 

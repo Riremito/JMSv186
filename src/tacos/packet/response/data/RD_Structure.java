@@ -18,7 +18,7 @@
  */
 package tacos.packet.response.data;
 
-import odin.server.shops.MapleMiniRoom;
+import tacos.miniroom.MiniRoom;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 
@@ -32,7 +32,7 @@ public class RD_Structure {
     public static byte[] AnnounceBox(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        MapleMiniRoom room = chr.getBalloonRoom();
+        MiniRoom room = chr.getBalloonRoom();
         if (room == null) {
             data.Encode1(0); // m_nMiniRoomType
             return data.getBytes();

@@ -1,24 +1,22 @@
 /*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc>
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package odin.server.shops;
+package tacos.miniroom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +35,10 @@ import tacos.packet.ops.OpsPSBuy;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
- * 個人商店 (PSP_)
- *
- * The items are put while the shop is being set up, they are out of the
- * owner's inventory until the shop closes. After the shop is opened the items
- * can not be put or taken back.
  *
  * @author Riremito
  */
-public class MaplePlayerShop extends MapleMiniRoom {
+public class StorePermit extends MiniRoom {
 
     private static final int MAX_VISITORS = 3;
     private static final int MAX_ITEMS = 10;
@@ -55,7 +48,7 @@ public class MaplePlayerShop extends MapleMiniRoom {
     private final List<String> blackList = new ArrayList<>();
     private boolean open = false;
 
-    public MaplePlayerShop(TacosCharacter owner, int itemId, String description) {
+    public StorePermit(TacosCharacter owner, int itemId, String description) {
         super(owner, itemId, description, MAX_VISITORS);
         this.hold = owner.getMiniRoomInventory();
     }

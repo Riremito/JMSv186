@@ -21,7 +21,7 @@ package tacos.server.map.object;
 import java.util.AbstractMap;
 import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsESWithdrawAll;
-import odin.server.shops.MaplePlayerShop;
+import tacos.miniroom.StorePermit;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.InvTypeDB;
 import tacos.client.TacosStoreBank;
@@ -36,7 +36,7 @@ import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosRoom;
 import odin.client.inventory.Item;
-import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.miniroom.StorePermit.MaplePlayerShopItem;
 import tacos.server.map.TacosMap;
 import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
@@ -258,7 +258,7 @@ public class TacosMerchant extends TacosMapObject {
     }
 
     private boolean save() {
-        goods.setItems(MaplePlayerShop.getStocks(items));
+        goods.setItems(StorePermit.getStocks(items));
         return saveGoods();
     }
 

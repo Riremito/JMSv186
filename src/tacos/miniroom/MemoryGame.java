@@ -16,7 +16,7 @@
  *
  *
  */
-package odin.server.shops;
+package tacos.miniroom;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,11 +26,10 @@ import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
- * 神経衰弱 (MGP_)
  *
  * @author Riremito
  */
-public class MapleMemoryGame extends MapleMiniGame {
+public class MemoryGame extends MiniGame {
 
     private static final int RECORD_QUEST_ID = 122210;
     private final List<Integer> cards = new ArrayList<>();
@@ -38,7 +37,7 @@ public class MapleMemoryGame extends MapleMiniGame {
     // the card turned up first in this turn, -1 = none
     private int firstCard = -1;
 
-    public MapleMemoryGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
+    public MemoryGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
         super(owner, itemId, description, password, gameKind);
     }
 

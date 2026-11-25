@@ -19,10 +19,10 @@
 package tacos.client;
 
 import tacos.packet.ops.OpsMRLeave;
-import odin.server.shops.MaplePlayerShop;
+import tacos.miniroom.StorePermit;
 import odin.handling.channel.handler.PachinkoHandler;
-import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MapleMiniRoom;
+import tacos.miniroom.MiniGame;
+import tacos.miniroom.MiniRoom;
 import tacos.server.map.object.TacosDragon;
 import tacos.wz.WzXML;
 import tacos.server.map.object.TacosMerchant;
@@ -2145,8 +2145,8 @@ public class TacosCharacter extends TacosPlayer {
     private boolean hasTutorialSummon = false;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleTrade trade;
-    private transient MapleMiniGame miniGame;
-    private transient MaplePlayerShop playerShop;
+    private transient MiniGame miniGame;
+    private transient StorePermit playerShop;
     // the hired merchant visited or managed by this character
     private transient TacosMerchant merchant;
     // items and meso put in a trade or a personal shop
@@ -3089,7 +3089,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // the mini room shown over its owner, a hired merchant has a balloon of its own.
-    public MapleMiniRoom getBalloonRoom() {
+    public MiniRoom getBalloonRoom() {
         if (this.miniGame != null && this.miniGame.isOwner(this)) {
             return this.miniGame;
         }
@@ -3109,19 +3109,19 @@ public class TacosCharacter extends TacosPlayer {
         return (this.trade != null && this.trade.isEntered()) || (this.playerShop != null && this.playerShop.isOwner(this));
     }
 
-    public MapleMiniGame getMiniGame() {
+    public MiniGame getMiniGame() {
         return this.miniGame;
     }
 
-    public void setMiniGame(MapleMiniGame miniGame) {
+    public void setMiniGame(MiniGame miniGame) {
         this.miniGame = miniGame;
     }
 
-    public MaplePlayerShop getPlayerShop() {
+    public StorePermit getPlayerShop() {
         return this.playerShop;
     }
 
-    public void setPlayerShop(MaplePlayerShop playerShop) {
+    public void setPlayerShop(StorePermit playerShop) {
         this.playerShop = playerShop;
     }
 

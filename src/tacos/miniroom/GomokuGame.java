@@ -16,7 +16,7 @@
  *
  *
  */
-package odin.server.shops;
+package tacos.miniroom;
 
 import java.util.List;
 import tacos.client.TacosCharacter;
@@ -24,18 +24,17 @@ import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
- * 五目並べ (ORP_)
  *
  * @author Riremito
  */
-public class MapleOmok extends MapleMiniGame {
+public class GomokuGame extends MiniGame {
 
     private static final int RECORD_QUEST_ID = 122200;
     private static final int BOARD_SIZE = 15;
     private static final int[][] DIRECTIONS = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
     private int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 
-    public MapleOmok(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
+    public GomokuGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
         super(owner, itemId, description, password, gameKind);
     }
 

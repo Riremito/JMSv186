@@ -21,11 +21,11 @@ package tacos.packet.request;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleTrade;
-import odin.server.shops.MapleMemoryGame;
-import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MapleOmok;
-import odin.server.shops.MaplePlayerShop;
-import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.miniroom.MemoryGame;
+import tacos.miniroom.MiniGame;
+import tacos.miniroom.GomokuGame;
+import tacos.miniroom.StorePermit;
+import tacos.miniroom.StorePermit.MaplePlayerShopItem;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosStoreBank;
 import tacos.debug.DebugLogger;
@@ -151,7 +151,7 @@ public class ReqCMiniRoomBaseDlg {
                 if (chr.isInMiniRoom() || !chr.haveItem(item_id) || isFreeMarket(chr)) {
                     return;
                 }
-                MapleMiniGame game = is_omok ? new MapleOmok(chr, item_id, desc, pass, game_kind) : new MapleMemoryGame(chr, item_id, desc, pass, game_kind);
+                MiniGame game = is_omok ? new GomokuGame(chr, item_id, desc, pass, game_kind) : new MemoryGame(chr, item_id, desc, pass, game_kind);
                 game.create();
                 return;
             }
@@ -179,7 +179,7 @@ public class ReqCMiniRoomBaseDlg {
                 if (!chr.returnMiniRoomInventory()) {
                     return;
                 }
-                new MaplePlayerShop(chr, item_id, desc).create();
+                new StorePermit(chr, item_id, desc).create();
                 return;
             }
             case MR_EntrustedShop: {
@@ -237,7 +237,7 @@ public class ReqCMiniRoomBaseDlg {
             }
         } else if (map.getPlayerShopByOid(object_id) != null) {
             // 個人商店
-            MaplePlayerShop player_shop = map.getPlayerShopByOid(object_id);
+            StorePermit player_shop = map.getPlayerShopByOid(object_id);
             byte is_private = cp.Decode1();
             if (is_private != 0) {
                 String password = cp.DecodeStr(); // personal shops have no password
@@ -245,7 +245,7 @@ public class ReqCMiniRoomBaseDlg {
             result = player_shop.enter(chr);
         } else if (map.getMiniGameByOid(object_id) != null) {
             // ミニゲーム
-            MapleMiniGame game = map.getMiniGameByOid(object_id);
+            MiniGame game = map.getMiniGameByOid(object_id);
             byte is_private = cp.Decode1();
             String password = (is_private != 0) ? cp.DecodeStr() : "";
             result = game.enter(chr, password);
@@ -308,7 +308,7 @@ public class ReqCMiniRoomBaseDlg {
         if (!map.allowPersonalShop()) {
             return;
         }
-        MaplePlayerShop player_shop = chr.getPlayerShop();
+        StorePermit player_shop = chr.getPlayerShop();
         if (player_shop != null && player_shop.isOwner(chr)) {
             player_shop.open();
             return;
@@ -354,7 +354,7 @@ public class ReqCMiniRoomBaseDlg {
 
     // PSP_ : CPersonalShopDlg
     private static boolean OnPersonalShop(TacosCharacter chr, OpsMiniRoomProtocol protocol, ClientPacket cp) {
-        MaplePlayerShop shop = chr.getPlayerShop();
+        StorePermit shop = chr.getPlayerShop();
         if (shop == null) {
             DebugLogger.ErrorLog("OnMiniRoom : " + protocol + ", no personal shop");
             chr.updateStat();
@@ -547,7 +547,7 @@ public class ReqCMiniRoomBaseDlg {
 
     // MGRP_ : COmokDlg, CMemoryGameDlg
     private static boolean OnMiniGame(TacosCharacter chr, OpsMiniRoomProtocol protocol, ClientPacket cp) {
-        MapleMiniGame game = chr.getMiniGame();
+        MiniGame game = chr.getMiniGame();
         if (game == null) {
             DebugLogger.ErrorLog("OnMiniRoom : " + protocol + ", no mini game");
             return true;
@@ -609,11 +609,11 @@ public class ReqCMiniRoomBaseDlg {
 
     // ORP_ : COmokDlg
     private static boolean OnOmok(TacosCharacter chr, OpsMiniRoomProtocol protocol, ClientPacket cp) {
-        if (!(chr.getMiniGame() instanceof MapleOmok)) {
+        if (!(chr.getMiniGame() instanceof GomokuGame)) {
             DebugLogger.ErrorLog("OnMiniRoom : " + protocol + ", no omok");
             return true;
         }
-        MapleOmok omok = (MapleOmok) chr.getMiniGame();
+        GomokuGame omok = (GomokuGame) chr.getMiniGame();
         switch (protocol) {
             case ORP_PutStoneChecker: {
                 int x = cp.Decode4();
@@ -631,11 +631,11 @@ public class ReqCMiniRoomBaseDlg {
 
     // MGP_ : CMemoryGameDlg
     private static boolean OnMemoryGame(TacosCharacter chr, OpsMiniRoomProtocol protocol, ClientPacket cp) {
-        if (!(chr.getMiniGame() instanceof MapleMemoryGame)) {
+        if (!(chr.getMiniGame() instanceof MemoryGame)) {
             DebugLogger.ErrorLog("OnMiniRoom : " + protocol + ", no memory game");
             return true;
         }
-        MapleMemoryGame memory_game = (MapleMemoryGame) chr.getMiniGame();
+        MemoryGame memory_game = (MemoryGame) chr.getMiniGame();
         switch (protocol) {
             case MGP_TurnUpCard: {
                 // CMemoryGameDlg::SendTurnUpCard

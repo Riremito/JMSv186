@@ -16,7 +16,7 @@
  *
  *
  */
-package odin.server.shops;
+package tacos.miniroom;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
@@ -30,13 +30,10 @@ import tacos.packet.response.ResCUser;
 import tacos.server.map.TacosMap;
 
 /**
- * A mini room opened by a character and shown as a balloon over the owner:
- * MaplePlayerShop (personal shop) and MapleMiniGame (omok, memory game).
- * Slot 0 is the owner, the visitors use slot 1 and after.
  *
  * @author Riremito
  */
-public abstract class MapleMiniRoom {
+public abstract class MiniRoom {
 
     private final TacosCharacter owner;
     private final TacosCharacter[] visitors;
@@ -45,7 +42,7 @@ public abstract class MapleMiniRoom {
     private final String description;
     private int objectId = 0;
 
-    protected MapleMiniRoom(TacosCharacter owner, int itemId, String description, int max_visitors) {
+    protected MiniRoom(TacosCharacter owner, int itemId, String description, int max_visitors) {
         this.owner = owner;
         this.visitors = new TacosCharacter[max_visitors];
         this.map = owner.getMap();

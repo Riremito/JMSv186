@@ -16,7 +16,7 @@
  *
  *
  */
-package odin.server.shops;
+package tacos.miniroom;
 
 import java.util.List;
 import odin.client.MapleQuestStatus;
@@ -28,12 +28,10 @@ import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
- * The common part of the mini games (MGRP_), the owner plays against one
- * visitor. MapleOmok handles ORP_ and MapleMemoryGame handles MGP_.
  *
  * @author Riremito
  */
-public abstract class MapleMiniGame extends MapleMiniRoom {
+public abstract class MiniGame extends MiniRoom {
 
     // m_nGameResultType
     public static final int RESULT_LOSE = 0;
@@ -48,7 +46,7 @@ public abstract class MapleMiniGame extends MapleMiniRoom {
     private int tieRequestSlot = -1;
     private int firstTurn = 0;
 
-    protected MapleMiniGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
+    protected MiniGame(TacosCharacter owner, int itemId, String description, String password, int gameKind) {
         super(owner, itemId, description, 1);
         this.password = (password != null) ? password : "";
         this.gameKind = gameKind;

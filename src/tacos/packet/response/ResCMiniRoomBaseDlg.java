@@ -21,7 +21,7 @@ package tacos.packet.response;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsESWithdrawAll;
 import tacos.packet.ops.OpsPSBuy;
-import odin.server.shops.MaplePlayerShop;
+import tacos.miniroom.StorePermit;
 import tacos.packet.ops.OpsMREnterResult;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.object.TacosMerchant;
@@ -36,8 +36,8 @@ import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
-import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.miniroom.MiniGame;
+import tacos.miniroom.StorePermit.MaplePlayerShopItem;
 import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.config.Region;
@@ -68,7 +68,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_Enter : CMiniRoomBaseDlg::OnEnterBase, COmokDlg::OnEnter / CMemoryGameDlg::OnEnter
-    public static ServerPacket MiniRoom_MRP_Enter(int slot, TacosCharacter chr, MapleMiniGame game) {
+    public static ServerPacket MiniRoom_MRP_Enter(int slot, TacosCharacter chr, MiniGame game) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
@@ -117,7 +117,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_EnterResult : CMiniRoomBaseDlg::OnEnterResultBase, CPersonalShopDlg::OnEnterResult
-    public static ServerPacket MiniRoom_MRP_EnterResult_PersonalShop(TacosCharacter chr, MaplePlayerShop ips) {
+    public static ServerPacket MiniRoom_MRP_EnterResult_PersonalShop(TacosCharacter chr, StorePermit ips) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         TacosCharacter owner = ips.getOwner();
@@ -190,7 +190,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_EnterResult : CMiniRoomBaseDlg::OnEnterResultBase, COmokDlg::OnEnterResult / CMemoryGameDlg::OnEnterResult
-    public static ServerPacket MiniRoom_MRP_EnterResult_MiniGame(TacosCharacter chr, MapleMiniGame game) {
+    public static ServerPacket MiniRoom_MRP_EnterResult_MiniGame(TacosCharacter chr, MiniGame game) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
@@ -552,7 +552,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MGRP_GameResult : COmokDlg::OnGameResult, CMemoryGameDlg::OnGameResult
-    public static ServerPacket MiniRoom_MGRP_GameResult(MapleMiniGame game, int type, int x) {
+    public static ServerPacket MiniRoom_MGRP_GameResult(MiniGame game, int type, int x) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MGRP_GameResult.get());
@@ -602,7 +602,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // GW_MiniGameRecord::Decode
-    public static byte[] GW_MiniGameRecord_Encode(TacosCharacter chr, MapleMiniGame game) {
+    public static byte[] GW_MiniGameRecord_Encode(TacosCharacter chr, MiniGame game) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(game.getMiniRoomType().get());
