@@ -1,4 +1,22 @@
-package odin.server;
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.miniroom;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -8,21 +26,18 @@ import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
+import odin.server.MapleInventoryManipulator;
+import odin.server.MapleItemInformationProvider;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosHoldInventory;
 import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
- * 交換 (TRP_)
- *
- * The items and meso put in the trade are out of the inventory until the
- * trade ends, so they can not be moved. The trade is done when both users
- * confirm it, otherwise everything goes back to the inventory.
  *
  * @author Riremito
  */
-public class MapleTrade {
+public class Trade {
 
     private static final int MAX_ITEMS = 9;
     private final TacosCharacter chr;
@@ -31,11 +46,11 @@ public class MapleTrade {
     private final boolean isPointTrade;
     // the items and meso put in this trade, saved with the character until the trade ends.
     private final TacosHoldInventory hold;
-    private MapleTrade partner = null;
+    private Trade partner = null;
     private boolean entered = false;
     private boolean confirmed = false;
 
-    private MapleTrade(TacosCharacter chr, int slot, boolean isPointTrade) {
+    private Trade(TacosCharacter chr, int slot, boolean isPointTrade) {
         this.chr = chr;
         this.slot = slot;
         this.isPointTrade = isPointTrade;
@@ -47,7 +62,7 @@ public class MapleTrade {
         return this.chr;
     }
 
-    public MapleTrade getPartner() {
+    public Trade getPartner() {
         return this.partner;
     }
 
@@ -80,7 +95,7 @@ public class MapleTrade {
             chr.Notice("You are already in a trade");
             return;
         }
-        MapleTrade trade = new MapleTrade(chr, 0, isPointTrade);
+        Trade trade = new Trade(chr, 0, isPointTrade);
         trade.entered = true;
         chr.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_EnterResult_TradingRoom(chr, trade));
     }
@@ -95,7 +110,7 @@ public class MapleTrade {
             cancel();
             return;
         }
-        this.partner = new MapleTrade(target, 1, this.isPointTrade);
+        this.partner = new Trade(target, 1, this.isPointTrade);
         this.partner.partner = this;
         target.SendPacket(ResCMiniRoomBaseDlg.MiniRoom_MRP_Invite(this.chr, this.isPointTrade));
     }

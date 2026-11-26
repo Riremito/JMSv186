@@ -16,7 +16,6 @@ import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
-import odin.server.maps.AramiaFireWorks;
 import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
@@ -308,19 +307,6 @@ public class MapleInventoryManipulator {
                 quantity -= newQuantity;
             }
             chr.sendInventoryOperation(true, io);
-        }
-        if (before == 0) {
-            switch (itemId) {
-                case AramiaFireWorks.KEG_ID:
-                    chr.Notice("You have gained a Powder Keg, you can give this in to Aramia of Henesys.");
-                    break;
-                case AramiaFireWorks.SUN_ID:
-                    chr.Notice("You have gained a Warm Sun, you can give this in to Maple Tree Hill through @joyce.");
-                    break;
-                case AramiaFireWorks.DEC_ID:
-                    chr.Notice("You have gained a Tree Decoration, you can give this in to White Christmas Hill through @joyce.");
-                    break;
-            }
         }
         chr.havePartyQuest(itemId);
         if (show) {

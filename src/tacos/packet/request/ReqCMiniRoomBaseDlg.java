@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleTrade;
+import tacos.miniroom.Trade;
 import tacos.miniroom.MemoryGame;
 import tacos.miniroom.MiniGame;
 import tacos.miniroom.GomokuGame;
@@ -156,7 +156,7 @@ public class ReqCMiniRoomBaseDlg {
                 return;
             }
             case MR_TradingRoom: {
-                MapleTrade.start(chr, false);
+                Trade.start(chr, false);
                 return;
             }
             case MR_CashTradingRoom: {
@@ -164,7 +164,7 @@ public class ReqCMiniRoomBaseDlg {
                 int unk1 = cp.Decode4();
                 // 交換窓のID
                 int trade_id = cp.Decode4();
-                MapleTrade.start(chr, true);
+                Trade.start(chr, true);
                 return;
             }
             case MR_PersonalShop: {
@@ -322,7 +322,7 @@ public class ReqCMiniRoomBaseDlg {
 
     // TRP_ : CTradingRoomDlg
     private static boolean OnTradingRoom(TacosCharacter chr, OpsMiniRoomProtocol protocol, ClientPacket cp) {
-        MapleTrade trade = chr.getTrade();
+        Trade trade = chr.getTrade();
         if (trade == null) {
             DebugLogger.ErrorLog("OnMiniRoom : " + protocol + ", no trade");
             return true;

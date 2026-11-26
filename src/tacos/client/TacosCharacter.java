@@ -140,7 +140,7 @@ import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
 import odin.server.MapleStatEffect;
-import odin.server.MapleTrade;
+import tacos.miniroom.Trade;
 import odin.server.MapleCarnivalParty;
 import odin.server.maps.SavedLocationType;
 import tacos.network.MockIOSession;
@@ -2144,7 +2144,7 @@ public class TacosCharacter extends TacosPlayer {
     private boolean smega;
     private boolean hasTutorialSummon = false;
     private transient MapleCarnivalParty carnivalParty;
-    private transient MapleTrade trade;
+    private transient Trade trade;
     private transient MiniGame miniGame;
     private transient StorePermit playerShop;
     // the hired merchant visited or managed by this character
@@ -2784,11 +2784,11 @@ public class TacosCharacter extends TacosPlayer {
         this.party = party;
     }
 
-    public MapleTrade getTrade() {
+    public Trade getTrade() {
         return trade;
     }
 
-    public void setTrade(MapleTrade trade) {
+    public void setTrade(Trade trade) {
         this.trade = trade;
     }
 

@@ -35,7 +35,7 @@ import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleTrade;
+import tacos.miniroom.Trade;
 import tacos.miniroom.MiniGame;
 import tacos.miniroom.StorePermit.MaplePlayerShopItem;
 import tacos.config.Config;
@@ -93,7 +93,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     // MRP_EnterResult : CMiniRoomBaseDlg::OnEnterResultBase, CTradingRoomDlg::OnEnterResult
-    public static ServerPacket MiniRoom_MRP_EnterResult_TradingRoom(TacosCharacter chr, MapleTrade trade) {
+    public static ServerPacket MiniRoom_MRP_EnterResult_TradingRoom(TacosCharacter chr, Trade trade) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         int number = trade.getSlot();
